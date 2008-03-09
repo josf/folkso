@@ -1,0 +1,6 @@
+2008-03-09
+
+First steps. Installed ADOdb. Very easy to install and set up
+connection. Will work for a generic install with provider. Cursory
+look at benchmarks looks promising. Slightly slower than native
+php+mysql. 
