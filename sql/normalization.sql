@@ -23,6 +23,107 @@ END$$
 
 delimiter ;
 
+delimiter $$
+drop function if exists alphabet_score$$
+create function alphabet_score (word varchar(255))
+       returns bigint
+       deterministic
+begin
+        declare depth tinyint default 12;
+        declare counter tinyint default 1;
+        declare best_score bigint default 0;
+        declare current_score bigint default 0;
+        declare current_character char;
+        declare char_value tinyint;
+
+        while (length(word) >= counter) do
+              set current_character = substring(word, counter, 1);
+              select rank 
+                     into char_value
+                     from alphabet
+                     where letter = current_character;
+              set score = score + char_value * power(10, depth);
+              set depth = depth - 1;
+              set counter = counter + 1;
+        end while;
+        return score;               
+end$$
+delimiter ;
+        
+
+
+delimiter $$
+drop function if exists param_sort$$
+create function param_sort( input_string VARCHAR(255))
+       returns varchar(255)
+       deterministic
+
+begin
+        declare accum varchar(255) default '';
+        declare are_here smallint default 1;
+        declare current_param varchar(255) default '';
+        declare current_param_score int default 0;
+        declare current_best_score int default 0;
+        declare current_word varchar(255) default '';
+        declare next_word_end tinyint default 0;
+        declare next_amp tinyint default 0;
+        declare next_equ tinyint default 0;
+
+
+        while ( locate('&', input_string, are_here) > 0) do
+              set next_amp = locate('&', input_string, are_here);
+              set next_equ = locate('=', input_string, are_here);
+
+              case
+                when (next_amp  = 0) and
+                     (next_equ  = 0) then
+                      set next_word_end = length(input_string);
+
+                when (next_amp > 0) and
+                     (next_equ = 0) then
+                      set next_word_end = next_amp - 1;
+
+                when (next_amp  = 0) and
+                     (next_equ > 0) then
+                     set next_word_end = next_equ - 1;
+
+                when (next_amp > 0) and
+                     (next_equ > 0) and
+                     (next_amp > next_equ) then
+                     set next_word_end = next_equ - 1;
+
+                when (next_amp > 0) and
+                     (next_equ > 0) and
+                     (next_equ > next_amp) then
+                     set next_word_end = next_amp - 1;
+                else
+                     set next_word_end = length(input_string);
+                     /* this should probably be an error... */
+             end case;
+             
+             set current_word = substr(input_string, are_here, next_word_end - are_here);
+             set current_score = alphabet_score(word);
+             if (current_score > best_score)            
+
+         
+             
+
+delimiter $$
+drop procedure if exists tmp_test$$
+create procedure tmp_test(inpu VARCHAR(255))
+begin
+        declare a_number int default 0;
+       create temporary table tmpStuff(
+              id int primary key auto_increment,
+              thing varchar(255) ) engine=memory;
+       insert  into tmpStuff set thing=inpu;
+       select id into a_number from tmpStuff where thing=inpu;
+
+       select * from tmpStuff;
+       drop table tmpStuff;
+end$$
+delimiter ;
+
 
 delimiter $$
 drop function if exists query_sort$$
@@ -52,7 +153,7 @@ BEGIN
                    info  = substring(input_string, locate('=', input_string, the_position) + 1,
                                                    locate('&', input_string, the_position) -1);
 
-                   /* is there another '&'? */
+                   --  is there another '&'? 
                    IF ( locate('&', input_string, the_position) > 0) THEN
                      SET the_position = locate('&', input_string, the_position);
                    ELSE -- no more '&', so we grab the rest of the string
@@ -84,7 +185,7 @@ BEGIN
            CLOSE our_cursor;
            SET no_more_rows = 0;
            DROP TABLE tmpUrlAccum;
-           END IF;
+      END IF;
            RETURN accum;
 END$$      
 delimiter ; 
