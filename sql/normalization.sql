@@ -1,4 +1,3 @@
-
 delimiter $$
 drop function if exists remove_end$$
 create function remove_end(input_string VARCHAR(250),
@@ -62,15 +61,16 @@ begin
         declare accum varchar(255) default '';
         declare are_here smallint default 1;
         declare current_param varchar(255) default '';
-        declare current_param_score int default 0;
-        declare current_best_score int default 0;
+        declare current_param_score bigint default 0;
+        declare current_best_score bigint default 0;
         declare current_word varchar(255) default '';
         declare next_word_end tinyint default 0;
         declare next_amp tinyint default 0;
         declare next_equ tinyint default 0;
+        declare next_segment_end tinyint default 0;
 
 
-        while ( locate('&', input_string, are_here) > 0) do
+        while (are_here < length(input_string)) do
               set next_amp = locate('&', input_string, are_here);
               set next_equ = locate('=', input_string, are_here);
 
@@ -78,32 +78,43 @@ begin
                 when (next_amp  = 0) and
                      (next_equ  = 0) then
                       set next_word_end = length(input_string);
+                      set next_segment_end = length(input_string) + 1;
 
                 when (next_amp > 0) and
                      (next_equ = 0) then
-                      set next_word_end = next_amp - 1;
+                      set next_word_end = next_amp;
+                      set next_segment_end = next_amp + 1;
 
                 when (next_amp  = 0) and
                      (next_equ > 0) then
-                     set next_word_end = next_equ - 1;
+                     set next_word_end = next_equ;
+                     set next_segment_end = length(input_string) + 1;
 
                 when (next_amp > 0) and
                      (next_equ > 0) and
                      (next_amp > next_equ) then
-                     set next_word_end = next_equ - 1;
+                     set next_word_end = next_equ;
+                     set next_segment_end = next_amp + 1;
 
                 when (next_amp > 0) and
                      (next_equ > 0) and
                      (next_equ > next_amp) then
-                     set next_word_end = next_amp - 1;
+                     set next_word_end = next_amp;
+                     set next_segment_end = next_amp + 1;
                 else
                      set next_word_end = length(input_string);
+                     set next_segment_end = length(input_string) + 1;
                      /* this should probably be an error... */
              end case;
              
              set current_word = substr(input_string, are_here, next_word_end - are_here);
-             set current_score = alphabet_score(word);
-             if (current_score > best_score)            
+             set current_param_score = alphabet_score(current_word);
+             set accum = concat(accum, '##', cast(current_param_score as char), '##', current_word, '##');
+             set are_here = next_segment_end;
+        end while;
+        return accum;
+end$$
+delimiter ;
 
          
              
