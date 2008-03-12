@@ -68,9 +68,11 @@ begin
         declare next_amp tinyint default 0;
         declare next_equ tinyint default 0;
         declare next_segment_end tinyint default 0;
+        declare remaining varchar(255) default '';
 
 
-        while (are_here < length(input_string)) do
+        set remaining = input_string;
+        while (length(remaining) > 0) do
               set next_amp = locate('&', input_string, are_here);
               set next_equ = locate('=', input_string, are_here);
 
@@ -117,7 +119,92 @@ end$$
 delimiter ;
 
          
+delimiter $$
+drop function if exists find_best_sequence$$
+create function find_best_sequence(input_string varchar(255))
+       RETURNS VARCHAR(255)
+       DETERMINISTIC
+begin
+        declare orig varchar(255) default '';
+        declare accum varchar(255) default '';
+        declare current_seg varchar(255) default '';
+        declare seg_end tinyint default 0;
+        declare sorted varchar(255) default '';
+        declare counter smallint default 1;
+        declare next_sorted_seg varchar(255) default '';
+        declare sorted_seg_end smallint default 0;
+        
+        set orig = input_string;
+        case
+                /* no string */
+             when (length(input_string) = 0) then
+                   return '';
              
+              /* single element */
+             when (instr(input_string, '&') = 0) then
+                  set sorted = input_string;
+
+             /* multiple parameters */
+             else
+                  while (  length(orig) > 0) do
+                        set seg_end = instr(orig, '&');
+                        if (seg_end = 0) then
+                           set seg_end = length(orig);
+                           set orig = '';
+                        else
+                           set current_seg = substr(orig, 1, seg_end - 1);
+                           set orig = substr(orig, seg_end + 1);
+                        end if;
+
+                        if length(sorted) = 0 then
+                            set sorted = concat(current_seg, '&'); -- remember to chop trailing & later
+                            
+                        else
+                            set counter = 1;
+                            sorting: while (counter < length(sorted)) do
+                                set sorted_seg_end = locate('&', sorted, counter + 1); -- alwas ends with ampersand
+                                set next_sorted_seg = substr(sorted, counter + 1, sorted_seg_end - counter);
+                                case 
+                                       -- current_seg goes before other seg
+                                      when (strcmp(current_seg, next_sorted_seg) = -1) then
+                                           set sorted = concat( current_seg, '&', sorted);
+                                           set current_seg = '';
+                                           set sorted_seg_end = 0;
+                                           leave sorting;
+                                      
+                                       -- current_seg goes after last seg in sorted
+                                      when ((strcmp(current_seg, next_sorted_seg) = 1) and
+                                            (sorted_seg_end = length(sorted))) then
+                                           set sorted = concat( sorted, '&', current_seg);
+                                           set current_seg = '';
+                                           set sorted_seg_end = 0;
+                                           leave sorting;
+
+                                      when ((strcmp(current_seg, next_sorted_seg) = 1) and
+                                            (strcmp(current_seg, 
+                                                    substring(sorted,
+                                                              sorted_seg_end + 1,
+                                                              locate('&', sorted, sorted_seg_end + 1) 
+                                                                   - sorted_seg_end + 1)) = 0)) then
+                                            set sorted = concat(
+                                                           substr(sorted, 1, sorted_seg_end),
+                                                           current_seg,
+                                                           substr(sorted, sorted_seg_end + 1));
+                                            set current_seg = '';
+                                            set sorted_seg_end = 0;
+                                            leave sorting;
+                                      else
+                                            set counter = sorted_seg_end + 1;
+                                      end case;
+                                  end while;
+                                  end if;
+                                end while;
+                              end case;
+                          return sorted;
+end$$
+delimiter ;
+                                           
+                                                  
 
 delimiter $$
 drop procedure if exists tmp_test$$
