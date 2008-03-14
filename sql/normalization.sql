@@ -193,15 +193,23 @@ begin
         if ( substring(my_url, 1, 7) = 'http://') THEN
                 set my_url=substring(my_url, 8);
         end if;
+        IF (substring(my_url, 1, 4) = 'www.') THEN
+           SET my_url=substring(my_url, 5);
+        END IF; 
+
+        if (instr(my_url, ':80') and
+         ( instr(my_url, ':80/') < instr(my_url, '/'))) then -- port number before 1st slash
+           set my_url = concat(
+                substr(my_url, 1, instr(my_url, ':80/') - 1),
+                substr(my_url, instr(my_url, ':80/') + 3));
+        end if;
 
         set my_url=remove_end(my_url, 'index.php');
         set my_url=remove_end(my_url, 'index.html');
         set my_url=remove_end(my_url, 'index.htm');
         set my_url=remove_end(my_url, '/');         
+        set my_url=remove_end(my_url, '?');
 
-        IF (substring(my_url, 1, 4) = 'www.') THEN
-           SET my_url=substring(my_url, 5);
-        END IF; 
         RETURN(my_url);        
 end$$
 delimiter ;
@@ -225,3 +233,4 @@ insert into urltest set url='http://www.example.com';
 insert into urltest set url='http://www.example.com?user=bob&page=4';
 insert into urltest set url='http://example.com?user=bob';
 insert into urltest set url='http://www.Example.com?page=44&aaa=ddd&bob';
+insert into urltest set url='http://example.com:80/work?bob=slob&a=c';
