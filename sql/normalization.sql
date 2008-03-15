@@ -198,11 +198,19 @@ begin
         END IF; 
 
         if (instr(my_url, ':80') and
-         ( instr(my_url, ':80/') < instr(my_url, '/'))) then -- port number before 1st slash
+         ( instr(my_url, ':80/') < instr(my_url, '/'))) then  -- port number before 1st slash
            set my_url = concat(
                 substr(my_url, 1, instr(my_url, ':80/') - 1),
                 substr(my_url, instr(my_url, ':80/') + 3));
         end if;
+
+        if (instr(my_url, ':80?') and
+            (instr(my_url, ':80?') < instr(my_url, '/'))) then
+            set  my_url = concat(
+                substr(my_url, 1, instr(my_url, ':80?') - 1),
+                substr(my_url, instr(my_url, ':80?') + 3));
+        end if;  
+
 
         set my_url=remove_end(my_url, 'index.php');
         set my_url=remove_end(my_url, 'index.html');
@@ -213,6 +221,35 @@ begin
         RETURN(my_url);        
 end$$
 delimiter ;
+
+delimiter $$
+drop procedure if exists url_visit$$
+create procedure url_visit(url varchar(255))
+
+begin
+declare found_url varchar(255) default '';
+declare url_check varchar(255) default '';
+
+        set url_check = url_whack(url);
+
+        select uri_normal 
+           into found_url
+           from resource
+           where uri_normal = url_check;
+
+        if (length(found_url) > 0)  then
+            update resource 
+               set visited = visited + 1
+               where uri_normal = url_check;
+        else
+            insert into resource
+                    (uri_normal, uri_raw) 
+                    values (url_check, url);
+        end if;
+end$$
+delimiter ;
+
+
 
 
 
@@ -234,3 +271,5 @@ insert into urltest set url='http://www.example.com?user=bob&page=4';
 insert into urltest set url='http://example.com?user=bob';
 insert into urltest set url='http://www.Example.com?page=44&aaa=ddd&bob';
 insert into urltest set url='http://example.com:80/work?bob=slob&a=c';
+insert into urltest set url='http://www.eXample.com:80?bob=theslob&action=quit';
+insert into urltest set url='http://www.fabula.org/atelier.php?Biblioth%26egrave%3Bques%2C_Fables_et_M%26eacute%3Bmoires_en_acte%28s%29';
