@@ -246,6 +246,9 @@ declare url_check varchar(255) default '';
                     (uri_normal, uri_raw) 
                     values (url_check, url);
         end if;
+
+        /* this is just a test */
+        select visited from resource where uri_normal = url_check;
 end$$
 delimiter ;
 
