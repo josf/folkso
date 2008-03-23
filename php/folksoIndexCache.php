@@ -51,9 +51,14 @@ class folksoIndexCache {
   }
 
   function data_to_cache ($string) {
-    if (!$string) {
+    if (!(isset($string)) or ($string == '')) {
       return 0;
     }
+    $cfilename = $this->new_cache_filename();
+    $handle = fopen($this->cachedir . $cfilename, 'w');
+    fwrite($string, $handle);
+    fclose($handle);
+    return($cfilename);
 
   } 
     
