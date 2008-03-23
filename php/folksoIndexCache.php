@@ -11,7 +11,7 @@ class folksoIndexCache {
     $this->cachedir = $dir;
     $this->cache_prefix = $cache_prefix;;
     $this->cache_suffix = $cache_suffix;
-    $this->cache_file_limit = $cache_file_limit ? $cache_file_limit : 100;
+     $this->cache_file_limit = $cache_file_limit ? $cache_file_limit : 100;
       
 
   }
