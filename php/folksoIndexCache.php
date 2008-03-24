@@ -8,9 +8,11 @@ class folksoIndexCache {
   var $cache_file_limit;
 
   //private!
-  var $dirhandle;
+  var $dh;
 
-  function folksoIndexCache ($dir, $cache_prefix, $cache_suffix, $file_limit) {
+  function folksoIndexCache ($dir, $cache_prefix = 'folksoindex-', 
+                             $cache_suffix = '.cache', 
+                             $file_limit = 100) {
     $this->cachedir = $dir;
     $this->cache_prefix = $cache_prefix;;
     $this->cache_suffix = $cache_suffix;
@@ -38,16 +40,20 @@ class folksoIndexCache {
   }
 
   function dirhandle () {
-    if (!($cachedir_handle = opendir($this->cachedir))){
-      trigger_error("cannot open cache directory: $this->cachedir", E_USER_ERROR);
-      return 0;
+    if (!$this->dh) {
+      if (!($this->dh = opendir($this->cachedir))) {
+        trigger_error("cannot open cache directory: $this->cachedir", E_USER_ERROR);
+        return 0;
+      }
     }
-    $this->dirhandle = $cachedir_handle;
-    return $this->dirhandle;
+    return $this->dh;
   }
   
   function close_dirhandle () {
-    closedir( $this->dirhandle);
+    if ( $this->dh ) {
+      closedir( $this->dh);
+      unset( $this->dh);
+    }
   }
 
   function data_to_cache ($string) {
@@ -55,17 +61,60 @@ class folksoIndexCache {
       return 0;
     }
     $cfilename = $this->new_cache_filename();
-    $handle = fopen($this->cachedir . $cfilename, 'w');
-    fwrite($string, $handle);
-    fclose($handle);
-    return($cfilename);
-
+    
+    if (!($handle = fopen($this->cachedir . $cfilename, 'w'))) {
+      trigger_error("failed to open cachedir $this->cachedir", E_USER_ERROR);
+      return 0;
+    }
+    else {
+      fwrite( $handle, $string);
+      fclose($handle);
+    return($cfilename); //needed mostly for testing purposes
+    }
   } 
     
   function new_cache_filename () {
     return $this->cache_prefix . sprintf('%09d', rand(0, 999999999)) . $this->cache_suffix;
   }
 
+  function retreive_cache () {
+    /* 
+     * This also deletes the cache files as they are retreived.
+
+     As with rest of class, we do not try to understand what is in the
+     files. If it is serialized data we have to unserialize it later,
+     in the calling class. Which is better anyway, since they ought to
+     know what to do with it down there.*/
+
+    $an_array = array();
+    while ($afile = readdir( $this->dirhandle() )){
+      echo "<p>afile is " . $afile . " and substr give ". substr($afile, 0, strlen($this->cache_prefix)). "</p>";
+
+      if (($this->is_cache_file($afile)) and
+          ($data = file_get_contents($this->cachedir . $afile))) {
+        array_push( $an_array, $data);
+        unlink($this->cachedir.$afile);
+      }
+      else {
+        continue; // just here to say that we don't complain if we can't
+                  // read the file. get it next time.
+      }
+    }
+    return $an_array;
   }
+
+  function is_cache_file ($file) { // a test
+    if ((is_file( $this->cachedir.$file)) and
+        (substr($file, 0, strlen($this->cache_prefix)) == $this->cache_prefix)) {
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
+
+} //end of class
+
+
 
 ?>
