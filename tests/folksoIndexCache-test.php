@@ -8,11 +8,13 @@ class testOffolksoIndexCache extends  UnitTestCase {
   var $ic;
 
   function testConstructor() {
-    
-    $this->ic = new folksoIndexCache('/tmp/cachetest');
 
+    $this->ic = new folksoIndexCache('/tmp/cachetest');
+    $other = new folksoIndexCache('/tmp/cachetest/');
     /* test adding of trailing '/' */
-    $this->assertTrue( $ic->cachedir = '/tmp/cachetest/');
+    $this->assertTrue(is_object($this->ic));
+    $this->assertEqual( $this->ic->cachedir, '/tmp/cachetest/');
+    $this->assertEqual( $other->cachedir, '/tmp/cachetest/');
   }
 
   function testNewCacheFilename () {
