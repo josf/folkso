@@ -10,18 +10,21 @@ class folksoIndexCache {
   //private!
   var $dh;
 
-  function folksoIndexCache ($dir, $cache_prefix = 'folksoindex-', 
-                             $cache_suffix = '.cache', 
-                             $file_limit = 100) {
+  function folksoIndexCache ($dir, $file_limit = 100, $cache_prefix = 'folksoindex-', 
+                             $cache_suffix = '.cache')
+                             {
     $this->cachedir = $dir;
     $this->cache_prefix = $cache_prefix;;
     $this->cache_suffix = $cache_suffix;
     $this->cache_file_limit = $cache_file_limit ? $cache_file_limit : 100;
    
     //make sure we have trailing '/'
-    if (!(substr($this->$cachedir, -1) == '/')) {
+    $slash = '/'; //no idea why these contorsions are necessary
+    $subslasher = substr($this->cachedir, -1);
+    if ($subslasher != $slash) {
       $this->cachedir = $this->cachedir . '/';
     }
+
   }
 
   function check_filecount () {
@@ -88,7 +91,6 @@ class folksoIndexCache {
 
     $an_array = array();
     while ($afile = readdir( $this->dirhandle() )){
-      echo "<p>afile is " . $afile . " and substr give ". substr($afile, 0, strlen($this->cache_prefix)). "</p>";
 
       if (($this->is_cache_file($afile)) and
           ($data = file_get_contents($this->cachedir . $afile))) {
