@@ -43,12 +43,13 @@ class folksoIndexCache {
   }
 
   function dirhandle () {
-    if (!$this->dh) {
-      if (!($this->dh = opendir($this->cachedir))) {
-        trigger_error("cannot open cache directory: $this->cachedir", E_USER_ERROR);
-        return 0;
-      }
+    /* returns either the currently open dirhandle, or a new one */
+
+    if (!($this->dh = opendir($this->cachedir))) {
+      trigger_error("cannot open cache directory: $this->cachedir", E_USER_ERROR);
+      return 0;
     }
+
     return $this->dh;
   }
   
@@ -90,24 +91,49 @@ class folksoIndexCache {
      know what to do with it down there.*/
 
     $an_array = array();
-    while ($afile = readdir( $this->dirhandle() )){
-
+    $dh = $this->dirhandle();
+    while ($afile = readdir( $dh )){
       if (($this->is_cache_file($afile)) and
           ($data = file_get_contents($this->cachedir . $afile))) {
+        print "DATA: $data";
+        if (!(unlink($this->cachedir.$afile))) {
+            trigger_error("cannot unlink $afile", E_USER_ERROR);
+          }
         array_push( $an_array, $data);
-        unlink($this->cachedir.$afile);
+
       }
       else {
         continue; // just here to say that we don't complain if we can't
                   // read the file. get it next time.
       }
     }
+
+    $this->close_dirhandle();
     return $an_array;
   }
 
   function is_cache_file ($file) { // a test
     if ((is_file( $this->cachedir.$file)) and
         (substr($file, 0, strlen($this->cache_prefix)) == $this->cache_prefix)) {
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
+
+
+  function cache_check () {
+    /* true if cache is full, false if empty */
+    $counter = 0;
+    $dh = $this->dirhandle();
+    while ( $file = readdir( $dh )) {
+      if ($this->is_cache_file($file)) {
+        ++$counter;
+      }
+    }
+    $this->close_dirhandle();
+    if ( $counter > $this->cache_file_limit ) {
       return true;
     }
     else {
