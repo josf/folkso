@@ -45,17 +45,20 @@ class testOffolksoIndexCache extends  UnitTestCase {
     foreach ($data as $thang)  {
       $this->ic->data_to_cache($thang);
     }
+    $this->assertFalse($this->ic->cache_check() );
     $new_data = $this->ic->retreive_cache();
     $ok = 1;
     foreach ($data as $old_thang) {
+      print "checking $old_thang";
       if (!( in_array($old_thang, $new_data))) {
+        print "$old_thang not here";
           $ok = 0;
         }
     }
     print sizeof($new_data);
     $this->assertTrue(is_array($new_data));
-    $this->assertEqual( $ok, 1);
-  }
+    $this->assertEqual( $ok, 1); 
+    } 
   function testIs_cache_file () {
     $fi  = 'folksoindex-123.cache';
     $ha = fopen($this->ic->cachedir . $fi, w);
