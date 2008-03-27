@@ -2,14 +2,14 @@
 require_once('/usr/local/www/apache22/lib/simpletest/unit_tester.php');
 require_once('/usr/local/www/apache22/lib/simpletest/reporter.php');
 require_once('/usr/local/www/apache22/lib/jf/folksoIndexCache.php');
-
+include('/usr/local/www/apache22/data/folksoUrl.php');
 class testOffolksoIndexCache extends  UnitTestCase {
 
   var $ic;
 
   function testConstructor() {
 
-    $this->ic = new folksoIndexCache('/tmp/cachetest');
+    $this->ic = new folksoIndexCache('/tmp/cachetest', 10);
     $other = new folksoIndexCache('/tmp/cachetest/');
     /* test adding of trailing '/' */
     $this->assertTrue(is_object($this->ic));
@@ -18,6 +18,8 @@ class testOffolksoIndexCache extends  UnitTestCase {
   }
 
   function testNewCacheFilename () {
+    $fob =  unserialize('O:9:"folksourl":2:{s:3:"url";N;s:5:"title";N;}');
+    $fob->get_url();
     $this->assertTrue(preg_match( 
                                  '/^folksoindex\-\d+\.cache$/', 
                                  $this->ic->new_cache_filename()));
