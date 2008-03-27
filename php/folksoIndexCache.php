@@ -16,7 +16,7 @@ class folksoIndexCache {
     $this->cachedir = $dir;
     $this->cache_prefix = $cache_prefix;;
     $this->cache_suffix = $cache_suffix;
-    $this->cache_file_limit = $cache_file_limit ? $cache_file_limit : 100;
+    $this->cache_file_limit = $file_limit ? $file_limit : 4;
    
     //make sure we have trailing '/'
     $slash = '/'; //no idea why these contorsions are necessary
@@ -67,7 +67,7 @@ class folksoIndexCache {
     $cfilename = $this->new_cache_filename();
     
     if (!($handle = fopen($this->cachedir . $cfilename, 'w'))) {
-      trigger_error("failed to open cachedir $this->cachedir", E_USER_ERROR);
+      trigger_error("failed to open file ". $this->cachedir. $cfilename, E_USER_ERROR);
       return 0;
     }
     else {
@@ -95,7 +95,6 @@ class folksoIndexCache {
     while ($afile = readdir( $dh )){
       if (($this->is_cache_file($afile)) and
           ($data = file_get_contents($this->cachedir . $afile))) {
-        print "DATA: $data";
         if (!(unlink($this->cachedir.$afile))) {
             trigger_error("cannot unlink $afile", E_USER_ERROR);
           }
@@ -125,15 +124,17 @@ class folksoIndexCache {
 
   function cache_check () {
     /* true if cache is full, false if empty */
-    $counter = 0;
+    $acounter = 0;
     $dh = $this->dirhandle();
     while ( $file = readdir( $dh )) {
       if ($this->is_cache_file($file)) {
-        ++$counter;
+        ++$acounter;
       }
     }
     $this->close_dirhandle();
-    if ( $counter > $this->cache_file_limit ) {
+    
+    if ( $acounter > $this->cache_file_limit ) {
+
       return true;
     }
     else {
