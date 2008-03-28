@@ -31,7 +31,7 @@ class folksoUrl {
     }
 
     if (strlen( $string) > 262) {
-      $stirng = substr($string, 1, 262);
+      $string = substr($string, 1, 262);
     }
     $this->url = $string;
     return $string;
