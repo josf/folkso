@@ -4,3 +4,45 @@ First steps. Installed ADOdb. Very easy to install and set up
 connection. Will work for a generic install with provider. Cursory
 look at benchmarks looks promising. Slightly slower than native
 php+mysql. 
+
+2008-03-17
+
+Things are slowly working. Stored procedures seems to be a good
+idea. Had a horrible time getting my parameter sorting function (part
+of normalization routine) to work but now it does.
+
+Right now I'm working with ADOdb. Seems pretty good. Offers cached
+selects (stores them in temp files somewhere). Trying to figure out
+how to use stored procedures with ADOdb. I can call them all right,
+but I'm not sure about recovering result sets. Should be possible
+though. 
+
+2008-03-20
+
+ADOdb does not seem to provide anything for dealing with result sets
+returned by  stored procedures. I am waiting for an answer on their
+forum, but MySQL does not seem to be a priority with them and no one
+has answered.
+
+Right now I am looking at MDB2, which is part of PEAR and supersedes
+the traditional DB. MDB2 has stored procedures for its mysql driver,
+so I am assuming that this will work for me, but I am going to test
+first. 
+
+2008-03-21
+
+Still messing around with MDB2. Why is it that no one seems to be
+doing the same thing that I am?
+
+Installed a simple "indexer.php" on Fabula. It works and is churring
+away. Need to add feature that will not count visits from robots.
+
+2008-03-30
+
+We have decided to have a dual-install php4 php5. I am setting it up
+now. So far:
+
+  # apt-get install php5-cgi
+
+Might need to do '# a2enmod suexec' but am not sure yet. Going to test
+first without that.
