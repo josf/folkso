@@ -180,6 +180,10 @@ begin
 
         set my_url=lower(input_url);
 
+        if (instr(my_url, '#')) then 
+          set my_url = substring(my_url, 1, instr(my_url, '#') - 1);
+        end if;
+
         IF (INSTR(my_url, '?')) THEN
            SET query_part=query_sort(
                                     substring(my_url, 
@@ -211,7 +215,7 @@ begin
                 substr(my_url, instr(my_url, ':80?') + 3));
         end if;  
 
-
+        
         set my_url=remove_end(my_url, 'index.php');
         set my_url=remove_end(my_url, 'index.html');
         set my_url=remove_end(my_url, 'index.htm');
@@ -237,7 +241,7 @@ declare url_check varchar(255) default '';
            from resource
            where uri_normal = url_check;
 
-        if (length(found_url) > 0)  then
+        if (length(found_url))  then
             update resource 
                set visited = visited + 1
                where uri_normal = url_check;
@@ -247,8 +251,6 @@ declare url_check varchar(255) default '';
                     values (url_check, url);
         end if;
 
-        /* this is just a test */
-        select visited from resource where uri_normal = url_check;
 end$$
 delimiter ;
 
@@ -276,3 +278,4 @@ insert into urltest set url='http://www.Example.com?page=44&aaa=ddd&bob';
 insert into urltest set url='http://example.com:80/work?bob=slob&a=c';
 insert into urltest set url='http://www.eXample.com:80?bob=theslob&action=quit';
 insert into urltest set url='http://www.fabula.org/atelier.php?Biblioth%26egrave%3Bques%2C_Fables_et_M%26eacute%3Bmoires_en_acte%28s%29';
+insert into urltest set url='http://www.example.com/bob.html#whereisthis';
