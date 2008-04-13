@@ -5,7 +5,49 @@ class TagServer {
   // Access stuff
   public $clientUrlRestrict = 'LOC'; //'LOC', 'LIS' or 'ALL'
   public $clientUrlRestrictList = array('127.0.0.1'); //localhost always allowed
-  public $allowedClientMethods = 'GET', 'POST';
+  public $allowedClientMethods;
+  private $possibleMethods = array('GET', 'get', 'POST', 'post', 'PUT', 'put', 'DELETE', 'delete');
+  private $possibleAccessModes = array('LOCAL', 'LIST', 'ALL');
+
+
+
+  function __construct ($config) {
+    private $conf_keys = array('methods', 'access_mode','access_list' );
+    
+    // methods
+    if ((array_key_exists('methods', $config)) &&
+        (is_array($config['methods']))) {
+      $this->$allowedClientMethods = array();
+      foreach ($config['methods'] as $meth) {
+        if (in_array($possibleMethods, $meth)) {
+          array_push($this->allowedClientMethods, $meth);
+        }
+      }
+    }
+    else {
+      $this->allowedClientMethods = array('GET');
+    }
+
+    // access mode
+    if ((array_key_exists('access_mode')) &&
+        (in_array($possibleAccessModes, $config['access_mode']))) {
+      $this->clientAccessRestrict = $config['access_mode'];
+    }
+    else {
+      $this->clientAccessRestrict = 'LOC';
+    }
+        
+    // client restrictions
+    if (( $this->clientAccessRestrict = 'LIST') &&
+        ( array_key_exists($config['access_list'])) &&
+        ( is_array($config['access_list']))) { // this should be an erreur instead!
+      $this->clientAllowedHost = $config['access_list'];
+    }
+
+          
+  }
+
+  
 
   public function initialChecks () {
     if ((in_array($_SERVER['REQUEST_METHOD'], $this->allowedClientMethods)) &&
