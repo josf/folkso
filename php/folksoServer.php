@@ -8,7 +8,7 @@ class TagServer {
   public $allowedClientMethods;
   private $possibleMethods = array('GET', 'get', 'POST', 'post', 'PUT', 'put', 'DELETE', 'delete');
   private $possibleAccessModes = array('LOCAL', 'LIST', 'ALL');
-
+  private $responseObjects = array();
 
 
   function __construct ($config) {
@@ -48,6 +48,28 @@ class TagServer {
   }
 
   
+  public function addResponseObj (folksoResponse $resp) { //one arg here to indicate
+                                           //that at least one is
+                                           //necessary
+    $objs = func_get_args();
+    foreach ($objs as $ob) {
+      if ( $ob instanceof folksoResponse ) {
+        push($this->responseObjects, $ob);
+      }
+      else {
+        //error
+      }
+    }
+  }
+
+  public function Respond ($request) {
+    /*
+     * Based on the request received, checks each response object is
+     * checked to see if it is equiped to handle the request.
+     */
+
+  }
+
 
   public function initialChecks () {
     if ((in_array($_SERVER['REQUEST_METHOD'], $this->allowedClientMethods)) &&
