@@ -20,6 +20,7 @@ class folksoResponse {
     if ((is_string($meth)) &&
         (in_array(array('get', 'put', 'post', 'delete')), strtolower($meth))) {
       $this->httpMethod = $meth;
+      return $this->httpMethod;
     }
     else {
       //Error

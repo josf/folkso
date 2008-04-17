@@ -3,7 +3,7 @@
 class TagServer {
 
   // Access stuff
-  public $clientUrlRestrict = 'LOC'; //'LOC', 'LIS' or 'ALL'
+  public $clientUrlRestrict = 'LOCAL'; //'LOCAL', 'LIST' or 'ALL'
   public $clientUrlRestrictList = array('127.0.0.1'); //localhost always allowed
   public $allowedClientMethods;
   private $possibleMethods = array('GET', 'get', 'POST', 'post', 'PUT', 'put', 'DELETE', 'delete');
@@ -34,7 +34,7 @@ class TagServer {
       $this->clientAccessRestrict = $config['access_mode'];
     }
     else {
-      $this->clientAccessRestrict = 'LOC';
+      $this->clientAccessRestrict = 'LOCAL';
     }
         
     // client restrictions
@@ -62,11 +62,15 @@ class TagServer {
     }
   }
 
+
   public function Respond ($request) {
     /*
      * Based on the request received, checks each response object is
      * checked to see if it is equiped to handle the request.
      */
+    foreach ($this->responseObjects as $resp) {
+      if ( $rep->activatep(
+    }
 
   }
 
