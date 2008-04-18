@@ -11,7 +11,6 @@ class folksoResponse {
 
 
   
-
   function getHttpMethod () {
     return $this->httpMethod;
   }
