@@ -1,23 +1,32 @@
 <?php
  
 class folksoResponse {
-  private $httpMethod = 'GET';
-  private $test_func;
-  private $action_func;
+  public $httpMethod = 'GET';
+  public $test_func;
+  public $action_func;
 
 
   function __construct ($test_func, $action_func) {
+    $this->test_func = $test_func; // must return true or false
+    $this->action_func = $action_func;
   }
 
 
+  function activatep () {
+    
+  }
   
+  function Respond () {
+
+  }
+
   function getHttpMethod () {
     return $this->httpMethod;
   }
 
   function setHttpMethod ($meth) {
     if ((is_string($meth)) &&
-        (in_array(array('get', 'put', 'post', 'delete')), strtolower($meth))) {
+        in_array(strtolower($meth), array('get', 'put', 'post', 'delete'))) {
       $this->httpMethod = $meth;
       return $this->httpMethod;
     }

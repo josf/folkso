@@ -20,7 +20,7 @@ class testOffolksoServer extends  UnitTestCase {
     $this->assertTrue( $this->srv->validClientAddress('', '127.0.0.1'));
     $this->assertTrue( $this->srv->validClientAddress('localhost', '::1'));
     $this->assertTrue( $this->srv->validClientAddress($_SERVER['REMOTE_HOST'], $_SERVER['REMOTE_ADDR']));
-
+    $this->assertEqual(1, 1);
   }
 
 
