@@ -13,11 +13,13 @@ class folksoResponse {
 
 
   function activatep () {
-    
+    $aa =  $this->test_func;
+    return $aa();
   }
   
   function Respond () {
-
+    $aa = $this->action_func;
+    return $aa();
   }
 
   function getHttpMethod () {

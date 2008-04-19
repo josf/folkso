@@ -9,11 +9,12 @@ class testOffolksoResponse extends  UnitTestCase {
 
     function testConstructor () {
 
-    $test_f = create_function('', 'return true;');
-    $act_f = create_function('', 'print "<p>Action!</p>";');
-    $this->rep = new folksoResponse($test_f, $act_f);
-    $this->assertTrue(($this->rep instanceof folksoResponse));
-
+      $test_f = create_function('', 'return true;');
+      $act_f = create_function('', 'print "<p>Action!</p>"; return "ok";');
+      $this->rep = new folksoResponse($test_f, $act_f);
+      $this->assertTrue(($this->rep instanceof folksoResponse));
+      $this->assertTrue($this->rep->activatep()); 
+      $this->assertEqual($this->rep->Respond(), "ok");
 
     }
 
