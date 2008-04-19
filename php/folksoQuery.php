@@ -11,20 +11,19 @@
    */
 
 class folksoQuery {
-  public $method;
-  public $content_type;
-  public $fk_params = array(); //will contain only folkso related parameters
+  private $method;
+  private $content_type;
+  private $fk_params = array(); //will contain only folkso related parameters
 
-  function __constructor () {
-    $method = $_SERVER['REQUEST_METHOD'];
-    $content_type = $_SERVER['CONTENT_TYPE'];
-    
-    if (count($_GET) > 0) {
-      $this->param_get($_GET);
+   function __construct ($server, $get, $post) {
+    $this->method = $server['REQUEST_METHOD'];
+    $this->content_type = $server['CONTENT_TYPE'];
+    if (count($get) > 0) {
+      $this->fk_params = array_merge($this->param_get($get), $this->fk_params);;
     }
 
-    if (count($_POST) > 0) {
-      $this->param_get($_POST);
+    if (count($post) > 0) {
+      $this->param_get($post);
     }
     /** Will add put and delete support here later **/
 
@@ -35,12 +34,13 @@ class folksoQuery {
                                                // $meth is the
                                                // corresponding name
                                                // 'post', 'get', etc.
+    $accum = array();
     foreach ($array as $param_key => $param_val) {
       if (substr($param_key, 0, 6) == 'folkso') {
-        $this->fk_params['$param_key'] = $param_val;
+        $accum[$param_key] = $param_val;
       }
     }
-
+    return $accum;
   }
 
   public function params () {

@@ -8,6 +8,8 @@ class testOffolksoResponse extends  UnitTestCase {
 
 
     function testConstructor () {
+      
+      print "<p>METH: " . $_SERVER['REQUEST_METHOD'] . "</p>";
 
       $test_f = create_function('', 'return true;');
       $act_f = create_function('', 'print "<p>Action!</p>"; return "ok";');
