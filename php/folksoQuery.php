@@ -7,7 +7,7 @@
    *
    * @package Folkso
    * @author Joseph Fahey
-   * @copyright Gnu Public Licence (GPL)
+   * @copyright 2008 Gnu Public Licence (GPL)
    */
 
 class folksoQuery {

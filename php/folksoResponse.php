@@ -19,7 +19,7 @@ class folksoResponse {
   
   function Respond () {
     $aa = $this->action_func;
-    return $aa();
+    return $aa(); //action (on DB for example) + return document
   }
 
   function getHttpMethod () {
