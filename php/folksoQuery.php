@@ -1,6 +1,16 @@
 <?php
+  /**
+   * This class provides a unified interface for all of the data
+   * pertaining to the HTTP request, including GET and POST
+   * parameters, and possible PUT and DELETE parameters should we end
+   * up using those methods.
+   *
+   * @package Folkso
+   * @author Joseph Fahey
+   * @copyright Gnu Public Licence (GPL)
+   */
 
-class folkoQuery {
+class folksoQuery {
   public $method;
   public $content_type;
   public $fk_params = array(); //will contain only folkso related parameters
@@ -33,6 +43,13 @@ class folkoQuery {
 
   }
 
+  public function params () {
+    return $this->fk_params;
+  }
+
+  public function method () {
+    return $this->method;
+  }
 
   }// end class
 
