@@ -3,13 +3,15 @@
   //require_once('/usr/local/www/apache22/lib/simpletest/reporter.php');
 require_once('/usr/local/www/apache22/lib/simpletest/autorun.php');
 include('/usr/local/www/apache22/lib/jf/fk/folksoServer.php');
+include('/usr/local/www/apache22/lib/jf/fk/folksoResponse.php');
+include('/usr/local/www/apache22/lib/jf/fk/folksoQuery.php');
 
 class testOffolksoServer extends  UnitTestCase {
 
   public $srv;
 
   function testConstructor () {
-    $this->srv = new folksoServer($_SERVER, $_GET, $_POST);
+    $this->srv = new folksoServer($_SERVER, $_GET, $_POST);      // send error message;
     //    print var_dump( $this->srv);
     $this->assertTrue( ($this->srv instanceof folksoServer));
   }
@@ -22,6 +24,15 @@ class testOffolksoServer extends  UnitTestCase {
 
   }
 
+
+  function testSimpleResponses () {
+      $test_f = create_function('', 'return true;');
+      $act_f = create_function('', 'print "<p>Action!</p>"; return "ok";');
+      $this->srv->addResponseObj(new folksoResponse($test_f, $act_f));
+      $this->assertTrue( is_array($this->srv->responseObjects));
+      $this->assertEqual( count( $this->srv->responseObjects), 1);
+      $this->srv->Respond();
+  }
 
   function message($message) {
 

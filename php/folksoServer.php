@@ -5,11 +5,11 @@ class folksoServer {
   // Access stuff
   public $clientAccessRestrict = 'LOCAL'; //'LOCAL', 'LIST' or 'ALL'
   public $clientAccessRestrictList = array('127.0.0.1'); //localhost always allowed
-  public $allowedClientMethods;
+  public $allowedClientMethods = array('GET');
   
   private $possibleMethods = array('GET', 'get', 'POST', 'post', 'PUT', 'put', 'DELETE', 'delete');
   private $possibleAccessModes = array('LOCAL', 'LIST', 'ALL');
-  private $responseObjects = array();
+  public $responseObjects = array();
 
 
   function __construct ($config) {
@@ -24,9 +24,6 @@ class folksoServer {
           array_push($this->allowedClientMethods, $meth);
         }
       }
-    }
-    else {
-      $this->allowedClientMethods = array('GET');
     }
 
     // access mode
@@ -53,7 +50,7 @@ class folksoServer {
     $objs = func_get_args();
     foreach ($objs as $ob) {
       if ( $ob instanceof folksoResponse ) {
-        push($this->responseObjects, $ob);
+        $this->responseObjects[] = $ob;
       }
       else {
         //error
@@ -62,30 +59,43 @@ class folksoServer {
   }
 
 
-  public function Respond ($request) {
+  public function Respond () {
     /*
      * Based on the request received, checks each response object is
      * checked to see if it is equiped to handle the request.
      */
-    $q = new folksoQuery(); //automatically gets all current request info
+    if (!($this->initialChecks())) {
+      // some kind of error
+      print "<h1>NOT OK</h1><p>Illegal request method for this resource.</p>";
+      return;
+    }
+
+
+    $q = new folksoQuery($_SERVER, $_GET, $_POST); 
 
     /* check each response object and run the response if activatep
      returns true*/
+
+    $repflag = false;
     foreach ($this->responseObjects as $resp) {
-      if ( $rep->activatep($q)) {
-        $rep->Respond($q);
+      if ( $resp->activatep($q)) {
+        $resp->Respond($q);
+        $repflag = true;
         break;
       }
     }
+    if (!$repflag) {
+      // default response or error page...
+    }
   }
   
-  public function initialChecks () {
+  function initialChecks () {
     if ((in_array($_SERVER['REQUEST_METHOD'], $this->allowedClientMethods)) &&
         ($this->validClientAddress($_SERVER['REMOTE_HOST'], $_SERVER['REMOTE_ADDR']))) {
-      // deal with request
+      return true;
     }
     else {
-      // send error message
+      return false;
     }
   }
   
