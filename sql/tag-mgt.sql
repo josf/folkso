@@ -38,7 +38,7 @@ begin
 
         -- shorten
         if (length(final_tag) > 120) then
-            set final_tag = substr(final_tag, 0, 120);
+            set final_tag = substr(final_tag, 1, 120);
         end if;
 
         return(final_tag);
@@ -46,5 +46,26 @@ end$$
 delimiter ;
 
 delimiter $$
-drop function if exists new_tag$$
+drop procedure if exists new_tag$$
 create function new_tag(input_tag varchar(255))
+begin
+        declare existing_id int unsigned default 0;
+        declare normed varchar(255) default '';
+
+        select id 
+               into existing_id 
+               from tag 
+               where tagnorm = normed;
+
+        if (existing_id > 0) then
+           return(existing_id); -- probably wrong
+        else
+           insert into tag
+                  set tagnorm = normed,
+                      tagdisplay = input_tag;
+           select last_insert_id();
+        end if;
+
+
+end$$
+delimiter ;
