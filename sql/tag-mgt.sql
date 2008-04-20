@@ -11,7 +11,7 @@
 delimiter $$
 drop function if exists normalize_tag$$
 create function normalize_tag(input_tag varchar(255))
-       returns varchar(255)
+       returns varchar(120)
        deterministic
 begin
         DECLARE final_tag VARCHAR(255) DEFAULT '';
@@ -36,6 +36,15 @@ begin
         set final_tag = replace(final_tag, '"', '');
         set final_tag = replace(final_tag, '''', '');
 
+        -- shorten
+        if (length(final_tag) > 120) then
+            set final_tag = substr(final_tag, 0, 120);
+        end if;
+
         return(final_tag);
 end$$
 delimiter ;
+
+delimiter $$
+drop function if exists new_tag$$
+create function new_tag(input_tag varchar(255))
