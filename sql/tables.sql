@@ -9,3 +9,4 @@ create table resource
         title mediumtext null,
         visited int unsigned default 1 not null);
 
+
