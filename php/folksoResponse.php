@@ -12,14 +12,14 @@ class folksoResponse {
   }
 
 
-  function activatep () {
+  function activatep (folksoQuery $query) {
     $aa =  $this->test_func;
-    return $aa();
+    return $aa($query);
   }
   
-  function Respond () {
+  function Respond (folksoQuery $query) {
     $aa = $this->action_func;
-    return $aa(); //action (on DB for example) + return document + status
+    return $aa($query); //action (on DB for example) + return document + status
   }
 
   function getHttpMethod () {

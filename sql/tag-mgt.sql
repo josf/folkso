@@ -45,6 +45,8 @@ begin
 end$$
 delimiter ;
 
+
+-- new_tag()
 DELIMITER $$
 DROP PROCEDURE if exists new_tag$$
 CREATE PROCEDURE new_tag(input_tag varchar(255))
