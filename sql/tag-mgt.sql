@@ -45,27 +45,28 @@ begin
 end$$
 delimiter ;
 
-delimiter $$
-drop procedure if exists new_tag$$
-create function new_tag(input_tag varchar(255))
-begin
-        declare existing_id int unsigned default 0;
-        declare normed varchar(255) default '';
+DELIMITER $$
+DROP PROCEDURE if exists new_tag$$
+CREATE PROCEDURE new_tag(input_tag varchar(255))
+BEGIN
+        DECLARE existing_id INTEGER DEFAULT 0;
+        DECLARE normed VARCHAR(255) DEFAULT '';
+        SET normed = normalize_tag(input_tag); 
 
         select id 
                into existing_id 
                from tag 
                where tagnorm = normed;
 
-        if (existing_id > 0) then
-           return(existing_id); -- probably wrong
-        else
+        if (existing_id = 0) then 
            insert into tag
                   set tagnorm = normed,
                       tagdisplay = input_tag;
-           select last_insert_id();
+           set existing_id = last_insert_id();
         end if;
 
+        SELECT id FROM tag WHERE id = existing_id;
 
-end$$
-delimiter ;
+
+END$$
+DELIMITER ;
