@@ -16,12 +16,6 @@ $srv->Respond($q);
 function singlePostTagTest ($q) {
   $params = $q->params();
 
-  print var_dump($q);
-  print "
-
-".var_dump($params);
-
-  print "<p>param is " . $params['folksonewtag']. "</p>";
   if (($q->method() == 'post') &&
       (is_string($params['folksonewtag']))) {
     return true;
@@ -36,7 +30,7 @@ function singlePostTagDo ($q) {
   $server = 'localhost'; $user ='root'; 
   $pwd = 'hellyes';
 
-  $params = $q->params;
+  $params = $q->params();
 
   print "We are doing";
   $db = new mysqli('localhost', 'root', 'hellyes', 'folksonomie');
