@@ -37,7 +37,9 @@ class folksoResponse {
   
   function Respond (folksoQuery $query) {
     $aa = $this->action_func;
-    return $aa($query); //action (on DB for example) + return document + status
+    return $aa($query); //action (on DB for example) + return document
+                        //+ status. In fact, returned value does not
+                        //matter probably.
   }
 
   function getHttpMethod () {

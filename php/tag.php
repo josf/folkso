@@ -11,7 +11,7 @@ $srv = new folksoServer(array( 'methods' => array('POST', 'GET'),
 $srv->addResponseObj(new folksoResponse('getTagTest', 'getTagDo'));
 $srv->addResponseObj(new folksoResponse('singlePostTagTest', 'singlePostTagDo'));
 $srv->addResponseObj(new folksoResponse('elster', 'elsterDo'));
-$srv->Respond($q);
+$srv->Respond();
 
 $server = 'localhost'; $user ='root'; 
 $pwd = 'hellyes';
