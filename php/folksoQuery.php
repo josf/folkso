@@ -23,7 +23,7 @@ class folksoQuery {
     }
 
     if (count($post) > 0) {
-      $this->param_get($post);
+      $this->fk_params = array_merge($this->param_get($post), $this->fk_params);
     }
     /** Will add put and delete support here later **/
 
@@ -48,7 +48,7 @@ class folksoQuery {
   }
 
   public function method () {
-    return $this->method;
+    return strtolower($this->method);
   }
 
   }// end class
