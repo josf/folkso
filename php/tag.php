@@ -8,10 +8,56 @@ include('folksoQuery.php');
 
 $srv = new folksoServer(array( 'methods' => array('POST', 'GET'),
                                'access_mode' => 'ALL'));
-
+$srv->addResponseObj(new folksoResponse('getTagTest', 'getTagDo'));
 $srv->addResponseObj(new folksoResponse('singlePostTagTest', 'singlePostTagDo'));
 $srv->addResponseObj(new folksoResponse('elster', 'elsterDo'));
 $srv->Respond($q);
+
+$server = 'localhost'; $user ='root'; 
+$pwd = 'hellyes';
+
+
+
+/**
+ * getTag (Test and Do) : with tag id, return the display version of
+ * the tag. Don't know what it should do if the tag does not
+ * exist. 404?
+ */
+
+function getTagTest ($q) {
+  $params = $q->params();
+
+  if (($q->method() == 'get') &&
+      (is_string($params['folksotagid']))) {
+    print "returning true";
+    return true;
+  }
+  else {
+    return false;
+  }
+}
+
+function getTagDo ($q) {
+  $params = $q->params();
+  $db = new mysqli('localhost', 'root', 'hellyes', 'folksonomie');
+  if ( mysqli_connect_errno()) {
+    printf("Connect failed: %s\n", mysqli_connect_error());
+  }
+
+  $result = $db->query("select tagdisplay from tag where id ='". $params['folksotagid']."'");
+  if ($db->errno <> 0) {
+    printf("Statement failed %d: (%s) %s\n", 
+           $db->errno, $db->sqlstate, $db->error);
+  }
+  else {
+    while($row = $result->fetch_object()) {
+      header('HTTP/1.0 404');
+      print "<p>A row:".$row->tagdisplay . "</p>";
+    }
+  }
+
+}
+
 
 function singlePostTagTest ($q) {
   $params = $q->params();
@@ -27,12 +73,8 @@ function singlePostTagTest ($q) {
 
 function singlePostTagDo ($q) {
   //  header('Content-Type: text/html');
-  $server = 'localhost'; $user ='root'; 
-  $pwd = 'hellyes';
-
   $params = $q->params();
 
-  print "We are doing";
   $db = new mysqli('localhost', 'root', 'hellyes', 'folksonomie');
   if ( mysqli_connect_errno()) {
     printf("Connect failed: %s\n", mysqli_connect_error());
