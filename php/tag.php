@@ -29,7 +29,6 @@ function getTagTest ($q) {
 
   if (($q->method() == 'get') &&
       (is_string($params['folksotagid']))) {
-    print "returning true";
     return true;
   }
   else {
@@ -50,8 +49,11 @@ function getTagDo ($q) {
            $db->errno, $db->sqlstate, $db->error);
   }
   else {
-    while($row = $result->fetch_object()) {
+    if ($result->num_rows == 0) {
       header('HTTP/1.0 404');
+      print "Tag not found: ".$params['folksotagid'];
+    }
+    while($row = $result->fetch_object()) {
       print "<p>A row:".$row->tagdisplay . "</p>";
     }
   }
