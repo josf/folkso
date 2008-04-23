@@ -9,16 +9,12 @@
    * @author Joseph Fahey
    * @copyright 2008 Gnu Public Licence (GPL)
    */
+
 class folksoQuery {
   private $method;
   private $content_type;
   private $fk_params = array(); //will contain only folkso related parameters
 
-  /**
-   * Intended to receive as args $_SERVER, $_GET and $_POST. When
-   * authorization is added, there will be an authorization argument
-   * as well.
-   */
    function __construct ($server, $get, $post) {
     $this->method = $server['REQUEST_METHOD'];
     $this->content_type = $server['CONTENT_TYPE'];
@@ -33,10 +29,6 @@ class folksoQuery {
 
   }
 
-   /**
-    * Checks for keys starting with 'folkso' and adds them to the
-    * object.
-    */
   private function param_get ($array) { // $array is either
                                                // _POST, _GET etc.,
                                                // $meth is the
@@ -55,10 +47,6 @@ class folksoQuery {
     return $this->fk_params;
   }
 
-  /**
-   * Returns the method used. In smallcaps, which should be the norm
-   * here.
-   */
   public function method () {
     return strtolower($this->method);
   }
