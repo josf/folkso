@@ -1,5 +1,22 @@
 <?php
 
+  /**
+   * A folksoServer object deals with all of the basic interactions
+   * that concern all of the actions of the tag server (per URL).
+   * Access to the tag server can be allowed or denied by IP
+   * address.
+   *
+   * The primary task of a folksoServer object is to decide which
+   * folksoResponse object will handle the incoming request, and then
+   * passes $_SERVER, $_GET and$_POST to that folksoResponse
+   * object. These objects are stored in the responseObjects array.
+   *
+   * When authorization is added, folksoServer will handle that as
+   * well.
+   *
+   */
+
+
 class folksoServer {
 
   // Access stuff
