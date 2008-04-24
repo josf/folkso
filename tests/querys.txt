@@ -1,0 +1,18 @@
+GET /tag.php?folksotagid=14 HTTP/1.0
+Content-type: text/html;charset="utf-8"
+Accept: text/html, text/xml
+Content-length: 0
+
+
+POST /tag.php HTTP/1.0
+Content-Type: application/x-www-form-urlencoded
+Content-length: 28
+
+folksonewtag=Roland Barthes
+
+
+POST /resourcetags.php HTTP/1.0
+Content-Type: application/x-www-form-urlencoded
+Content-length: 93
+
+folksoresourcetotag=http://www.fabula.org/actualites/article123.php&folksotagidstoresource=14
