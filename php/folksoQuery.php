@@ -63,8 +63,15 @@ class folksoQuery {
     return strtolower($this->method);
   }
 
+  public function is_param ($str) {
+    if (is_string($this->fk_params[$str])) {
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
+
+
   }// end class
-
-
-
 ?>

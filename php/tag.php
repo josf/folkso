@@ -62,6 +62,7 @@ function getTagDo ($q) {
 
 
 function singlePostTagTest ($q) {
+
   $params = $q->params();
 
   if (($q->method() == 'post') &&
