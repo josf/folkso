@@ -72,3 +72,36 @@ BEGIN
 
 END$$
 DELIMITER ;
+
+
+-- tag page
+DELIMITER $$
+DROP PROCEDURE IF EXISTS tag_resource$$
+CREATE PROCEDURE tag_resource(resource_uri      varchar(255),
+                              tag_id            integer)
+BEGIN
+
+        declare existing_tag_id int unsigned;
+        declare existing_uri varchar(255);
+
+        select id
+               into existing_tag_id
+               from tag
+               where id = tag_id;
+
+       select id
+              into existing_uri
+              from resource
+              where uri_normal = url_whack(resource_uri);
+
+        if ((existing_tag_id) 
+           and
+           (existing_uri)) then
+                           insert into tagevent
+                           set tag_id = existing_tag_id,
+                               resource_id = existing_ur,
+                               user_id = 9999;
+        end if;
+end$$
+DELIMITER ;
+           
