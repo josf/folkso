@@ -35,17 +35,18 @@ class folksoQuery {
 
    /**
     * Checks for keys starting with 'folkso' and adds them to the
-    * object.
+    * object. Values longer than 300 characters are shortened to 300
+    * characters.
     */
-  private function param_get ($array) { // $array is either
-                                               // _POST, _GET etc.,
-                                               // $meth is the
-                                               // corresponding name
-                                               // 'post', 'get', etc.
+  private function param_get ($array) {
     $accum = array();
     foreach ($array as $param_key => $param_val) {
       if (substr($param_key, 0, 6) == 'folkso') {
-        $accum[$param_key] = $param_val;
+        $to_insert = $param_val;
+        if (strlen($param_val) > 300) {
+          $to_insert = substr($param_val, 0, 300);
+        }
+        $accum[$param_key] = $to_insert;
       }
     }
     return $accum;
