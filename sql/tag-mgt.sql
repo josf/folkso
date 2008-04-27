@@ -74,7 +74,9 @@ END$$
 DELIMITER ;
 
 
--- tag page
+-- tag page We recommend calling url_visit _before_ calling this
+-- procedure, to make sure that the resource already
+-- exists. Especially true if this were to be used for external URIs.
 DELIMITER $$
 DROP PROCEDURE IF EXISTS tag_resource$$
 CREATE PROCEDURE tag_resource(resource_uri      varchar(255),
