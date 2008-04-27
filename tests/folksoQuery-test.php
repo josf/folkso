@@ -7,6 +7,7 @@ class testOffolksoResponse extends  UnitTestCase {
   public $qu;
   public $qu2;
   public $qubad;
+  public $qumulti;
 
   function testConstructor () {
 
@@ -33,6 +34,16 @@ class testOffolksoResponse extends  UnitTestCase {
     $this->assertTrue(is_string($params['folksoCommand']));
     $this->assertTrue(strlen($params['folksoCommand'] < 301));
     $this->assertFalse(key_exists('varboDeal', $params));
+
+  }
+
+  function testMultiPartField () {
+    $this->qumulti = new folksoQuery( $_SERVER,
+                                      array('folksoArgs' => 'this+that+somethingelse'),
+                                      array());
+    $params = $this->qumulti->params();
+    print var_dump($params);
+    $this->assertTrue(is_array($params['folksoArgs']));
 
   }
 

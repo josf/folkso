@@ -33,27 +33,35 @@ class folksoQuery {
 
   }
 
+
+
+  /**
+   * Shortens a string to a maximum of 300 characters
+   */
+
    /**
     * Checks for keys starting with 'folkso' and adds them to the
     * object. Values longer than 300 characters are shortened to 300
-    * characters.
+    * characters. 300 is chosen because it is a bit more than 255, the
+    * limit for most of the Mysql VARCHAR() arguments.
     */
   private function param_get ($array) {
     $accum = array();
     foreach ($array as $param_key => $param_val) {
       if (substr($param_key, 0, 6) == 'folkso') {
         $to_insert = $param_val;
-        if (strlen($param_val) > 300) {
-          $to_insert = substr($param_val, 0, 300);
+
+        if (strstr($param_val, '+')) {
+          $to_insert = array_map(  'field_shorten', 
+                                   explode('+', $param_val));
+        }
+        else {
+          $to_insert = field_shorten($param_val);
         }
         $accum[$param_key] = $to_insert;
       }
     }
     return $accum;
-  }
-
-  public function params () {
-    return $this->fk_params;
   }
 
   /**
@@ -64,6 +72,12 @@ class folksoQuery {
     return strtolower($this->method);
   }
 
+
+  public function params () {
+    return $this->fk_params;
+  }
+
+
   public function is_param ($str) {
     if (is_string($this->fk_params[$str])) {
       return true;
@@ -73,6 +87,15 @@ class folksoQuery {
     }
   }
 
-
   }// end class
+ function field_shorten ($str) {
+    if ( strlen($str) < 300) {
+      return $str;
+    }
+    else {
+      return substr($str, 0, 300);
+    }
+  }
+
+
 ?>
