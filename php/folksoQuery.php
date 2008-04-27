@@ -120,6 +120,8 @@ class folksoQuery {
 
   }// end class
  function field_shorten ($str) {
+   $str = trim($str);
+
     if ( strlen($str) < 300) {
       return $str;
     }

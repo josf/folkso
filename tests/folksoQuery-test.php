@@ -23,6 +23,7 @@ class testOffolksoResponse extends  UnitTestCase {
     $this->qu2 = new folksoQuery( $_SERVER, array('folksoCommand' => 'obey'), $_POST);
     $this->assertTrue($this->qu2 instanceof folksoQuery);
     $this->assertTrue(key_exists('folksoCommand', $this->qu2->params() ));
+    $this->assertTrue($this->qu2->is_single_param('folksoCommand'));
   }
 
   function testCheckingBadData () { 
@@ -44,6 +45,7 @@ class testOffolksoResponse extends  UnitTestCase {
     $params = $this->qumulti->params();
     print var_dump($params);
     $this->assertTrue(is_array($params['folksoArgs']));
+    $this->assertTrue($this->qumulti->is_multiple_param('folksoArgs'));
 
   }
 
