@@ -104,6 +104,10 @@ class folksoQuery {
     }
   }
 
+  /**
+   * Note: returns false for an empty array. This makes sense, I
+   * think.
+   */
   public function is_multiple_param ($str) {
     if ((is_array($this->fk_params[$str])) &&
         (count($this->fk_params[$str]) > 0)) {
