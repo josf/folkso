@@ -6,6 +6,7 @@ class testOffolksoResponse extends  UnitTestCase {
 
   public $qu;
   public $qu2;
+  public $qubad;
 
   function testConstructor () {
 
@@ -21,6 +22,18 @@ class testOffolksoResponse extends  UnitTestCase {
     $this->qu2 = new folksoQuery( $_SERVER, array('folksoCommand' => 'obey'), $_POST);
     $this->assertTrue($this->qu2 instanceof folksoQuery);
     $this->assertTrue(key_exists('folksoCommand', $this->qu2->params() ));
+  }
+
+  function testCheckingBadData () { 
+    $this->qubad = new folksoQuery( $_SERVER,
+                                    array('folksoCommand' => 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+                                          'varboDeal'    => 'Hey guys'),
+                                    array());
+    $params = $this->qubad->params();
+    $this->assertTrue(is_string($params['folksoCommand']));
+    $this->assertTrue(strlen($params['folksoCommand'] < 301));
+    $this->assertFalse(key_exists('varboDeal', $params));
+
   }
 
   function message($message) {
