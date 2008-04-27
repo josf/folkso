@@ -99,7 +99,7 @@ BEGIN
            (existing_uri)) then
                            insert into tagevent
                            set tag_id = existing_tag_id,
-                               resource_id = existing_ur,
+                               resource_id = existing_uri,
                                user_id = 9999;
         end if;
 end$$
