@@ -78,8 +78,35 @@ class folksoQuery {
   }
 
 
+  /**
+   * Note that this returns true for strings AND arrays. The calling
+   * function should distinguish if finer grained distinctions are
+   * necessary, by using is_single_param or is_multiple_param.
+   */
   public function is_param ($str) {
+    if ((is_string($this->fk_params[$str])) ||
+        ((is_array($this->fk_params[$str])) &&
+         (count($this->fk_params[$str]) > 0)))
+      {
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
+
+  public function is_single_param ($str) {
     if (is_string($this->fk_params[$str])) {
+      return true;
+    }
+    else {
+      return false; 
+    }
+  }
+
+  public function is_multiple_param ($str) {
+    if ((is_array($this->fk_params[$str])) &&
+        (count($this->fk_params[$str]) > 0)) {
       return true;
     }
     else {
