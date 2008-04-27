@@ -24,7 +24,6 @@ function visitPageTest ($q) {
     return true;
   }
   else {
-    print "ARE we here?";
     return false;
   }
 }
@@ -34,19 +33,21 @@ function visitPageDo ($q) {
 
   $db = new mysqli('localhost', 'root', 'hellyes', 'folksonomie');
   if ( mysqli_connect_errno()) {
+    header('HTTP/1.0 501');
     printf("Connect failed: %s\n", mysqli_connect_error());
   }
 
-  print "working with ". $db->real_escape_string($params['folksovisituri']) . "\n";
   $result = $db->query("call url_visit('" .
                        $db->real_escape_string($params['folksovisituri']) .
                        "')");
   if ($db->errno <> 0) {
+    header('HTTP/1.0 501');
     printf("Statement failed %d: (%s) %s\n", 
            $db->errno, $db->sqlstate, $db->error);
   }
   else {
-    print "OK\n";
+    header('HTTP/1.0. 200');
+    print "Page considered visited\n";
   }
 }
 
