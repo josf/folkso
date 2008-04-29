@@ -8,7 +8,7 @@ class folksoClient {
   public $postfields = '';
   public $getfields = array();
   public $datastyle;
-  private $ch;
+  public $ch;
 
   /**
    * Arguments: HOST, URI, METHOD. URI means the local part of the
@@ -44,7 +44,15 @@ class folksoClient {
 
 
   function execute () {
-    $this->ch = curl_init($this->host . $this->uri);
+    $this->ch = curl_init($this->build_req());
+    $headers = array( "Content-Type: application/x-www-form-urlencoded",
+                      "Content-length: " . $this->content_length());
+    curl_setopt($this->ch, CURLOPT_HTTPHEADERS, $headers);
+    if (strtolower($this->method) == 'post'){
+      curl_setopt($this->ch, CURLOPT_POSTFIELDS, $this->postfields);
+    }
+    curl_exec($this->ch);
+    
 
   }
 
@@ -75,6 +83,21 @@ class folksoClient {
     }
   }
 
+  public function content_length () {
+    if (strtolower($this->method) == 'get') {
+      return 0;
+    }
+    elseif (strtolower($this->method) == 'post') {
+      $length = strlen($this->postfields);
+      if ($this->datastyle) {
+        $length = $length + strlen('&folksodatastyle='.$this->datastyle);
+      }
+      return $length;
+    }
+    else {
+      // error : unsupported method
+    }
+  }
 
   private function parse_arg_array ($arr) {
     $arg_a = array();
@@ -88,10 +111,7 @@ class folksoClient {
     }
     return implode($arg_a, '&');
   }
-      
-
-
-  }
+  } //end class
 
 
 ?>
