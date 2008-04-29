@@ -7,7 +7,7 @@ include('folksoResponse.php');
 include('folksoQuery.php');
 
 $srv = new folksoServer(array( 'methods' => array('POST', 'GET'),
-                               'access_mode' => 'ALL'));
+                               'access_mode' => 'LOCAL'));
 
 $srv->addResponseObj(new folksoResponse('visitPageTest', 'visitPageDo'));
 $srv->Respond();

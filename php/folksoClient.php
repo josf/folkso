@@ -44,15 +44,24 @@ class folksoClient {
     curl_setopt($this->ch, CURLOPT_POSTFIELDS....)
       }
 
-  private function build_req () {
+  public function build_req () {
     $uri = $this->host . $this->uri;
     if (strtolower($this->method) == 'get') {
-      $uri =. '?';
-      if (is_string($this->datastyle)) {
-        $uri =. 'folksodatastyl=' . $this->datastyle;
+      /* add '?' */
+      if ($this->datastyle || $this->getfields) {
+        $get = '?';
       }
-
-
+      if (strlen($this->getfields) > 0) {
+        $get =. $this->getfields;
+      }
+      if ((strlen($get) > 1) &&
+          (strlen($this->datastyle) > 0)) {
+        $get =. '&';
+      }
+      if (strlen($this->datastyle) > 0) {
+        $get =. 'folksodatastyle=' . $this->datastyle;
+      }
+    }
   }
 
 

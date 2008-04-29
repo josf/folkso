@@ -105,7 +105,7 @@ function elster ($q) {
 
 function elsterDo ($q) {
   //  header('Content-Type: text/html');
-  print "<h2>Hey!</h2>";
+  print "<h2>Default: no action taken.</h2>";
 }
 
 ?>
