@@ -41,7 +41,17 @@ class folksoClient {
     return $this->getfields;
   }
 
-
+  /**
+   * Datastyle indicators (html, xml, etc.) should be very short,
+   * probably one character (h = html, x = xml, etc.)
+   *
+   */
+  function set_datastyle ($str) {
+    if (strlen($str) > 3) { 
+      $str = substr($str, 0, 3);
+    }
+    $this->datastyle = $str;
+  }
 
   function execute () {
     $this->ch = curl_init($this->build_req());
@@ -52,13 +62,14 @@ class folksoClient {
       curl_setopt($this->ch, CURLOPT_POSTFIELDS, $this->postfields);
     }
     curl_exec($this->ch);
-    
-
   }
 
-  // curl_setopt($this->ch, CURLOPT_POSTFIELDS....)
-
-
+  /**
+   * Returns the appropriate request string depending on method and
+   * the different fields involved. Mostly this is a problem for GETs
+   * since all the fields are part of the URI.
+   *
+   */
   public function build_req () {
     $uri = $this->host . $this->uri;
     if (strtolower($this->method) == 'get') {
@@ -83,6 +94,11 @@ class folksoClient {
     }
   }
 
+
+  /**
+   * Calculates content length for POSTs. 
+   *
+   */
   public function content_length () {
     if (strtolower($this->method) == 'get') {
       return 0;
