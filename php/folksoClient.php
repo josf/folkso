@@ -1,5 +1,6 @@
 <?php
 
+
 class folksoClient {
   public $host;
   public $uri; // not including hostname ie. /thispage.php
@@ -9,6 +10,12 @@ class folksoClient {
   public $datastyle;
   private $ch;
 
+  /**
+   * Arguments: HOST, URI, METHOD. URI means the local part of the
+   * URI. Right now we assume that it starts with a leading slash,
+   * though that should probably be fixed.
+   *
+   */
   function __construct ($host, $uri, $method) {
     $this->host = $host;
     $this->uri = $uri;
@@ -20,7 +27,7 @@ class folksoClient {
    * values. Keys must begin with 'folkso'.
    */
   function set_postfields ($arr) {
-    $this->postfields = parse_arg_array($arr);
+    $this->postfields = $this->parse_arg_array($arr);
     return $this->postfields;
   }
 
@@ -30,7 +37,7 @@ class folksoClient {
    * do not put it here.
    */
   function set_getfields ($arr) {
-    $this->getfields = parse_arg_array($arr);
+    $this->getfields = $this->parse_arg_array($arr);
     return $this->getfields;
   }
 
@@ -39,10 +46,10 @@ class folksoClient {
   function execute () {
     $this->ch = curl_init($this->host . $this->uri);
 
+  }
 
+  // curl_setopt($this->ch, CURLOPT_POSTFIELDS....)
 
-    curl_setopt($this->ch, CURLOPT_POSTFIELDS....)
-      }
 
   public function build_req () {
     $uri = $this->host . $this->uri;
@@ -52,15 +59,19 @@ class folksoClient {
         $get = '?';
       }
       if (strlen($this->getfields) > 0) {
-        $get =. $this->getfields;
+        $get .= $this->getfields;
       }
       if ((strlen($get) > 1) &&
           (strlen($this->datastyle) > 0)) {
-        $get =. '&';
+        $get .= '&';
       }
       if (strlen($this->datastyle) > 0) {
-        $get =. 'folksodatastyle=' . $this->datastyle;
+        $get .= 'folksodatastyle=' . $this->datastyle;
       }
+      return $uri . $get;
+    }
+    else {
+      return $uri;
     }
   }
 
