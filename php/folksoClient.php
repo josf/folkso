@@ -58,10 +58,12 @@ class folksoClient {
     $headers = array( "Content-Type: application/x-www-form-urlencoded",
                       "Content-length: " . $this->content_length());
     curl_setopt($this->ch, CURLOPT_HTTPHEADERS, $headers);
+    curl_setopt($this->ch, CURLOPT_USERAGENT, 'folksoClient');
     if (strtolower($this->method) == 'post'){
+      curl_setopt($this->ch, CURLOPT_POST, true);
       curl_setopt($this->ch, CURLOPT_POSTFIELDS, $this->postfields);
     }
-    curl_exec($this->ch);
+    $resp = curl_exec($this->ch);
   }
 
   /**
@@ -119,7 +121,7 @@ class folksoClient {
     $arg_a = array();
     foreach ($arr as $pkey => $pval) {
       if (substr($pkey, 0, 6) == 'folkso') {
-        array_push($arg_a, $pkey . "=" . trim($pval));
+        array_push($arg_a, $pkey . "=" . urlencode(trim($pval)));
       }
       else {
         // TODO : error of some kind

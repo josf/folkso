@@ -27,6 +27,9 @@ class testOffolksoClient extends  UnitTestCase {
     $this->cl->datastyle = 'b';
     $this->assertEqual($this->cl->build_req(), 'localhost/tag.php?folksoStuff=bob&folksoThing=blender&folksodatastyle=b');
     $this->assertEqual($this->cl->content_length, 0);
+    $bb = new folksoClient('localhost', '/tag.php', 'GET');
+    $bb->set_getfields(array('folksoB' => 'bébé'));
+    $this->assertEqual($bb->getfields, 'folksoB='.urlencode('bébé'));
   }
 
 
