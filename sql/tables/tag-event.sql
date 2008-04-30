@@ -3,6 +3,7 @@ create table tagevent
        (id int unsigned primary key auto_increment,
        tag_id int unsigned not null,
        resource_id int unsigned not null, 
+       meta_id int unsigned 0,
        user_id int unsigned not null,
        tagtime timestamp not null);
 
