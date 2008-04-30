@@ -59,11 +59,12 @@ class folksoClient {
                       "Content-length: " . $this->content_length());
     curl_setopt($this->ch, CURLOPT_HTTPHEADERS, $headers);
     curl_setopt($this->ch, CURLOPT_USERAGENT, 'folksoClient');
+    curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, true);
     if (strtolower($this->method) == 'post'){
       curl_setopt($this->ch, CURLOPT_POST, true);
       curl_setopt($this->ch, CURLOPT_POSTFIELDS, $this->postfields);
     }
-    $resp = curl_exec($this->ch);
+    return curl_exec($this->ch);
   }
 
   /**
