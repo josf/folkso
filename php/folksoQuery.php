@@ -34,35 +34,48 @@ class folksoQuery {
   }
 
 
-
-  /**
-   * Shortens a string to a maximum of 300 characters
-   */
-
    /**
     * Checks for keys starting with 'folkso' and adds them to the
     * object. Values longer than 300 characters are shortened to 300
     * characters. 300 is chosen because it is a bit more than 255, the
     * limit for most of the Mysql VARCHAR() arguments.
+    *
+    * Fields ending in three digits are processed differently. Their
+    * values are built up into arrays that are then associated with a
+    * single parameter name, stripped of the three finale digits.
     */
   private function param_get ($array) {
     $accum = array();
+    $mults = array();
     foreach ($array as $param_key => $param_val) {
       if (substr($param_key, 0, 6) == 'folkso') {
-        $to_insert = $param_val;
 
-        if (strstr($param_val, '+')) {
-          $to_insert = array_map(  'field_shorten', 
-                                   explode('+', $param_val));
+        // if fieldname end in 3 digits : folksothing123, we strip off
+        // the digits and build up an array of the fields
+        if (preg_match('/\d\d\d$/', $param_key)) {
+          $new_key = substr($param_key, 0, -3);
+
+          // for 1st time through
+          if (! isset($mults[$new_key])) {
+            $mults[$new_key] = array();
+          }
+          array_push($mults[$new_key], $this->field_shorten($param_val));
         }
         else {
-          $to_insert = field_shorten($param_val);
+          $accum[$param_key] = $this->field_shorten($param_val);
         }
-        $accum[$param_key] = $to_insert;
+      }
+    }
+
+    // If there are multiple fields, put them into $accum
+    if (count($mults) > 0){
+      foreach ($mults as $mkey => $mval) {
+        $accum[$mkey] = $mval;
       }
     }
     return $accum;
   }
+
 
   /**
    * Returns the method used. In smallcaps, which should be the norm
@@ -118,9 +131,11 @@ class folksoQuery {
     }
   }
 
-  }// end class
- function field_shorten ($str) {
-   $str = trim($str);
+  /**
+   * Shortens a string to a maximum of 300 characters
+   */
+  private function field_shorten ($str) {
+    $str = trim($str);
 
     if ( strlen($str) < 300) {
       return $str;
@@ -129,6 +144,9 @@ class folksoQuery {
       return substr($str, 0, 300);
     }
   }
+
+
+  }// end class
 
 
 ?>
