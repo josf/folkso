@@ -23,14 +23,13 @@ class folksoQuery {
     $this->method = $server['REQUEST_METHOD'];
     $this->content_type = $server['CONTENT_TYPE'];
     if (count($get) > 0) {
-      $this->fk_params = array_merge($this->param_get($get), $this->fk_params);;
+      $this->fk_params = array_merge($this->parse_params($get), $this->fk_params);;
     }
 
     if (count($post) > 0) {
-      $this->fk_params = array_merge($this->param_get($post), $this->fk_params);
+      $this->fk_params = array_merge($this->parse_params($post), $this->fk_params);
     }
     /** Will add put and delete support here later **/
-
   }
 
 
@@ -44,7 +43,7 @@ class folksoQuery {
     * values are built up into arrays that are then associated with a
     * single parameter name, stripped of the three finale digits.
     */
-  private function param_get ($array) {
+  private function parse_params ($array) {
     $accum = array();
     $mults = array();
     foreach ($array as $param_key => $param_val) {
@@ -88,6 +87,23 @@ class folksoQuery {
 
   public function params () {
     return $this->fk_params;
+  }
+
+  /**
+   * Convience access to parameters. Not necessary to write 'folkso'
+   * in front of parameters.
+   */
+  public function get_param ($str) {
+    if (isset($this->fk_params[$str])) {
+      return $this->fk_params[$str];
+    }
+    elseif ((substr($str, 0, 6) <> 'folkso') &&
+            (isset($this->fk_params['folkso'.$str]))) {
+      return $this->fk_params['folkso' . $str ];
+    }
+    else {
+      return false;
+    }
   }
 
 
