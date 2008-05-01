@@ -41,10 +41,10 @@ function isHeadDo ($q) {
     header('HTTP/1.0 501 Database problem');
   }
   elseif ($result->num_rows == 0) {
-    header('HTTP/1.0 404');
+    header('HTTP/1.0 404 Resource not found');
   }
   else {
-    header('HTTP/1.0 200');
+    header('HTTP/1.0 200 Resource exists');
   }
 }
 

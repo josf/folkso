@@ -1,14 +1,20 @@
 <?php
 
+  /**
+   * This class should work with PHP4 or PHP5.
+   * 
+   * It requires the php libcurl functions but could be rewritten,
+   * with the same interface, to use another http client.
+   */
 
 class folksoClient {
-  public $host;
-  public $uri; // not including hostname ie. /thispage.php
-  public $method;
-  public $postfields = '';
-  public $getfields = array();
-  public $datastyle;
-  public $ch;
+  var $host;
+  var $uri; // not including hostname ie. /thispage.php
+  var $method;
+  var $postfields = '';
+  var $getfields = array();
+  var $datastyle;
+  var $ch;
 
   /**
    * Arguments: HOST, URI, METHOD. URI means the local part of the
@@ -64,7 +70,6 @@ class folksoClient {
       curl_setopt($this->ch, CURLOPT_POST, true);
       curl_setopt($this->ch, CURLOPT_POSTFIELDS, $this->postfields);
     }
-    print var_dump ($this->ch);
     return curl_exec($this->ch);
   }
 
@@ -74,7 +79,7 @@ class folksoClient {
    * since all the fields are part of the URI.
    *
    */
-  public function build_req () {
+  function build_req () {
     $uri = $this->host . $this->path;
     if (strtolower($this->method) == 'get') {
       /* add '?' */
@@ -103,7 +108,7 @@ class folksoClient {
    * Calculates content length for POSTs. 
    *
    */
-  public function content_length () {
+  function content_length () {
     if (strtolower($this->method) == 'get') {
       return 0;
     }
@@ -124,11 +129,11 @@ class folksoClient {
    *
    */
 
-  public function query_resultcode () {
+  function query_resultcode () {
     return curl_getinfo($this->ch, CURLINFO_HTTP_CODE);
   }
 
-  private function parse_arg_array ($arr) {
+  function parse_arg_array ($arr) {
     $arg_a = array();
     foreach ($arr as $pkey => $pval) {
       if (substr($pkey, 0, 6) == 'folkso') {
