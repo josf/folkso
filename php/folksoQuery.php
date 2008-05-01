@@ -114,9 +114,11 @@ class folksoQuery {
    */
   public function is_param ($str) {
     if ((is_string($this->fk_params[$str])) ||
+        (is_string($this->fk_params['folkso' . $str])) ||
         ((is_array($this->fk_params[$str])) &&
-         (count($this->fk_params[$str]) > 0)))
-      {
+         (count($this->fk_params[$str]) > 0)) ||
+        ((is_array($this->fk_params['folkso' . $str])) &&
+         (count($this->fk_params['folkso' . $str]) > 0))) {
       return true;
     }
     else {
@@ -125,7 +127,8 @@ class folksoQuery {
   }
 
   public function is_single_param ($str) {
-    if (is_string($this->fk_params[$str])) {
+    if ((is_string($this->fk_params[$str])) ||
+        (is_string($this->fk_params['folkso'.$str]))){
       return true;
     }
     else {

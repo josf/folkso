@@ -27,6 +27,30 @@ function visitPageTest ($q) {
 }
 
 function visitPageDo ($q) {
+  $ic = new folksoIndexCache('/tmp/cachetest', 2);  
+
+  if (!($ic->data_to_cache( serialize($q->get_param('visituri'))))) {
+    trigger_error("Cannot store data in cache", E_USER_ERROR);
+  }
+
+  $page = new folksoUrl($q->get_param('visituri'), 
+                        $q->get_param('urititle') ? $q->is_single_param('urititle') : '' );
+
+  if ($ic->cache_check() ) {
+    $pages_to_parse = $ic->retreive_cache();
+    //    print "count ". count($pages_to_parse);
+
+    $db = new mysqli('localhost', 'root', 'hellyes', 'folksonomie');
+    if ( mysqli_connect_errno()) {
+      printf("Connect failed: %s\n", mysqli_connect_error());
+    }
+
+    foreach ($pages_to_parse as $raw) {
+      $item = unserialize($raw);
+      print $item->get_url();
+      db_store_data($item, $db);
+    }
+  }
 
 
   $db = new mysqli('localhost', 'root', 'hellyes', 'folksonomie');
