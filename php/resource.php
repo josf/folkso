@@ -17,8 +17,6 @@ $pwd = 'hellyes'; $database = 'folksonomie';
 
 
 function visitPageTest ($q) {
-  $params = $q->params();
-
   if (($q->method() == 'post') &&
       ($q->is_single_param('folksovisituri'))) {
     return true;
@@ -29,7 +27,7 @@ function visitPageTest ($q) {
 }
 
 function visitPageDo ($q) {
-  $params = $q->params();
+
 
   $db = new mysqli('localhost', 'root', 'hellyes', 'folksonomie');
   if ( mysqli_connect_errno()) {
@@ -38,10 +36,10 @@ function visitPageDo ($q) {
   }
 
   $result = $db->query("call url_visit('" .
-                       $db->real_escape_string($params['folksovisituri']) .
+                       $db->real_escape_string($q->get_param('folksovisituri')) .
                        "')");
   if ($db->errno <> 0) {
-    header('HTTP/1.0 501');
+    header('HTTP/1.0 501 Database problem');
     printf("Statement failed %d: (%s) %s\n", 
            $db->errno, $db->sqlstate, $db->error);
   }

@@ -16,3 +16,16 @@ Content-Type: application/x-www-form-urlencoded
 Content-length: 93
 
 folksoresourcetotag=http://www.fabula.org/actualites/article123.php&folksotagidstoresource=14
+
+
+POST /resourcetags.php HTTP/1.0
+Content-Type: application/x-www-form-urlencoded
+Content-length: 169
+
+folksotagidstoresource001=19&folksotagidstoresource002=18&folksotagidstoresource003=4&folksoresourcetotag=http%3A%2F%2Fwww%2Efabula%2Eorg%2Factualites%2Farticle123%2Ephp
+
+POST /resource.php?bob=slob HTTP/1.0
+Content-Type: application/x-www-form-urlencoded
+Content-length: 33
+
+folksovisituri=http%3A%2F%2Fdixsept%2Ecom

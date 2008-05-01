@@ -8,9 +8,9 @@ create table tagevent
        tagtime timestamp not null);
 
 -- (local-set-key [(control c) (b)] 'sql-snip)
-(defun sql-snip () 
-     (interactive)(snippet-insert "insert into tag-event set tag_id = $${norm}, set resource_id = $${res}, user_id = 1;
-     "))
+-- (defun sql-snip () 
+--      (interactive)(snippet-insert "insert into tag-event set tag_id = $${norm}, set resource_id = $${res}, user_id = 1;
+--     "))
 
 insert into tagevent set tag_id = 1, resource_id = 342, user_id = 1;
 insert into tagevent set tag_id = 2, resource_id = 342, user_id = 1;

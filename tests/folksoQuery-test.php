@@ -49,6 +49,7 @@ class testOffolksoResponse extends  UnitTestCase {
     $params = $this->qumulti->params();
     $this->assertTrue(is_array($params['folksoArgs']));
     $this->assertTrue($this->qumulti->is_multiple_param('folksoArgs'));
+    $this->assertFalse($this->qumulti->is_single_param('folksoArgs'));
 
   }
 

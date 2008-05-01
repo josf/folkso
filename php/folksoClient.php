@@ -16,9 +16,9 @@ class folksoClient {
    * though that should probably be fixed.
    *
    */
-  function __construct ($host, $uri, $method) {
+  function __construct ($host, $path, $method) {
     $this->host = $host;
-    $this->uri = $uri;
+    $this->path = $path;
     $this->method = $method;
   }
 
@@ -59,11 +59,12 @@ class folksoClient {
                       "Content-length: " . $this->content_length());
     curl_setopt($this->ch, CURLOPT_HTTPHEADERS, $headers);
     curl_setopt($this->ch, CURLOPT_USERAGENT, 'folksoClient');
-    curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, true);
+    //    curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, true);
     if (strtolower($this->method) == 'post'){
       curl_setopt($this->ch, CURLOPT_POST, true);
       curl_setopt($this->ch, CURLOPT_POSTFIELDS, $this->postfields);
     }
+    print var_dump ($this->ch);
     return curl_exec($this->ch);
   }
 
@@ -74,7 +75,7 @@ class folksoClient {
    *
    */
   public function build_req () {
-    $uri = $this->host . $this->uri;
+    $uri = $this->host . $this->path;
     if (strtolower($this->method) == 'get') {
       /* add '?' */
       if ($this->datastyle || $this->getfields) {
@@ -116,6 +117,15 @@ class folksoClient {
     else {
       // error : unsupported method
     }
+  }
+
+  /**
+   * Access to information about the query.
+   *
+   */
+
+  public function query_resultcode () {
+    return curl_getinfo($this->ch, CURLINFO_HTTP_CODE);
   }
 
   private function parse_arg_array ($arr) {
