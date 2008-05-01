@@ -8,12 +8,45 @@ include('folksoQuery.php');
 
 $srv = new folksoServer(array( 'methods' => array('POST', 'GET', 'HEAD'),
                                'access_mode' => 'LOCAL'));
-
+$srv->addResponseObj(new folksoResponse('isHeadTest', 'isHeadDo'));
 $srv->addResponseObj(new folksoResponse('visitPageTest', 'visitPageDo'));
 $srv->Respond();
 
 $server = 'localhost'; $user ='root'; 
 $pwd = 'hellyes'; $database = 'folksonomie';
+
+
+function isHeadTest ($q) {
+  if (($q->method() == 'head') &&
+      ($q->is_param('uri'))) {
+    return true;
+  }
+  else {
+    return false;
+  }
+}
+
+function isHeadDo ($q) {
+  $db = new mysqli('localhost', 'root', 'hellyes', 'folksonomie');
+  if ( mysqli_connect_errno()) {
+    header('HTTP/1.0 501');
+    printf("Connect failed: %s\n", mysqli_connect_error());
+  }
+
+  $result = $db->query("select id from resource where id = '" .
+                       $db->real_escape_string($q->get_param('uri')) .
+                       "'");
+
+  if ($db->errno <> 0) {
+    header('HTTP/1.0 501 Database problem');
+  }
+  elseif ($result->num_rows == 0) {
+    header('HTTP/1.0 404');
+  }
+  else {
+    header('HTTP/1.0 200');
+  }
+}
 
 
 function visitPageTest ($q) {
