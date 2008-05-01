@@ -6,8 +6,9 @@ include('folksoServer.php');
 include('folksoResponse.php');
 include('folksoQuery.php');
 
-$srv = new folksoServer(array( 'methods' => array('POST', 'GET'),
+$srv = new folksoServer(array( 'methods' => array('POST', 'GET', 'HEAD'),
                                'access_mode' => 'ALL'));
+$srv->addResponseObj(new folksoResponse('isHeadTest', 'isHeadDo'));
 $srv->addResponseObj(new folksoResponse('getTagTest', 'getTagDo'));
 $srv->addResponseObj(new folksoResponse('singlePostTagTest', 'singlePostTagDo'));
 $srv->addResponseObj(new folksoResponse('elster', 'elsterDo'));
@@ -17,6 +18,38 @@ $server = 'localhost'; $user ='root';
 $pwd = 'hellyes';
 
 
+function isHeadTest ($q) {
+  if (($q->method() == 'head') &&
+      ($q->is_param('tagid'))) {
+    return true;
+  }
+  else {
+    return false;
+  }
+}
+
+function isHeadDo ($q) {
+    $db = new mysqli('localhost', 'root', 'hellyes', 'folksonomie');
+  if ( mysqli_connect_errno()) {
+    header('HTTP/1.0 501');
+    return;
+  }
+
+  $result = $db->query("select id from tag where id ='" . 
+                       $db->real_escape_string($q->get_param('tagid')) .
+                       "'");
+  if ($db->errno <> 0) {
+      header('HTTP/1.0 501');
+  }
+  else {
+    if ($result->num_rows == 0) {
+      header('HTTP/1.0 404');
+    }
+    else {
+      header('HTTP/1.0 200');
+    }
+  }
+}
 
 /**
  * getTag (Test and Do) : with tag id, return the display version of
@@ -65,11 +98,8 @@ function getTagDo ($q) {
 
 
 function singlePostTagTest ($q) {
-
-  $params = $q->params();
-
   if (($q->method() == 'post') &&
-      (is_string($params['folksonewtag']))) {
+      ($q->is_param('folksonewtag'))) {
     return true;
   }
   else {
@@ -105,7 +135,8 @@ function elster ($q) {
 
 function elsterDo ($q) {
   //  header('Content-Type: text/html');
-  print "<h2>Default: no action taken.</h2>";
+  header('HTTP/1.0. 400');
+  print "Incorrect request.";
 }
 
 ?>

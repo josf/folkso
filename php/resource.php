@@ -6,7 +6,7 @@ include('folksoServer.php');
 include('folksoResponse.php');
 include('folksoQuery.php');
 
-$srv = new folksoServer(array( 'methods' => array('POST', 'GET'),
+$srv = new folksoServer(array( 'methods' => array('POST', 'GET', 'HEAD'),
                                'access_mode' => 'LOCAL'));
 
 $srv->addResponseObj(new folksoResponse('visitPageTest', 'visitPageDo'));
@@ -29,12 +29,14 @@ function visitPageTest ($q) {
 function visitPageDo ($q) {
   $ic = new folksoIndexCache('/tmp/cachetest', 2);  
 
-  if (!($ic->data_to_cache( serialize($q->get_param('visituri'))))) {
+  $page = new folksoUrl($q->get_param('visituri'), 
+                        $q->is_single_param('urititle') ? $q->get_param('urititle') : '' );
+
+
+  if (!($ic->data_to_cache( serialize($page)))) {
     trigger_error("Cannot store data in cache", E_USER_ERROR);
   }
 
-  $page = new folksoUrl($q->get_param('visituri'), 
-                        $q->get_param('urititle') ? $q->is_single_param('urititle') : '' );
 
   if ($ic->cache_check() ) {
     $pages_to_parse = $ic->retreive_cache();
@@ -47,7 +49,7 @@ function visitPageDo ($q) {
 
     foreach ($pages_to_parse as $raw) {
       $item = unserialize($raw);
-      print $item->get_url();
+      //      print $item->get_url();
       db_store_data($item, $db);
     }
   }
@@ -71,6 +73,22 @@ function visitPageDo ($q) {
     header('HTTP/1.0. 200');
     print "Page considered visited\n";
   }
+}
+
+function db_store_data ($url_obj, $db) {
+  
+  $qq = "call url_visit('". $url_obj->get_url(). "')";
+  //  print "<p>$qq</p>";
+  $result = $db->query($qq);
+  if ($mysqli->errno) {
+    die("execution failed : " . $mysqli->errno.": ". $mysqli->error);
+  }
+  /*  while ($row = $result->fetch_object()) {
+    print("<p><b>". $row->uri_normal . "</b>". $row->visited . "</p>");
+    }*/
+  unset($qq);
+  unset($row);
+  unset($result);
 }
 
 

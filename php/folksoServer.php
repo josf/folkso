@@ -24,7 +24,7 @@ class folksoServer {
   public $clientAccessRestrictList = array('127.0.0.1'); //localhost always allowed
   public $allowedClientMethods = array('GET');
   
-  private $possibleMethods = array('GET', 'get', 'POST', 'post', 'PUT', 'put', 'DELETE', 'delete');
+  private $possibleMethods = array('GET', 'get', 'HEAD', 'head','POST', 'post', 'PUT', 'put', 'DELETE', 'delete');
   private $possibleAccessModes = array('LOCAL', 'LIST', 'ALL');
   public $responseObjects = array();
 
@@ -81,9 +81,17 @@ class folksoServer {
      * Based on the request received, checks each response object is
      * checked to see if it is equiped to handle the request.
      */
-    if (!($this->initialChecks())) {
+    if (!($this->valid_method())) {
       // some kind of error
+      header('HTTP/1.0 405');
       print "<h1>NOT OK</h1><p>Illegal request method for this resource.</p>";
+      return;
+    }
+
+    
+    if (!($this->validClientAddress($_SERVER['REMOTE_HOST'], $_SERVER['REMOTE_ADDR']))) {
+      header('HTTP/1.0 403');
+      print "Sorry, this not available to you";
       return;
     }
 
@@ -102,19 +110,21 @@ class folksoServer {
       }
     }
     if (!$repflag) {
+      header('HTTP/1.0 400');
+      print "Client did not make a valid query.";
       // default response or error page...
     }
   }
   
-  function initialChecks () {
-    if ((in_array($_SERVER['REQUEST_METHOD'], $this->allowedClientMethods)) &&
-        ($this->validClientAddress($_SERVER['REMOTE_HOST'], $_SERVER['REMOTE_ADDR']))) {
+  function valid_method () {
+    if (in_array($_SERVER['REQUEST_METHOD'], $this->allowedClientMethods)) {
       return true;
     }
     else {
       return false;
     }
   }
+
   
   function validClientAddress ($host, $ip) {
     if ( $this->clientAccessRestrict == 'ALL') {
