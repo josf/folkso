@@ -1,6 +1,7 @@
 <?php
 
 include('/usr/local/www/apache22/lib/jf/fk/folksoTags.php');
+
 $srv = new folksoServer(array( 'methods' => array('POST', 'GET'),
                                'access_mode' => 'ALL'));
 $srv->addResponseObj(new folksoResponse('getTagTest', 'getTagDo'));
@@ -19,7 +20,7 @@ $pwd = 'hellyes';
  * exist. 404?
  */
 
-function getTagTest ($q) {
+function getTagTest (folksoQuery $q, folksoUserCreds $cred) {
   $params = $q->params();
 
   if (($q->method() == 'get') &&
@@ -31,7 +32,7 @@ function getTagTest ($q) {
   }
 }
 
-function getTagDo ($q) {
+function getTagDo (folksoQuery $q, folksoUserCreds $cred) {
   $params = $q->params();
   $db = new mysqli('localhost', 'root', 'hellyes', 'folksonomie');
   if ( mysqli_connect_errno()) {
@@ -56,7 +57,7 @@ function getTagDo ($q) {
 }
 
 
-function singlePostTagTest ($q) {
+function singlePostTagTest (folksoQuery $q, folksoUserCreds $cred) {
   $params = $q->params();
 
   if (($q->method() == 'post') &&
@@ -68,7 +69,7 @@ function singlePostTagTest ($q) {
   }
 }
 
-function singlePostTagDo ($q) {
+function singlePostTagDo (folksoQuery $q, folksoUserCreds $cred) {
   //  header('Content-Type: text/html');
   $params = $q->params();
 

@@ -16,6 +16,7 @@
    *
    */
 
+include('/usr/local/www/apache22/lib/jf/fk/folksoTags.php');
 
 class folksoServer {
 
@@ -97,14 +98,14 @@ class folksoServer {
 
 
     $q = new folksoQuery($_SERVER, $_GET, $_POST); 
-
+    $cred = new folksoUserCreds( $_SERVER['PHP_AUTH_DIGEST']);
     /* check each response object and run the response if activatep
      returns true*/
 
     $repflag = false;
     foreach ($this->responseObjects as $resp) {
-      if ( $resp->activatep($q)) {
-        $resp->Respond($q);
+      if ( $resp->activatep($q, $cred)) {
+        $resp->Respond($q, $cred);
         $repflag = true;
         break;
       }

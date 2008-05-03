@@ -18,7 +18,7 @@ $server = 'localhost'; $user ='root';
 $pwd = 'hellyes'; $database = 'folksonomie';
 
 
-function isHeadTest ($q) {
+function isHeadTest (folksoQuery $q, folksoUserCreds $cred) {
   if (($q->method() == 'head') &&
       ($q->is_param('uri'))) {
     return true;
@@ -28,7 +28,7 @@ function isHeadTest ($q) {
   }
 }
 
-function isHeadDo ($q) {
+function isHeadDo (folksoQuery $q, folksoUserCreds $cred) {
   $db = new mysqli('localhost', 'root', 'hellyes', 'folksonomie');
   if ( mysqli_connect_errno()) {
     header('HTTP/1.0 501');
@@ -51,7 +51,7 @@ function isHeadDo ($q) {
 }
 
 
-function visitPageTest ($q) {
+function visitPageTest (folksoQuery $q, folksoUserCreds $cred) {
   if (($q->method() == 'post') &&
       ($q->is_single_param('folksovisituri'))) {
     return true;
@@ -61,7 +61,7 @@ function visitPageTest ($q) {
   }
 }
 
-function visitPageDo ($q) {
+function visitPageDo (folksoQuery $q, folksoUserCreds $cred) {
   $ic = new folksoIndexCache('/tmp/cachetest', 500);  
 
   $page = new folksoUrl($q->get_param('visituri'), 
