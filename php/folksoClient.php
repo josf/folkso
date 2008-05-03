@@ -22,7 +22,7 @@ class folksoClient {
    * though that should probably be fixed.
    *
    */
-  function __construct ($host, $path, $method) {
+  function folksoClient ($host, $path, $method) {
     $this->host = $host;
     $this->path = $path;
     $this->method = $method;
