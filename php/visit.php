@@ -1,6 +1,6 @@
 <?php
 
-include('folksoClient.php');
+include('/var/www/dom/fabula/commun3/folksonomie/folksoClient.php');
 
 
 function curPageURL() {
@@ -16,12 +16,13 @@ function curPageURL() {
 }
 
 
-$fc = new folksoClient('localhost', '/resource.php', 'POST');
-print var_dump($fc->set_postfields(array('folksovisituri' => 'http://anothertestforyeall.com')));
-print $fc->build_req();
+$fc = new folksoClient('localhost', '/commun3/folksonomie/resource.php', 'POST');
+$fc->set_postfields(array('folksovisituri' => curPageURL(),
+                          'folksourititle' => $page_titre ? $page_titre : ''));
+//print $fc->build_req();
 
 $fc->execute();
-print $fc->query_resultcode();
+//print $fc->query_resultcode();
 
 
 ?>

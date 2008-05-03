@@ -134,7 +134,6 @@ class folksoIndexCache {
     $this->close_dirhandle();
     
     if ( $acounter > $this->cache_file_limit ) {
-
       return true;
     }
     else {
