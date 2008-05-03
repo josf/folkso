@@ -1,12 +1,6 @@
 <?php
 
-
-include('/var/www/dom/fabula/commun3/folksonomie/folksoIndexCache.php');
-include('/var/www/dom/fabula/commun3/folksonomie/folksoUrl.php');
-include('/var/www/dom/fabula/commun3/folksonomie/folksoServer.php');
-include('/var/www/dom/fabula/commun3/folksonomie/folksoResponse.php');
-include('/var/www/dom/fabula/commun3/folksonomie/folksoQuery.php');
-
+include('/usr/local/www/apache22/lib/jf/fk/folksoTags.php');
 $srv = new folksoServer(array( 'methods' => array('POST', 'GET'),
                                'access_mode' => 'ALL'));
 $srv->addResponseObj(new folksoResponse('getTagTest', 'getTagDo'));
@@ -15,7 +9,7 @@ $srv->addResponseObj(new folksoResponse('singlePostTagTest', 'singlePostTagDo'))
 $srv->Respond();
 
 $server = 'localhost'; $user ='root'; 
-$pwd = 'LucienLeuwen';
+$pwd = 'hellyes';
 
 
 
@@ -39,7 +33,7 @@ function getTagTest ($q) {
 
 function getTagDo ($q) {
   $params = $q->params();
-  $db = new mysqli('localhost', 'root', 'LucienLeuwen', 'folksonomie');
+  $db = new mysqli('localhost', 'root', 'hellyes', 'folksonomie');
   if ( mysqli_connect_errno()) {
     printf("Connect failed: %s\n", mysqli_connect_error());
   }
@@ -78,7 +72,7 @@ function singlePostTagDo ($q) {
   //  header('Content-Type: text/html');
   $params = $q->params();
 
-  $db = new mysqli('localhost', 'root', 'LucienLeuwen', 'folksonomie');
+  $db = new mysqli('localhost', 'root', 'hellyes', 'folksonomie');
   if ( mysqli_connect_errno()) {
     printf("Connect failed: %s\n", mysqli_connect_error());
   }

@@ -1,11 +1,13 @@
 <?php
 
-include('/var/www/dom/fabula/commun3/folksonomie/folksoIndexCache.php');
+include('/usr/local/www/apache22/lib/jf/fk/folksoTags.php');
+
+/*include('/var/www/dom/fabula/commun3/folksonomie/folksoIndexCache.php');
 include('/var/www/dom/fabula/commun3/folksonomie/folksoUrl.php');
 include('/var/www/dom/fabula/commun3/folksonomie/folksoServer.php');
 include('/var/www/dom/fabula/commun3/folksonomie/folksoResponse.php');
 include('/var/www/dom/fabula/commun3/folksonomie/folksoQuery.php');
-
+*/
 $srv = new folksoServer(array( 'methods' => array('POST', 'GET', 'HEAD'),
                                'access_mode' => 'ALL'));
 $srv->addResponseObj(new folksoResponse('isHeadTest', 'isHeadDo'));
@@ -13,7 +15,7 @@ $srv->addResponseObj(new folksoResponse('visitPageTest', 'visitPageDo'));
 $srv->Respond();
 
 $server = 'localhost'; $user ='root'; 
-$pwd = 'LucienLeuwen'; $database = 'folksonomie';
+$pwd = 'hellyes'; $database = 'folksonomie';
 
 
 function isHeadTest ($q) {
@@ -27,7 +29,7 @@ function isHeadTest ($q) {
 }
 
 function isHeadDo ($q) {
-  $db = new mysqli('localhost', 'root', 'LucienLeuwen', 'folksonomie');
+  $db = new mysqli('localhost', 'root', 'hellyes', 'folksonomie');
   if ( mysqli_connect_errno()) {
     header('HTTP/1.0 501');
     printf("Connect failed: %s\n", mysqli_connect_error());
@@ -75,7 +77,7 @@ function visitPageDo ($q) {
     $pages_to_parse = $ic->retreive_cache();
     //    print "count ". count($pages_to_parse);
 
-    $db = new mysqli('localhost', 'root', 'LucienLeuwen', 'folksonomie');
+    $db = new mysqli('localhost', 'root', 'hellyes', 'folksonomie');
     if ( mysqli_connect_errno()) {
       printf("Connect failed: %s\n", mysqli_connect_error());
     }
