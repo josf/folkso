@@ -1,55 +1,23 @@
 <?php
 
-include('/usr/local/www/apache22/lib/jf/folksoIndexCache.php');
-include('folksoUrl.php');
-include('folksoServer.php');
-include('folksoResponse.php');
-include('folksoQuery.php');
 
-$srv = new folksoServer(array( 'methods' => array('POST', 'GET', 'HEAD'),
+include('/var/www/dom/fabula/commun3/folksonomie/folksoIndexCache.php');
+include('/var/www/dom/fabula/commun3/folksonomie/folksoUrl.php');
+include('/var/www/dom/fabula/commun3/folksonomie/folksoServer.php');
+include('/var/www/dom/fabula/commun3/folksonomie/folksoResponse.php');
+include('/var/www/dom/fabula/commun3/folksonomie/folksoQuery.php');
+
+$srv = new folksoServer(array( 'methods' => array('POST', 'GET'),
                                'access_mode' => 'ALL'));
-$srv->addResponseObj(new folksoResponse('isHeadTest', 'isHeadDo'));
 $srv->addResponseObj(new folksoResponse('getTagTest', 'getTagDo'));
 $srv->addResponseObj(new folksoResponse('singlePostTagTest', 'singlePostTagDo'));
-$srv->addResponseObj(new folksoResponse('elster', 'elsterDo'));
+
 $srv->Respond();
 
 $server = 'localhost'; $user ='root'; 
-$pwd = 'hellyes';
+$pwd = 'LucienLeuwen';
 
 
-function isHeadTest ($q) {
-  if (($q->method() == 'head') &&
-      ($q->is_param('tagid'))) {
-    return true;
-  }
-  else {
-    return false;
-  }
-}
-
-function isHeadDo ($q) {
-    $db = new mysqli('localhost', 'root', 'hellyes', 'folksonomie');
-  if ( mysqli_connect_errno()) {
-    header('HTTP/1.0 501');
-    return;
-  }
-
-  $result = $db->query("select id from tag where id ='" . 
-                       $db->real_escape_string($q->get_param('tagid')) .
-                       "'");
-  if ($db->errno <> 0) {
-      header('HTTP/1.0 501');
-  }
-  else {
-    if ($result->num_rows == 0) {
-      header('HTTP/1.0 404');
-    }
-    else {
-      header('HTTP/1.0 200');
-    }
-  }
-}
 
 /**
  * getTag (Test and Do) : with tag id, return the display version of
@@ -71,14 +39,12 @@ function getTagTest ($q) {
 
 function getTagDo ($q) {
   $params = $q->params();
-  $db = new mysqli('localhost', 'root', 'hellyes', 'folksonomie');
+  $db = new mysqli('localhost', 'root', 'LucienLeuwen', 'folksonomie');
   if ( mysqli_connect_errno()) {
     printf("Connect failed: %s\n", mysqli_connect_error());
   }
 
-  $result = $db->query("select tagdisplay from tag where id ='" . 
-                       $db->real_escape_string($params['folksotagid']) .
-                       "'");
+  $result = $db->query("select tagdisplay from tag where id ='". $params['folksotagid']."'");
   if ($db->errno <> 0) {
     printf("Statement failed %d: (%s) %s\n", 
            $db->errno, $db->sqlstate, $db->error);
@@ -86,8 +52,7 @@ function getTagDo ($q) {
   else {
     if ($result->num_rows == 0) {
       header('HTTP/1.0 404');
-      print "Tag not found: " .
-        $db->real_escape_string($params['folksotagid']);
+      print "Tag not found: ".$params['folksotagid'];
     }
     while($row = $result->fetch_object()) {
       print "<p>A row:".$row->tagdisplay . "</p>";
@@ -98,8 +63,10 @@ function getTagDo ($q) {
 
 
 function singlePostTagTest ($q) {
+  $params = $q->params();
+
   if (($q->method() == 'post') &&
-      ($q->is_param('folksonewtag'))) {
+      (is_string($params['folksonewtag']))) {
     return true;
   }
   else {
@@ -111,13 +78,11 @@ function singlePostTagDo ($q) {
   //  header('Content-Type: text/html');
   $params = $q->params();
 
-  $db = new mysqli('localhost', 'root', 'hellyes', 'folksonomie');
+  $db = new mysqli('localhost', 'root', 'LucienLeuwen', 'folksonomie');
   if ( mysqli_connect_errno()) {
     printf("Connect failed: %s\n", mysqli_connect_error());
   }
-  $result = $db->query("call new_tag('" . 
-                       $db->real_escape_string($params['folksonewtag']) . 
-                       "')");
+  $result = $db->query("call new_tag('" . $params['folksonewtag'] . "')");
   if ($db->errno <> 0) {
     printf("Statement failed %d: (%s) %s\n", 
            $db->errno, $db->sqlstate, $db->error);
@@ -127,16 +92,6 @@ function singlePostTagDo ($q) {
       print "<p>A row:".$row->id . "</p>";
     }
   }
-}
-
-function elster ($q) {
-  return true;
-}
-
-function elsterDo ($q) {
-  //  header('Content-Type: text/html');
-  header('HTTP/1.0. 400');
-  print "Incorrect request.";
 }
 
 ?>
