@@ -228,7 +228,8 @@ delimiter ;
 
 delimiter $$
 drop procedure if exists url_visit$$
-create procedure url_visit(url varchar(255))
+create procedure url_visit(url varchar(255),
+                           title varchar(255))
 
 begin
 declare found_url varchar(255) default '';
@@ -247,8 +248,8 @@ declare url_check varchar(255) default '';
                where uri_normal = url_check;
         else
             insert into resource
-                    (uri_normal, uri_raw) 
-                    values (url_check, url);
+                    (uri_normal, uri_raw, title) 
+                    values (url_check, url, title);
         end if;
 
 end$$
