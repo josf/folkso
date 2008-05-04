@@ -28,10 +28,29 @@ class folksoServer {
   private $possibleMethods = array('GET', 'get', 'HEAD', 'head','POST', 'post', 'PUT', 'put', 'DELETE', 'delete');
   private $possibleAccessModes = array('LOCAL', 'LIST', 'ALL');
   public $responseObjects = array();
+  public $authorize_get_fields = array();
 
-
+  /**
+   * Argument is an associative array containing any of the following
+   * keys:
+   *
+   * 1. methods: an array of acceptable http method names.
+   * 
+   * 2. access_mode: Single string, either 'LOCAL' (access only from
+   * localhost), 'LIST' (access only from a list of hosts), or 'ALL'
+   * (no per host access restrictions). 
+   *
+   * 3. access_list: if access_mode is LIST, supply the list of valid
+   * hosts or IPs here.
+   *
+   * 4. authorize_get_fields: Most GET requests do not require
+   * authentication/authorization, so we can usually avoid this
+   * step. However, certain kinds of GETs may need
+   * authentication/authorization, so you can put the field names that
+   * _do_ require it in an array here.
+   */
   function __construct ($config) {
-     $conf_keys = array('methods', 'access_mode','access_list' );
+    $conf_keys = array('methods', 'access_mode','access_list', 'authorize_get_fields' );
     
     // methods
     if ((array_key_exists('methods', $config)) &&
@@ -76,12 +95,11 @@ class folksoServer {
     }
   }
 
-
+  /*
+   * Based on the request received, checks each response object is
+   * checked to see if it is equiped to handle the request.
+   */
   public function Respond () {
-    /*
-     * Based on the request received, checks each response object is
-     * checked to see if it is equiped to handle the request.
-     */
     if (!($this->valid_method())) {
       // some kind of error
       header('HTTP/1.0 405');
@@ -96,11 +114,10 @@ class folksoServer {
       return;
     }
 
-
-
     $q = new folksoQuery($_SERVER, $_GET, $_POST); 
 
     if (($q->method() <> 'get') &&
+        ($this->clientAccressRestrict <> 'LOCAL')) &&
         (strlen($_SERVER['PHP_AUTH_DIGEST']) == 0)) {
       header('HTTP/1.0 403');
       print "You must identify yourself to modify this resource";
