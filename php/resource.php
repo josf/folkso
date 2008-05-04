@@ -55,7 +55,7 @@ function isHeadDo (folksoQuery $q, folksoUserCreds $cred) {
 
 
 
-function getTagsIdsTest ($q) {
+function getTagsIdsTest (folksoQuery $q, folksoUserCreds $cred) {
   $params = $q->params();
   if (($q->method() == 'get') &&
       (is_string($params['folksoresourceuri']))) {
@@ -66,24 +66,43 @@ function getTagsIdsTest ($q) {
   }
 }
 
-function getTagsIdsDo ($q) {
+function getTagsIdsDo (folksoQuery $q, folksoUserCreds $cred) {
   $params = $q->params();
   
-  $db = new mysqli('localhost', 'root', 'LucienLeuwen', 'folksonomie');
+  $db = new mysqli('localhost', 'root', 'hellyes', 'folksonomie');
   if ( mysqli_connect_errno()) {
     printf("Connect failed: %s\n", mysqli_connect_error());
+  }
+
+  $pageres = $db->query("select uri_normal, uri_raw
+                         from resource
+                         where uri_normal = url_whack('" . $q->get_param('resourceuri') . "')");
+  if ($db->errno <> 0) {
+    header('HTTP/1.0 501 Database problem');
+    printf("Statement failed %d: (%s) %s\n", 
+           $db->errno, $db->sqlstate, $db->error);
+  }
+  elseif ($pageres->num_rows == 0) {
+    header('HTTP/1.0 404 Resource not found');
+    print "uri was ". $q->get_param('resourceuri');
+    return;
+  }
+  else {
+    header('HTTP/1.0 200');
+    $row = $pageres->fetch_object();
+    print "<h1><a href='". $row->uri_raw . "'>" . $row->uri_normal . "</a><h1>";
   }
 
   $result = $db->query("select tagdisplay 
                         from tag 
                         join tagevent on tag.id = tagevent.tag_id
                         join resource on resource.id = tagevent.resource_id
-                        where uri_normal = url_whack('". $params['folksoresourceuri']."')");
+                        where uri_normal = url_whack('". $q->get_param('folksoresourceuri') ."')");
   if ($db->errno <> 0) {
     printf("Statement failed %d: (%s) %s\n", 
            $db->errno, $db->sqlstate, $db->error);
   }
-  else {
+  else  {
     while ( $row = $result->fetch_object() ) {
       print $row->tagdisplay . "\n";
     }
