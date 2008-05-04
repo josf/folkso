@@ -97,7 +97,15 @@ class folksoServer {
     }
 
 
+
     $q = new folksoQuery($_SERVER, $_GET, $_POST); 
+
+    if (($q->method() <> 'get') &&
+        (strlen($_SERVER['PHP_AUTH_DIGEST']) == 0)) {
+      header('HTTP/1.0 403');
+      print "You must identify yourself to modify this resource";
+    }
+
     $cred = new folksoUserCreds( $_SERVER['PHP_AUTH_DIGEST']);
     /* check each response object and run the response if activatep
      returns true*/

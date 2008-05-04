@@ -13,8 +13,13 @@ class folksoUserCreds {
    * need to check sometimes (for GETs, essentially) and since that
    * involves a database connection, it isn't worth it.
    */
-  function check_digest () {
-    $this->userid = 99999;  // completely bogus for now...
+  function check_digest () {   // completely bogus for now...
+    if ($this->digest == 'xyz') {
+      $this->userid = 99999;
+    }
+    else {
+      return false;
+    }
   }
 
   function tag_create_access () {
@@ -24,7 +29,9 @@ class folksoUserCreds {
   function admin_access () {
     return true;
   }
-
+  function userid () {
+    return $this->userid;
+  }
   } //end class
 
 
