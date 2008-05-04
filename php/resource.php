@@ -8,14 +8,17 @@ include('/var/www/dom/fabula/commun3/folksonomie/folksoServer.php');
 include('/var/www/dom/fabula/commun3/folksonomie/folksoResponse.php');
 include('/var/www/dom/fabula/commun3/folksonomie/folksoQuery.php');
 */
-$srv = new folksoServer(array( 'methods' => array('POST', 'GET', 'HEAD'),
-                               'access_mode' => 'ALL'));
-$srv->addResponseObj(new folksoResponse('isHeadTest', 'isHeadDo'));
-$srv->addResponseObj(new folksoResponse('visitPageTest', 'visitPageDo'));
-$srv->Respond();
 
 $server = 'localhost'; $user ='root'; 
 $pwd = 'hellyes'; $database = 'folksonomie';
+
+$srv = new folksoServer(array( 'methods' => array('POST', 'GET', 'HEAD'),
+                               'access_mode' => 'ALL'));
+$srv->addResponseObj(new folksoResponse('isHeadTest', 'isHeadDo'));
+$srv->addResponseObj(new folksoResponse('getTagsIdsTest', 'getTagsIdsDo'));
+$srv->addResponseObj(new folksoResponse('visitPageTest', 'visitPageDo'));
+$srv->Respond();
+
 
 
 function isHeadTest (folksoQuery $q, folksoUserCreds $cred) {
@@ -48,6 +51,44 @@ function isHeadDo (folksoQuery $q, folksoUserCreds $cred) {
   else {
     header('HTTP/1.0 200 Resource exists');
   }
+}
+
+
+
+function getTagsIdsTest ($q) {
+  $params = $q->params();
+  if (($q->method() == 'get') &&
+      (is_string($params['folksoresourceuri']))) {
+    return true;
+  }
+  else {
+    return false;
+  }
+}
+
+function getTagsIdsDo ($q) {
+  $params = $q->params();
+  
+  $db = new mysqli('localhost', 'root', 'LucienLeuwen', 'folksonomie');
+  if ( mysqli_connect_errno()) {
+    printf("Connect failed: %s\n", mysqli_connect_error());
+  }
+
+  $result = $db->query("select tagdisplay 
+                        from tag 
+                        join tagevent on tag.id = tagevent.tag_id
+                        join resource on resource.id = tagevent.resource_id
+                        where uri_normal = url_whack('". $params['folksoresourceuri']."')");
+  if ($db->errno <> 0) {
+    printf("Statement failed %d: (%s) %s\n", 
+           $db->errno, $db->sqlstate, $db->error);
+  }
+  else {
+    while ( $row = $result->fetch_object() ) {
+      print $row->tagdisplay . "\n";
+    }
+  }
+
 }
 
 

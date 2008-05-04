@@ -29,7 +29,6 @@ class folksoResponse {
     $this->action_func = $action_func;
   }
 
-
   function activatep (folksoQuery $query, folksoUserCreds $cred) {
     $aa =  $this->test_func;
     return $aa($query, $cred);
