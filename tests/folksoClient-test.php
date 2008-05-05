@@ -77,23 +77,15 @@ function http_digest_parse($txt)
 
       $rr = trim($rr);
       if(strpos($rr,'=') !== false) {
-        print "<p>RR is $rr</p>";
         $lhs = substr($rr,0,strpos($rr,'='));
         $rhs = substr($rr,strpos($rr,'=')+1);
         $lhs = trim($lhs);
         $rhs = trim($rhs);
 
-
-        print "<p>lhs is $lhs, rhs is $rhs</p>";
-
-
-        print "<p>Leftmost char : " . substr($rhs, 0, 1) . "</p>";
-
         if ((substr($rhs, 0, 1) == substr($rhs, -1, 1)) &&
             ((substr($rhs, 0, 1) == '"') ||
              (substr($rhs, 0, 1) == "'"))) {
           $val = substr($rhs, 1, (strlen($rhs) - 2));
-          print "<p>val is $val</p>";
         }
         else {
           $val = $rhs;
