@@ -4,7 +4,7 @@ require_once('/usr/local/www/apache22/lib/simpletest/reporter.php');
 include('/usr/local/www/apache22/lib/jf/fk/folksoUserCreds.php');
 
 
-class testOffolksoClient extends  UnitTestCase {
+class testOffolksoUserCreds extends  UnitTestCase {
   public $c;
 
   function testBasic () {
@@ -19,8 +19,44 @@ class testOffolksoClient extends  UnitTestCase {
     $this->assertTrue($this->c->admin_access());
 
   }
+
+  function testDigest () {
+    $str = 'Digest username="guest", realm="Restricted area", nonce="481e29a45ed2a", uri="/phpexamp.php", response="ef83bc4581ca2ff2b7eefba5f87d4aaf", opaque="cdce8a5c95a1427d74df7acbf41c9ce0", qop=auth, nc=00000001, cnonce="b0c4985b224014dc"';
+
+    $this->assertTrue(is_array($this->c->http_digest_parse($str)));
+
+    $auth = $this->c->http_digest_parse($str);
+    print var_dump($auth);
+    $this->assertTrue(count($auth) > 5);
+    $this->assertEqual($auth['username'], 'guest');
+    $this->assertEqual($auth['realm'], 'Restricted area');
+    $this->assertEqual($auth['nonce'], '481e29a45ed2a');
+    $this->assertEqual($auth['uri'], '/phpexamp.php');
+    $this->assertEqual($auth['response'], 'ef83bc4581ca2ff2b7eefba5f87d4aaf');
+    $this->assertEqual($auth['opaque'], 'cdce8a5c95a1427d74df7acbf41c9ce0');
+    $this->assertEqual($auth['qop'], 'auth');
+    $this->assertEqual($auth['nc'], '00000001');
+    $this->assertEqual($auth['cnonce'], 'b0c4985b224014dc');
+
+
+    // Same but with single quotes...
+    $str2 = "'Digest username='guest', realm='Restricted area', nonce='481e29a45ed2a', uri='/phpexamp.php', response='ef83bc4581ca2ff2b7eefba5f87d4aaf', opaque='cdce8a5c95a1427d74df7acbf41c9ce0', qop=auth, nc=00000001, cnonce='b0c4985b224014dc'";
+
+    $auth2 = $this->c->http_digest_parse($str2);
+    $this->assertTrue(count($auth) > 5);
+    $this->assertEqual($auth2['username'], 'guest');
+    $this->assertEqual($auth2['realm'], 'Restricted area');
+    $this->assertEqual($auth2['nonce'], '481e29a45ed2a');
+    $this->assertEqual($auth2['uri'], '/phpexamp.php');
+    $this->assertEqual($auth2['response'], 'ef83bc4581ca2ff2b7eefba5f87d4aaf');
+    $this->assertEqual($auth2['opaque'], 'cdce8a5c95a1427d74df7acbf41c9ce0');
+    $this->assertEqual($auth2['qop'], 'auth');
+    $this->assertEqual($auth2['nc'], '00000001');
+    $this->assertEqual($auth2['cnonce'], 'b0c4985b224014dc');
+
+  }
 }
 
 
-$test = &new testOffolksoClient();
+$test = &new testOffolksoUserCreds();
 $test->run(new HtmlReporter());
