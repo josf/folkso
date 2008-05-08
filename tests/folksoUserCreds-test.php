@@ -1,26 +1,18 @@
 <?php
 require_once('/usr/local/www/apache22/lib/simpletest/unit_tester.php');
 require_once('/usr/local/www/apache22/lib/simpletest/reporter.php');
-include('/usr/local/www/apache22/lib/jf/fk/folksoUserCreds.php');
+include('/usr/local/www/apache22/lib/jf/fk/folksoTags.php');
 
 
 class testOffolksoUserCreds extends  UnitTestCase {
   public $c;
 
   function testBasic () {
-    $this->c = new folksoUserCreds('xyz');
+    $this->c = new folksoUserCreds( 'Digest username="guest", realm="Restricted area", nonce="481e29a45ed2a", uri="/phpexamp.php", response="ef83bc4581ca2ff2b7eefba5f87d4aaf", opaque="cdce8a5c95a1427d74df7acbf41c9ce0", qop=auth, nc=00000001, cnonce="b0c4985b224014dc"', 'GET', 'Restricted area');
     $this->assertTrue($this->c instanceof folksoUserCreds);
   }
 
-  function testAccesses () {
-    $this->assertFalse($this->c->userid);  // returns nothing if check_digest() hasn't run yet
-    $this->c->check_digest();
-    $this->assertEqual($this->c->userid, 99999); // BOGUS
-    $this->assertTrue($this->c->admin_access());
-
-  }
-
-  function testDigest () {
+  function testDigestParse () {
     $str = 'Digest username="guest", realm="Restricted area", nonce="481e29a45ed2a", uri="/phpexamp.php", response="ef83bc4581ca2ff2b7eefba5f87d4aaf", opaque="cdce8a5c95a1427d74df7acbf41c9ce0", qop=auth, nc=00000001, cnonce="b0c4985b224014dc"';
 
     $this->assertTrue(is_array($this->c->http_digest_parse($str)));
@@ -53,6 +45,26 @@ class testOffolksoUserCreds extends  UnitTestCase {
     $this->assertEqual($auth2['qop'], 'auth');
     $this->assertEqual($auth2['nc'], '00000001');
     $this->assertEqual($auth2['cnonce'], 'b0c4985b224014dc');
+
+  }
+
+  function testDigestCalc () {
+    print "A1: ";
+    print $this->c->buildDigestA1($this->c->digest_data, 'Restricted area', 'guest');
+    print "A2: ";
+    print $this->c->buildDigestA2($this->c->digest_data, 'GET');
+    print "Together "; 
+    $alluh = $this->c->buildDigestResponse($this->c->digest_data, 
+                                        $this->c->buildDigestA1(
+                                             $this->c->digest_data, 
+                                             'Restricted area', 
+                                             'guest'),
+                                        $this->c->buildDigestA2(
+                                             $this->c->digest_data, 
+                                             'GET'));
+    print "<p>All unhashed: $alluh</p>";
+    print "<p>Hashed ". md5($alluh) . "</p>";
+    
 
   }
 }

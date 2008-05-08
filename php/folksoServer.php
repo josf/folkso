@@ -116,14 +116,43 @@ class folksoServer {
 
     $q = new folksoQuery($_SERVER, $_GET, $_POST); 
 
-    if (($q->method() <> 'get') &&
-        ($this->clientAccressRestrict <> 'LOCAL')) &&
-        (strlen($_SERVER['PHP_AUTH_DIGEST']) == 0)) {
-      header('HTTP/1.0 403');
-      print "You must identify yourself to modify this resource";
-    }
+    if ($this->is_auth_necessary()) {
+      $realm = 'folkso';
 
-    $cred = new folksoUserCreds( $_SERVER['PHP_AUTH_DIGEST']);
+      // Initial challenge
+      if (empty($_SERVER['PHP_AUTH_DIGEST'])) {
+        header('HTTP/1.0 401 Unauthorized');
+        header('WWW-Authenticate: Digest realm="'.$realm.
+               '",qop="auth",nonce="'.uniqid().'",opaque="'. md5($realm).'"');
+        die("Sorry. ". $_SERVER['PHP_AUTH_DIGEST']); // user canceled
+      }
+      else {
+        $cred = new folksoUserCreds( $_SERVER['PHP_AUTH_DIGEST'], 
+                                     $_SERVER['REQUEST_METHOD'], 
+                                     $realm);
+        if (!($cred->validateAuth($cred->http_digest_parse())) ||
+            !($cred->checkUsername($cred->digest_data['username']))) {
+          header('HTTP/1.0 403 Forbidden'); // is this right?
+          die('Incorrect credentials.'. var_dump($cred));
+        }
+
+        $a1uh = $cred->buildDigestA1($cred->digest_data, $realm, 'folksong');
+        $a2uh = $cred->buildDigestA2($cred->digest_data, 'GET');
+        $together_uh = $cred->buildDigestResponse($cred->digest_data, $a1uh, $a2uh);
+
+        if ($cred->digest_data['response'] !== md5($together_uh)) {
+          header('HTTP/1.0 403 Forbidden'); // is this right?
+          die('You do not seem to be who you say you are. Response: '. $cred->digest_data['response'] . 
+              ' <p>'. $_SERVER['PHP_AUTH_DIGEST'] . '</p> <p> and '
+              . md5($together_uh) . 
+              '</p> <p>and ' . 
+              'a1uh ' . $a1uh .
+              '</p><p>a2uh ' . $a2uh .
+              '</p><p>together_uh ' . $together_uh . '</p>'.
+              $cred->displayDigestData());
+        }
+      }
+  
     /* check each response object and run the response if activatep
      returns true*/
 
@@ -139,6 +168,7 @@ class folksoServer {
       header('HTTP/1.0 400');
       print "Client did not make a valid query.";
       // default response or error page...
+    }
     }
   }
   
@@ -168,6 +198,23 @@ class folksoServer {
     }
     return false;
   }
+
+/** 
+ * "True" means authorization _is_ necessary, false means it isn't. We
+ * could check the fields for some GETs here too, to see if this is an
+ * individualized GET request. (Or maybe it isn't necessary to do so
+ * either.)
+ */
+function is_auth_necessary () {
+  if ((strtolower($this->method) == 'get') ||
+      (strtolower($this->method) == 'head') ||
+      ($this->clientAccessRestrict == 'LOCAL')) {
+    return false;
+  }
+  else {
+    return true;
+  }
+}
 
 
   } //end of class
