@@ -45,6 +45,9 @@ class testOffolksoUserCreds extends  UnitTestCase {
     $this->assertEqual($auth2['qop'], 'auth');
     $this->assertEqual($auth2['nc'], '00000001');
     $this->assertEqual($auth2['cnonce'], 'b0c4985b224014dc');
+    
+    $this->assertTrue($this->c->validateAuth($auth2));
+    $this->assertTrue($this->c->checkUsername('folksy'));
 
   }
 

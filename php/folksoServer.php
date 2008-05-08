@@ -130,8 +130,8 @@ class folksoServer {
         $cred = new folksoUserCreds( $_SERVER['PHP_AUTH_DIGEST'], 
                                      $_SERVER['REQUEST_METHOD'], 
                                      $realm);
-        if (!($cred->validateAuth($cred->http_digest_parse())) ||
-            !($cred->checkUsername($cred->digest_data['username']))) {
+        if ((!$cred->validateAuth($cred->http_digest_parse())) ||
+            (!$cred->checkUsername($cred->digest_data['username']))) {
           header('HTTP/1.0 403 Forbidden'); // is this right?
           die('Incorrect credentials.'. var_dump($cred));
         }
