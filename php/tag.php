@@ -113,6 +113,7 @@ function getTagResourcesDo (folksoQuery $q, folksoUserCreds $cred) {
                          "or tag.tagnorm = normalize_tag('" .
                          $db->real_escape_string($q->get_param('tagresources')) ."')");
       if ($db->errno <> 0) {
+        header('HTTP/1.1 501');
         printf("Statement failed %d: (%s) %s\n",
                $db->errno, $db->sqlstate, $db->error);
       }
@@ -141,11 +142,14 @@ function singlePostTagTest (folksoQuery $q, folksoUserCreds $cred) {
 function singlePostTagDo (folksoQuery $q, folksoUserCreds $cred) {
   $db = new mysqli('localhost', 'root', 'hellyes', 'folksonomie');
   if ( mysqli_connect_errno()) {
+    header('HTTP/1.1 501');
     printf("Connect failed: %s\n", mysqli_connect_error());
+    die("Database problem. Something is wrong.");
   }
   $result = $db->query("call new_tag('" . 
                        $db->real_escape_string($q->get_param('folksonewtag')) . "')");
   if ($db->errno <> 0) {
+    header('HTTP/1.1 501');
     printf("Statement failed %d: (%s) %s\n", 
            $db->errno, $db->sqlstate, $db->error);
   }
