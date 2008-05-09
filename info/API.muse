@@ -1,0 +1,77 @@
+
+* tag.php
+
+** GET
+
+*** folksotagid
+
+With numerical id, retrieve the display version of the tag.
+
+**** Errors
+
+***** 404 
+
+Tag does not exist.
+
+*** folksotagresources
+
+With a numerical tag id as argument, retrieves a list of the resources
+associated with that tag.
+
+Returns a **204** if there are no tags associated with the selected
+resource. 
+
+Multiple, numbered 'folksotagresources' parameters will be treated as
+combined requests, ie. SELECT RESOURCE WHERE (TAGGED AS T1) AND
+(TAGGED AS T2) AND... (This is very pseudo SQL.)
+
+**** Errors
+***** 404
+
+Tag does not exist.
+
+
+** POST
+
+*** folksonewtag
+
+With the display version of a tag, create a new tag. Returns the new
+tag's id (**201**, created).
+
+* resource.php
+
+** HEAD
+
+*** folksouri
+
+Returns 200 if the resource provided (raw uri) is already present in
+the resource index (resource table).
+
+**** Errors
+
+***** 404
+
+Resource is not indexed.
+
+** GET
+
+*** folksoresourceuri
+
+Retrieve the tags associated with a given resource.
+
+**** Errors
+
+***** 404 
+
+Resource is not indexed.
+
+** POST
+
+*** folksovisituri, folksourititle
+
+Add a resource (uri) to the resource index.
+
+urititle is optional.
+
+Returns the uri of the link to the new resource.
+
