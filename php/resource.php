@@ -112,7 +112,9 @@ function getTagsIdsDo (folksoQuery $q, folksoUserCreds $cred) {
 
 }
 
-
+/**
+ * VisitPage : add a resource (uri) to the resource index
+ */
 function visitPageTest (folksoQuery $q, folksoUserCreds $cred) {
   if (($q->method() == 'post') &&
       ($q->is_single_param('folksovisituri'))) {

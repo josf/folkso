@@ -60,6 +60,7 @@ function getTagDo (folksoQuery $q, folksoUserCreds $cred) {
  * Retrieves a list of the resources associated with the given tag.
  */
 function getTagResourcesTest (folksoQuery $q, folksoUserCreds $cred) {
+
   if (($q->method() == 'get') &&
       ($q->is_single_param('folksotagresources'))) {
     return true;
@@ -97,6 +98,7 @@ function getTagResourcesDo (folksoQuery $q, folksoUserCreds $cred) {
       printf("Statement failed %d: (%s) %s\n", 
              $db->errno, $db->sqlstate, $db->error);
     }
+    // We have results
     elseif ($result->num_rows > 0) {
       header('HTTP/1.1 200');
       print "<ul>";
@@ -105,8 +107,7 @@ function getTagResourcesDo (folksoQuery $q, folksoUserCreds $cred) {
       }
       print "</ul>";
     }
-    else {
- 
+    else { // No results : is it the tag or the resources' fault?
       $eres = $db->query("select id from tag where tag.id = '" .
                          $db->real_escape_string($q->get_param('tagresources')) . "'".
                          "or tag.tagnorm = normalize_tag('" .
@@ -115,20 +116,19 @@ function getTagResourcesDo (folksoQuery $q, folksoUserCreds $cred) {
         printf("Statement failed %d: (%s) %s\n",
                $db->errno, $db->sqlstate, $db->error);
       }
+      // No TAG!
       elseif ($eres->num_rows == 0) {
         header('HTTP/1.1 404');
         print "Tag '" . $q->get_param('tagresources') . "' does not seem to exist";
       }
-      else {
-        header('HTTP/1.1 200');
+      else { // No resources
+        header('HTTP/1.1 204');
         print "No resources associated with this tag";
       }
     }
 }
 
 function singlePostTagTest (folksoQuery $q, folksoUserCreds $cred) {
-  $params = $q->params();
-
   if (($q->method() == 'post') &&
       ($q->is_single_param('folksonewtag'))) {
     return true;
@@ -139,21 +139,20 @@ function singlePostTagTest (folksoQuery $q, folksoUserCreds $cred) {
 }
 
 function singlePostTagDo (folksoQuery $q, folksoUserCreds $cred) {
-  //  header('Content-Type: text/html');
-  $params = $q->params();
-
   $db = new mysqli('localhost', 'root', 'hellyes', 'folksonomie');
   if ( mysqli_connect_errno()) {
     printf("Connect failed: %s\n", mysqli_connect_error());
   }
-  $result = $db->query("call new_tag('" . $params['folksonewtag'] . "')");
+  $result = $db->query("call new_tag('" . 
+                       $db->real_escape_string($q->get_param('folksonewtag')) . "')");
   if ($db->errno <> 0) {
     printf("Statement failed %d: (%s) %s\n", 
            $db->errno, $db->sqlstate, $db->error);
   }
   else {
+    header('HTTP/1.1 201'); // should add a "location" header
     while($row = $result->fetch_object()) {
-      print "<p>A row:".$row->id . "</p>";
+      print "Tag created (or already existed), id is ".$row->id  ;
     }
   }
 }

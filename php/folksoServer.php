@@ -115,9 +115,13 @@ class folksoServer {
     }
 
     $q = new folksoQuery($_SERVER, $_GET, $_POST); 
+    $realm = 'folkso';
+    $cred = new folksoUserCreds( $_SERVER['PHP_AUTH_DIGEST'], 
+                                 $_SERVER['REQUEST_METHOD'], 
+                                 $realm);
 
     if ($this->is_auth_necessary()) {
-      $realm = 'folkso';
+
 
       // Initial challenge
       if (empty($_SERVER['PHP_AUTH_DIGEST'])) {
@@ -126,14 +130,13 @@ class folksoServer {
                '",qop="auth",nonce="'.uniqid().'",opaque="'. md5($realm).'"');
         die("Sorry. ". $_SERVER['PHP_AUTH_DIGEST']); // user canceled
       }
-      else {
-        $cred = new folksoUserCreds( $_SERVER['PHP_AUTH_DIGEST'], 
-                                     $_SERVER['REQUEST_METHOD'], 
-                                     $realm);
+      else { // Check credentials
+   
+        // Did not find the user... or some other similar problem
         if ((!$cred->validateAuth($cred->http_digest_parse())) ||
             (!$cred->checkUsername($cred->digest_data['username']))) {
           header('HTTP/1.0 403 Forbidden'); // is this right?
-          die('Incorrect credentials.'. var_dump($cred));
+          die('Incorrect credentials. Do we know you?');
         }
 
         $a1uh = $cred->buildDigestA1($cred->digest_data, $realm, 'folksong');
@@ -142,17 +145,10 @@ class folksoServer {
 
         if ($cred->digest_data['response'] !== md5($together_uh)) {
           header('HTTP/1.0 403 Forbidden'); // is this right?
-          die('You do not seem to be who you say you are. Response: '. $cred->digest_data['response'] . 
-              ' <p>'. $_SERVER['PHP_AUTH_DIGEST'] . '</p> <p> and '
-              . md5($together_uh) . 
-              '</p> <p>and ' . 
-              'a1uh ' . $a1uh .
-              '</p><p>a2uh ' . $a2uh .
-              '</p><p>together_uh ' . $together_uh . '</p>'.
-              $cred->displayDigestData());
+          die('You do not seem to be who you say you are (bad response).');
         }
       }
-  
+    }
     /* check each response object and run the response if activatep
      returns true*/
 
@@ -165,12 +161,12 @@ class folksoServer {
       }
     }
     if (!$repflag) {
-      header('HTTP/1.0 400');
-      print "Client did not make a valid query.";
+      header('HTTP/1.1 400');
+      print "Client did not make a valid query. (folksoServer)";
       // default response or error page...
     }
-    }
   }
+
   
   function valid_method () {
     if (in_array($_SERVER['REQUEST_METHOD'], $this->allowedClientMethods)) {
