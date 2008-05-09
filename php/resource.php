@@ -54,7 +54,9 @@ function isHeadDo (folksoQuery $q, folksoUserCreds $cred) {
 }
 
 
-
+/**
+ * Retrieve the tags associated with a given resource.
+ */
 function getTagsIdsTest (folksoQuery $q, folksoUserCreds $cred) {
   $params = $q->params();
   if (($q->method() == 'get') &&

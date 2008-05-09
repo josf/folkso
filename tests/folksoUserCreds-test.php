@@ -68,8 +68,11 @@ class testOffolksoUserCreds extends  UnitTestCase {
     print "<p>All unhashed: $alluh</p>";
     print "<p>Hashed ". md5($alluh) . "</p>";
     
-
+    print "<h1>Flork</h1>";
+    $this->assertFalse(preg_match('/^\d+$/', "123zd43"));
+    $this->assertTrue(preg_match('/^\d+$/', "12343"));    
   }
+  
 }
 
 
