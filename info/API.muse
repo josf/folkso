@@ -75,3 +75,12 @@ urititle is optional.
 
 Returns the uri of the link to the new resource.
 
+*** folksouri, folksotag
+
+Tag a resource with one or more tags.
+
+**** Errors
+
+***** 404
+
+Resource is not indexed.

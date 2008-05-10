@@ -163,8 +163,14 @@ class folksoQuery {
       return substr($str, 0, 300);
     }
   }
-
-
+  public function is_number ($param) {
+    if (preg_match('/^\d+$/', $this->get_param($param))) {
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
   }// end class
 
 

@@ -53,6 +53,19 @@ class testOffolksoResponse extends  UnitTestCase {
 
   }
 
+  function testDataFuncs () {
+    $data = new folksoQuery( $_SERVER,
+                             array('folksoNumber' => '12343',
+                                   'folksoNotNumber' => '123edf3',
+                                   'folksoNothing' => ''),
+                             array());
+    $this->assertTrue($data->is_number('Number'));
+    $this->assertFalse($data->is_number('NotNumber'));
+    $this->assertFalse($data->is_number('Nothing'));
+
+  }
+
+
   function message($message) {
 
   }
