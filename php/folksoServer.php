@@ -120,6 +120,8 @@ class folksoServer {
                                  $_SERVER['REQUEST_METHOD'], 
                                  $realm);
 
+    $dbc = new folksoDBconnect('localhost', 'root', 'hellyes', 'folksonomie');
+
     if ($this->is_auth_necessary()) {
 
 
@@ -155,7 +157,7 @@ class folksoServer {
     $repflag = false;
     foreach ($this->responseObjects as $resp) {
       if ( $resp->activatep($q, $cred)) {
-        $resp->Respond($q, $cred);
+        $resp->Respond($q, $cred, $dbc);
         $repflag = true;
         break;
       }

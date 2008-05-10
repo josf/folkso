@@ -31,7 +31,7 @@ function isHeadTest (folksoQuery $q, folksoUserCreds $cred) {
   }
 }
 
-function isHeadDo (folksoQuery $q, folksoUserCreds $cred) {
+function isHeadDo (folksoQuery $q, folksoUserCreds $cred, folksoDBconnect $dbc) {
   $db = new mysqli('localhost', 'root', 'hellyes', 'folksonomie');
   if ( mysqli_connect_errno()) {
     header('HTTP/1.0 501');
@@ -68,7 +68,7 @@ function getTagsIdsTest (folksoQuery $q, folksoUserCreds $cred) {
   }
 }
 
-function getTagsIdsDo (folksoQuery $q, folksoUserCreds $cred) {
+function getTagsIdsDo (folksoQuery $q, folksoUserCreds $cred, folksoDBconnect $dbc) {
   $params = $q->params();
   
   $db = new mysqli('localhost', 'root', 'hellyes', 'folksonomie');
@@ -125,7 +125,7 @@ function visitPageTest (folksoQuery $q, folksoUserCreds $cred) {
   }
 }
 
-function visitPageDo (folksoQuery $q, folksoUserCreds $cred) {
+function visitPageDo (folksoQuery $q, folksoUserCreds $cred, folksoDBconnect $dbc) {
   $ic = new folksoIndexCache('/tmp/cachetest', 500);  
 
   $page = new folksoUrl($q->get_param('visituri'), 
@@ -152,27 +152,25 @@ function visitPageDo (folksoQuery $q, folksoUserCreds $cred) {
       db_store_data($item, $db);
     }
   }
+}
 
-
-  /*  $db = new mysqli('localhost', 'root', 'LucienLeuwen', 'folksonomie');
-  if ( mysqli_connect_errno()) {
-    header('HTTP/1.0 501');
-    printf("Connect failed: %s\n", mysqli_connect_error());
-  }
-
-  $result = $db->query("call url_visit('" .
-                       $db->real_escape_string($q->get_param('folksovisituri')) .
-                       "')");
-  if ($db->errno <> 0) {
-    header('HTTP/1.0 501 Database problem');
-    printf("Statement failed %d: (%s) %s\n", 
-           $db->errno, $db->sqlstate, $db->error);
+function tagResourceTest (folksoQuery $q, folksoUserCreds $cred) {
+  if (($q->method() == 'post') &&
+      ($q->is_param('folksoresource')) &&
+      ($q->is_param('folksotag'))) {
+    return true;
   }
   else {
-    header('HTTP/1.0. 200');
-    print "Page considered visited\n";
-    } */
+    return false;
+  }
 }
+
+function tagResourceDo (folksoQuery $q, folksoUserCreds $cred, folksoDBconnect $dbc) {
+  
+  
+
+}
+
 
 function db_store_data ($url_obj, $db) {
   

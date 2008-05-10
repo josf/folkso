@@ -11,7 +11,15 @@ $srv->addResponseObj(new folksoResponse('singlePostTagTest', 'singlePostTagDo'))
 $srv->Respond();
 
 $server = 'localhost'; $user ='root'; 
-$pwd = 'hellyes';
+$pwd = 'hellyes'; $database = 'folksonomie';
+
+$dbc = new folksoDBconnect($server, $user, $pwd, $database);
+if ($dbc instanceof folksoDBconnect) {
+  print "YO YO";
+}
+$ddd = $dbc->db_obj();
+
+print var_dump($ddd);
 
 // GET
 
@@ -33,14 +41,22 @@ function getTagTest (folksoQuery $q, folksoUserCreds $cred) {
   }
 }
 
-function getTagDo (folksoQuery $q, folksoUserCreds $cred) {
+function getTagDo (folksoQuery $q, folksoUserCreds $cred, folksoDBconnect $dbc) {
   $params = $q->params();
-  $db = new mysqli('localhost', 'root', 'hellyes', 'folksonomie');
+    $db = new mysqli('localhost', 'root', 'hellyes', 'folksonomie');
+  global $dbc;
+  print "in the funk:  ";
+  print var_dump($dbc);
+  // $db = $dbc->db_obj();
   if ( mysqli_connect_errno()) {
     printf("Connect failed: %s\n", mysqli_connect_error());
   }
 
-  $result = $db->query("select tagdisplay from tag where id ='". $params['folksotagid']."'");
+  $result = $db->query("select tagdisplay from tag where id ='". 
+                       $db->real_escape_string($q->get_param('folksotagid')) ."'");
+  if ($db instanceof mysqli) {
+    print "yo";
+  }
   if ($db->errno <> 0) {
     printf("Statement failed %d: (%s) %s\n", 
            $db->errno, $db->sqlstate, $db->error);
@@ -70,7 +86,7 @@ function getTagResourcesTest (folksoQuery $q, folksoUserCreds $cred) {
   }
 }
 
-function getTagResourcesDo (folksoQuery $q, folksoUserCreds $cred) {
+function getTagResourcesDo (folksoQuery $q, folksoUserCreds $cred, folksoDBconnect $dbc) {
     $db = new mysqli('localhost', 'root', 'hellyes', 'folksonomie');
     if ( mysqli_connect_errno()) {
       printf("Connect failed: %s\n", mysqli_connect_error());
@@ -139,7 +155,7 @@ function singlePostTagTest (folksoQuery $q, folksoUserCreds $cred) {
   }
 }
 
-function singlePostTagDo (folksoQuery $q, folksoUserCreds $cred) {
+function singlePostTagDo (folksoQuery $q, folksoUserCreds $cred, folksoDBconnect $dbc) {
   $db = new mysqli('localhost', 'root', 'hellyes', 'folksonomie');
   if ( mysqli_connect_errno()) {
     header('HTTP/1.1 501');
