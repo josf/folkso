@@ -84,7 +84,11 @@ CREATE PROCEDURE tag_resource(resource_uri      varchar(255),
 BEGIN
 
         declare existing_tag_id int unsigned;
-        declare existing_uri varchar(255);
+        declare existing_uri varchar(255);      
+        declare out_status varchar(255);
+--        declare exit handler for 1048
+--                set out_status='Tag does not exist';
+
 
         select id
                into existing_tag_id
@@ -96,14 +100,12 @@ BEGIN
               from resource
               where uri_normal = url_whack(resource_uri);
 
-        if ((existing_tag_id) 
-           and
-           (existing_uri)) then
-                           insert into tagevent
-                           set tag_id = existing_tag_id,
-                               resource_id = existing_uri,
-                               user_id = 9999;
-        end if;
+       insert into tagevent
+              set tag_id = existing_tag_id,
+              resource_id = existing_uri,
+              user_id = 9999;
 end$$
 DELIMITER ;
            
+
+select 1;

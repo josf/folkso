@@ -34,9 +34,9 @@ class folksoResponse {
     return $aa($query, $cred);
   }
   
-  function Respond (folksoQuery $query, folksoUserCreds $cred) {
+  function Respond (folksoQuery $query, folksoUserCreds $cred, folksoDBconnect $dbc) {
     $aa = $this->action_func;
-    return $aa($query, $cred); //action (on DB for example) + return document
+    return $aa($query, $cred, $dbc); //action (on DB for example) + return document
                         //+ status. In fact, returned value does not
                         //matter probably.
   }

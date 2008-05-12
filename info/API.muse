@@ -55,7 +55,7 @@ Resource is not indexed.
 
 ** GET
 
-*** folksoresourceuri
+*** Tags associated with a resource: folksoresourceuri
 
 Retrieve the tags associated with a given resource.
 
@@ -65,9 +65,10 @@ Retrieve the tags associated with a given resource.
 
 Resource is not indexed.
 
+
 ** POST
 
-*** folksovisituri, folksourititle
+***  Add a resource to the index: folksovisituri, folksourititle
 
 Add a resource (uri) to the resource index.
 
@@ -75,7 +76,7 @@ urititle is optional.
 
 Returns the uri of the link to the new resource.
 
-*** folksouri, folksotag
+*** Tag a resource: folksouri, folksotag
 
 Tag a resource with one or more tags.
 
@@ -83,4 +84,4 @@ Tag a resource with one or more tags.
 
 ***** 404
 
-Resource is not indexed.
+Resource is not indexed or tag does not exist.

@@ -14,12 +14,6 @@ $server = 'localhost'; $user ='root';
 $pwd = 'hellyes'; $database = 'folksonomie';
 
 $dbc = new folksoDBconnect($server, $user, $pwd, $database);
-if ($dbc instanceof folksoDBconnect) {
-  print "YO YO";
-}
-$ddd = $dbc->db_obj();
-
-print var_dump($ddd);
 
 // GET
 
@@ -43,28 +37,26 @@ function getTagTest (folksoQuery $q, folksoUserCreds $cred) {
 
 function getTagDo (folksoQuery $q, folksoUserCreds $cred, folksoDBconnect $dbc) {
   $params = $q->params();
-    $db = new mysqli('localhost', 'root', 'hellyes', 'folksonomie');
-  global $dbc;
-  print "in the funk:  ";
-  print var_dump($dbc);
-  // $db = $dbc->db_obj();
-  if ( mysqli_connect_errno()) {
-    printf("Connect failed: %s\n", mysqli_connect_error());
+  //$db = new mysqli('localhost', 'root', 'hellyes', 'folksonomie');
+  $db = $dbc->db_obj();
+  if ($dbc->dberr){
+    header('HTTP/1.1 501');
+    print "Database connection error.  ";
+    print $dbc->dberr;
+    die("Something is wrong.");
   }
 
   $result = $db->query("select tagdisplay from tag where id ='". 
                        $db->real_escape_string($q->get_param('folksotagid')) ."'");
-  if ($db instanceof mysqli) {
-    print "yo";
-  }
   if ($db->errno <> 0) {
+    header('HTTP/1.1 501');
     printf("Statement failed %d: (%s) %s\n", 
            $db->errno, $db->sqlstate, $db->error);
   }
   else {
     if ($result->num_rows == 0) {
       header('HTTP/1.1 404');
-      print "Tag not found: ".$params['folksotagid'];
+      print "Tag not found: ". $q->get_param('tagid');
     }
     while($row = $result->fetch_object()) {
       print "<p>A row:".$row->tagdisplay . "</p>";
@@ -87,7 +79,7 @@ function getTagResourcesTest (folksoQuery $q, folksoUserCreds $cred) {
 }
 
 function getTagResourcesDo (folksoQuery $q, folksoUserCreds $cred, folksoDBconnect $dbc) {
-    $db = new mysqli('localhost', 'root', 'hellyes', 'folksonomie');
+  $db = $dbc->db_obj();
     if ( mysqli_connect_errno()) {
       printf("Connect failed: %s\n", mysqli_connect_error());
     }
@@ -102,7 +94,6 @@ function getTagResourcesDo (folksoQuery $q, folksoUserCreds $cred, folksoDBconne
       $querybase .= 
         "where tag.id = " . 
         $db->real_escape_string($q->get_param('tagresources'));
-
     }
     else {
       $querybase .= 

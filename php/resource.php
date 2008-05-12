@@ -16,6 +16,7 @@ $srv = new folksoServer(array( 'methods' => array('POST', 'GET', 'HEAD'),
                                'access_mode' => 'ALL'));
 $srv->addResponseObj(new folksoResponse('isHeadTest', 'isHeadDo'));
 $srv->addResponseObj(new folksoResponse('getTagsIdsTest', 'getTagsIdsDo'));
+$srv->addResponseObj(new folksoResponse('tagResourceTest', 'tagResourceDo'));
 $srv->addResponseObj(new folksoResponse('visitPageTest', 'visitPageDo'));
 $srv->Respond();
 
@@ -76,6 +77,7 @@ function getTagsIdsDo (folksoQuery $q, folksoUserCreds $cred, folksoDBconnect $d
     printf("Connect failed: %s\n", mysqli_connect_error());
   }
 
+  // check to see if resource is in db.
   $pageres = $db->query("select uri_normal, uri_raw
                          from resource
                          where uri_normal = url_whack('" . $q->get_param('resourceuri') . "')");
@@ -83,19 +85,15 @@ function getTagsIdsDo (folksoQuery $q, folksoUserCreds $cred, folksoDBconnect $d
     header('HTTP/1.0 501 Database problem');
     printf("Statement failed %d: (%s) %s\n", 
            $db->errno, $db->sqlstate, $db->error);
+    return;
   }
   elseif ($pageres->num_rows == 0) {
     header('HTTP/1.0 404 Resource not found');
     print "uri was ". $q->get_param('resourceuri');
     return;
   }
-  else {
-    header('HTTP/1.0 200');
-    $row = $pageres->fetch_object();
-    print "<h1><a href='". $row->uri_raw . "'>" . $row->uri_normal . "</a><h1>";
-  }
 
-  $result = $db->query("select tagdisplay 
+  $result = $db->query("select distinct tagdisplay 
                         from tag 
                         join tagevent on tag.id = tagevent.tag_id
                         join resource on resource.id = tagevent.resource_id
@@ -104,10 +102,19 @@ function getTagsIdsDo (folksoQuery $q, folksoUserCreds $cred, folksoDBconnect $d
     printf("Statement failed %d: (%s) %s\n", 
            $db->errno, $db->sqlstate, $db->error);
   }
-  else  {
+  elseif ($result->num_rows == 0) {
+    header('HTTP/1.1 204 No tags');
+    return;
+  }
+  else {
+    header('HTTP/1.1 200');
+    $row = $pageres->fetch_object();
+    print "<h1><a href='". $row->uri_raw . "'>" . $row->uri_normal . "</a></h1>";
+    print "<ul>";
     while ( $row = $result->fetch_object() ) {
-      print $row->tagdisplay . "\n";
+      print "<li>".$row->tagdisplay . "</li>\n";
     }
+    print "</ul>";
   }
 
 }
@@ -166,9 +173,35 @@ function tagResourceTest (folksoQuery $q, folksoUserCreds $cred) {
 }
 
 function tagResourceDo (folksoQuery $q, folksoUserCreds $cred, folksoDBconnect $dbc) {
-  
-  
+  $db = $dbc->db_obj();
+  $db->query("call tag_resource('" .
+             $db->real_escape_string($q->get_param('resource')) . "', '" .
+             $db->real_escape_string($q->get_param('tag')) . "')");
 
+  if ($db->errno <> 0) {
+
+    if (($db->errno == 1048) &&
+        (strpos($db->error, 'resource_id'))) {
+      header('HTTP/1.1 404');
+      print "Resource ". $q->get_param('resource') . " has not been indexed yet.";
+    }
+    elseif (($db->errno == 1048) &&
+            (strpos($db->error, 'tag_id'))) {
+      header('HTTP/1.1 404');
+      print "Tag ". $q->get_param('tag') . " does not exist.";
+    }
+    else {
+      header('HTTP/1.1 501');
+      print "obscure database problem";
+      printf("Statement failed error number %d: (%s) %s\n", 
+          $db->errno, $db->sqlstate, $db->error); 
+
+    }
+  }
+  else {
+    header('HTTP/1.1 200');
+    print "Resource has been tagged";
+  }
 }
 
 

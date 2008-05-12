@@ -5,4 +5,5 @@ create table resource
         uri_normal varchar(255) not null unique,
         uri_raw mediumtext not null,
         title mediumtext null,
-        visited int unsigned default 1 not null);
+        visited int unsigned default 1 not null)
+        ENGINE = InnoDB;

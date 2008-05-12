@@ -18,22 +18,32 @@ class testOffolksoDataDisplay extends  UnitTestCase {
                                       'titleformat' => '<h1>XXX</h1>'),
                                 array('type' => 'text',
                                       'argsperline' => 2,
-                                      'lineformat' => "XXX :\t XXX",
+                                      'lineformat' => "-- XXX : XXX",
                                       'start' => "\n",
                                       'end' => "\n",
                                       'titleformat' => "XXX\n------\n"));
-
+    $this->assertFalse($this->dd->type);
     $this->assertTrue($this->dd instanceof folksoDataDisplay);
     $this->assertTrue($this->dd->activate_style('xhtml'));
+    $this->assertEqual($this->dd->type, 'xhtml');
   }
 
   function testOutput () {
     $this->assertEqual(
                        $this->dd->line("bob", "slob"),
                        '<a href="bob">slob</a>');
-
+    $thing = array('xhtml' => 'Randy',
+                   'default' => 'Slacker');
+    $this->assertEqual($this->dd->line("bob", $thing), 
+                       '<a href="bob">Randy</a>');
+    $this->assertTrue($this->dd->activate_style('text'));
+    print $this->dd->type;
+    $this->assertEqual($this->dd->type, 'text');
+    $this->assertEqual($this->dd->line("bob", $thing),
+                      '-- bob : Slacker');
+    $this->assertEqual($this->dd->line("bob", array("default" => "something")), 
+                       '-- bob : something');
   }
-
 }
 
 $test = &new testOffolksoDataDisplay();

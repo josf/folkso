@@ -5,7 +5,8 @@ create table tagevent
        resource_id int unsigned not null, 
        meta_id int unsigned default 0 not null,
        user_id int unsigned not null,
-       tagtime timestamp not null);
+       tagtime timestamp not null)
+    ENGINE=InnoDB;
 
 -- (local-set-key [(control c) (b)] 'sql-snip)
 -- (defun sql-snip () 

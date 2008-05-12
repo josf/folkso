@@ -22,18 +22,22 @@ class folksoDataDisplay {
   }
 
   function activate_style ($type) {
+    $this->type = $type;
+    $changed = false;
     foreach ($this->datastyles as $display) {
+      print "checking " . $display['type'];
       if ($display['type'] == $type) {
-        $this->type = $type;
         $this->lineformat = $display['lineformat'];
         $this->argsperline = $display['argsperline'];
         $this->titleformat = $display['titleformat'];
         $this->start = $display['start'];
         $this->end = $display['end'];
+        $changed = true;
+        break;
       }
-      $this->activated = true;
-      return true;
     }
+    $this->activated = true;
+    return $changed;
   }
 
 
@@ -63,7 +67,7 @@ class folksoDataDisplay {
 
     $args = func_get_args();
     $args = array_slice($args, 0, $this->argsperline);
-    $outline = $this->lineformat; // use a copy, not the format
+    $outline = $this->lineformat; // use a copy, not the format itself
 
     for ($i = 0; $i < count($args); ++$i) {
       $offset = strpos($outline, 'XXX');
@@ -72,7 +76,7 @@ class folksoDataDisplay {
       }
       
       $outline = substr_replace($outline,
-                                $args[$i],
+                                $this->eval_element($args[$i]),
                                 $offset,
                                 3);
     }
@@ -82,6 +86,18 @@ class folksoDataDisplay {
     return $outline;
   }
 
+
+  function eval_element ($thing) {
+    if (is_string($thing)) {
+      return $thing;
+    }
+    elseif (isset($thing[$this->type])) {
+      return $thing[$this->type];
+    }
+    else {
+      return $thing['default'];
+    }
+  }
 
   function startform () {
     return $this->start;
