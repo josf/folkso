@@ -205,7 +205,6 @@ class folksoServer {
  * either.)
  */
 function is_auth_necessary ($q) {
-  return true;
   if ((strtolower($q->method()) == 'get') ||
       (strtolower($q->method()) == 'head') ||
       ($this->clientAccessRestrict == 'LOCAL')) {
