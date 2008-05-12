@@ -25,7 +25,6 @@ class folksoDataDisplay {
     $this->type = $type;
     $changed = false;
     foreach ($this->datastyles as $display) {
-      print "checking " . $display['type'];
       if ($display['type'] == $type) {
         $this->lineformat = $display['lineformat'];
         $this->argsperline = $display['argsperline'];
@@ -81,7 +80,7 @@ class folksoDataDisplay {
                                 3);
     }
     if (strpos($outline, 'XXX')) {
-      trigger_error('Template mismatch: not enough arguments', E_USER_ERROR);
+      trigger_error("Template mismatch: not enough arguments: $outline", E_USER_ERROR);
     }
     return $outline;
   }

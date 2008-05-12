@@ -108,11 +108,29 @@ function getTagResourcesDo (folksoQuery $q, folksoUserCreds $cred, folksoDBconne
     // We have results
     elseif ($result->num_rows > 0) {
       header('HTTP/1.1 200');
-      print "<ul>";
-      while ($row = $result->fetch_object()) {
-        print "<li><a href='" . $row->href . "'>" . $row->display . "</a></li>";
+      $dd = new folksoDataDisplay(array('type' => 'xhtml',
+                                        'start' => '<ul>',
+                                        'end' => '</ul>',
+                                        'lineformat' => '<li><a href"XXX">XXX</a></li>',
+                                        'argsperline' => 2),
+                                  array('type' => 'text',
+                                        'start' => '',
+                                        'end' => '',
+                                        'lineformat' => " XXX XXX\n", 
+                                        'argsperline' => 2));
+      print "content type" . $q->content_type();
+      if ($q->content_type() == 'text/html') {
+        $dd->activate_style('xhtml');
       }
-      print "</ul>";
+      //      elseif ($q->content_type() == 'text/text') {
+      else {
+        $dd->activate_style('text');
+      }
+      print $dd->startform();
+      while ($row = $result->fetch_object()) {
+        print $dd->line( $row->href, $row->display);
+      }
+      print $dd->endform();
     }
     else { // No results : is it the tag or the resources' fault?
       $eres = $db->query("select id from tag where tag.id = '" .

@@ -21,7 +21,7 @@ class folksoQuery {
    */
    function __construct ($server, $get, $post) {
     $this->method = $server['REQUEST_METHOD'];
-    $this->content_type = $server['CONTENT_TYPE'];
+    $this->content_type = $server['HTTP_ACCEPT'];
     if (count($get) > 0) {
       $this->fk_params = array_merge($this->parse_params($get), $this->fk_params);;
     }
@@ -75,7 +75,9 @@ class folksoQuery {
     return $accum;
   }
 
-
+  public function content_type () {
+    return $this->content_type;
+  }
   /**
    * Returns the method used. In smallcaps, which should be the norm
    * here.

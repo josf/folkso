@@ -114,6 +114,8 @@ class folksoServer {
       return;
     }
 
+
+
     $q = new folksoQuery($_SERVER, $_GET, $_POST); 
     $realm = 'folkso';
     $cred = new folksoUserCreds( $_SERVER['PHP_AUTH_DIGEST'], 
@@ -122,8 +124,7 @@ class folksoServer {
 
     $dbc = new folksoDBconnect('localhost', 'root', 'hellyes', 'folksonomie');
 
-    if ($this->is_auth_necessary()) {
-
+    if ($this->is_auth_necessary($q)) {
 
       // Initial challenge
       if (empty($_SERVER['PHP_AUTH_DIGEST'])) {
@@ -142,12 +143,12 @@ class folksoServer {
         }
 
         $a1uh = $cred->buildDigestA1($cred->digest_data, $realm, 'folksong');
-        $a2uh = $cred->buildDigestA2($cred->digest_data, 'GET');
+        $a2uh = $cred->buildDigestA2($cred->digest_data, $cred->method);
         $together_uh = $cred->buildDigestResponse($cred->digest_data, $a1uh, $a2uh);
 
         if ($cred->digest_data['response'] !== md5($together_uh)) {
           header('HTTP/1.0 403 Forbidden'); // is this right?
-          die('You do not seem to be who you say you are (bad response).');
+          die('You do not seem to be who you say you are (bad response).'. $together_uh . " a1uh " . $a1uh . "a2uh" . $a2uh);
         }
       }
     }
@@ -203,9 +204,10 @@ class folksoServer {
  * individualized GET request. (Or maybe it isn't necessary to do so
  * either.)
  */
-function is_auth_necessary () {
-  if ((strtolower($this->method) == 'get') ||
-      (strtolower($this->method) == 'head') ||
+function is_auth_necessary ($q) {
+  return true;
+  if ((strtolower($q->method()) == 'get') ||
+      (strtolower($q->method()) == 'head') ||
       ($this->clientAccessRestrict == 'LOCAL')) {
     return false;
   }
