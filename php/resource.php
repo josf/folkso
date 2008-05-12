@@ -61,7 +61,7 @@ function isHeadDo (folksoQuery $q, folksoUserCreds $cred, folksoDBconnect $dbc) 
 function getTagsIdsTest (folksoQuery $q, folksoUserCreds $cred) {
   $params = $q->params();
   if (($q->method() == 'get') &&
-      (is_string($params['folksoresourceuri']))) {
+      ($q->is_param('resourceuri'))) {
     return true;
   }
   else {
@@ -70,8 +70,6 @@ function getTagsIdsTest (folksoQuery $q, folksoUserCreds $cred) {
 }
 
 function getTagsIdsDo (folksoQuery $q, folksoUserCreds $cred, folksoDBconnect $dbc) {
-  $params = $q->params();
-  
   $db = new mysqli('localhost', 'root', 'hellyes', 'folksonomie');
   if ( mysqli_connect_errno()) {
     printf("Connect failed: %s\n", mysqli_connect_error());
@@ -108,13 +106,39 @@ function getTagsIdsDo (folksoQuery $q, folksoUserCreds $cred, folksoDBconnect $d
   }
   else {
     header('HTTP/1.1 200');
-    $row = $pageres->fetch_object();
-    print "<h1><a href='". $row->uri_raw . "'>" . $row->uri_normal . "</a></h1>";
-    print "<ul>";
-    while ( $row = $result->fetch_object() ) {
-      print "<li>".$row->tagdisplay . "</li>\n";
+    $dd = new folksoDataDisplay( array('type' => 'text',
+                                 'start' => "\n",
+                                 'end' => "\n",
+                                 'lineformat' => " XXX\n",
+                                 'titleformat' => " XXX \n-----",
+                                 'argsperline' => 1),
+                           array('type' => 'xhtml',
+                                 'start' => '<ul>',
+                                 'end' => '</ul>',
+                                 'titleformat' => '<h1>XXX</h1>',
+                                 'lineformat' => '<li>XXX</li>',
+                                 'argsperline' => 1));
+
+    print $q->content_type();
+    
+    if ($q->content_type() == 'text/text') {
+      $dd->activate_style('text');
     }
-    print "</ul>";
+    elseif ($q->content_type() == 'text/html') {
+      $dd->activate_style('xhtml');
+    }
+    else {
+      $dd->activate_style('xhtml');
+    }
+
+
+    $row = $pageres->fetch_object();
+    print $dd->title($row->uri_normal);
+    print $dd->startform();
+    while ( $row = $result->fetch_object() ) {
+      print $dd->line($row->tagdisplay);
+    }
+    print $dd->endform();
   }
 
 }
