@@ -1,11 +1,14 @@
 <?php
 require_once('/usr/local/www/apache22/lib/simpletest/unit_tester.php');
 require_once('/usr/local/www/apache22/lib/simpletest/reporter.php');
+
+require_once('/usr/local/www/apache22/lib/jf/fk/folksoUserValid.php');
 include('/usr/local/www/apache22/lib/jf/fk/folksoTags.php');
 
 
 class testOffolksoUserCreds extends  UnitTestCase {
   public $c;
+  public $w;
 
   function testBasic () {
     $this->c = new folksoUserCreds( 'Digest username="guest", realm="Restricted area", nonce="481e29a45ed2a", uri="/phpexamp.php", response="ef83bc4581ca2ff2b7eefba5f87d4aaf", opaque="cdce8a5c95a1427d74df7acbf41c9ce0", qop=auth, nc=00000001, cnonce="b0c4985b224014dc"', 'GET', 'Restricted area');
@@ -15,9 +18,9 @@ class testOffolksoUserCreds extends  UnitTestCase {
   function testDigestParse () {
     $str = 'Digest username="guest", realm="Restricted area", nonce="481e29a45ed2a", uri="/phpexamp.php", response="ef83bc4581ca2ff2b7eefba5f87d4aaf", opaque="cdce8a5c95a1427d74df7acbf41c9ce0", qop=auth, nc=00000001, cnonce="b0c4985b224014dc"';
 
-    $this->assertTrue(is_array($this->c->http_digest_parse($str)));
+    $this->assertTrue(is_array($this->c->parse_auth_header($str)));
 
-    $auth = $this->c->http_digest_parse($str);
+    $auth = $this->c->parse_auth_header($str);
     print var_dump($auth);
     $this->assertTrue(count($auth) > 5);
     $this->assertEqual($auth['username'], 'guest');
@@ -34,7 +37,7 @@ class testOffolksoUserCreds extends  UnitTestCase {
     // Same but with single quotes...
     $str2 = "'Digest username='guest', realm='Restricted area', nonce='481e29a45ed2a', uri='/phpexamp.php', response='ef83bc4581ca2ff2b7eefba5f87d4aaf', opaque='cdce8a5c95a1427d74df7acbf41c9ce0', qop=auth, nc=00000001, cnonce='b0c4985b224014dc'";
 
-    $auth2 = $this->c->http_digest_parse($str2);
+    $auth2 = $this->c->parse_auth_header($str2);
     $this->assertTrue(count($auth) > 5);
     $this->assertEqual($auth2['username'], 'guest');
     $this->assertEqual($auth2['realm'], 'Restricted area');
@@ -53,18 +56,15 @@ class testOffolksoUserCreds extends  UnitTestCase {
 
   function testDigestCalc () {
     print "A1: ";
-    print $this->c->buildDigestA1($this->c->digest_data, 'Restricted area', 'guest');
+    print $this->c->buildDigestA1('Restricted area', 'guest');
     print "A2: ";
-    print $this->c->buildDigestA2($this->c->digest_data, 'GET');
+    print $this->c->buildDigestA2();
     print "Together "; 
-    $alluh = $this->c->buildDigestResponse($this->c->digest_data, 
+    $alluh = $this->c->buildDigestResponse(
                                         $this->c->buildDigestA1(
-                                             $this->c->digest_data, 
-                                             'Restricted area', 
-                                             'guest'),
-                                        $this->c->buildDigestA2(
-                                             $this->c->digest_data, 
-                                             'GET'));
+                                                                'Restricted area', 
+                                                                'guest'),
+                                        $this->c->buildDigestA2());
     print "<p>All unhashed: $alluh</p>";
     print "<p>Hashed ". md5($alluh) . "</p>";
     
@@ -72,7 +72,6 @@ class testOffolksoUserCreds extends  UnitTestCase {
     $this->assertFalse(preg_match('/^\d+$/', "123zd43"));
     $this->assertTrue(preg_match('/^\d+$/', "12343"));    
   }
-  
 }
 
 

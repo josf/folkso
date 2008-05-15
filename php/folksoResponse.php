@@ -29,12 +29,12 @@ class folksoResponse {
     $this->action_func = $action_func;
   }
 
-  function activatep (folksoQuery $query, folksoUserCreds $cred) {
+  function activatep (folksoQuery $query, folksoWsseCreds $cred) {
     $aa =  $this->test_func;
     return $aa($query, $cred);
   }
   
-  function Respond (folksoQuery $query, folksoUserCreds $cred, folksoDBconnect $dbc) {
+  function Respond (folksoQuery $query, folksoWsseCreds $cred, folksoDBconnect $dbc) {
     $aa = $this->action_func;
     return $aa($query, $cred, $dbc); //action (on DB for example) + return document
                         //+ status. In fact, returned value does not

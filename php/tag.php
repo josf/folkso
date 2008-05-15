@@ -23,7 +23,7 @@ $dbc = new folksoDBconnect($server, $user, $pwd, $database);
  * exist. 404?
  */
 
-function getTagTest (folksoQuery $q, folksoUserCreds $cred) {
+function getTagTest (folksoQuery $q, folksoWsseCreds $cred) {
   $params = $q->params();
 
   if (($q->method() == 'get') &&
@@ -35,7 +35,7 @@ function getTagTest (folksoQuery $q, folksoUserCreds $cred) {
   }
 }
 
-function getTagDo (folksoQuery $q, folksoUserCreds $cred, folksoDBconnect $dbc) {
+function getTagDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
   $params = $q->params();
   //$db = new mysqli('localhost', 'root', 'hellyes', 'folksonomie');
   $db = $dbc->db_obj();
@@ -67,7 +67,7 @@ function getTagDo (folksoQuery $q, folksoUserCreds $cred, folksoDBconnect $dbc) 
 /**
  * Retrieves a list of the resources associated with the given tag.
  */
-function getTagResourcesTest (folksoQuery $q, folksoUserCreds $cred) {
+function getTagResourcesTest (folksoQuery $q, folksoWsseCreds $cred) {
 
   if (($q->method() == 'get') &&
       ($q->is_single_param('folksotagresources'))) {
@@ -78,7 +78,7 @@ function getTagResourcesTest (folksoQuery $q, folksoUserCreds $cred) {
   }
 }
 
-function getTagResourcesDo (folksoQuery $q, folksoUserCreds $cred, folksoDBconnect $dbc) {
+function getTagResourcesDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
   $db = $dbc->db_obj();
     if ( mysqli_connect_errno()) {
       printf("Connect failed: %s\n", mysqli_connect_error());
@@ -154,7 +154,7 @@ function getTagResourcesDo (folksoQuery $q, folksoUserCreds $cred, folksoDBconne
     }
 }
 
-function singlePostTagTest (folksoQuery $q, folksoUserCreds $cred) {
+function singlePostTagTest (folksoQuery $q, folksoWsseCreds $cred) {
   if (($q->method() == 'post') &&
       ($q->is_single_param('folksonewtag'))) {
     return true;
@@ -164,7 +164,7 @@ function singlePostTagTest (folksoQuery $q, folksoUserCreds $cred) {
   }
 }
 
-function singlePostTagDo (folksoQuery $q, folksoUserCreds $cred, folksoDBconnect $dbc) {
+function singlePostTagDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
   $db = new mysqli('localhost', 'root', 'hellyes', 'folksonomie');
   if ( mysqli_connect_errno()) {
     header('HTTP/1.1 501');

@@ -118,35 +118,35 @@ class folksoServer {
 
     $q = new folksoQuery($_SERVER, $_GET, $_POST); 
     $realm = 'folkso';
-    $cred = new folksoUserCreds( $_SERVER['PHP_AUTH_DIGEST'], 
+/*    $cred = new folksoUserCreds( $_SERVER['PHP_AUTH_DIGEST'], 
                                  $_SERVER['REQUEST_METHOD'], 
-                                 $realm);
+                                 $realm);*/
 
+
+    $cred = new folksoWsseCreds($_SERVER['HTTP_X_WSSE']);
+    $cred->parse_auth_header();
+//    print var_dump($cred);
     $dbc = new folksoDBconnect('localhost', 'root', 'hellyes', 'folksonomie');
 
     if ($this->is_auth_necessary($q)) {
 
       // Initial challenge
-      if (empty($_SERVER['PHP_AUTH_DIGEST'])) {
+      if (empty($_SERVER['HTTP_X_WSSE'])) {
         header('HTTP/1.0 401 Unauthorized');
-        header('WWW-Authenticate: Digest realm="'.$realm.
-               '",qop="auth",nonce="'.uniqid().'",opaque="'. md5($realm).'"');
-        die("Sorry. ". $_SERVER['PHP_AUTH_DIGEST']); // user canceled
+        header('WWW-Authenticate: realm="folkso", profile="UsernameToken"');
+        die("Sorry. ". $_SERVER['HTT_X_WSSE']); // user canceled
       }
       else { // Check credentials
    
         // Did not find the user... or some other similar problem
-        if ((!$cred->validateAuth($cred->http_digest_parse())) ||
-            (!$cred->checkUsername($cred->digest_data['username']))) {
+        if ((!$cred->validateAuth()) ||
+            (!$cred->checkUsername($cred->getUsername()))) {
           header('HTTP/1.0 403 Forbidden'); // is this right?
           die('Incorrect credentials. Do we know you?');
         }
 
-        $a1uh = $cred->buildDigestA1($cred->digest_data, $realm, 'folksong');
-        $a2uh = $cred->buildDigestA2($cred->digest_data, $cred->method);
-        $together_uh = $cred->buildDigestResponse($cred->digest_data, $a1uh, $a2uh);
-
-        if ($cred->digest_data['response'] !== md5($together_uh)) {
+        if (!$cred->Validate()) {
+//        if ($cred->digest_data['response'] !== md5($together_uh)) {
           header('HTTP/1.0 403 Forbidden'); // is this right?
           die('You do not seem to be who you say you are (bad response).'. $together_uh . " a1uh " . $a1uh . "a2uh" . $a2uh);
         }
