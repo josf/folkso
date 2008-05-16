@@ -1,6 +1,6 @@
 <?php
 
-include('/usr/local/www/apache22/lib/jf/fk/folksoTags.php');
+include('/var/www/dom/fabula/commun3/folksonomie/folksoTags.php');
 
 $srv = new folksoServer(array( 'methods' => array('POST', 'GET'),
                                'access_mode' => 'ALL'));
@@ -118,13 +118,12 @@ function getTagResourcesDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconne
                                         'end' => '',
                                         'lineformat' => " XXX XXX\n", 
                                         'argsperline' => 2));
-      print "content type" . $q->content_type();
+
       if ($q->content_type() == 'text/html') {
         $dd->activate_style('xhtml');
       }
-      //      elseif ($q->content_type() == 'text/text') {
       else {
-        $dd->activate_style('text');
+        $dd->activate_style('xhtml');
       }
       print $dd->startform();
       while ($row = $result->fetch_object()) {
@@ -165,7 +164,7 @@ function singlePostTagTest (folksoQuery $q, folksoWsseCreds $cred) {
 }
 
 function singlePostTagDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
-  $db = new mysqli('localhost', 'root', 'hellyes', 'folksonomie');
+  $db = $dbc->db_obj();
   if ( mysqli_connect_errno()) {
     header('HTTP/1.1 501');
     printf("Connect failed: %s\n", mysqli_connect_error());

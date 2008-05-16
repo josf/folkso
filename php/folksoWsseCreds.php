@@ -1,6 +1,6 @@
 <?php
 
-require('/usr/local/www/apache22/lib/jf/fk/folksoUserValid.php');
+require('/var/www/dom/fabula/commun3/folksonomie/folksoUserValid.php');
 
 class folksoWsseCreds extends folksoUserValid {
 
@@ -44,6 +44,9 @@ class folksoWsseCreds extends folksoUserValid {
 function parse_auth_header ($head = '') {
   if (empty($head)) {
     $head = $this->header;
+  }
+  if (empty($head)){
+    return false;
   }
 
   if (preg_match('/username="([^"]+)"/i', $head, $username_match)) {

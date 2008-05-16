@@ -65,6 +65,9 @@ Retrieve the tags associated with a given resource.
 
 Resource is not indexed.
 
+***** 204
+
+No tags associated with resource.
 
 ** POST
 
@@ -76,7 +79,7 @@ urititle is optional.
 
 Returns the uri of the link to the new resource.
 
-*** Tag a resource: folksouri, folksotag
+*** Tag a resource: folksoresource, folksotag
 
 Tag a resource with one or more tags.
 
