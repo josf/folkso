@@ -16,7 +16,7 @@
    *
    */
 
-include('/usr/local/www/apache22/lib/jf/fk/folksoTags.php');
+include('/var/www/dom/fabula/commun3/folksonomie/folksoTags.php');
 
 class folksoServer {
 
@@ -123,10 +123,9 @@ class folksoServer {
                                  $realm);*/
 
 
-    $cred = new folksoWsseCreds($_SERVER['HTTP_X_WSSE']);
-    $cred->parse_auth_header();
+
 //    print var_dump($cred);
-    $dbc = new folksoDBconnect('localhost', 'root', 'hellyes', 'folksonomie');
+    $dbc = new folksoDBconnect('localhost', 'root', 'LucienLeuwen', 'folksonomie');
 
     if ($this->is_auth_necessary($q)) {
 
@@ -137,6 +136,9 @@ class folksoServer {
         die("Sorry. ". $_SERVER['HTT_X_WSSE']); // user canceled
       }
       else { // Check credentials
+    $cred = new folksoWsseCreds($_SERVER['HTTP_X_WSSE']);
+    $cred->parse_auth_header();
+
    
         // Did not find the user... or some other similar problem
         if ((!$cred->validateAuth()) ||

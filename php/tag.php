@@ -1,6 +1,6 @@
 <?php
 
-include('/usr/local/www/apache22/lib/jf/fk/folksoTags.php');
+include('/var/www/dom/fabula/commun3/folksonomie/folksoTags.php');
 
 $srv = new folksoServer(array( 'methods' => array('POST', 'GET'),
                                'access_mode' => 'ALL'));
@@ -165,7 +165,7 @@ function singlePostTagTest (folksoQuery $q, folksoWsseCreds $cred) {
 }
 
 function singlePostTagDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
-  $db = new mysqli('localhost', 'root', 'hellyes', 'folksonomie');
+  $db = $dbc->db_obj();
   if ( mysqli_connect_errno()) {
     header('HTTP/1.1 501');
     printf("Connect failed: %s\n", mysqli_connect_error());
