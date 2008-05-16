@@ -121,6 +121,8 @@ class folksoServer {
 /*    $cred = new folksoUserCreds( $_SERVER['PHP_AUTH_DIGEST'], 
                                  $_SERVER['REQUEST_METHOD'], 
                                  $realm);*/
+    $cred = new folksoWsseCreds($_SERVER['HTTP_X_WSSE']);
+    $cred->parse_auth_header();
 
 
 
@@ -136,8 +138,6 @@ class folksoServer {
         die("Sorry. ". $_SERVER['HTT_X_WSSE']); // user canceled
       }
       else { // Check credentials
-    $cred = new folksoWsseCreds($_SERVER['HTTP_X_WSSE']);
-    $cred->parse_auth_header();
 
    
         // Did not find the user... or some other similar problem
@@ -207,6 +207,7 @@ class folksoServer {
  * either.)
  */
 function is_auth_necessary ($q) {
+  return false;
   if ((strtolower($q->method()) == 'get') ||
       (strtolower($q->method()) == 'head') ||
       ($this->clientAccessRestrict == 'LOCAL')) {

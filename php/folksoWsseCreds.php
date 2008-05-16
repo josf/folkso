@@ -45,6 +45,9 @@ function parse_auth_header ($head = '') {
   if (empty($head)) {
     $head = $this->header;
   }
+  if (empty($head)){
+    return false;
+  }
 
   if (preg_match('/username="([^"]+)"/i', $head, $username_match)) {
     $this->username = $username_match[1];

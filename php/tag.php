@@ -118,13 +118,12 @@ function getTagResourcesDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconne
                                         'end' => '',
                                         'lineformat' => " XXX XXX\n", 
                                         'argsperline' => 2));
-      print "content type" . $q->content_type();
+
       if ($q->content_type() == 'text/html') {
         $dd->activate_style('xhtml');
       }
-      //      elseif ($q->content_type() == 'text/text') {
       else {
-        $dd->activate_style('text');
+        $dd->activate_style('xhtml');
       }
       print $dd->startform();
       while ($row = $result->fetch_object()) {

@@ -1,6 +1,6 @@
 <?php
 
-include('/usr/local/www/apache22/lib/jf/fk/folksoTags.php');
+include('/var/www/dom/fabula/commun3/folksonomie/folksoTags.php');
 
 /*include('/var/www/dom/fabula/commun3/folksonomie/folksoIndexCache.php');
 include('/var/www/dom/fabula/commun3/folksonomie/folksoUrl.php');
@@ -9,8 +9,6 @@ include('/var/www/dom/fabula/commun3/folksonomie/folksoResponse.php');
 include('/var/www/dom/fabula/commun3/folksonomie/folksoQuery.php');
 */
 
-$server = 'localhost'; $user ='root'; 
-$pwd = 'hellyes'; $database = 'folksonomie';
 
 $srv = new folksoServer(array( 'methods' => array('POST', 'GET', 'HEAD'),
                                'access_mode' => 'ALL'));
@@ -22,7 +20,7 @@ $srv->Respond();
 
 
 
-function isHeadTest (folksoQuery $q, folksoUserCreds $cred) {
+function isHeadTest (folksoQuery $q, folksoWsseCreds $cred) {
   if (($q->method() == 'head') &&
       ($q->is_param('uri'))) {
     return true;
@@ -32,8 +30,8 @@ function isHeadTest (folksoQuery $q, folksoUserCreds $cred) {
   }
 }
 
-function isHeadDo (folksoQuery $q, folksoUserCreds $cred, folksoDBconnect $dbc) {
-  $db = new mysqli('localhost', 'root', 'hellyes', 'folksonomie');
+function isHeadDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+  $db = $dbc->db_obj();
   if ( mysqli_connect_errno()) {
     header('HTTP/1.0 501');
     printf("Connect failed: %s\n", mysqli_connect_error());
@@ -58,7 +56,7 @@ function isHeadDo (folksoQuery $q, folksoUserCreds $cred, folksoDBconnect $dbc) 
 /**
  * Retrieve the tags associated with a given resource.
  */
-function getTagsIdsTest (folksoQuery $q, folksoUserCreds $cred) {
+function getTagsIdsTest (folksoQuery $q, folksoWsseCreds $cred) {
   $params = $q->params();
   if (($q->method() == 'get') &&
       ($q->is_param('resourceuri'))) {
@@ -69,8 +67,8 @@ function getTagsIdsTest (folksoQuery $q, folksoUserCreds $cred) {
   }
 }
 
-function getTagsIdsDo (folksoQuery $q, folksoUserCreds $cred, folksoDBconnect $dbc) {
-  $db = new mysqli('localhost', 'root', 'hellyes', 'folksonomie');
+function getTagsIdsDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+  $db = $dbc->db_obj();
   if ( mysqli_connect_errno()) {
     printf("Connect failed: %s\n", mysqli_connect_error());
   }
@@ -146,7 +144,7 @@ function getTagsIdsDo (folksoQuery $q, folksoUserCreds $cred, folksoDBconnect $d
 /**
  * VisitPage : add a resource (uri) to the resource index
  */
-function visitPageTest (folksoQuery $q, folksoUserCreds $cred) {
+function visitPageTest (folksoQuery $q, folksoWsseCreds $cred) {
   if (($q->method() == 'post') &&
       ($q->is_single_param('folksovisituri'))) {
     return true;
@@ -156,7 +154,7 @@ function visitPageTest (folksoQuery $q, folksoUserCreds $cred) {
   }
 }
 
-function visitPageDo (folksoQuery $q, folksoUserCreds $cred, folksoDBconnect $dbc) {
+function visitPageDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
   $ic = new folksoIndexCache('/tmp/cachetest', 500);  
 
   $page = new folksoUrl($q->get_param('visituri'), 
@@ -172,7 +170,7 @@ function visitPageDo (folksoQuery $q, folksoUserCreds $cred, folksoDBconnect $db
     $pages_to_parse = $ic->retreive_cache();
     //    print "count ". count($pages_to_parse);
 
-    $db = new mysqli('localhost', 'root', 'hellyes', 'folksonomie');
+    $db = $dbc->db_obj();
     if ( mysqli_connect_errno()) {
       printf("Connect failed: %s\n", mysqli_connect_error());
     }
@@ -185,7 +183,7 @@ function visitPageDo (folksoQuery $q, folksoUserCreds $cred, folksoDBconnect $db
   }
 }
 
-function tagResourceTest (folksoQuery $q, folksoUserCreds $cred) {
+function tagResourceTest (folksoQuery $q, folksoWsseCreds $cred) {
   if (($q->method() == 'post') &&
       ($q->is_param('folksoresource')) &&
       ($q->is_param('folksotag'))) {
@@ -196,7 +194,7 @@ function tagResourceTest (folksoQuery $q, folksoUserCreds $cred) {
   }
 }
 
-function tagResourceDo (folksoQuery $q, folksoUserCreds $cred, folksoDBconnect $dbc) {
+function tagResourceDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
   $db = $dbc->db_obj();
   $db->query("call tag_resource('" .
              $db->real_escape_string($q->get_param('resource')) . "', '" .
