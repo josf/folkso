@@ -16,7 +16,7 @@
    *
    */
 
-include('/var/www/dom/fabula/commun3/folksonomie/folksoTags.php');
+include('/usr/local/www/apache22/lib/jf/fk/folksoTags.php');
 
 class folksoServer {
 
@@ -127,7 +127,7 @@ class folksoServer {
 
 
 //    print var_dump($cred);
-    $dbc = new folksoDBconnect('localhost', 'root', 'LucienLeuwen', 'folksonomie');
+    $dbc = new folksoDBconnect('localhost', 'root', 'hellyes', 'folksonomie');
 
     if ($this->is_auth_necessary($q)) {
 

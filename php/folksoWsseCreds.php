@@ -1,6 +1,6 @@
 <?php
 
-require('/var/www/dom/fabula/commun3/folksonomie/folksoUserValid.php');
+require('/usr/local/www/apache22/lib/jf/fk/folksoUserValid.php');
 
 class folksoWsseCreds extends folksoUserValid {
 

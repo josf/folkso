@@ -1,6 +1,8 @@
 <?php
 
-include('/var/www/dom/fabula/commun3/folksonomie/folksoTags.php');
+include('/usr/local/www/apache22/lib/jf/fk/folksoTags.php');
+include('/usr/local/www/apache22/lib/jf/fk/folksoDisplayFactory.php');
+
 
 $srv = new folksoServer(array( 'methods' => array('POST', 'GET'),
                                'access_mode' => 'ALL'));
@@ -10,10 +12,8 @@ $srv->addResponseObj(new folksoResponse('singlePostTagTest', 'singlePostTagDo'))
 
 $srv->Respond();
 
-$server = 'localhost'; $user ='root'; 
-$pwd = 'hellyes'; $database = 'folksonomie';
 
-$dbc = new folksoDBconnect($server, $user, $pwd, $database);
+
 
 // GET
 
@@ -36,8 +36,6 @@ function getTagTest (folksoQuery $q, folksoWsseCreds $cred) {
 }
 
 function getTagDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
-  $params = $q->params();
-  //$db = new mysqli('localhost', 'root', 'hellyes', 'folksonomie');
   $db = $dbc->db_obj();
   if ($dbc->dberr){
     header('HTTP/1.1 501');
@@ -57,11 +55,20 @@ function getTagDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) 
     if ($result->num_rows == 0) {
       header('HTTP/1.1 404');
       print "Tag not found: ". $q->get_param('tagid');
+      return;
     }
-    while($row = $result->fetch_object()) {
-      print "<p>A row:".$row->tagdisplay . "</p>";
-    }
+    else {
+      header('HTTP/1.1 200');
+      $df = new folksoDisplayFactory();
+      $disp = $df->singleElementList();
+      $disp->activate_style('xml');
+      print $disp->startform();
+      while($row = $result->fetch_object()) {
+        print $disp->line($row->tagdisplay);
+      }
+      print $disp->endform();
   }
+}
 }
 
 /**
@@ -83,7 +90,7 @@ function getTagResourcesDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconne
     if ( mysqli_connect_errno()) {
       printf("Connect failed: %s\n", mysqli_connect_error());
     }
-    $querybase = "select 
+    $querybase = "select distinct
                  uri_raw as href, uri_normal, title, 
                  case when title is null then uri_normal else title end as display
               from resource
@@ -108,16 +115,8 @@ function getTagResourcesDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconne
     // We have results
     elseif ($result->num_rows > 0) {
       header('HTTP/1.1 200');
-      $dd = new folksoDataDisplay(array('type' => 'xhtml',
-                                        'start' => '<ul>',
-                                        'end' => '</ul>',
-                                        'lineformat' => '<li><a href"XXX">XXX</a></li>',
-                                        'argsperline' => 2),
-                                  array('type' => 'text',
-                                        'start' => '',
-                                        'end' => '',
-                                        'lineformat' => " XXX XXX\n", 
-                                        'argsperline' => 2));
+      $df = new folksoDisplayFactory();
+      $dd = $df->basicLinkList();
 
       if ($q->content_type() == 'text/html') {
         $dd->activate_style('xhtml');
