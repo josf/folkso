@@ -18,8 +18,9 @@ $srv->addResponseObj(new folksoResponse('tagResourceTest', 'tagResourceDo'));
 $srv->addResponseObj(new folksoResponse('visitPageTest', 'visitPageDo'));
 $srv->Respond();
 
-
-
+/**
+ * Check to see if a resource is present in the database.
+ */
 function isHeadTest (folksoQuery $q, folksoWsseCreds $cred) {
   if (($q->method() == 'head') &&
       (($q->is_param('uri')) ||
@@ -63,12 +64,13 @@ function isHeadDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) 
 
 
 /**
- * Retrieve the tags associated with a given resource.
+ * Retrieve the tags associated with a given resource. Accepts uri or
+ * id.
  */
 function getTagsIdsTest (folksoQuery $q, folksoWsseCreds $cred) {
-  $params = $q->params();
   if (($q->method() == 'get') &&
-      ($q->is_param('resourceuri'))) {
+      (($q->is_param('resourceuri')) ||
+       ($q->is_param('resourceid')))) {
     return true;
   }
   else {
@@ -83,9 +85,18 @@ function getTagsIdsDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $d
   }
 
   // check to see if resource is in db.
-  $pageres = $db->query("select uri_normal, uri_raw
+  if ($q->is_param('resourceid')) {
+    $pageres = $db->query("select uri_normal, uri_raw
+                           from resource
+                           where id = " . 
+                          $db->real_escape_string($q->get_param('resource_id')));
+  }
+  elseif ($q->is_param('resourceuri')) {
+    $pageres = $db->query("select uri_normal, uri_raw
                          from resource
                          where uri_normal = url_whack('" . $q->get_param('resourceuri') . "')");
+  }
+
   if ($db->errno <> 0) {
     header('HTTP/1.0 501 Database problem');
     printf("Statement failed %d: (%s) %s\n", 
