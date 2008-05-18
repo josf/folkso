@@ -42,10 +42,12 @@ tag's id (**201**, created).
 
 ** HEAD
 
-*** folksouri
+*** folksouri *or* folksoresourceid
 
-Returns 200 if the resource provided (raw uri) is already present in
+Returns 200 if the resource provided (id or raw uri) is already present in
 the resource index (resource table).
+
+If both parameters are provided, only resourceid will be used.
 
 **** Errors
 

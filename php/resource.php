@@ -22,7 +22,8 @@ $srv->Respond();
 
 function isHeadTest (folksoQuery $q, folksoWsseCreds $cred) {
   if (($q->method() == 'head') &&
-      ($q->is_param('uri'))) {
+      (($q->is_param('uri')) ||
+       ($q->is_param('resourceid')))) {
     return true;
   }
   else {
@@ -37,10 +38,18 @@ function isHeadDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) 
     printf("Connect failed: %s\n", mysqli_connect_error());
   }
 
-  $result = $db->query("select id from resource where id = '" .
-                       $db->real_escape_string($q->get_param('uri')) .
-                       "'");
+  if ($q->is_param('resourceid')) {
 
+    $result = $db->query("select id from resource where id = '" .
+                         $db->real_escape_string($q->get_param('resourceid')) .
+                         "'");
+  }
+  elseif ($q->is_param('uri')) {
+    $result = $db->query("select id
+                          from resource
+                          where uri_normal = url_whack('" .
+                         $db->real_escape_string($q->get_param('uri')) . "')");
+  }
   if ($db->errno <> 0) {
     header('HTTP/1.0 501 Database problem');
   }
