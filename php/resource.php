@@ -16,6 +16,7 @@ $srv->addResponseObj(new folksoResponse('isHeadTest', 'isHeadDo'));
 $srv->addResponseObj(new folksoResponse('getTagsIdsTest', 'getTagsIdsDo'));
 $srv->addResponseObj(new folksoResponse('tagResourceTest', 'tagResourceDo'));
 $srv->addResponseObj(new folksoResponse('visitPageTest', 'visitPageDo'));
+$srv->addResponseObj(new folksoResponse('addResourceTest', 'addResourceDo'));
 $srv->Respond();
 
 /**
@@ -178,7 +179,7 @@ function visitPageDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $db
   $ic = new folksoIndexCache('/tmp/cachetest', 500);  
 
   $page = new folksoUrl($q->get_param('visituri'), 
-                        $q->is_single_param('urititle') ? $q->get_param('folksourititle') : '' );
+                        $q->is_single_param('urititle') ? $q->get_param('urititle') : '' );
 
 
   if (!($ic->data_to_cache( serialize($page)))) {
@@ -202,6 +203,36 @@ function visitPageDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $db
     }
   }
 }
+
+function addResourceTest (folksoQuery $q, folksoWsseCreds $cred) {
+  if (($q->method() == 'post') &&
+      ($q->is_param('newuri'))) {
+    return true;
+  }
+  else {
+    return false;
+  }
+}
+
+function addResourceDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+  $db = $dbc->db_obj();
+  $action = $db->query("call url_visit('" .
+                       $db->real_escape_string($q->get_param('newuri')) . 
+                       "', '" .
+                       $db->real_escape_string($q->get_param('newtitle')) . "')");
+      
+  if ($db->errno <> 0) {
+    header('HTTP/1.1 501 DB error');
+    printf("Statement failed %d: (%s) %s\n", 
+           $db->errno, $db->sqlstate, $db->error);
+    die("execution failed : " . $mysqli->errno.": ". $mysqli->error);
+  }
+  else {
+    header('HTTP/1.1 201');
+    print "Resource added";
+  }
+}
+
 
 function tagResourceTest (folksoQuery $q, folksoWsseCreds $cred) {
   if (($q->method() == 'post') &&
@@ -237,7 +268,6 @@ function tagResourceDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $
       print "obscure database problem";
       printf("Statement failed error number %d: (%s) %s\n", 
           $db->errno, $db->sqlstate, $db->error); 
-
     }
   }
   else {

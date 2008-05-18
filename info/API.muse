@@ -79,7 +79,18 @@ Add a resource (uri) to the resource index.
 
 urititle is optional.
 
-Returns the uri of the link to the new resource.
+Returns the uri of the link to the new resource. If the resource
+already exists, the number of visits is incremented.
+
+This command is cached. The resource is not immediatly added to the
+index.
+
+Returns 201 on success.
+
+*** Add a resource to the index immediatly: folksonewuri,folksonewtitle
+
+Like folksovisituri, except that the resource is added immediately.
+
 
 *** Tag a resource: folksoresource, folksotag
 
