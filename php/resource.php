@@ -225,7 +225,7 @@ function addResourceDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $
     header('HTTP/1.1 501 DB error');
     printf("Statement failed %d: (%s) %s\n", 
            $db->errno, $db->sqlstate, $db->error);
-    die("execution failed : " . $mysqli->errno.": ". $mysqli->error);
+    die("execution failed : " . $db->errno.": ". $db->error);
   }
   else {
     header('HTTP/1.1 201');
@@ -279,18 +279,12 @@ function tagResourceDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $
 
 function db_store_data ($url_obj, $db) {
   
-  $qq = "call url_visit('". $url_obj->get_url(). "')";
-  //  print "<p>$qq</p>";
+  $qq = "call url_visit('". $url_obj->get_url(). "', '" . $url_obj->get_title() ."')";
+
   $result = $db->query($qq);
   if ($mysqli->errno) {
     die("execution failed : " . $mysqli->errno.": ". $mysqli->error);
   }
-  /*  while ($row = $result->fetch_object()) {
-    print("<p><b>". $row->uri_normal . "</b>". $row->visited . "</p>");
-    }*/
-  unset($qq);
-  unset($row);
-  unset($result);
 }
 
 
