@@ -1,3 +1,12 @@
+#title Folkso
+
+Dans une logique de *RESTful webservices*, cette API expose deux
+interfaces correspondant à deux types d'information. **tag.php** répond à
+toutes les requêtes concernant les *tags*, et surtout l'affichage des
+ressources associées à un *tag* donné. **resource.php** représente les
+différentes ressources (URI), et peut, par exemple, afficher les *tags*
+associés à une ressource donnée.
+
 
 * tag.php
 
@@ -6,6 +15,10 @@
 *** folksotagid
 
 With numerical id, retrieve the display version of the tag.
+
+**** Formats
+
+Currently, only a simple text version.
 
 **** Errors
 
@@ -18,14 +31,22 @@ Tag does not exist.
 With a numerical tag id as argument, retrieves a list of the resources
 associated with that tag.
 
-Returns a **204** if there are no tags associated with the selected
-resource. 
 
 Multiple, numbered 'folksotagresources' parameters will be treated as
 combined requests, ie. SELECT RESOURCE WHERE (TAGGED AS T1) AND
 (TAGGED AS T2) AND... (This is very pseudo SQL.)
 
+**** Formats
+
+Currently returns an xhtml list. An XML list will also be provided.
+
+
 **** Errors
+***** 204
+
+Returns a **204** if there are no tags associated with the selected
+resource. 
+
 ***** 404
 
 Tag does not exist.
@@ -61,6 +82,10 @@ Resource is not indexed.
 
 Retrieve the tags associated with a given resource.
 
+**** Formats
+
+xhtml, xml, text.
+
 **** Errors
 
 ***** 404 
@@ -85,7 +110,7 @@ already exists, the number of visits is incremented.
 This command is cached. The resource is not immediatly added to the
 index.
 
-Returns 201 on success.
+Returns **201** on success.
 
 *** Add a resource to the index immediatly: folksonewuri,folksonewtitle
 
@@ -94,7 +119,7 @@ Like folksovisituri, except that the resource is added immediately.
 
 *** Tag a resource: folksoresource, folksotag
 
-Tag a resource with one or more tags.
+Tag a resource with one or more tags. Returns **201** (created).
 
 **** Errors
 

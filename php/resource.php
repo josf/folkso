@@ -138,7 +138,6 @@ function getTagsIdsDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $d
                                  'lineformat' => '<li>XXX</li>',
                                  'argsperline' => 1));
 
-    print $q->content_type();
     
     if ($q->content_type() == 'text/text') {
       $dd->activate_style('text');

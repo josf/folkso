@@ -75,8 +75,7 @@ class folksoDisplayFactory {
                       'list',
                       'element');
     return $obj;
-      
-                                 
   }
+
 }
 ?>

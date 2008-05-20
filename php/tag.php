@@ -9,6 +9,7 @@ $srv = new folksoServer(array( 'methods' => array('POST', 'GET'),
 $srv->addResponseObj(new folksoResponse('getTagTest', 'getTagDo'));
 $srv->addResponseObj(new folksoResponse('getTagResourcesTest', 'getTagResourcesDo'));
 $srv->addResponseObj(new folksoResponse('singlePostTagTest', 'singlePostTagDo'));
+$srv->addResponseObj(new folksoResponse('autoCompleteTagsTest', 'autoCompleteTagsDo'));
 
 $srv->Respond();
 
@@ -183,5 +184,56 @@ function singlePostTagDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect
     }
   }
 }
+
+
+function autoCompleteTagsTest (folksoQuery $q, folksoWsseCreds $cred) {
+  if (($q->is_param('autotag')) &&
+      ($q->method() == 'get')) {
+    return true;
+  }
+  else {
+    return false;
+  }
+}
+
+function autoCompleteTagsDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+  
+  $req = substr($q->get_param('autotag'), 0, 3);
+  
+  $db = $dbc->db_obj();
+  $result = $db->query("select tagdisplay
+                        from tag
+                        where tagdisplay like '" .
+                       $db->real_escape_string($req) .
+                       "%'");
+
+  if ($db->errno <> 0) {
+    header('HTTP/1.1 501');
+    printf("Statement failed %d: (%s) %s\n", 
+           $db->errno, $db->sqlstate, $db->error);
+    return;
+  }
+  elseif ($result->num_rows > 0) {
+    header('HTTP/1.1 200');
+
+    $df = new folksoDisplayFactory();
+    $dd = $df->singleElementList();
+    $dd->activate_style('xhtml');
+
+    print $dd->startform();
+    while($row = $result->fetch_object()) {
+      print $dd->line($row->tagdisplay) . "\n";
+    }
+    print $dd->endform();
+    return;
+  }
+  else {
+    header('HTTP/1.1 204 No rows');
+    return;
+  }
+}
+
+
+
 
 ?>

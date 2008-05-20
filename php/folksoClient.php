@@ -61,12 +61,13 @@ class folksoClient {
 
   function execute () {
     $this->ch = curl_init($this->build_req());
-    $headers = array( "Content-Type: application/x-www-form-urlencoded",
-                      "Content-length: " . $this->content_length());
-    curl_setopt($this->ch, CURLOPT_HTTPHEADERS, $headers);
+
     curl_setopt($this->ch, CURLOPT_USERAGENT, 'folksoClient');
     //    curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, true);
     if (strtolower($this->method) == 'post'){
+      $headers = array( "Content-Type: application/x-www-form-urlencoded",
+                        "Content-length: " . $this->content_length());
+      curl_setopt($this->ch, CURLOPT_HTTPHEADERS, $headers);
       curl_setopt($this->ch, CURLOPT_POST, true);
       curl_setopt($this->ch, CURLOPT_POSTFIELDS, $this->postfields);
     }
