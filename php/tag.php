@@ -1,19 +1,72 @@
 <?php
 
 include('/usr/local/www/apache22/lib/jf/fk/folksoTags.php');
-include('/usr/local/www/apache22/lib/jf/fk/folksoDisplayFactory.php');
 
 
-$srv = new folksoServer(array( 'methods' => array('POST', 'GET'),
+
+$srv = new folksoServer(array( 'methods' => array('POST', 'GET', 'HEAD'),
                                'access_mode' => 'ALL'));
 $srv->addResponseObj(new folksoResponse('getTagTest', 'getTagDo'));
 $srv->addResponseObj(new folksoResponse('getTagResourcesTest', 'getTagResourcesDo'));
 $srv->addResponseObj(new folksoResponse('singlePostTagTest', 'singlePostTagDo'));
 $srv->addResponseObj(new folksoResponse('autoCompleteTagsTest', 'autoCompleteTagsDo'));
+$srv->addResponseObj(new folksoResponse('headCheckTagTest', 'headCheckTagDo'));
 
 $srv->Respond();
 
+// HEAD
 
+/**
+ * checkTag (Test and Do) : given a string, checks if that tag is
+ * already present in the database.
+ *
+ *
+ *
+ */
+
+function headCheckTagTest (folksoQuery $q, folksoWsseCreds $cred) {
+  if (($q->method() == 'head') &&
+      ($q->is_param('tag'))) {
+    return true;
+  }
+  else {
+    return false;
+  }
+}
+
+function headCheckTagDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+  $db = $dbc->db_obj();
+  if ($dbc->dberr){
+    header('HTTP/1.1 501');
+    print "Database connection error.  ";
+    print $dbc->dberr;
+    die("Something is wrong.");
+  }
+
+  $result = $db->query("select id from tag where tagnorm = normalize_tag('" .
+                       $db->real_escape_string($q->get_param('tag')) .
+                       "') " . 
+                       "limit 1");
+
+  if ($db->errno <> 0) {
+    header('HTTP/1.1 501');
+    printf("Statement failed %d: (%s) %s\n", 
+           $db->errno, $db->sqlstate, $db->error);
+    die("DB error");
+  }
+  
+  if ($result->num_rows == 0) {
+    header('HTTP/1.1 404');
+  }
+  else {
+    header('HTTP/1.1 200');
+    $id = 0;
+    while ($row = $result->fetch_object()) {
+      $id = $row->id;
+    }
+    header("X-Folkso-Tagid: " . $id);
+  }
+}
 
 
 // GET
@@ -25,10 +78,8 @@ $srv->Respond();
  */
 
 function getTagTest (folksoQuery $q, folksoWsseCreds $cred) {
-  $params = $q->params();
-
   if (($q->method() == 'get') &&
-      (is_string($params['folksotagid']))) {
+      ($q->is_param('tagid'))) {
     return true;
   }
   else {
@@ -153,6 +204,10 @@ function getTagResourcesDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconne
     }
 }
 
+/**
+ * Add a new tag.
+ *
+ */
 function singlePostTagTest (folksoQuery $q, folksoWsseCreds $cred) {
   if (($q->method() == 'post') &&
       ($q->is_single_param('folksonewtag'))) {
