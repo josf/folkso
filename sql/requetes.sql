@@ -1,6 +1,24 @@
+select tag.tagdisplay, 
+       tag.id, count(tag.id) as c1,  
+from (select count(te.tag_id) as cnt
+                             from tagevent te
+                             join resource on te.resource_id = resource.id
+                             where resource.uri_normal = 'fabula.org/revue/document1312.php') as icnt
 
--- rank is the popularity relative to _this_ resource : ie. the lowest
--- score is the most commonly attributed tag for this resource.
+       (select count(distinct cnt)
+                     from (select count(te.tag_id) as cnt
+                             from tagevent te
+                             join resource on te.resource_id = resource.id
+                             where resource.uri_normal = 'fabula.org/revue/document1312.php') as icnt
+                      ) as c2
+       from tagevent tt
+       join tag on tt.tag_id = tag.id
+       join resource on tt.resource_id = resource.id
+       where (resource.uri_normal = 'fabula.org/revue/document1312.php')
+       group by tag.id;
+
+
+
 select tsq.tagdisplay,
        tsq.id,
        (select count(distinct itsq.icnt)
@@ -22,28 +40,4 @@ select tsq.tagdisplay,
                     where resource.uri_normal = 'fabula.org/revue/document1312.php'
                     group by tag.id) tsq;
             
-
-select tsq.tagdisplay,
-       tsq.id,
-       (select count(distinct itsq.pop)
-        from (select tag.tagdisplay,
-                    tag.id,
-                    (select count(te.tag_id)
-                       from tagevent te
-                       where te.tag_id = tag.id) as pop
-                       from tag
-                       join tagevent on tagevent.tag_id = tag.id
-                       join resource on tagevent.resource_id = resource.id
-                       where resource.uri_normal = 'fabula.org/revue/document1312.php') itsq
-        where itsq.pop >= tsq.pop) as rank
-       from (select tag.tagdisplay,
-                    tag.id,
-                    (select count(te.tag_id)
-                       from tagevent te
-                       where te.tag_id = tag.id) as pop
-                       from tag
-                       join tagevent on tagevent.tag_id = tag.id
-                       join resource on tagevent.resource_id = resource.id
-                       where resource.uri_normal = 'fabula.org/revue/document1312.php') tsq;
-
        
