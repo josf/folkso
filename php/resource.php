@@ -161,6 +161,8 @@ function getTagsIdsDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $d
 
 }
 
+
+
 /**
  * VisitPage : add a resource (uri) to the resource index
  */
