@@ -12,11 +12,21 @@ include('/var/www/dom/fabula/commun3/folksonomie/folksoQuery.php');
 
 $srv = new folksoServer(array( 'methods' => array('POST', 'GET', 'HEAD'),
                                'access_mode' => 'ALL'));
-$srv->addResponseObj(new folksoResponse('isHeadTest', 'isHeadDo'));
-$srv->addResponseObj(new folksoResponse('getTagsIdsTest', 'getTagsIdsDo'));
-$srv->addResponseObj(new folksoResponse('tagResourceTest', 'tagResourceDo'));
-$srv->addResponseObj(new folksoResponse('visitPageTest', 'visitPageDo'));
-$srv->addResponseObj(new folksoResponse('addResourceTest', 'addResourceDo'));
+$srv->addResponseObj(new folksoResponse('head', 
+                                        array('oneof' => array('uri', 'id')),
+                                        'isHeadDo'));
+$srv->addResponseObj(new folksoResponse('get',
+                                        array('oneof' => array('uri', 'id')),
+                                        'getTagsIdsDo'));
+$srv->addResponseObj(new folksoResponse('post',
+                                        array('required' => array('resource', 'tag')),
+                                        'tagResourceDo'));
+$srv->addResponseObj(new folksoResponse('post',
+                                        array('required_single' => array('visituri')),
+                                        'visitPageDo'));
+$srv->addResponseObj(new folksoResponse('post',
+                                        array('required' => array('newuri')),
+                                        'addResourceDo'));
 $srv->Respond();
 
 /**
@@ -40,10 +50,10 @@ function isHeadDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) 
     printf("Connect failed: %s\n", mysqli_connect_error());
   }
 
-  if ($q->is_param('resourceid')) {
+  if ($q->is_param('id')) {
 
     $result = $db->query("select id from resource where id = '" .
-                         $db->real_escape_string($q->get_param('resourceid')) .
+                         $db->real_escape_string($q->get_param('id')) .
                          "'");
   }
   elseif ($q->is_param('uri')) {
@@ -86,16 +96,16 @@ function getTagsIdsDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $d
   }
 
   // check to see if resource is in db.
-  if ($q->is_param('resourceid')) {
+  if ($q->is_param('id')) {
     $pageres = $db->query("select uri_normal, uri_raw
                            from resource
                            where id = " . 
-                          $db->real_escape_string($q->get_param('resource_id')));
+                          $db->real_escape_string($q->get_param('id')));
   }
-  elseif ($q->is_param('resourceuri')) {
+  elseif ($q->is_param('uri')) {
     $pageres = $db->query("select uri_normal, uri_raw
                          from resource
-                         where uri_normal = url_whack('" . $q->get_param('resourceuri') . "')");
+                         where uri_normal = url_whack('" . $q->get_param('uri') . "')");
   }
 
   if ($db->errno <> 0) {
@@ -114,7 +124,7 @@ function getTagsIdsDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $d
                         from tag 
                         join tagevent on tag.id = tagevent.tag_id
                         join resource on resource.id = tagevent.resource_id
-                        where uri_normal = url_whack('". $q->get_param('folksoresourceuri') ."')");
+                        where uri_normal = url_whack('". $q->get_param('uri') ."')");
   if ($db->errno <> 0) {
     printf("Statement failed %d: (%s) %s\n", 
            $db->errno, $db->sqlstate, $db->error);

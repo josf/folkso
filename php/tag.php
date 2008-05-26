@@ -6,11 +6,25 @@ include('/usr/local/www/apache22/lib/jf/fk/folksoTags.php');
 
 $srv = new folksoServer(array( 'methods' => array('POST', 'GET', 'HEAD'),
                                'access_mode' => 'ALL'));
-$srv->addResponseObj(new folksoResponse('getTagTest', 'getTagDo'));
-$srv->addResponseObj(new folksoResponse('getTagResourcesTest', 'getTagResourcesDo'));
-$srv->addResponseObj(new folksoResponse('singlePostTagTest', 'singlePostTagDo'));
-$srv->addResponseObj(new folksoResponse('autoCompleteTagsTest', 'autoCompleteTagsDo'));
-$srv->addResponseObj(new folksoResponse('headCheckTagTest', 'headCheckTagDo'));
+$srv->addResponseObj(new folksoResponse('get', 
+                                        array('required' => array('tagid')),
+                                        'getTagDo'));
+
+$srv->addResponseObj(new folksoResponse('get', 
+                                        array('required_single' => array('tagresources')),
+                                        'getTagResourcesDo'));
+
+$srv->addResponseObj(new folksoResponse('post',
+                                        array('required_single' => array('newtag')),
+                                        'singlePostTagDo'));
+
+$srv->addResponseObj(new folksoResponse('get', 
+                                        array('required' => array('autotag')),
+                                        'autoCompleteTagsDo'))
+;
+$srv->addResponseObj(new folksoResponse('head',
+                                        array('required' => array('tag')),
+                                        'headCheckTagDo'));
 
 $srv->Respond();
 
