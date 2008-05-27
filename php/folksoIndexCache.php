@@ -1,5 +1,13 @@
 <?php
 
+  /**
+   * Class for caching resource information to reduce database access.
+   *
+   * @package Folkso
+   * @author Joseph Fahey
+   * @copyright 2008 Gnu Public Licence (GPL)
+   */
+
 class folksoIndexCache {
 
   var $cachedir;

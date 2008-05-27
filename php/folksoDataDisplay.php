@@ -1,5 +1,17 @@
 <?php
 
+  /**
+   * folksoDataDisplay formats the data returned from the
+   * database. Each folksoDataDisplay object can have multiple display
+   * formats: xhtml, xml, simple text.
+   *
+   * Use folksoDisplayFactory to produce these objects easily.
+   *
+   * @package Folkso
+   * @author Joseph Fahey
+   * @copyright 2008 Gnu Public Licence (GPL)
+   */
+
 
 class folksoDataDisplay {
 

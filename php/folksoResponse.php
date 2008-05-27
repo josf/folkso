@@ -27,8 +27,17 @@ class folksoResponse {
 
   /**
    * @param string $method The method that this Response will respond
-   * to.
-   * @param associative array $params An arra
+   * to.  
+   *
+   * @param associative array $params An associative array of
+   * arrays. The four possible keys are 'required', 'oneof',
+   * 'required_single', and 'required_multiple'. The key or keys
+   * present must contain a linear array of field names (not
+   * necessarily preceded by 'folkso'). If just one of the fields in
+   * the 'oneof' array are present in the query, the query will be
+   * considered valid (provided that the other conditions from the
+   * 'required*' arrays are met, if present).
+   *
    * @param function $action_func This function will be called if this
    * response is activated.
    */
@@ -38,6 +47,15 @@ class folksoResponse {
     $this->activate_params = $params;
   }
 
+  /**
+   * Tests whether this Response object should respond to the request ($q).
+   * 
+   * Using the information in $params passed on object creation, this
+   * method tests that information against the query information ($q).
+   *
+   * @param folksoQuery $q
+   * @return boolean
+   */
   function activatep (folksoQuery $q) {
     if (($q->method() == $this->method) &&
         ($this->param_check($q))) {
@@ -52,7 +70,9 @@ class folksoResponse {
    * Checks to see if this Response should be used to respond to the query $q.
    *
    * First check the 'required' parameters in $this->activate_params
-   * and returns false if any of them are missing.
+   * and returns false if any of them are missing. If one of the
+   * 'oneof' fields is present (and assuming conditions in the other
+   * arrays are met), 'true' is returned.
    *
    * @param folksoQuery $q
    * @return boolean
@@ -104,8 +124,15 @@ class folksoResponse {
     return true;
   }
 
-
-  function Respond (folksoQuery $query, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+  /**
+   * Passes t
+   * @param folksoQuery $q
+   * @param folksoWsseCreds $cred (this will probably change)
+   * @param folkskoDBconnect $dbc (passed in from folksoServer)
+   * @return HTTP response. The return value is never used as such,
+   * since the action is performed in the server.
+   */
+  function Respond (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
     $aa = $this->action_func;
     return $aa($query, $cred, $dbc); //action (on DB for example) + return document
                         //+ status. In fact, returned value does not

@@ -13,7 +13,10 @@
    *
    * When authorization is added, folksoServer will handle that as
    * well.
-   *
+   * 
+   * @package Folkso
+   * @author Joseph Fahey
+   * @copyright 2008 Gnu Public Licence (GPL)
    */
 
 include('/usr/local/www/apache22/lib/jf/fk/folksoTags.php');
@@ -21,16 +24,25 @@ include('/usr/local/www/apache22/lib/jf/fk/folksoTags.php');
 class folksoServer {
 
   // Access stuff
+  /**
+   * Defines access mode. This may not be necessary or should be moved
+   * to the folksoResponse level.
+   */
   public $clientAccessRestrict = 'LOCAL'; //'LOCAL', 'LIST' or 'ALL'
   public $clientAccessRestrictList = array('127.0.0.1'); //localhost always allowed
+
+  /**
+   * Methods to which this server object will respond. Again, this may not be necessary.
+   */
   public $allowedClientMethods = array('GET');
-  
+
   private $possibleMethods = array('GET', 'get', 'HEAD', 'head','POST', 'post', 'PUT', 'put', 'DELETE', 'delete');
   private $possibleAccessModes = array('LOCAL', 'LIST', 'ALL');
   public $responseObjects = array();
   public $authorize_get_fields = array();
 
   /**
+   * @param array $config
    * Argument is an associative array containing any of the following
    * keys:
    *
@@ -80,22 +92,20 @@ class folksoServer {
     }
   }
 
-  
+
+  /**
+   * Adds a folksoResponse object to the array of response objects.
+   * 
+   * @param folksoResponse $resp 
+   *
+   */ 
   public function addResponseObj (folksoResponse $resp) { //one arg here to indicate
                                            //that at least one is
                                            //necessary
-    $objs = func_get_args();
-    foreach ($objs as $ob) {
-      if ( $ob instanceof folksoResponse ) {
         $this->responseObjects[] = $ob;
-      }
-      else {
-        //error
-      }
-    }
   }
 
-  /*
+  /**
    * Based on the request received, checks each response object is
    * checked to see if it is equiped to handle the request.
    */
@@ -103,7 +113,7 @@ class folksoServer {
     if (!($this->valid_method())) {
       // some kind of error
       header('HTTP/1.0 405');
-      print "<h1>NOT OK</h1><p>Illegal request method for this resource.</p>";
+      print "NOT OK. Illegal request method for this resource.";
       return;
     }
 
@@ -114,8 +124,6 @@ class folksoServer {
       return;
     }
 
-
-
     $q = new folksoQuery($_SERVER, $_GET, $_POST); 
     $realm = 'folkso';
 /*    $cred = new folksoUserCreds( $_SERVER['PHP_AUTH_DIGEST'], 
@@ -124,7 +132,6 @@ class folksoServer {
 
     $cred = new folksoWsseCreds($_SERVER['HTTP_X_WSSE']);
     $cred->parse_auth_header();
-
 
 //    print var_dump($cred);
     $dbc = new folksoDBconnect('localhost', 'root', 'hellyes', 'folksonomie');
@@ -171,7 +178,11 @@ class folksoServer {
     }
   }
 
-  
+  /**
+   * Tests whether the REQUEST_METHOD in $_SERVER is allowed.
+   * 
+   * @return boolean
+   */
   function valid_method () {
     if (in_array($_SERVER['REQUEST_METHOD'], $this->allowedClientMethods)) {
       return true;
@@ -204,11 +215,13 @@ class folksoServer {
  * could check the fields for some GETs here too, to see if this is an
  * individualized GET request. (Or maybe it isn't necessary to do so
  * either.)
+ *
+ * @param folksoQuery $q
  */
-function is_auth_necessary ($q) {
+function is_auth_necessary (folksoQuery $q) {
   return false;
-  if ((strtolower($q->method()) == 'get') ||
-      (strtolower($q->method()) == 'head') ||
+  if (($q->method()== 'get') ||
+      ($q->method() == 'head') ||
       ($this->clientAccessRestrict == 'LOCAL')) {
     return false;
   }

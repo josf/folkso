@@ -1,5 +1,17 @@
 <?php
 
+  /**
+   * A class for passing around database handles and connection information. 
+   *
+   * Essentially, this class wraps up database information and
+   * possibly a database connection so that the connection is not made
+   * until required.
+   *
+   * @package Folkso
+   * @author Joseph Fahey
+   * @copyright 2008 Gnu Public Licence (GPL)
+   */
+
 
 class folksoDBconnect {
   private $host;
@@ -33,7 +45,13 @@ class folksoDBconnect {
 
   }
 
-  function db_obj () {
+  /**
+   * The key function. Returns either an existing database connection
+   * object, or creates one if necessary.
+   *
+   * @return Database connection object.
+   */
+  public function db_obj () {
     if ((!empty($this->dbx)) &&
         ($this->dbx instanceof mysqli)) {
       $this->dberr = '';

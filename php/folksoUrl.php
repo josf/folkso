@@ -1,5 +1,15 @@
 <?php
 
+  /**
+   * A class for describing URLs. (Primarily so that they can be
+   * stored conveniently.)
+   * 
+   *
+   * @package Folkso
+   * @author Joseph Fahey
+   * @copyright 2008 Gnu Public Licence (GPL)
+   */
+
 class folksoUrl {
   /* very bare bones. just holds title and url */
   var $url;

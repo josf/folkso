@@ -1,5 +1,14 @@
 <?php
 
+  /**
+   * Produce folksoDataDisplay objects conveniently.
+   *
+   * @package Folkso
+   * @author Joseph Fahey
+   * @copyright 2008 Gnu Public Licence (GPL)
+   */
+
+
 require_once('/usr/local/www/apache22/lib/jf/fk/folksoDataDisplay.php');
 
 class folksoDisplayFactory {

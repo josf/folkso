@@ -1,5 +1,15 @@
 <?php
 
+  /**
+   * Abstract class for user information to be passed to
+   * folksoResponse by folksoServer.
+   *
+   * @package Folkso
+   * @author Joseph Fahey
+   * @copyright 2008 Gnu Public Licence (GPL)
+   */
+
+
 abstract class folksoUserValid {
   abstract public function parse_auth_header ($header = '');
   
