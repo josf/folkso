@@ -1,13 +1,19 @@
 <?php
 
+
+  /**
+   * Web interface providing information about tags.
+   *
+   * @package Folkso
+   * @author Joseph Fahey
+   * @copyright 2008 Gnu Public Licence (GPL)
+   */
+
+
+
+
   //include('/var/www/dom/fabula/commun3/folksonomie/folksoTags.php');
 include('/usr/local/www/apache22/lib/jf/fk/folksoTags.php');
-/*include('/var/www/dom/fabula/commun3/folksonomie/folksoIndexCache.php');
-include('/var/www/dom/fabula/commun3/folksonomie/folksoUrl.php');
-include('/var/www/dom/fabula/commun3/folksonomie/folksoServer.php');
-include('/var/www/dom/fabula/commun3/folksonomie/folksoResponse.php');
-include('/var/www/dom/fabula/commun3/folksonomie/folksoQuery.php');
-*/
 
 
 $srv = new folksoServer(array( 'methods' => array('POST', 'GET', 'HEAD'),
@@ -35,7 +41,7 @@ $srv->Respond();
 function isHeadTest (folksoQuery $q, folksoWsseCreds $cred) {
   if (($q->method() == 'head') &&
       (($q->is_param('uri')) ||
-       ($q->is_param('resourceid')))) {
+       ($q->is_param('id')))) {
     return true;
   }
   else {
@@ -90,6 +96,99 @@ function getTagsIdsTest (folksoQuery $q, folksoWsseCreds $cred) {
 }
 
 function getTagsIdsDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+  $i = new folksoDBinteract($dbc);
+
+  if ($i->db_error()){
+    header('HTTP/1.0 501 Database problem');
+    print $i->error_info() . "\n";
+    return;
+  }
+  
+  // check to see if resource is in db.
+  $ress = $q->is_param('id') ? $q->get_param('id') : $q->get_param('uri');
+  if  (!$i->resourcep($ress))  {
+    if ($i->db_error()) {
+      header('HTTP/1.0 501 Database problem');
+      print $i->error_info() . "\n";
+      return;
+    }
+    else {
+      header('HTTP/1.0 404 Resource not found');      
+      print "Resource not present in database";
+      return;
+    }
+  }
+
+  $select = "select distinct tagdisplay 
+                        from tag 
+                        join tagevent on tag.id = tagevent.tag_id
+                        join resource on resource.id = tagevent.resource_id ";
+  if ($q->is_param('id')) {
+    $select .= "where resource.id = " . $i->dbquote($q->get_param('id'));
+  }
+  else {
+    $select .= "where uri_normal = url_whack('". $i->dbquote($q->get_param('uri')) ."')";
+  }
+   
+  $i->query($select);
+
+  switch ($i->result_status) {
+  case 'DBERR':
+    header('HTTP/1.1 501 Database error');
+    print $i->error_info() . "\n";
+    return;
+    break;
+  case 'NOROWS':
+    header('HTTP/1.1 204 No tags associated with resource');
+    return;
+    break;
+  case 'OK':
+    header('HTTP/1.1 200');
+    break;
+  }
+  // here everything should be ok
+
+    $dd = new folksoDataDisplay( array('type' => 'text',
+                                 'start' => "\n",
+                                 'end' => "\n",
+                                 'lineformat' => " XXX\n",
+                                 'titleformat' => " XXX \n-----",
+                                 'argsperline' => 1),
+                           array('type' => 'xhtml',
+                                 'start' => '<ul>',
+                                 'end' => '</ul>',
+                                 'titleformat' => '<h1>XXX</h1>',
+                                 'lineformat' => '<li>XXX</li>',
+                                 'argsperline' => 1));
+
+    
+    if ($q->content_type() == 'text/text') {
+      $dd->activate_style('text');
+    }
+    elseif ($q->content_type() == 'text/html') {
+      $dd->activate_style('xhtml');
+    }
+    else {
+      $dd->activate_style('xhtml');
+    }
+
+    $row = $i->result->fetch_object();
+    print $dd->title($row->uri_normal);
+    print $dd->startform();
+    while ( $row = $i->result->fetch_object() ) {
+      print $dd->line($row->tagdisplay);
+    }
+    print $dd->endform();
+}
+
+
+
+
+/**
+ * Tag cloud local.
+ */
+
+function tagCloudLocalPop (folksoQuery $q, folksoWsseCreds $cred, folksoDBconect $dbc) {
   $db = $dbc->db_obj();
   if ( mysqli_connect_errno()) {
     printf("Connect failed: %s\n", mysqli_connect_error());
@@ -115,63 +214,15 @@ function getTagsIdsDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $d
     return;
   }
   elseif ($pageres->num_rows == 0) {
-    header('HTTP/1.0 404 Resource not found');
+    header('HTTP/1.0 404 Resource not indexed.');
     print "uri was ". $q->get_param('resourceuri');
     return;
   }
 
-  $result = $db->query("select distinct tagdisplay 
-                        from tag 
-                        join tagevent on tag.id = tagevent.tag_id
-                        join resource on resource.id = tagevent.resource_id
-                        where uri_normal = url_whack('". $q->get_param('uri') ."')");
-  if ($db->errno <> 0) {
-    printf("Statement failed %d: (%s) %s\n", 
-           $db->errno, $db->sqlstate, $db->error);
-  }
-  elseif ($result->num_rows == 0) {
-    header('HTTP/1.1 204 No tags');
-    return;
-  }
-  else {
-    header('HTTP/1.1 200');
-    $dd = new folksoDataDisplay( array('type' => 'text',
-                                 'start' => "\n",
-                                 'end' => "\n",
-                                 'lineformat' => " XXX\n",
-                                 'titleformat' => " XXX \n-----",
-                                 'argsperline' => 1),
-                           array('type' => 'xhtml',
-                                 'start' => '<ul>',
-                                 'end' => '</ul>',
-                                 'titleformat' => '<h1>XXX</h1>',
-                                 'lineformat' => '<li>XXX</li>',
-                                 'argsperline' => 1));
-
-    
-    if ($q->content_type() == 'text/text') {
-      $dd->activate_style('text');
-    }
-    elseif ($q->content_type() == 'text/html') {
-      $dd->activate_style('xhtml');
-    }
-    else {
-      $dd->activate_style('xhtml');
-    }
 
 
-    $row = $pageres->fetch_object();
-    print $dd->title($row->uri_normal);
-    print $dd->startform();
-    while ( $row = $result->fetch_object() ) {
-      print $dd->line($row->tagdisplay);
-    }
-    print $dd->endform();
-  }
 
 }
-
-
 
 /**
  * VisitPage : add a resource (uri) to the resource index

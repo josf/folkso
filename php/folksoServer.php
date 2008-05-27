@@ -102,7 +102,7 @@ class folksoServer {
   public function addResponseObj (folksoResponse $resp) { //one arg here to indicate
                                            //that at least one is
                                            //necessary
-        $this->responseObjects[] = $ob;
+        $this->responseObjects[] = $resp;
   }
 
   /**
@@ -164,8 +164,12 @@ class folksoServer {
      returns true*/
 
     $repflag = false;
+    if (count($this->responseObjects) === 0) {
+      trigger_error("No responseObjects available", E_USER_ERROR);
+    }
+
     foreach ($this->responseObjects as $resp) {
-      if ( $resp->activatep($q, $cred)) {
+      if ($resp->activatep($q, $cred)) {
         $resp->Respond($q, $cred, $dbc);
         $repflag = true;
         break;
