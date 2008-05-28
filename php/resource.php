@@ -24,6 +24,9 @@ $srv->addResponseObj(new folksoResponse('head',
 $srv->addResponseObj(new folksoResponse('get',
                                         array('oneof' => array('uri', 'id')),
                                         'getTagsIdsDo'));
+$srv->addResponseObj(new folksoResponse('get',
+                                        array('required' => array('clouduri')),
+                                        'tagCloudLocalPop'));
 $srv->addResponseObj(new folksoResponse('post',
                                         array('required' => array('resource', 'tag')),
                                         'tagResourceDo'));
@@ -147,82 +150,110 @@ function getTagsIdsDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $d
     break;
   }
   // here everything should be ok
+  $df = new folksoDisplayFactory();
+  $dd = $df->singleElementList();
 
-    $dd = new folksoDataDisplay( array('type' => 'text',
-                                 'start' => "\n",
-                                 'end' => "\n",
-                                 'lineformat' => " XXX\n",
-                                 'titleformat' => " XXX \n-----",
-                                 'argsperline' => 1),
-                           array('type' => 'xhtml',
-                                 'start' => '<ul>',
-                                 'end' => '</ul>',
-                                 'titleformat' => '<h1>XXX</h1>',
-                                 'lineformat' => '<li>XXX</li>',
-                                 'argsperline' => 1));
-
-    
-    if ($q->content_type() == 'text/text') {
+  switch ($q->content_type()) {
+  case 'text/text':
       $dd->activate_style('text');
-    }
-    elseif ($q->content_type() == 'text/html') {
+      break;
+  case 'text/html':
+    $dd->activate_style('xhtml');
+    break;
+  default:
       $dd->activate_style('xhtml');
-    }
-    else {
-      $dd->activate_style('xhtml');
-    }
+      break;
+  }
 
-    $row = $i->result->fetch_object();
-    print $dd->title($row->uri_normal);
-    print $dd->startform();
-    while ( $row = $i->result->fetch_object() ) {
-      print $dd->line($row->tagdisplay);
-    }
-    print $dd->endform();
+  $row = $i->result->fetch_object();
+  print $dd->title($row->uri_normal);
+  print $dd->startform();
+  while ( $row = $i->result->fetch_object() ) {
+    print $dd->line($row->tagdisplay);
+  }
+  print $dd->endform();
 }
-
-
 
 
 /**
  * Tag cloud local.
+ *
+ * Parameters: , folksoclouduri
  */
 
-function tagCloudLocalPop (folksoQuery $q, folksoWsseCreds $cred, folksoDBconect $dbc) {
-  $db = $dbc->db_obj();
-  if ( mysqli_connect_errno()) {
-    printf("Connect failed: %s\n", mysqli_connect_error());
+function tagCloudLocalPop (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+
+  $i = new folksoDBinteract($dbc);
+
+  if ($i->db_error()) {
+    header('HTTP/1.0 501 Database problem');
+    print $i->error_info() . "\n";
+    return;
   }
 
   // check to see if resource is in db.
-  if ($q->is_param('id')) {
-    $pageres = $db->query("select uri_normal, uri_raw
-                           from resource
-                           where id = " . 
-                          $db->real_escape_string($q->get_param('id')));
-  }
-  elseif ($q->is_param('uri')) {
-    $pageres = $db->query("select uri_normal, uri_raw
-                         from resource
-                         where uri_normal = url_whack('" . $q->get_param('uri') . "')");
+  $ress = $q->is_param('id') ? $q->get_param('id') : $q->get_param('uri');
+  if  (!$i->resourcep($ress))  {
+    if ($i->db_error()) {
+      header('HTTP/1.0 501 Database problem');
+      print $i->error_info() . "\n";
+      return;
+    }
+    else {
+      header('HTTP/1.0 404 Resource not found');      
+      print "Resource not present in database";
+      return;
+    }
   }
 
-  if ($db->errno <> 0) {
-    header('HTTP/1.0 501 Database problem');
-    printf("Statement failed %d: (%s) %s\n", 
-           $db->errno, $db->sqlstate, $db->error);
+  $select = "select tsq.tagdisplay,
+       tsq.id,
+       (select count(distinct itsq.icnt)
+               from (select tag.tagdisplay,
+                    tag.id,
+                    count(tag.id) as icnt
+                    from tag
+                    join tagevent on tagevent.tag_id = tag.id
+                    join resource on tagevent.resource_id = resource.id
+                    where resource.uri_normal = '" . $i->dbquote($q->get_param('clouduri')) . "'
+                    group by tag.id) itsq
+               where itsq.icnt >= tsq.cnt) as rank
+       from (select tag.tagdisplay,
+                    tag.id,
+                    count(tag.id) as cnt
+                    from tag
+                    join tagevent on tagevent.tag_id = tag.id
+                    join resource on tagevent.resource_id = resource.id
+                    where resource.uri_normal = '" . $i->dbquote($q->get_param('clouduri')) . "' 
+                    group by tag.id) tsq
+       ";
+
+  $i->query($select);
+  switch ($i->result_status) {
+  case 'DBERR':
+    header('HTTP/1.1 501 Database error');
+    print $i->error_info() . "\n";
     return;
-  }
-  elseif ($pageres->num_rows == 0) {
-    header('HTTP/1.0 404 Resource not indexed.');
-    print "uri was ". $q->get_param('resourceuri');
+    break;
+  case 'NOROWS':
+    header('HTTP/1.1 204 No tags associated with resource');
     return;
+    break;
+  case 'OK':
+    header('HTTP/1.1 200');
+    break;
   }
-
-
-
-
+  $df = new folksoDisplayFactory();
+  $dd = $df->cloud();
+  $dd->activate_style('xhtml'); // only style available right now.
+  
+  print $dd->startform();
+  while ($row = $i->result->fetch_object()) {
+    print $dd->line($row->rank, $row->tagid, $row->tagdisplay)."\n";
+  }
+  print $dd->endform();
 }
+
 
 /**
  * VisitPage : add a resource (uri) to the resource index

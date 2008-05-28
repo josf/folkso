@@ -15,7 +15,7 @@ include_once('/usr/local/www/apache22/lib/jf/fk/folksoDBconnect.php');
 
 class folksoDBinteract {
 
-private $db;
+public $db;
 public $result;
   public $connect_error= '';
   public $query_error = '';

@@ -10,6 +10,8 @@ class testOffolksoResponse extends  UnitTestCase {
 
   public $rep;
   public $query;
+  public $dbc;
+  public $wsse;
 
     function testConstructor () {
       
@@ -20,14 +22,18 @@ class testOffolksoResponse extends  UnitTestCase {
                                      array());
 
 
+      $this->dbc = new folksoDBconnect('yo', 'yo', 'yo', 'yo');
+      $this->wsse = new folksoWsseCreds('yo');
+
       $test_f = create_function('', 'return true;');
       $act_f = create_function('', 'print "<p>Action!</p>"; return "ok";');
       $this->rep = new folksoResponse('get', 
                                       array('required' => array('uri')),
                                       $act_f);
+      
       $this->assertTrue(($this->rep instanceof folksoResponse));
-      $this->assertTrue($this->rep->activatep($this->query)); 
-      $this->assertEqual($this->rep->Respond($this->query), "ok");
+      $this->assertTrue($this->rep->activatep($this->query, $this->wsse)); 
+      $this->assertEqual($this->rep->Respond($this->query, $this->wsse, $this->dbc), "ok");
 
     }
 }//end class

@@ -18,6 +18,7 @@ class folksoDisplayFactory {
                                  array('type' => 'xhtml',
                                         'start' => '<ul>',
                                         'end' => '</ul>',
+                                       'titleformat' => '<h2>XXX</h2>',
                                         'lineformat' => '<li><a href="XXX">XXX</a></li>',
                                         'argsperline' => 2),
                                  $this->standardTextList(2));
@@ -60,6 +61,7 @@ class folksoDisplayFactory {
     $txt = array('type' => 'text',
                  'start' => "\n",
                  'end' => "\n",
+                 'titleformat' => 'XXX',
                  'argsperline' => $argnum);
 
     $line = '';
@@ -77,6 +79,7 @@ class folksoDisplayFactory {
                                        'start' => '<ul>',
                                        'end' => '</ul>',
                                        'argsperline' => 1,
+                                       'titleformat' => '<h2>XXX</h2>',
                                        'lineformat' => '<li>XXX</li>'),
                                  $this->standardTextList(1));
     $this->addXmlPart($obj, 
@@ -85,6 +88,16 @@ class folksoDisplayFactory {
                       'element');
     return $obj;
   }
+  public function cloud () {
+    $obj = new folksoDataDisplay( array('type' => 'xhtml',
+                                       'start' => '<ul>',
+                                       'end' => '</ul>',
+                                       'argsperline' => 3,
+                                       'lineformat' => '<li class="cloudXXX"><a href="XXX">XXX</a></li>',
+                                        'titleformat' => '<h3>XXX</h3>'));
+    return $obj;
 
+
+  }
 }
 ?>
