@@ -40,17 +40,9 @@ $srv->Respond();
 
 /**
  * Check to see if a resource is present in the database.
+ * 
+ * Web parameters: HEAD + folksouri or folksoid
  */
-function isHeadTest (folksoQuery $q, folksoWsseCreds $cred) {
-  if (($q->method() == 'head') &&
-      (($q->is_param('uri')) ||
-       ($q->is_param('id')))) {
-    return true;
-  }
-  else {
-    return false;
-  }
-}
 
 function isHeadDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
   $db = $dbc->db_obj();
@@ -85,19 +77,11 @@ function isHeadDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) 
 
 /**
  * Retrieve the tags associated with a given resource. Accepts uri or
- * id.
+ * id. 
+ * 
+ * Web parameters : GET + folksoresourceuri or folksoresourceid
+ *
  */
-function getTagsIdsTest (folksoQuery $q, folksoWsseCreds $cred) {
-  if (($q->method() == 'get') &&
-      (($q->is_param('resourceuri')) ||
-       ($q->is_param('resourceid')))) {
-    return true;
-  }
-  else {
-    return false;
-  }
-}
-
 function getTagsIdsDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
   $i = new folksoDBinteract($dbc);
 
@@ -178,7 +162,7 @@ function getTagsIdsDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $d
 /**
  * Tag cloud local.
  *
- * Parameters: , folksoclouduri
+ * Parameters: folksoclouduri
  */
 
 function tagCloudLocalPop (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
@@ -207,7 +191,7 @@ function tagCloudLocalPop (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnec
   }
 
   $select = "select tsq.tagdisplay,
-       tsq.id,
+       tsq.id as tagid,
        (select count(distinct itsq.icnt)
                from (select tag.tagdisplay,
                     tag.id,
@@ -215,7 +199,7 @@ function tagCloudLocalPop (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnec
                     from tag
                     join tagevent on tagevent.tag_id = tag.id
                     join resource on tagevent.resource_id = resource.id
-                    where resource.uri_normal = '" . $i->dbquote($q->get_param('clouduri')) . "'
+                    where resource.uri_normal = url_whack('" . $i->dbquote($q->get_param('clouduri')) . "')
                     group by tag.id) itsq
                where itsq.icnt >= tsq.cnt) as rank
        from (select tag.tagdisplay,
@@ -224,7 +208,7 @@ function tagCloudLocalPop (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnec
                     from tag
                     join tagevent on tagevent.tag_id = tag.id
                     join resource on tagevent.resource_id = resource.id
-                    where resource.uri_normal = '" . $i->dbquote($q->get_param('clouduri')) . "' 
+                    where resource.uri_normal = url_whack('" . $i->dbquote($q->get_param('clouduri')) . "') 
                     group by tag.id) tsq
        ";
 
@@ -257,16 +241,10 @@ function tagCloudLocalPop (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnec
 
 /**
  * VisitPage : add a resource (uri) to the resource index
+ * 
+ * Web parameters: POST + folksovisituri
+ * 
  */
-function visitPageTest (folksoQuery $q, folksoWsseCreds $cred) {
-  if (($q->method() == 'post') &&
-      ($q->is_single_param('folksovisituri'))) {
-    return true;
-  }
-  else {
-    return false;
-  }
-}
 
 function visitPageDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
   $ic = new folksoIndexCache('/tmp/cachetest', 500);  
@@ -297,16 +275,10 @@ function visitPageDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $db
   }
 }
 
-function addResourceTest (folksoQuery $q, folksoWsseCreds $cred) {
-  if (($q->method() == 'post') &&
-      ($q->is_param('newuri'))) {
-    return true;
-  }
-  else {
-    return false;
-  }
-}
-
+/**
+ * Web parameteres : POST + folksonewuri
+ *
+ */
 function addResourceDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
   $db = $dbc->db_obj();
   $action = $db->query("call url_visit('" .
@@ -327,16 +299,9 @@ function addResourceDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $
 }
 
 
-function tagResourceTest (folksoQuery $q, folksoWsseCreds $cred) {
-  if (($q->method() == 'post') &&
-      ($q->is_param('folksoresource')) &&
-      ($q->is_param('folksotag'))) {
-    return true;
-  }
-  else {
-    return false;
-  }
-}
+/**
+ * Web parameters: POST + folksoresource + folksotag
+ */
 
 function tagResourceDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
   $db = $dbc->db_obj();
