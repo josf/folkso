@@ -49,4 +49,21 @@ select tsq.tagdisplay,
                        join resource on tagevent.resource_id = resource.id
                        where resource.uri_normal = 'fabula.org/revue/document1312.php') tsq;
 
-       
+
+
+select tag.tagdisplay,
+       tag.tagnorm,
+       tag.id,
+       (select count(tag_id)
+               from tagevent tage
+               join resource on tage.resource_id = resource.id
+               where (resource.uri_normal = 'fabula.org/revue/document1312.php') and 
+                      (tage.tag_id = tag.id))
+                 as localcount,
+       tpop.popularity as pop
+       from tag
+       join tagevent te on te.tag_id = tag.id
+       join resource res on res.id = te.resource_id
+       join tag_popularity tpop on tpop.tag_id = tag.id
+       where res.uri_normal = 'fabula.org/revue/document1312.php'
+       group by tag.id;

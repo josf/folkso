@@ -108,4 +108,181 @@ end$$
 DELIMITER ;
            
 
-select 1;
+
+
+delimiter $$
+drop procedure if exists update_tag_popularity$$
+create procedure update_tag_popularity()
+
+BEGIN
+        DECLARE l_last_row_fetched INT;
+        declare this_tag int;
+        DECLARE tag_c CURSOR FOR
+                SELECT id FROM tag;
+        DECLARE CONTINUE HANDLER FOR NOT FOUND SET l_last_row_fetched=1;
+
+        DROP TABLE IF EXISTS tag_popularity;
+        CREATE TABLE tag_popularity
+               (tag_id INT UNSIGNED PRIMARY KEY,
+               popularity INT UNSIGNED, INDEX pop (tag_id));
+
+        SET l_last_row_fetched = 0;
+        OPEN tag_c;
+        read_tags: LOOP
+                   FETCH tag_c INTO this_tag;
+                   IF l_last_row_fetched=1 THEN
+                      LEAVE read_tags;
+                   END IF;
+
+                   INSERT INTO tag_popularity
+                          SET tag_id = this_tag,
+                          popularity = (SELECT COUNT(id) 
+                                                    FROM tagevent te
+                                                    WHERE te.tag_id = this_tag);
+        END LOOP read_tags;
+        CLOSE tag_c;
+        SET l_last_row_fetched=0;
+
+END$$
+DELIMITER ; 
+              
+
+DELIMITER $$
+DROP PROCEDURE IF EXISTS cloudy$$
+CREATE PROCEDURE cloudy(url varchar(255), 
+                        localweight int,
+                        globalweight int)
+
+BEGIN
+
+DECLARE url_norm VARCHAR(255);
+
+-- v is to indicate that these are variables, since later we have
+-- identical column names
+DECLARE displayv VARCHAR(255);
+DECLARE normv VARCHAR(255);       
+DECLARE tagidv INT;        
+DECLARE localpopv INT;
+DECLARE globalpopv INT;
+
+DECLARE maxlocal INT;
+DECLARE maxglobal INT;
+
+DECLARE l_last_row_fetched INT default 0;
+
+DECLARE ourdata CURSOR FOR
+         SELECT  tag.tagdisplay,
+               tag.tagnorm,
+               tag.id,
+               (SELECT COUNT(tag_id)
+                       FROM tagevent tage
+                       JOIN resource ON tage.resource_id = resource.id
+                       WHERE (resource.uri_normal = url_whack(url)) AND 
+                             (tage.tag_id = tag.id)) AS localcount,
+               tpop.popularity AS pop
+       FROM tag
+            JOIN tagevent te ON te.tag_id = tag.id
+            JOIN resource res ON res.id = te.resource_id
+            JOIN tag_popularity tpop ON tpop.tag_id = tag.id
+       WHERE res.uri_normal = url_whack(url)
+       GROUP BY tag.id;
+       
+
+DECLARE CONTINUE HANDLER FOR NOT FOUND SET l_last_row_fetched=1;
+
+-- because of a mysql bug
+-- (http://dev.mysql.com/doc/refman/5.1/en/temporary-table-problems.html),
+-- you cannot refer to a temporary table with an alias. Therefore, we
+-- create two, no three! identical tables...
+
+DROP TABLE IF EXISTS output_temp_table;
+CREATE TABLE output_temp_table
+       (tagid INT UNSIGNED PRIMARY KEY,
+        tagnorm VARCHAR(255) NOT NULL,
+        tagdisplay VARCHAR(255) NOT NULL,
+        globalpop INT UNSIGNED,
+        localpop INT UNSIGNED);
+
+
+DROP TABLE IF EXISTS output_temp_table2;
+CREATE TEMPORARY TABLE output_temp_table2
+       (tagid INT UNSIGNED PRIMARY KEY,
+        tagnorm VARCHAR(255) NOT NULL,
+        tagdisplay VARCHAR(255) NOT NULL,
+        globalpop INT UNSIGNED,
+        localpop INT UNSIGNED);
+
+
+DROP TABLE IF EXISTS output_temp_table3;
+CREATE TEMPORARY TABLE output_temp_table3
+       (tagid INT UNSIGNED PRIMARY KEY,
+        tagnorm VARCHAR(255) NOT NULL,
+        tagdisplay VARCHAR(255) NOT NULL,
+        globalpop INT UNSIGNED,
+        localpop INT UNSIGNED);
+
+
+SET l_last_row_fetched = 0;
+OPEN ourdata;
+cursing: LOOP
+         FETCH ourdata INTO displayv, normv, tagidv, localpopv, globalpopv;
+         IF l_last_row_fetched=1 THEN
+            LEAVE cursing;
+         END IF;
+
+         INSERT INTO output_temp_table 
+                SET 
+                    tagdisplay   = displayv,
+                    tagnorm      = normv,
+                    tagid     = tagidv,
+                    localpop  = localpopv,
+                    globalpop = globalpopv;
+
+         INSERT INTO output_temp_table2 
+                SET 
+                    tagdisplay   = displayv,
+                    tagnorm      = normv,
+                    tagid     = tagidv,
+                    localpop  = localpopv,
+                    globalpop = globalpopv;
+
+         INSERT INTO output_temp_table3
+                SET 
+                    tagdisplay   = displayv,
+                    tagnorm      = normv,
+                    tagid     = tagidv,
+                    localpop  = localpopv,
+                    globalpop = globalpopv;
+         
+END LOOP cursing;
+CLOSE ourdata;      
+SET l_last_row_fetched=0;
+
+SELECT tagdisplay,
+       tagnorm,
+       tagid,
+       globalpop AS ottglobalpop,
+       localpop AS ottlocalpop,
+       (select count(distinct output_temp_table2.tagid)
+               from
+               output_temp_table2 
+               where output_temp_table2.localpop <= ottlocalpop) as lpop,
+       (select count(distinct output_temp_table3.tagid)
+               from
+               output_temp_table3
+               where output_temp_table3.globalpop >= ottglobalpop) as gpop
+       from output_temp_table;
+
+
+END$$
+DELIMITER ;
+
+
+
+
+
+
+
+
+
+
