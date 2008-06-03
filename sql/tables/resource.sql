@@ -9,5 +9,6 @@ create table resource
         visited int unsigned default 1 not null,
         added_timestamp timestamp 
         added_by int unsigned not null,
-        status_flaq varchar(255) null)
+        status_flaq varchar(255) null,
+        index urinorm (uri_normal))
         ENGINE = InnoDB;
