@@ -32,6 +32,11 @@ class folksoIndexCache {
     if ($subslasher != $slash) {
       $this->cachedir = $this->cachedir . '/';
     }
+    if (!is_dir($this->cachedir) &&
+        (substr($this->cachedir, 0, 4) == '/tmp')) {
+      mkdir($this->cachedir, 0700);
+    }
+
 
   }
 

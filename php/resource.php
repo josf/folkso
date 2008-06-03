@@ -243,6 +243,7 @@ function tagCloudLocalPop (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnec
  * VisitPage : add a resource (uri) to the resource index
  * 
  * Web parameters: POST + folksovisituri
+ * This uses a cache in /tmp to reduce (drastically) the number of database connections.
  * 
  */
 
@@ -337,7 +338,8 @@ function tagResourceDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $
 
 function db_store_data ($url_obj, $db) {
   
-  $qq = "call url_visit('". $url_obj->get_url(). "', '" . $url_obj->get_title() ."')";
+  $qq = "call url_visit('". $db->real_escape_string($url_obj->get_url()). "', '" . 
+    $db->real_escape_string($url_obj->get_title()) ."', 1)";
 
   $result = $db->query($qq);
   if ($mysqli->errno) {

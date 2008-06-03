@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS TAGEVENT;
+ DROP TABLE IF EXISTS tagevent;
 CREATE TABLE tagevent
        (id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
        tag_id INT UNSIGNED NOT NULL,
@@ -9,7 +9,7 @@ CREATE TABLE tagevent
        INDEX tagdex (tag_id),
        INDEX resdex (resource_id),
        FOREIGN KEY (tag_id) REFERENCES tag(tagids),
-       FOREIGN KEY (resource_id) REFERENCES resource(resnorm) )
+       FOREIGN KEY (resource_id) REFERENCES resource(primary) )
     ENGINE=InnoDB;
 
 -- (local-set-key [(control c) (b)] 'sql-snip)
