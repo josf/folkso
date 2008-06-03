@@ -2,7 +2,9 @@ drop table if exists tag;
 create table tag
        (id int unsigned primary key auto_increment,
        tagnorm varchar(120) not null unique,
-       tagdisplay varchar(150) not null unique)
+       tagdisplay varchar(150) not null unique,
+       index tagids (id),
+       index tagnorms (tagnorm))
     ENGINE=InnoDB;
 
 

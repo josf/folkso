@@ -263,10 +263,12 @@ SELECT tagdisplay,
        tagid,
        globalpop AS ottglobalpop,
        localpop AS ottlocalpop,
+       localweight *
        (select count(distinct output_temp_table2.tagid)
                from
                output_temp_table2 
                where output_temp_table2.localpop <= ottlocalpop) as lpop,
+       globalweight *
        (select count(distinct output_temp_table3.tagid)
                from
                output_temp_table3

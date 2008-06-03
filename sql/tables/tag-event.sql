@@ -1,11 +1,15 @@
-drop table if exists tagevent;
-create table tagevent
-       (id int unsigned primary key auto_increment,
-       tag_id int unsigned not null,
-       resource_id int unsigned not null, 
-       meta_id int unsigned default 0 not null,
-       user_id int unsigned not null,
-       tagtime timestamp not null)
+DROP TABLE IF EXISTS TAGEVENT;
+CREATE TABLE tagevent
+       (id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+       tag_id INT UNSIGNED NOT NULL,
+       resource_id INT UNSIGNED NOT NULL, 
+       meta_id INT UNSIGNED DEFAULT 0 NOT NULL,
+       user_id INT UNSIGNED NOT NULL,
+       tagtime TIMESTAMP NOT NULL,
+       INDEX tagdex (tag_id),
+       INDEX resdex (resource_id),
+       FOREIGN KEY (tag_id) REFERENCES tag(tagids),
+       FOREIGN KEY (resource_id) REFERENCES resource(resnorm) )
     ENGINE=InnoDB;
 
 -- (local-set-key [(control c) (b)] 'sql-snip)
