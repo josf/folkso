@@ -8,8 +8,8 @@ CREATE TABLE tagevent
        tagtime TIMESTAMP NOT NULL,
        INDEX tagdex (tag_id),
        INDEX resdex (resource_id),
-       FOREIGN KEY (tag_id) REFERENCES tag(tagids),
-       FOREIGN KEY (resource_id) REFERENCES resource(primary) )
+       FOREIGN KEY (tag_id) REFERENCES tag(id),
+       FOREIGN KEY (resource_id) REFERENCES resource(id) )
     ENGINE=InnoDB;
 
 -- (local-set-key [(control c) (b)] 'sql-snip)

@@ -5,7 +5,7 @@
 -- Normalize tag
 
 -- (local-set-key [(control c) (b)] 'sql-snip) 
---(defun sql-snip () (interactive) (snippet-insert "set final_tag = replace(final_tag, '$${1}', '$${2}');
+-- (defun sql-snip () (interactive) (snippet-insert "set final_tag = replace(final_tag, '$${1}', '$${2}');
 -- "))
 
 delimiter $$
@@ -164,9 +164,12 @@ DECLARE normv VARCHAR(255);
 DECLARE tagidv INT;        
 DECLARE localpopv INT;
 DECLARE globalpopv INT;
+DECLARE weightv INT;        
 
 DECLARE maxlocal INT;
 DECLARE maxglobal INT;
+DECLARE maxweight INT;
+DECLARE minweight INT;
 
 DECLARE l_last_row_fetched INT default 0;
 
@@ -186,6 +189,23 @@ DECLARE ourdata CURSOR FOR
             JOIN tag_popularity tpop ON tpop.tag_id = tag.id
        WHERE res.uri_normal = url_whack(url)
        GROUP BY tag.id;
+DECLARE finaldata CURSOR FOR
+SELECT tagdisplay,
+       tagnorm,
+       tagid,
+       globalpop AS ottglobalpop,
+       localpop AS ottlocalpop,
+       (localweight *
+       (select count(distinct output_temp_table2.tagid)
+               from
+               output_temp_table2 
+               where output_temp_table2.localpop <= ottlocalpop)) +
+       (globalweight *
+       (select count(distinct output_temp_table3.tagid)
+               from
+               output_temp_table3
+               where output_temp_table3.globalpop >= ottglobalpop)) as weight
+       from output_temp_table;
        
 
 DECLARE CONTINUE HANDLER FOR NOT FOUND SET l_last_row_fetched=1;
@@ -212,7 +232,6 @@ CREATE TEMPORARY TABLE output_temp_table2
         globalpop INT UNSIGNED,
         localpop INT UNSIGNED);
 
-
 DROP TABLE IF EXISTS output_temp_table3;
 CREATE TEMPORARY TABLE output_temp_table3
        (tagid INT UNSIGNED PRIMARY KEY,
@@ -220,7 +239,6 @@ CREATE TEMPORARY TABLE output_temp_table3
         tagdisplay VARCHAR(255) NOT NULL,
         globalpop INT UNSIGNED,
         localpop INT UNSIGNED);
-
 
 SET l_last_row_fetched = 0;
 OPEN ourdata;
@@ -258,23 +276,50 @@ END LOOP cursing;
 CLOSE ourdata;      
 SET l_last_row_fetched=0;
 
-SELECT tagdisplay,
-       tagnorm,
-       tagid,
-       globalpop AS ottglobalpop,
-       localpop AS ottlocalpop,
-       localweight *
-       (select count(distinct output_temp_table2.tagid)
-               from
-               output_temp_table2 
-               where output_temp_table2.localpop <= ottlocalpop) as lpop,
-       globalweight *
-       (select count(distinct output_temp_table3.tagid)
-               from
-               output_temp_table3
-               where output_temp_table3.globalpop >= ottglobalpop) as gpop
-       from output_temp_table;
 
+DROP TABLE IF EXISTS final_output;
+CREATE TEMPORARY TABLE final_output
+       (tagdisplay VARCHAR(255) NOT NULL, 
+       tagnorm VARCHAR(255) NOT NULL, 
+       tagid INT UNSIGNED NOT NULL, 
+       weight INT UNSIGNED NOT NULL);
+
+SET l_last_row_fetched = 0;
+OPEN finaldata;
+cussing: LOOP
+         FETCH finaldata INTO displayv, normv, tagidv, globalpopv, localpopv, weightv;
+         IF l_last_row_fetched=1 THEN
+            LEAVE cussing;
+         END IF;
+
+         INSERT INTO final_output
+                SET
+                tagdisplay = displayv,
+                tagnorm    = normv,
+                tagid      = tagidv,
+                weight     = weightv;
+
+END LOOP cussing;
+CLOSE finaldata;      
+SET l_last_row_fetched=0;
+
+select max(weight)
+       into maxweight
+       from final_output;
+
+select min(weight)
+       into minweight
+       from final_output;
+
+select tagdisplay, tagnorm, tagid, weight,
+       case  
+             when (weight - minweight) > 0.8 * (maxweight - minweight) then 5
+             when (weight - minweight) > 0.6 * (maxweight - minweight) then 4
+             when (weight - minweight) > 0.4 * (maxweight - minweight) then 3
+             when (weight - minweight) > 0.2 * (maxweight - minweight) then 2
+       else 1
+       end as cloudweight
+       from final_output;
 
 END$$
 DELIMITER ;
