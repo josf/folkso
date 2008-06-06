@@ -2,7 +2,7 @@
 
 
   /**
-   * Web interface providing information about tags.
+   * Web interface providing information about resources.
    *
    * @package Folkso
    * @author Joseph Fahey
@@ -162,7 +162,7 @@ function getTagsIdsDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $d
 /**
  * Tag cloud local.
  *
- * Parameters: folksoclouduri
+ * Parameters: GET, folksoclouduri
  */
 
 function tagCloudLocalPop (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
@@ -176,8 +176,8 @@ function tagCloudLocalPop (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnec
   }
 
   // check to see if resource is in db.
-  $ress = $q->is_param('id') ? $q->get_param('id') : $q->get_param('uri');
-  if  (!$i->resourcep($ress))  {
+
+  if  (!$i->resourcep($q->get_param('clouduri' )) )  {
     if ($i->db_error()) {
       header('HTTP/1.0 501 Database problem');
       print $i->error_info() . "\n";
@@ -190,29 +190,8 @@ function tagCloudLocalPop (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnec
     }
   }
 
-  $select = "select tsq.tagdisplay,
-       tsq.id as tagid,
-       (select count(distinct itsq.icnt)
-               from (select tag.tagdisplay,
-                    tag.id,
-                    count(tag.id) as icnt
-                    from tag
-                    join tagevent on tagevent.tag_id = tag.id
-                    join resource on tagevent.resource_id = resource.id
-                    where resource.uri_normal = url_whack('" . $i->dbquote($q->get_param('clouduri')) . "')
-                    group by tag.id) itsq
-               where itsq.icnt >= tsq.cnt) as rank
-       from (select tag.tagdisplay,
-                    tag.id,
-                    count(tag.id) as cnt
-                    from tag
-                    join tagevent on tagevent.tag_id = tag.id
-                    join resource on tagevent.resource_id = resource.id
-                    where resource.uri_normal = url_whack('" . $i->dbquote($q->get_param('clouduri')) . "') 
-                    group by tag.id) tsq
-       ";
-
-  $i->query($select);
+  
+  $i->query("call cloudy('" . $q->get_param('clouduri') . "', 5, 5)");
   switch ($i->result_status) {
   case 'DBERR':
     header('HTTP/1.1 501 Database error');
@@ -233,7 +212,7 @@ function tagCloudLocalPop (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnec
   
   print $dd->startform();
   while ($row = $i->result->fetch_object()) {
-    print $dd->line($row->rank, $row->tagid, $row->tagdisplay)."\n";
+    print $dd->line($row->cloudweight, $row->tagid, $row->tagdisplay)."\n";
   }
   print $dd->endform();
 }

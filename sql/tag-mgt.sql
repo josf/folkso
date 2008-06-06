@@ -5,7 +5,7 @@
 -- Normalize tag
 
 -- (local-set-key [(control c) (b)] 'sql-snip) 
--- (defun sql-snip () (interactive) (snippet-insert "set final_tag = replace(final_tag, '$${1}', '$${2}');
+--(defun sql-snip () (interactive) (snippet-insert "set final_tag = replace(final_tag, '$${1}', '$${2}');
 -- "))
 
 delimiter $$
@@ -145,7 +145,8 @@ BEGIN
 
 END$$
 DELIMITER ; 
-              
+
+
 
 DELIMITER $$
 DROP PROCEDURE IF EXISTS cloudy$$
@@ -189,6 +190,8 @@ DECLARE ourdata CURSOR FOR
             JOIN tag_popularity tpop ON tpop.tag_id = tag.id
        WHERE res.uri_normal = url_whack(url)
        GROUP BY tag.id;
+
+
 DECLARE finaldata CURSOR FOR
 SELECT tagdisplay,
        tagnorm,
@@ -323,7 +326,6 @@ select tagdisplay, tagnorm, tagid, weight,
 
 END$$
 DELIMITER ;
-
 
 
 
