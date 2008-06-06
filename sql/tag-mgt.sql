@@ -189,6 +189,7 @@ DECLARE ourdata CURSOR FOR
             JOIN tag_popularity tpop ON tpop.tag_id = tag.id
        WHERE res.uri_normal = url_whack(url)
        GROUP BY tag.id;
+
 DECLARE finaldata CURSOR FOR
 SELECT tagdisplay,
        tagnorm,
