@@ -5,7 +5,7 @@
 -- Normalize tag
 
 -- (local-set-key [(control c) (b)] 'sql-snip) 
--- (defun sql-snip () (interactive) (snippet-insert "set final_tag = replace(final_tag, '$${1}', '$${2}');
+--(defun sql-snip () (interactive) (snippet-insert "set final_tag = replace(final_tag, '$${1}', '$${2}');
 -- "))
 
 delimiter $$
@@ -145,7 +145,8 @@ BEGIN
 
 END$$
 DELIMITER ; 
-              
+
+
 
 DELIMITER $$
 DROP PROCEDURE IF EXISTS cloudy$$
@@ -324,7 +325,6 @@ select tagdisplay, tagnorm, tagid, weight,
 
 END$$
 DELIMITER ;
-
 
 
 
