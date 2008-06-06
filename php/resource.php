@@ -212,7 +212,7 @@ function tagCloudLocalPop (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnec
   
   print $dd->startform();
   while ($row = $i->result->fetch_object()) {
-    print $dd->line($row->cloudweight, $row->tagid, $row->tagdisplay)."\n";
+    print $dd->line($row->cloudweight, "http://fabula.org/commun3/folksonomie/tag.php?folksotagresources=".$row->tagid, $row->tagdisplay)."\n";
   }
   print $dd->endform();
 }
@@ -264,7 +264,7 @@ function addResourceDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $
   $action = $db->query("call url_visit('" .
                        $db->real_escape_string($q->get_param('newuri')) . 
                        "', '" .
-                       $db->real_escape_string($q->get_param('newtitle')) . "')");
+                       $db->real_escape_string($q->get_param('newtitle')) . "', 500)");
       
   if ($db->errno <> 0) {
     header('HTTP/1.1 501 DB error');
