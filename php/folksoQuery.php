@@ -1,5 +1,6 @@
 <?php
-  /**
+
+/**
    * This class provides a unified interface for all of the data
    * pertaining to the HTTP request, including GET and POST
    * parameters, and possible PUT and DELETE parameters should we end
@@ -49,9 +50,11 @@ class folksoQuery {
     foreach ($array as $param_key => $param_val) {
       if (substr($param_key, 0, 6) == 'folkso') {
 
-        // if fieldname end in 3 digits : folksothing123, we strip off
-        // the digits and build up an array of the fields
-        if (preg_match('/\d\d\d$/', $param_key)) {
+        # if fieldname end in 3 digits : folksothing123, we strip off
+        # the digits and build up an array of the fields
+#        if (preg_match('/\d\d\d$/', $param_key)) {
+      if ( 1 == 0 ) {
+
           $new_key = substr($param_key, 0, -3);
 
           // for 1st time through
@@ -66,7 +69,7 @@ class folksoQuery {
       }
     }
 
-    // If there are multiple fields, put them into $accum
+    # If there are multiple fields, put them into $accum
     if (count($mults) > 0){
       foreach ($mults as $mkey => $mval) {
         $accum[$mkey] = $mval;
