@@ -36,20 +36,9 @@ $srv->Respond();
  * checkTag (Test and Do) : given a string, checks if that tag is
  * already present in the database.
  *
- *
+ * HEAD, tag
  *
  */
-
-function headCheckTagTest (folksoQuery $q, folksoWsseCreds $cred) {
-  if (($q->method() == 'head') &&
-      ($q->is_param('tag'))) {
-    return true;
-  }
-  else {
-    return false;
-  }
-}
-
 function headCheckTagDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
   $db = $dbc->db_obj();
   if ($dbc->dberr){
@@ -94,7 +83,6 @@ function headCheckTagDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect 
  * the tag. Don't know what it should do if the tag does not
  * exist. 404?
  */
-
 function getTagDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
   $db = $dbc->db_obj();
   if ($dbc->dberr){
@@ -136,16 +124,6 @@ function getTagDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) 
  *
  * Parameters: GET, resources (single param)
  */
-function getTagResourcesTest (folksoQuery $q, folksoWsseCreds $cred) {
-
-  if (($q->method() == 'get') &&
-      ($q->is_single_param('folksoresources'))) {
-    return true;
-  }
-  else {
-    return false;
-  }
-}
 
 function getTagResourcesDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
   $db = $dbc->db_obj();
@@ -241,8 +219,6 @@ function singlePostTagDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect
     }
   }
 }
-
-
 
 /** 
  * GET, autotag
