@@ -212,7 +212,7 @@ function tagCloudLocalPop (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnec
   
   print $dd->startform();
   while ($row = $i->result->fetch_object()) {
-    print $dd->line($row->cloudweight, "http://fabula.org/commun3/folksonomie/tag.php?folksotagresources=".$row->tagid, $row->tagdisplay)."\n";
+    print $dd->line($row->cloudweight, "http://fabula.org/commun3/folksonomie/tag.php?folksoresources=".$row->tagid, $row->tagdisplay)."\n";
   }
   print $dd->endform();
 }
