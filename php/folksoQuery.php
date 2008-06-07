@@ -35,6 +35,9 @@ class folksoQuery {
 
 
    /**
+    *
+    * @params array $array : an array made up of $_SERVER etc.
+    * 
     * Checks for keys starting with 'folkso' and adds them to the
     * object. Values longer than 300 characters are shortened to 300
     * characters. 300 is chosen because it is a bit more than 255, the
@@ -45,29 +48,32 @@ class folksoQuery {
     * single parameter name, stripped of the three finale digits.
     */
   private function parse_params ($array) {
-    $accum = array();
-    $mults = array();
-    foreach ($array as $param_key => $param_val) {
-      if (substr($param_key, 0, 6) == 'folkso') {
+      $accum = array();
+      $mults = array();
+      foreach ($array as $param_key => $param_val) {
+          if (substr($param_key, 0, 6) == 'folkso') {
+              
+              # if fieldname end in 3 digits : folksothing123, we strip off
+              # the digits and build up an array of the fields
+              if (preg_match('/\d\d\d$/', $param_key)) {
+                  $new_key = substr($param_key, 0, -3);
 
-        # if fieldname end in 3 digits : folksothing123, we strip off
-        # the digits and build up an array of the fields
-#        if (preg_match('/\d\d\d$/', $param_key)) {
-      if ( 1 == 0 ) {
+                 # for 1st time through
+                  if (! isset($mults[$new_key])) {
+                      $mults[$new_key] = array();
+                  }      
+                  array_push($mults[$new_key],
+                         $this->field_shorten($param_val));
+              }
+              else {
+                  if ( $param_key == 'folksopage' ) {
+                      $param_val = $this->checkpage($param_val);
+                  }
 
-          $new_key = substr($param_key, 0, -3);
-
-          // for 1st time through
-          if (! isset($mults[$new_key])) {
-            $mults[$new_key] = array();
+                  $accum[$param_key] = $this->field_shorten($param_val);
+              }
           }
-          array_push($mults[$new_key], $this->field_shorten($param_val));
-        }
-        else {
-          $accum[$param_key] = $this->field_shorten($param_val);
-        }
       }
-    }
 
     # If there are multiple fields, put them into $accum
     if (count($mults) > 0){
@@ -78,6 +84,31 @@ class folksoQuery {
     return $accum;
   }
 
+/**
+  * If the 'folksopage' parameter is present, this function validates
+  *  it, makes  sure that it is an integer and that it is not longer
+  * than 4 digits. (If it is longer, the first four digits are used.)
+  *
+  * In case of a malformed field, 0 is returned, which should
+  * eliminate the effect of the field.
+  *
+  * @param mixed $page Ideally this is an integer, but we want to be sure
+  * @return integer
+  */
+  private function checkpage( $page ) {
+      if (preg_match('/^\d+$/', $page)) {
+          if ( strlen($page) > 4) {
+            return substr($page, 1, 4);
+      }
+          else {
+              return $page;    
+          }         
+      }         
+         else { 
+             return 0;
+         }              
+  }     
+  
   public function content_type () {
     return $this->content_type;
   }

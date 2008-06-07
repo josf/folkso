@@ -149,12 +149,16 @@ function getTagResourcesDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconne
 
   if  ((!$q->is_param('page')) ||
        ($q->get_param('page') == 1))  {
-      $querybase .= "\n limit 15";
+      $querybase .= "\n limit 20";
+  }
+  else {
+      $querybase .= "\n limit ". $q->get_param('page') * 20 . ",20";
   }
   
     $result = $db->query($querybase);
     if ($db->errno <> 0) {
-      printf("Statement failed %d: (%s) %s\n", 
+        header('HTTP/1.1 501 Database error');
+        printf("Statement failed %d: (%s) %s\n", 
              $db->errno, $db->sqlstate, $db->error);
     }
     # We have results
@@ -185,7 +189,7 @@ function getTagResourcesDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconne
         printf("Statement failed %d: (%s) %s\n",
                $db->errno, $db->sqlstate, $db->error);
       }
-      // No TAG!
+      # No TAG!
       elseif ($eres->num_rows == 0) {
         header('HTTP/1.1 404');
         print "Tag '" . $q->get_param('resources') . "' does not seem to exist";
