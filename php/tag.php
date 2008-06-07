@@ -11,7 +11,7 @@ $srv->addResponseObj(new folksoResponse('get',
                                         'getTagDo'));
 
 $srv->addResponseObj(new folksoResponse('get', 
-                                        array('required_single' => array('tagresources')),
+                                        array('required_single' => array('resources')),
                                         'getTagResourcesDo'));
 
 $srv->addResponseObj(new folksoResponse('post',
@@ -124,7 +124,6 @@ function getTagDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) 
  *
  * Parameters: GET, resources (single param)
  */
-
 function getTagResourcesDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
   $db = $dbc->db_obj();
     if ( mysqli_connect_errno()) {
@@ -147,6 +146,12 @@ function getTagResourcesDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconne
         "where tag.tagnorm = normalize_tag('" .
         $db->real_escape_string($q->get_param('resources')) . "')";
     }
+
+  if  ((!$q->is_param('page')) ||
+       ($q->get_param('page') == 1))  {
+      $querybase .= "\n limit 15";
+  }
+  
     $result = $db->query($querybase);
     if ($db->errno <> 0) {
       printf("Statement failed %d: (%s) %s\n", 
