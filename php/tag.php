@@ -123,6 +123,10 @@ function getTagDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) 
  * Retrieves a list of the resources associated with the given tag.
  *
  * Parameters: GET, resources (single param)
+ *
+ * We might have to think about adding a way to announce whether there
+ * is a "next page" or not.
+ * 
  */
 function getTagResourcesDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
   $db = $dbc->db_obj();
