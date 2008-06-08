@@ -40,83 +40,78 @@ $srv->Respond();
  *
  */
 function headCheckTagDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
-  $db = $dbc->db_obj();
-  if ($dbc->dberr){
-    header('HTTP/1.1 501');
-    print "Database connection error.  ";
-    print $dbc->dberr;
-    die("Something is wrong.");
+  $i = new folksoDBinteract($dbc);
+  if ($i->db_error()) {
+    header('HTTP/1.1 501 Database error');
+    die($i->error_info());
   }
 
-  $result = $db->query("select id from tag where tagnorm = normalize_tag('" .
-                       $db->real_escape_string($q->get_param('tag')) .
-                       "') " . 
-                       "limit 1");
-
-  if ($db->errno <> 0) {
-    header('HTTP/1.1 501');
-    printf("Statement failed %d: (%s) %s\n", 
-           $db->errno, $db->sqlstate, $db->error);
-    die("DB error");
-  }
+  $i->query("select id from tag where tagnorm = normalize_tag('" .
+            $i->dbquote($q->get_param('tag')) .
+            "') " . 
+            " limit 1");
   
-  if ($result->num_rows == 0) {
-    header('HTTP/1.1 404');
-  }
-  else {
-    header('HTTP/1.1 200');
+  switch ($i->result_status) {
+  case 'DBERR':
+    header('HTTP/1.1 501 Database error');
+    die($i->error_info());
+    break;
+  case 'NOROWS':
+    header('HTTP/1.1 404 Tag does not exist');
+    die('The tag '. $q->get_param('tag') . ' is not present in our database.');
+    break;
+  case 'OK':
+    header('HTTP/1.1 200 Tag exists');
     $id = 0;
-    while ($row = $result->fetch_object()) {
+    while ($row = $i->result->fetch_object()) {
       $id = $row->id;
     }
     header("X-Folkso-Tagid: " . $id);
   }
 }
 
-
 /** 
  *  GET
  */
 
 /**
- * getTag (Test and Do) : with tag id, return the display version of
- * the tag. Don't know what it should do if the tag does not
- * exist. 404?
+ * getTag : with tag id, return the display version of
+ * the tag. 
+ *
  */
 function getTagDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
-  $db = $dbc->db_obj();
-  if ($dbc->dberr){
-    header('HTTP/1.1 501');
-    print "Database connection error.  ";
-    print $dbc->dberr;
-    die("Something is wrong.");
+  $i = new folksoDBinteract($dbc);
+
+  if ($i->db_error()) {
+    header('HTTP/1.1 501 Database problem');
+    die( $i->error_info());
   }
 
-  $result = $db->query("select tagdisplay from tag where id ='". 
-                       $db->real_escape_string($q->get_param('folksotagid')) ."'");
-  if ($db->errno <> 0) {
-    header('HTTP/1.1 501');
-    printf("Statement failed %d: (%s) %s\n", 
-           $db->errno, $db->sqlstate, $db->error);
+  $i->query("select tagdisplay from tag where id ='". 
+            $i->dbquote($q->get_param('folksotagid')) . "'");
+
+  switch ($i->result_status) {
+  case 'DBERR':
+    header('HTTP/1.1 501 Database error');
+    die( $i->error_info());
+    break;
+  case 'NOROWS':
+    header('HTTP/1.1 404 Tag not found');
+    die('The tag ' . $q->get_param('tagid') . ' was not found');
+    break;
+  case 'OK':
+    header('HTTP/1.1 200');
+    break;
   }
-  else {
-    if ($result->num_rows == 0) {
-      header('HTTP/1.1 404');
-      print "Tag not found: ". $q->get_param('tagid');
-      return;
-    }
-    else {
-      header('HTTP/1.1 200');
-      $df = new folksoDisplayFactory();
-      $disp = $df->singleElementList();
-      $disp->activate_style('xml');
-      print $disp->startform();
-      while($row = $result->fetch_object()) {
-        print $disp->line($row->tagdisplay);
-      }
-      print $disp->endform();
+
+  $df = new folksoDisplayFactory();
+  $disp = $df->singleElementList();
+  $disp->activate_style('xml');
+  print $disp->startform();
+  while($row = $i->result->fetch_object()) {
+    print $disp->line($row->tagdisplay);
   }
-}
+  print $disp->endform();
 }
 
 /**
@@ -129,80 +124,90 @@ function getTagDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) 
  * 
  */
 function getTagResourcesDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
-  $db = $dbc->db_obj();
-    if ( mysqli_connect_errno()) {
-      printf("Connect failed: %s\n", mysqli_connect_error());
-    }
-    $querybase = "select distinct
-                 uri_raw as href, uri_normal, title, 
-                 case when title is null then uri_normal else title end as display
-              from resource
-                 join tagevent on resource.id = tagevent.resource_id
-                 join tag on tagevent.tag_id = tag.id ";
+  $i = new folksoDBinteract($dbc);
 
-    if (preg_match( '/^\d+$/', $q->get_param('resources'))) {
-      $querybase .= 
-        "where tag.id = " . 
-        $db->real_escape_string($q->get_param('resources'));
+  if ( $i->db_error() ) {
+    header('HTTP/1.1 501 Database problem');
+    print $i->error_info() . "\n";
+    return;
+  }
+
+  // check to see if tag exists
+  if (!$i->tagp($q->get_param('resources'))) {
+    if ($i->db_error()) {
+      header('HTTP/1.0 501 Database problem');
+      print $i->error_info() . "\n";
+      return;
     }
     else {
-      $querybase .= 
-        "where tag.tagnorm = normalize_tag('" .
-        $db->real_escape_string($q->get_param('resources')) . "')";
+      header('HTTP/1.1 404 Tag not found');
+      print $q->get_param('resource') . " does not exist in the database";
+      return;
     }
+  }
+    
+  $querybase = "SELECT DISTINCT
+                 uri_raw AS href, uri_normal, title, 
+                 CASE 
+                   WHEN title IS NULL THEN uri_normal 
+                   ELSE title 
+                 END AS display
+              FROM resource
+                 JOIN tagevent ON resource.id = tagevent.resource_id
+                 JOIN tag ON tagevent.tag_id = tag.id ";
 
+  // tag by ID
+  if (preg_match( '/^\d+$/', $q->get_param('resources'))) {
+    $querybase .= 
+      "WHERE tag.id = " . 
+      $i->dbquote($q->get_param('resources'));
+  } //tag by string
+  else {
+    $querybase .= 
+      "WHERE tag.tagnorm = normalize_tag('" .
+      $i->dbquote($q->get_param('resources')) . "')";
+  }
+
+  //pagination
   if  ((!$q->is_param('page')) ||
        ($q->get_param('page') == 1))  {
-      $querybase .= "\n limit 20";
+      $querybase .= "  LIMIT 20";
   }
   else {
-      $querybase .= "\n limit ". $q->get_param('page') * 20 . ",20";
+      $querybase .= "  LIMIT ". $q->get_param('page') * 20 . ",20";
   }
   
-    $result = $db->query($querybase);
-    if ($db->errno <> 0) {
-        header('HTTP/1.1 501 Database error');
-        printf("Statement failed %d: (%s) %s\n", 
-             $db->errno, $db->sqlstate, $db->error);
-    }
-    # We have results
-    elseif ($result->num_rows > 0) {
-      header('HTTP/1.1 200');
-      $df = new folksoDisplayFactory();
-      $dd = $df->basicLinkList();
+  $i->query($querybase);
+  switch ($i->result_status) {
+  case 'DBERR':
+    header('HTTP/1.1 501 Database error');
+    print $i->error_info() . "\n";
+    return;
+    break;
+  case 'NOROWS':
+    header('HTTP/1.1 204 No resources associated with  tag');
+    print "No resources are currently associated with " . $q->get_param('resources');
+    return;
+    break;
+  case 'OK':
+    header('HTTP/1.1 200');
+    break; // now we do the rest, assuming all is well.
+  }
 
-      if ($q->content_type() == 'text/html') {
-        $dd->activate_style('xhtml');
-      }
-      else {
-        $dd->activate_style('xhtml');
-      }
-      print $dd->startform();
-      while ($row = $result->fetch_object()) {
-        print $dd->line( $row->href, $row->display);
-      }
-      print $dd->endform();
-    }
-    else { # No results : is it the tag or the resources' fault?
-      $eres = $db->query("select id from tag where tag.id = '" .
-                         $db->real_escape_string($q->get_param('resources')) . "'".
-                         "or tag.tagnorm = normalize_tag('" .
-                         $db->real_escape_string($q->get_param('resources')) ."')");
-      if ($db->errno <> 0) {
-        header('HTTP/1.1 501');
-        printf("Statement failed %d: (%s) %s\n",
-               $db->errno, $db->sqlstate, $db->error);
-      }
-      # No TAG!
-      elseif ($eres->num_rows == 0) {
-        header('HTTP/1.1 404');
-        print "Tag '" . $q->get_param('resources') . "' does not seem to exist";
-      }
-      else { // No resources
-        header('HTTP/1.1 204');
-        print "No resources associated with this tag";
-      }
-    }
+  $df = new folksoDisplayFactory();
+  $dd = $df->basicLinkList();
+  
+  if ($q->content_type() == 'text/html') {
+    $dd->activate_style('xhtml');
+  }
+  else {
+    $dd->activate_style('xhtml');
+  }
+  print $dd->startform();
+  while ($row = $i->result->fetch_object()) {
+    print $dd->line( $row->href, $row->display);
+  }
+  print $dd->endform();
 }
 
 /**

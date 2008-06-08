@@ -117,7 +117,7 @@ public $result;
     if (preg_match('/^\d+$/', $tagstring)) {
       $select = "select id from tag
                  where id = " . $tagstring .
-                 "limit 1";
+                 " limit 1";
     }
     else {
       $select = 
@@ -125,7 +125,7 @@ public $result;
                   where tagnorm = normalize_tag('" .
         $this->db->real_escape_string($tagstring) .
         "') 
-        limit 1";
+         limit 1";
     }
     $this->query($select);
     if ($this->result_status == 'OK') {
@@ -151,7 +151,7 @@ public $result;
       $select = "select id from resource
                  where id = " .
         $this->db->real_escape_string($url) . 
-        " limit 1";
+        "  limit 1";
     }
     else {
       $select = "select id from resource 
