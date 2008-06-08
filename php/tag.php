@@ -4,7 +4,7 @@ include('/usr/local/www/apache22/lib/jf/fk/folksoTags.php');
 
 
 
-$srv = new folksoServer(array( 'methods' => array('POST', 'GET', 'HEAD'),
+$srv = new folksoServer(array( 'methods' => array('POST', 'GET', 'HEAD', 'DELETE'),
                                'access_mode' => 'ALL'));
 $srv->addResponseObj(new folksoResponse('get', 
                                         array('required' => array('tagid')),
@@ -25,6 +25,9 @@ $srv->addResponseObj(new folksoResponse('get',
 $srv->addResponseObj(new folksoResponse('head',
                                         array('required' => array('tag')),
                                         'headCheckTagDo'));
+$srv->addResponseObj(new folksoResponse('delete',
+                                        array('required' => array('delete')),
+                                        'deleteTag'));
 
 $srv->Respond();
 
@@ -168,15 +171,18 @@ function getTagResourcesDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconne
       $i->dbquote($q->get_param('resources')) . "')";
   }
 
+  $querybase .= " ORDER BY resource.visited DESC ";  
+
   //pagination
   if  ((!$q->is_param('page')) ||
        ($q->get_param('page') == 1))  {
-      $querybase .= "  LIMIT 20";
+      $querybase .= "  LIMIT 20 ";
   }
   else {
-      $querybase .= "  LIMIT ". $q->get_param('page') * 20 . ",20";
+      $querybase .= "  LIMIT ". $q->get_param('page') * 20 . ",20 ";
   }
-  
+
+
   $i->query($querybase);
   switch ($i->result_status) {
   case 'DBERR':
@@ -242,7 +248,6 @@ function singlePostTagDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect
  * GET, autotag
  */
 function autoCompleteTagsDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
-  
   $req = substr($q->get_param('autotag'), 0, 3);
   
   $db = $dbc->db_obj();
@@ -277,5 +282,66 @@ function autoCompleteTagsDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconn
     return;
   }
 }
+
+/**
+ * DELETE, folksodelete (can be tag id or tag name)
+ *
+ * Obviously, this badly needs authentication!
+ */
+function deleteTag  (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+  $i = new folksoDBinteract($dbc);
+
+  if ( $i->db_error() ) {
+    header('HTTP/1.1 501 Database problem');
+    print $i->error_info() . "\n";
+    return;
+  }
+
+  /* Check to see if tag is there. This might not be necessary: if the
+   * tag does not exist, we just continue */
+  if (!$i->tagp($q->get_param('delete'))) {
+    if ($i->db_error()) {
+      header('HTTP/1.1 501 Database problem');
+      die($i->error_info());
+    }
+    else {
+      header('HTTP/1.1 404 Could not delete - tag not found');
+      print $q->get_param('resource') . " does not exist in the database";
+      return;
+    }
+  }
+
+  // delete 1 : remove tagevents
+  // delete 2 : remove the tag itself
+  $delete1 = '';
+  $delete2 = "delete from tag  ";
+
+  if ($q->is_number('delete')) {
+    $delete1 .= ' delete from tagevent where tag_id='. $q->get_param('delete');
+    $delete2 .= ' where id='. $q->get_param('delete');
+  }
+  else {
+    $delete1 .= " DELETE tagevent FROM tagevent JOIN ON tag WHERE tagevent.tag_id = tag.id
+                  WHERE tag.tagnorm = normalize_tag('" . $q->get_param('delete') . "')";    
+    $delete2 .= " WHERE tagnorm = normalize_tag('" . $q->get_param('delete') . "')";
+  }
+
+  $i->query($delete1); // delete tagevent
+  if ($i->result_status ==  'DBERR') {
+    header('HTTP/1.1 501 Database error');
+    die("Initial tagevent delete failed " . $i->error_info());
+  }
+
+  $i->query($delete2); // delete tag
+  if ($i->result_status ==  'DBERR') {
+    header('HTTP/1.1 501 Database error');
+    die("Secondary delete failed ". $i->error_info());
+  }
+  else {
+    header('HTTP/1.1 204 Deleted');
+    return;
+  }
+}
+
 
 ?>
