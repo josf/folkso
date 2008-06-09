@@ -9,9 +9,6 @@
    * @copyright 2008 Gnu Public Licence (GPL)
    */
 
-
-
-
   //include('/var/www/dom/fabula/commun3/folksonomie/folksoTags.php');
 include('/usr/local/www/apache22/lib/jf/fk/folksoTags.php');
 

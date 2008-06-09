@@ -20,6 +20,12 @@ public $result;
   public $connect_error= '';
   public $query_error = '';
   public $result_status;
+  
+  /**
+   * When $this->first_val() is called, it stores the result here for
+   * future calls.
+   */
+  private $first_val;
 
   /**
    * On object creation, the caller should check error status to make
@@ -77,6 +83,7 @@ public $result;
    * @return 
    */
   public function query ($query) {
+    $this->first_val = ''; // reset first_val for new query (just in case).
     $this->result = $this->db->query($query);
 
     if ($this->db->errno <> 0) {
@@ -176,6 +183,36 @@ public $result;
    */
   public function dbquote ($str) {
     return $this->db->real_escape_string($str);
+  }
+
+  /**
+   * Use the db handle's quoting mechanisme.
+   *
+   * @param string $str
+   *
+   * Use this and not dbquote, which will be changed into a real
+   * quoting function soon.
+   */
+  public function dbescape ($str) {
+    return $this->db->real_escape_string($str);
+  }
+
+  /**
+   * @param string $name The name of the column holding the single
+   * result that we want.
+   *
+   */
+  public function first_val ($name) {
+    if ($this->first_val) {
+      return $this->first_val;
+    }
+    elseif ($this->result_status == 'OK') {
+      $row = $this->result->fetch_object();
+      return $row->status;
+    }
+    else {
+      return false;
+    }
   }
 }
 

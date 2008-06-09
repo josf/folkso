@@ -25,6 +25,11 @@ $srv->addResponseObj(new folksoResponse('get',
 $srv->addResponseObj(new folksoResponse('head',
                                         array('required' => array('tag')),
                                         'headCheckTagDo'));
+
+$srv->addResponseObj(new folksoResponse('post',
+                                        array('required' => array('source', 'target')),
+                                        'tagMerge'));
+
 $srv->addResponseObj(new folksoResponse('delete',
                                         array('required' => array('delete')),
                                         'deleteTag'));
@@ -179,9 +184,9 @@ function getTagResourcesDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconne
       $querybase .= "  LIMIT 20 ";
   }
   else {
-      $querybase .= "  LIMIT ". $q->get_param('page') * 20 . ",20 ";
+      $querybase .= "  LIMIT ". 
+        $q->get_param('page') * 20 . ",20 ";
   }
-
 
   $i->query($querybase);
   switch ($i->result_status) {
@@ -192,7 +197,8 @@ function getTagResourcesDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconne
     break;
   case 'NOROWS':
     header('HTTP/1.1 204 No resources associated with  tag');
-    print "No resources are currently associated with " . $q->get_param('resources');
+    print "No resources are currently associated with " . 
+      $q->get_param('resources');
     return;
     break;
   case 'OK':
@@ -284,9 +290,78 @@ function autoCompleteTagsDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconn
 }
 
 /**
+ * POST, target source
+ * 
+ * Retags all the tagevents tagged by "source" as "target", then
+ * deletes "source".
+ *
+ * Returns 204 on success, 404 on missing tags.
+ * 
+ */
+
+function tagMerge (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+  $i = new folksoDBinteract($dbc);
+  if ( $i->db_error() ) {
+    header('HTTP/1.1 501 Database connection problem');
+    die($i->error_info());
+  }
+
+  // build query
+  $source_part = '';
+  if (is_numeric($q->get_param('source'))){
+    $source_part = $q->get_param('source'). ", ''";
+  }
+  else {
+    $source_part = "'', '". $i->dbquote($q->get_param('source')) . "'";
+  }
+
+  $target_part = '';
+  if (is_numeric($q->get_param('target'))) {
+    $target_part = $q->get_param('target') . ", ''";
+  }
+  else {
+    $target_part = "'', '" . $i->dbquote($q->get_param('target')) . "'";
+  }
+  
+  // execute
+  $i->query("call tagmerge($source_part, $target_part)");
+  
+
+  if ($i->result_status == 'DBERR') {
+    header('HTTP/1.1 501 Database error');
+    die($i->error_info());
+  }
+  else {
+    switch ($i->first_val('status')) {
+    case 'OK':
+      header('HTTP/1.1 204 Merge successful');
+      print $i->first_val('status');
+      return;
+      break;
+    case 'NOTARGET':
+      header('HTTP/1.1 404 Invalid target tag');
+      print $i->first_val('status');
+      die($q->get_param('target') . 
+          " is not present in the database. Merge not accomplished.");
+      break;
+    case 'NOSOURCE':
+      header('HTTP/1.1 404 Invalid source tag');
+      die($q->get_param('source') . 
+          " is not present in the database. Merge not accomplished.");
+      break;
+    }
+    header('HTTP/1.1 501 Strange server error');
+    print "fv: ".$i->first_val('status');
+    die('This should not have happened.');
+  }
+}
+
+/**
  * DELETE, folksodelete (can be tag id or tag name)
  *
  * Obviously, this badly needs authentication!
+ *
+ * 404 on tag not found. 204 on success.
  */
 function deleteTag  (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
   $i = new folksoDBinteract($dbc);
@@ -337,11 +412,10 @@ function deleteTag  (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc
     header('HTTP/1.1 501 Database error');
     die("Secondary delete failed ". $i->error_info());
   }
-  else {
-    header('HTTP/1.1 204 Deleted');
-    return;
-  }
+
+  header('HTTP/1.1 204 Tag deleted');
 }
+
 
 
 ?>

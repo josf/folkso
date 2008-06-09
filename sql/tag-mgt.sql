@@ -327,7 +327,68 @@ END$$
 DELIMITER ;
 
 
+-- 
+-- tagmerge
+-- 
+-- Four arguments so that either tag_ids or strings can be used.
+-- 
+-- Do not forget to include all four.
 
+DELIMITER $$
+DROP PROCEDURE IF EXISTS tagmerge$$
+CREATE PROCEDURE tagmerge(source_id_arg INT,
+                          source_str_arg VARCHAR(255),
+                          target_id_arg INT,
+                          target_str_arg VARCHAR(255))
+BEGIN
+
+DECLARE source_id INT;
+DECLARE target_id INT;
+DECLARE return_statement VARCHAR(15);
+
+IF (source_id_arg > 0) THEN
+   SELECT id 
+   INTO source_id
+   FROM tag
+   WHERE id = source_id_arg;
+ELSE
+   SELECT id
+   INTO source_id
+   FROM tag
+   WHERE tagnorm = normalize_tag(source_str_arg);
+END IF;
+
+IF (target_id_arg > 0) THEN
+   SELECT id
+   INTO target_id
+   FROM tag
+   WHERE id = target_id_arg;
+ELSE
+   SELECT id
+   INTO target_id
+   FROM tag
+   WHERE tagnorm = normalize_tag(target_str_arg);
+END IF;
+
+CASE
+  WHEN (target_id is null) THEN
+       SET return_statement = 'NOTARGET';
+  WHEN (source_id is null) then
+       SET return_statement = 'NOSOURCE';
+  ELSE
+       UPDATE tagevent
+         SET tag_id = target_id
+         WHERE tag_id = source_id;
+       DELETE 
+         FROM tag 
+         WHERE id = source_id;
+         SET return_statement = 'OK';
+END CASE;
+
+SELECT return_statement AS status;
+
+END$$
+DELIMITER ;
 
 
 
