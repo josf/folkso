@@ -36,6 +36,9 @@ $srv->addResponseObj(new folksoResponse('post',
 $srv->addResponseObj(new folksoResponse('delete',
                                         array('required' => array('delete')),
                                         'deleteTag'));
+$srv->addResponseObj(new folksoResponse('post',
+                                        array('required' => array('rename', 'newname')),
+                                        'renameTag'));
 
 $srv->Respond();
 
@@ -469,7 +472,49 @@ function byalpha (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
                     $row->tagdisplay) . "\n";
   }
   print $dd->endform();
-
 }
+
+/**
+ * rename tag
+ *
+ * rename, newname
+ * 
+ */
+function renameTag (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+  $i = new folksoDBinteract($dbc);
+  if ($i->db_error()) {
+    header('HTTP/1.1 501 Database connection problem');
+    die($i->error_info());
+  }
+
+  if (!$i->tagp($q->get_param('rename'))) {
+    header('HTTP/1.1 404 Tag not found');
+    die('Nothing to rename. No such tag: ' . $q->get_param('rename'));
+  }
+
+  $query = "update tag
+            set tagdisplay = '" . 
+    $i->dbescape($q->get_param('newname')) . "', " .
+    "tagnorm = normalize_tag('" . $i->dbescape($q->get_param('newname')) . "') ".
+    "where ";
+
+  if (is_numeric($q->get_param('rename'))) {
+    $query .= " id = " . $q->get_param('rename');
+  }
+  else {
+    $query .= " tagnorm = normalize_tag('" . 
+      $i->dbescape($q->get_param('rename')) . "')";
+  }
+  $i->query($query);
+  if ($i->result_status == 'DBERR') {
+    header('HTTP/1.1 501 Database error');
+    die($i->error_info());
+  }
+  else {
+    header('HTTP/1.1 204 Tag renamed');
+    return;
+  }
+}
+
 
 ?>

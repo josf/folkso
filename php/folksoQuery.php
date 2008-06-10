@@ -108,7 +108,11 @@ class folksoQuery {
              return 0;
          }              
   }     
-  
+
+  /**
+   * Simple getter function right now.
+   *
+   */
   public function content_type () {
     return $this->content_type;
   }
