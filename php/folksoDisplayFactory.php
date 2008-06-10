@@ -99,5 +99,26 @@ class folksoDisplayFactory {
 
 
   }
+
+  public function TagList () {
+    $obj = new folksoDataDisplay(
+                                 array('type' => 'xhtml',
+                                       'start' => '<ul class="taglist">',
+                                       'end' => '</ul>',
+                                       'titleformat' => '<h2>XXX</h2>',
+                                       'lineformat' => '<li><a id="tagXXX" href="XXX">XXX</a></li>',
+                                       'argsperline' => 3),
+                                 $this->standardTextList(3),
+                                 array('type' => 'xml',
+                                       'start' => '<taglist>',
+                                       'end' => '</taglist>',
+                                       'lineformat' => 
+                                       "<tag>\n\t<numid>XXX</numid>".
+                                       "\n\t<tagnorm>XXX</tagnorm>".
+                                       "\n\t<display>XXX</display>".
+                                       "\n</tag>",
+                                       'argsperline' => 3));
+    return $obj;
+  }
 }
 ?>

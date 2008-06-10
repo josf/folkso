@@ -208,7 +208,7 @@ public $result;
     }
     elseif ($this->result_status == 'OK') {
       $row = $this->result->fetch_object();
-      return $row->status;
+      return $row->$name;
     }
     else {
       return false;

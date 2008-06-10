@@ -20,8 +20,11 @@ $srv->addResponseObj(new folksoResponse('post',
 
 $srv->addResponseObj(new folksoResponse('get', 
                                         array('required' => array('autotag')),
-                                        'autoCompleteTagsDo'))
-;
+                                        'autoCompleteTagsDo'));
+$srv->addResponseObj(new folksoResponse('get',
+                                        array('required' => array('byalpha')),
+                                        'byalpha'));
+
 $srv->addResponseObj(new folksoResponse('head',
                                         array('required' => array('tag')),
                                         'headCheckTagDo'));
@@ -416,6 +419,57 @@ function deleteTag  (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc
   header('HTTP/1.1 204 Tag deleted');
 }
 
+/**
+ * byalpha
+ *
+ * GET, folksoalpha
+ * 
+ * List of tags by letter of the alphabet. Up to three letters are allowed.
+ *
+ */
+function byalpha (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+  print "yo alpha";
+  $i = new folksoDBinteract($dbc);
+  if ($i->db_error()) {
+    header('HTTP/1.1 501 Database connection problem');
+    die($i->error_info());
+  }
+  
+  $alpha = substr($q->get_param('byalpha'), 0, 3);
 
+
+  $query = "select id, tagdisplay, tagnorm
+            from tag
+            where tagnorm like '" . $i->dbescape($alpha) . "%'";
+  print $query;
+
+  $i->query($query);
+  switch ($i->result_status) {
+  case 'DBERR':
+    header('HTTP/1.1 501 Database error');
+    die($i->error_info());
+    break;
+  case 'NOROWS':
+    header('HTTP/1.1 204 No matching tags');
+    return;
+    break;
+  case 'OK':
+    header('HTTP/1.1 200 Ok');
+    break;
+  }
+
+  // assuming everything is ok (200)
+  $df = new folksoDisplayFactory();
+  $dd = $df->TagList();
+  $dd->activate_style('xml');
+  print $dd->startform();
+  while ($row = $i->result->fetch_object()) {
+    print $dd->line($row->id, 
+                    $row->tagnorm,
+                    $row->tagdisplay) . "\n";
+  }
+  print $dd->endform();
+
+}
 
 ?>
