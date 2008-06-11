@@ -431,7 +431,6 @@ function deleteTag  (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc
  *
  */
 function byalpha (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
-  print "yo alpha";
   $i = new folksoDBinteract($dbc);
   if ($i->db_error()) {
     header('HTTP/1.1 501 Database connection problem');
@@ -444,7 +443,6 @@ function byalpha (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
   $query = "select id, tagdisplay, tagnorm
             from tag
             where tagnorm like '" . $i->dbescape($alpha) . "%'";
-  print $query;
 
   $i->query($query);
   switch ($i->result_status) {
