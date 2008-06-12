@@ -37,6 +37,9 @@ $srv->addResponseObj(new folksoResponse('delete',
                                         array('required' => array('delete')),
                                         'deleteTag'));
 $srv->addResponseObj(new folksoResponse('post',
+                                        array('required' => array('delete')),
+                                        'deleteTag'));
+$srv->addResponseObj(new folksoResponse('post',
                                         array('required' => array('rename', 'newname')),
                                         'renameTag'));
 
@@ -241,6 +244,7 @@ function singlePostTagDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect
     printf("Connect failed: %s\n", mysqli_connect_error());
     die("Database problem. Something is wrong.");
   }
+  $db->set_charset('utf8');
   $result = $db->query("call new_tag('" . 
                        $db->real_escape_string($q->get_param('folksonewtag')) . "')");
   if ($db->errno <> 0) {
@@ -431,6 +435,7 @@ function deleteTag  (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc
  *
  */
 function byalpha (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+
   $i = new folksoDBinteract($dbc);
   if ($i->db_error()) {
     header('HTTP/1.1 501 Database connection problem');
@@ -440,7 +445,7 @@ function byalpha (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
   $alpha = substr($q->get_param('byalpha'), 0, 3);
 
 
-  $query = "select id, tagdisplay, tagnorm
+  $query = "select id, tagdisplay, tagnorm, popularity
             from tag
             where tagnorm like '" . $i->dbescape($alpha) . "%'";
 
@@ -467,7 +472,8 @@ function byalpha (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
   while ($row = $i->result->fetch_object()) {
     print $dd->line($row->id, 
                     $row->tagnorm,
-                    $row->tagdisplay) . "\n";
+                    $row->tagdisplay,
+                    $row->popularity) . "\n";
   }
   print $dd->endform();
 }
@@ -475,7 +481,7 @@ function byalpha (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
 /**
  * rename tag
  *
- * rename, newname
+ * POST, rename, newname
  * 
  */
 function renameTag (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {

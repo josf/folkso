@@ -35,6 +35,7 @@ public $result;
    */
   public function __construct (folksoDBconnect $dbc) {
     $this->db = $dbc->db_obj();
+    $this->db->set_charset('utf8');
     if ( mysqli_connect_errno()) {
       $this->connect_error = sprintf("Connect failed: %s Error code: %s", 
                                      mysqli_connect_error(), 
@@ -136,9 +137,11 @@ public $result;
     }
     $this->query($select);
     if ($this->result_status == 'OK') {
+    $this->result->free();
       return true;
     }
     else { 
+    $this->result->free();
       return false;
     }
   }
@@ -169,11 +172,14 @@ public $result;
     }
     $this->query($select);
     if ($this->result_status == 'OK') {
+    $this->result->free();
       return true;
     }
     else {
+    $this->result->free();
       return false;
     }
+
   }
 
   /**
@@ -213,6 +219,16 @@ public $result;
     else {
       return false;
     }
+  }
+
+  /**
+   * Allow the statement handle and the connection handle to be
+   * destroyed.
+   */
+  public function done () {
+    $this->result->free();
+    $this->db->close();
+
   }
 }
 

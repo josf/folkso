@@ -106,7 +106,7 @@ class folksoDisplayFactory {
                                        'start' => '<ul class="taglist">',
                                        'end' => '</ul>',
                                        'titleformat' => '<h2>XXX</h2>',
-                                       'lineformat' => '<li><a id="tagXXX" href="XXX">XXX</a></li>',
+                                       'lineformat' => '<li><a id="tagXXX" href="XXX">XXX (XXX)</a></li>',
                                        'argsperline' => 3),
                                  $this->standardTextList(3),
                                  array('type' => 'xml',
@@ -116,8 +116,9 @@ class folksoDisplayFactory {
                                        "<tag>\n\t<numid>XXX</numid>".
                                        "\n\t<tagnorm>XXX</tagnorm>".
                                        "\n\t<display>XXX</display>".
+                                       "\n\t<popularity>XXX</popularity>".
                                        "\n</tag>",
-                                       'argsperline' => 3));
+                                       'argsperline' => 4));
     return $obj;
   }
 }
