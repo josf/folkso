@@ -53,18 +53,24 @@
       <xsl:element name="form">
           <xsl:attribute name="action">/tag.php</xsl:attribute>
           <xsl:attribute name="method">post</xsl:attribute>
-      <xsl:element name="p">
-        <xsl:text> Supprimer ce tag : </xsl:text>
+          <xsl:element name="p">
+            <xsl:text> Supprimer ce tag : </xsl:text>
 
-        <xsl:element name="button">
-          <xsl:attribute name="type">submit</xsl:attribute>
-          <xsl:attribute name="name">folksodelete</xsl:attribute>
-          <xsl:attribute name="value">
-            <xsl:value-of select="numid"/>
-          </xsl:attribute>
-          Suppression
-        </xsl:element>
+            <xsl:element name="button">
+              <xsl:attribute name="type">submit</xsl:attribute>
+              <xsl:attribute name="name">folksodelete</xsl:attribute>
+              <xsl:attribute name="value">
+                <xsl:value-of select="numid"/>
+              </xsl:attribute>
+              Suppression
+            </xsl:element>
+          </xsl:element>
       </xsl:element>
+
+      <!-- fusionner -->
+      <xsl:element name="form">
+          <xsl:attribute name="action">/tag.php</xsl:attribute>
+          <xsl:attribute name="method">post</xsl:attribute>
       <xsl:element name="p">
         <xsl:text> 
           Fusionner ce tag avec : (inscrire le nom ou l'identifiant du tag
@@ -91,7 +97,7 @@
           Fusionner
         </xsl:element>
       </xsl:element>
-    </xsl:element>
+      </xsl:element>
     </xsl:element>
   </xsl:template>
 
