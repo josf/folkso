@@ -379,7 +379,7 @@ CASE
 
        UPDATE tag
           SET popularity = (SELECT COUNT(id)
-                                   FROM tagevent te
+                                   FROM tagevent te.
                                    WHERE te.tag_id = target_id)
           WHERE id = target_id;
          SET return_statement = 'OK';
