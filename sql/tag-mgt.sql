@@ -377,6 +377,12 @@ CASE
        DELETE 
          FROM tag 
          WHERE id = source_id;
+
+       UPDATE tag
+          SET popularity = (SELECT COUNT(id)
+                                   FROM tagevent te.
+                                   WHERE te.tag_id = target_id)
+          WHERE id = target_id;
          SET return_statement = 'OK';
 END CASE;
 
