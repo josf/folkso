@@ -79,7 +79,7 @@
 
       <!-- fusionner -->
       <xsl:element name="form">
-          <xsl:attribute name="action">/tag.php</xsl:attribute>
+          <xsl:attribute name="action">/commun3/folksonomie/tag.php</xsl:attribute>
           <xsl:attribute name="method">post</xsl:attribute>
       <xsl:element name="p">
         <xsl:text> 

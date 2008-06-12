@@ -121,38 +121,5 @@ class folksoDisplayFactory {
                                        'argsperline' => 4));
     return $obj;
   }
-
-  /**
-   *
-   * @returns a folksoDataDisplay object suited for displaying lists
-   * of resources.
-   */
-  public function FancyResourceList () {
-    $obj = new folksoDataDisplay(
-                                 array('type' => 'xhtml',
-                                       'start' => '<ul class="resourcelist">',
-                                       'end' => '<ul>',
-                                       'titleformat' => '<h2 class="resourcelistTitle">XXX</h2>',
-                                       'lineformat' => 
-                                       "<li>\n" .
-                                       "\t<a id=\"resXXX\" href=\"XXX\">XXX</a>\n" .
-                                       "<span class=\"tags\">XXX</span>" .
-                                       "</li>",
-                                       'argsperline' => 4),
-                                 $this->standardTextList(4),
-                                 array('type' => 'xml',
-                                       'start' => '<resourcelist>',
-                                       'end' => '</resourcelist>',
-                                       'lineformat' =>
-                                       "<resource>\n".
-                                       "\t<numid>XXX</numid>\n" .
-                                       "\t<url>XXX</url>\n" .
-                                       "\t<title>XXX</title>\n" .
-                                       "\t<tags>XXX</tags>\n" .
-                                       '</resource>',
-                                       'argsperline' => 4));
-    return $obj;
-  }
-
 }
 ?>

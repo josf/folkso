@@ -134,7 +134,7 @@ class folksoServer {
     $cred->parse_auth_header();
 
 //    print var_dump($cred);
-    $dbc = new folksoDBconnect('localhost', 'root', 'hellyes', 'folksonomie');
+    $dbc = new folksoDBconnect('localhost', 'root', 'LucienLeuwen', 'folksonomie');
 
     if ($this->is_auth_necessary($q)) {
 
