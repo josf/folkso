@@ -128,17 +128,6 @@ class folksoDataDisplay {
     return $out;
   }
 
-  /**
-   * @return A string where &, < and > are escaped.
-   */
-  public function xmlesc($str) {
-    $str = str_replace(array('&', '<', '>'),
-                       array('&amp;', '&lt;', '&gt;'),
-                       $str);
-    return $str;
-
-  }
-
 }// end of class
 
 ?>

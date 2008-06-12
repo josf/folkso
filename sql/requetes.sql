@@ -67,19 +67,3 @@ select tag.tagdisplay,
        join tag_popularity tpop on tpop.tag_id = tag.id
        where res.uri_normal = 'fabula.org/revue/document1312.php'
        group by tag.id;
-
-
- 
-select r.title, 
-       r.id,
-       group_concat(tt.td2 separator ' - ' )
-       from resource r
-       join tagevent te on r.id = te.resource_id
-       join tag t on te.tag_id = t.id
-       cross join (select tagdisplay as td2
-                          from tag t2
-                          join tagevent te2 on te2.tag_id = t2.id
-                          join resource r2 on r2.id = te2.resource_id
-                          where r2.id = r.id) as tt
-       where t.id =50
-       group by r.id;
