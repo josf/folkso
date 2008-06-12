@@ -121,11 +121,6 @@ BEGIN
                 SELECT id FROM tag;
         DECLARE CONTINUE HANDLER FOR NOT FOUND SET l_last_row_fetched=1;
 
-        DROP TABLE IF EXISTS tag_popularity;
-        CREATE TABLE tag_popularity
-               (tag_id INT UNSIGNED PRIMARY KEY,
-               popularity INT UNSIGNED, INDEX pop (tag_id));
-
         SET l_last_row_fetched = 0;
         OPEN tag_c;
         read_tags: LOOP
@@ -134,11 +129,11 @@ BEGIN
                       LEAVE read_tags;
                    END IF;
 
-                   INSERT INTO tag_popularity
-                          SET tag_id = this_tag,
-                          popularity = (SELECT COUNT(id) 
-                                                    FROM tagevent te
-                                                    WHERE te.tag_id = this_tag);
+                   UPDATE tag
+                      SET popularity =  (SELECT COUNT(id) 
+                                            FROM tagevent te
+                                            WHERE te.tag_id = this_tag)
+                      WHERE id = this_tag;
         END LOOP read_tags;
         CLOSE tag_c;
         SET l_last_row_fetched=0;

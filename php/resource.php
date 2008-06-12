@@ -167,7 +167,7 @@ function tagCloudLocalPop (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnec
   $i = new folksoDBinteract($dbc);
 
   if ($i->db_error()) {
-    header('HTTP/1.0 501 Database problem');
+    header('HTTP/1.0 501 Database connection problem');
     print $i->error_info() . "\n";
     return;
   }
@@ -209,7 +209,9 @@ function tagCloudLocalPop (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnec
   
   print $dd->startform();
   while ($row = $i->result->fetch_object()) {
-    print $dd->line($row->cloudweight, "http://fabula.org/commun3/folksonomie/tag.php?folksoresources=".$row->tagid, $row->tagdisplay)."\n";
+    print $dd->line($row->cloudweight, 
+                    "http://fabula.org/commun3/folksonomie/tag.php?folksoresources=".
+                    $row->tagid, $row->tagdisplay)."\n";
   }
   print $dd->endform();
 }
@@ -239,16 +241,18 @@ function visitPageDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $db
     $pages_to_parse = $ic->retreive_cache();
     //    print "count ". count($pages_to_parse);
 
-    $db = $dbc->db_obj();
-    if ( mysqli_connect_errno()) {
-      printf("Connect failed: %s\n", mysqli_connect_error());
+    $i = new folksoDBinteract($dbc);
+    if ($i->db_error()) {
+      header('HTTP/1.0 501 Database connection problem');
+      die( $i->error_info());
     }
 
     foreach ($pages_to_parse as $raw) {
       $item = unserialize($raw);
       //      print $item->get_url();
-      db_store_data($item, $db);
+      db_store_data($item, $i->db);
     }
+    $i->done();
   }
 }
 
