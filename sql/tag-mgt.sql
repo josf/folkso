@@ -178,10 +178,11 @@ DECLARE ourdata CURSOR FOR
                        JOIN resource ON tage.resource_id = resource.id
                        WHERE (resource.uri_normal = url_whack(url)) AND 
                              (tage.tag_id = tag.id)) AS localcount,
-               tag.popularity AS pop
+               tpop.popularity AS pop
        FROM tag
             JOIN tagevent te ON te.tag_id = tag.id
             JOIN resource res ON res.id = te.resource_id
+            JOIN tag_popularity tpop ON tpop.tag_id = tag.id
        WHERE res.uri_normal = url_whack(url)
        GROUP BY tag.id;
 
@@ -376,6 +377,12 @@ CASE
        DELETE 
          FROM tag 
          WHERE id = source_id;
+
+       UPDATE tag
+          SET popularity = (SELECT COUNT(id)
+                                   FROM tagevent te.
+                                   WHERE te.tag_id = target_id)
+          WHERE id = target_id;
          SET return_statement = 'OK';
 END CASE;
 

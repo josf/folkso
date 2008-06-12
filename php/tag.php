@@ -24,7 +24,9 @@ $srv->addResponseObj(new folksoResponse('get',
 $srv->addResponseObj(new folksoResponse('get',
                                         array('required' => array('byalpha')),
                                         'byalpha'));
-
+$srv->addResponseObj(new folksoResponse('get',
+                                        array('required' => array('fancy')),
+                                        'fancyResource'));
 $srv->addResponseObj(new folksoResponse('head',
                                         array('required' => array('tag')),
                                         'headCheckTagDo'));
@@ -163,14 +165,14 @@ function getTagResourcesDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconne
     }
   }
     
-  $querybase = "SELECT DISTINCT
-                 uri_raw AS href, uri_normal, title, 
+  $querybase = "SELECT
+                 r.uri_raw AS href, r.id AS id, r.title AS title, 
                  CASE 
                    WHEN title IS NULL THEN uri_normal 
                    ELSE title 
                  END AS display
-              FROM resource
-                 JOIN tagevent ON resource.id = tagevent.resource_id
+              FROM resource r
+                 JOIN tagevent ON r.id = tagevent.resource_id
                  JOIN tag ON tagevent.tag_id = tag.id ";
 
   // tag by ID
@@ -185,7 +187,7 @@ function getTagResourcesDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconne
       $i->dbquote($q->get_param('resources')) . "')";
   }
 
-  $querybase .= " ORDER BY resource.visited DESC ";  
+  $querybase .= " ORDER BY r.visited DESC ";  
 
   //pagination
   if  ((!$q->is_param('page')) ||
@@ -216,17 +218,23 @@ function getTagResourcesDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconne
   }
 
   $df = new folksoDisplayFactory();
-  $dd = $df->basicLinkList();
+  $dd = $df->ResourceList();
   
   if ($q->content_type() == 'text/html') {
     $dd->activate_style('xhtml');
   }
   else {
-    $dd->activate_style('xhtml');
+    $dd->activate_style('xml');
   }
   print $dd->startform();
   while ($row = $i->result->fetch_object()) {
-    print $dd->line( $row->href, $row->display);
+    print $dd->line( $row->id, 
+                     $row->href, 
+                     array('xml' => 
+                           html_entity_decode(strip_tags($row->display), 
+                                              ENT_NOQUOTES, 
+                                              'UTF-8'),
+                           'default' => $row->display));
   }
   print $dd->endform();
 }
@@ -260,6 +268,84 @@ function singlePostTagDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect
   }
 }
 
+
+function fancyResource (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+  $i = new folksoDBinteract($dbc);
+  if ( $i->db_error() ) {
+    header('HTTP/1.1 501 Database problem');
+    die( $i->error_info());
+  }
+
+$querystart = 
+  'select 
+  r.title as title, 
+  r.id,
+  r.uri_raw as href,
+  CASE 
+    WHEN title IS NULL THEN uri_normal 
+    ELSE title
+  END AS display,
+  (select group_concat(tagdisplay separator \' - \')
+               from tag t2
+               join tagevent te2 on t2.id = te2.tag_id
+               join resource r2 on r2.id = te2.resource_id
+               where r2.id = r.id) as tags
+  from resource r
+  join tagevent te on r.id = te.resource_id
+  join tag t on te.tag_id = t.id';
+
+  $queryend = " LIMIT 20";
+  $querywhere = '';
+  if (is_numeric($q->get_param('fancy'))) {
+    $querywhere = 'where t.id = ' . $q->get_param('fancy') . ' ';
+  }
+  else {
+    $querywhere = "where t.tagnorm = normalize_tag('" . 
+      $i->dbescape($q->get_param('fancy')) . "') ";
+  }
+
+  $i->query($querystart . ' '  . $querywhere . ' ' . $queryend);
+  switch ($i->result_status) {
+  case 'DBERR':
+    header('HTTP/1.1 501 Database query error');
+    die($i->error_info());
+    break;
+  case 'NOROWS':
+    header('HTTP/1.1 204 No resources associated with  tag');
+    print "No resources are currently associated with " . 
+      $q->get_param('fancy');
+    return;
+    break;
+  case 'OK':
+    header('HTTP/1.1 200');
+    break;
+  default:
+      header('HTTP/1.1 501 Inexplicable error');
+    die('This does not make sense');
+  }
+  // so we are 'OK'
+
+  $df = new folksoDisplayFactory();
+  $dd = $df->FancyResourceList();
+  
+  $dd->activate_style('xml');
+  print $dd->startform();
+  while ($row = $i->result->fetch_object()) {
+    print $dd->line( $row->id,
+                     $row->href,
+                     array('xml' => 
+                           html_entity_decode(strip_tags($row->display), 
+                                              ENT_NOQUOTES, 
+                                              'UTF-8'),
+                           'default' => $row->display),
+                     $row->tags);
+  }
+  print $dd->endform();
+                     
+
+}
+
+
 /** 
  * GET, autotag
  */
@@ -267,8 +353,6 @@ function autoCompleteTagsDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconn
   $req = substr($q->get_param('autotag'), 0, 3);
   
   $db = $dbc->db_obj();
- 
-  $db->set_charset('utf8');
   $result = $db->query("select tagdisplay
                         from tag
                         where tagdisplay like '" .

@@ -76,7 +76,7 @@ function isHeadDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) 
  * Retrieve the tags associated with a given resource. Accepts uri or
  * id. 
  * 
- * Web parameters : GET + folksoresourceuri or folksoresourceid
+ * Web parameters : GET + uri or id
  *
  */
 function getTagsIdsDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
@@ -103,15 +103,15 @@ function getTagsIdsDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $d
     }
   }
 
-  $select = "select distinct tagdisplay 
-                        from tag 
-                        join tagevent on tag.id = tagevent.tag_id
-                        join resource on resource.id = tagevent.resource_id ";
+  $select = "SELECT DISTINCT tagdisplay 
+                        FROM tag 
+                        JOIN tagevent ON tag.id = tagevent.tag_id
+                        JOIN resource ON resource.id = tagevent.resource_id ";
   if ($q->is_param('id')) {
-    $select .= "where resource.id = " . $i->dbquote($q->get_param('id'));
+    $select .= "WHERE resource.id = " . $i->dbquote($q->get_param('id'));
   }
   else {
-    $select .= "where uri_normal = url_whack('". $i->dbquote($q->get_param('uri')) ."')";
+    $select .= "WHERE uri_normal = url_whack('". $i->dbquote($q->get_param('uri')) ."')";
   }
    
   $i->query($select);
