@@ -231,14 +231,14 @@ function getTagResourcesDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconne
     print $dd->line( $row->id, 
                      $row->href, 
                      array('xml' => 
-                           html_entity_decode(strip_tags($row->display), 
-                                              ENT_NOQUOTES, 
-                                              'UTF-8'),
+                           'Placeholder',
                            'default' => $row->display));
   }
   print $dd->endform();
 }
-
+/*                           html_entity_decode(strip_tags($row->display), 
+                                              ENT_NOQUOTES, 
+                                              'UTF-8'),*/
 /**
  * Add a new tag.
  *
@@ -288,7 +288,8 @@ $querystart =
                from tag t2
                join tagevent te2 on t2.id = te2.tag_id
                join resource r2 on r2.id = te2.resource_id
-               where r2.id = r.id) as tags
+               where r2.id = r.id
+               group by t2.tagdisplay) as tags
   from resource r
   join tagevent te on r.id = te.resource_id
   join tag t on te.tag_id = t.id';
@@ -332,16 +333,10 @@ $querystart =
   while ($row = $i->result->fetch_object()) {
     print $dd->line( $row->id,
                      $row->href,
-                     array('xml' => 
-                           html_entity_decode(strip_tags($row->display), 
-                                              ENT_NOQUOTES, 
-                                              'UTF-8'),
-                           'default' => $row->display),
+                     html_entity_decode(strip_tags($row->display), ENT_NOQUOTES, 'UTF-8'),
                      $row->tags);
   }
   print $dd->endform();
-                     
-
 }
 
 

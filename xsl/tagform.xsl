@@ -15,8 +15,12 @@
 
       <!-- Name of tag -->
       <xsl:element name="p">
-        <xsl:element name="span">
+        <xsl:element name="a">
           <xsl:attribute name="class">tagname</xsl:attribute>
+        <xsl:attribute name="href">
+        <xsl:value-of select="concat('http://fabula.org/commun3/folksonomie/resourceview.php?tagthing=',
+                                     numid)"/>
+        </xsl:attribute>
           <xsl:value-of select="display"/>
         </xsl:element>
 

@@ -170,7 +170,7 @@ class folksoDisplayFactory {
                                        "<resource>\n".
                                        "\t<numid>XXX</numid>\n" .
                                        "\t<url>XXX</url>\n" .
-                                       "\t<title>XXX</title>\n" .
+                                       "\t<title><![CDATA[XXX]]></title>\n" .
                                        "\t<tags>XXX</tags>\n" .
                                        '</resource>',
                                        'argsperline' => 4));
