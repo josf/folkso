@@ -107,8 +107,8 @@ class folksoDisplayFactory {
                                        'end' => '</ul>',
                                        'titleformat' => '<h2>XXX</h2>',
                                        'lineformat' => '<li><a id="tagXXX" href="XXX">XXX (XXX)</a></li>',
-                                       'argsperline' => 3),
-                                 $this->standardTextList(3),
+                                       'argsperline' => 4),
+                                 $this->standardTextList(4),
                                  array('type' => 'xml',
                                        'start' => '<taglist>',
                                        'end' => '</taglist>',
@@ -119,6 +119,33 @@ class folksoDisplayFactory {
                                        "\n\t<popularity>XXX</popularity>".
                                        "\n</tag>",
                                        'argsperline' => 4));
+    return $obj;
+  }
+
+
+
+  public function ResourceList () {
+    $obj = new folksoDataDisplay(
+                                 array('type' => 'xhtml',
+                                       'start' => '<ul class="resourcelist">',
+                                       'end' => '<ul>',
+                                       'titleformat' => '<h2 class="resourcelistTitle">XXX</h2>',
+                                       'lineformat' => 
+                                       "<li>\n" .
+                                       "\t<a id=\"resXXX\" href=\"XXX\">XXX</a>\n" .
+                                       "</li>",
+                                       'argsperline' => 3),
+                                 $this->standardTextList(3),
+                                 array('type' => 'xml',
+                                       'start' => '<resourcelist>',
+                                       'end' => '</resourcelist>',
+                                       'lineformat' =>
+                                       "<resource>\n".
+                                       "\t<numid>XXX</numid>\n" .
+                                       "\t<url>XXX</url>\n" .
+                                       "\t<title>XXX</title>\n" .
+                                       '</resource>',
+                                       'argsperline' => 3));
     return $obj;
   }
 

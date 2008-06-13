@@ -529,7 +529,7 @@ function byalpha (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
   $alpha = substr($q->get_param('byalpha'), 0, 3);
 
 
-  $query = "select id, tagdisplay, tagnorm
+  $query = "select id, tagdisplay, tagnorm, popularity
             from tag
             where tagnorm like '" . $i->dbescape($alpha) . "%'";
 
@@ -556,7 +556,8 @@ function byalpha (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
   while ($row = $i->result->fetch_object()) {
     print $dd->line($row->id, 
                     $row->tagnorm,
-                    $row->tagdisplay) . "\n";
+                    $row->tagdisplay,
+                    $row->popularity) . "\n";
   }
   print $dd->endform();
 }
