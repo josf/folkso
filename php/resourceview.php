@@ -42,8 +42,6 @@ require_once('/usr/local/www/apache22/lib/jf/fk/folksoClient.php');
 
      if ($fc->query_resultcode() == 200) {
 
-              print $reslist;
-
            $resources = new DOMDocument();
            $resources->loadXML($reslist);
            
