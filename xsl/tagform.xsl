@@ -29,7 +29,7 @@
           <xsl:attribute name="class">tagpopularity</xsl:attribute>
           <xsl:text> (</xsl:text>
           <xsl:value-of select="popularity"/>
-          <xsl:text> resources)</xsl:text>
+          <xsl:text> ressources)</xsl:text>
         </xsl:element>
 
       </xsl:element>

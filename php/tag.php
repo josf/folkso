@@ -247,6 +247,7 @@ function getTagResourcesDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconne
  */
 function singlePostTagDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
   $db = $dbc->db_obj();
+  $db->set_charset('UTF8');
   if ( mysqli_connect_errno()) {
     header('HTTP/1.1 501');
     printf("Connect failed: %s\n", mysqli_connect_error());
@@ -284,12 +285,12 @@ $querystart =
     WHEN title IS NULL THEN uri_normal 
     ELSE title
   END AS display,
-  (select group_concat(tagdisplay separator \' - \')
+  (select group_concat(distinct tagdisplay separator \' - \')
                from tag t2
                join tagevent te2 on t2.id = te2.tag_id
                join resource r2 on r2.id = te2.resource_id
                where r2.id = r.id
-               group by t2.tagdisplay) as tags
+               ) as tags
   from resource r
   join tagevent te on r.id = te.resource_id
   join tag t on te.tag_id = t.id';

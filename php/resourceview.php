@@ -14,7 +14,7 @@ ul.resourcelist li a, ul.resourcelist li a:link, ul.resourcelist li a:visited { 
 font-color: orange;}
 
 ul.resourcelist li { margin-bottom: 1em}
-
+ul.resourcelist li a.tocloud, ul.resourcelist li a:visited.tocloud, ul.resourcelist li a:link.tocloud {font-size:10pt;}
 </style>
 
 </head>
@@ -41,6 +41,7 @@ require_once('/usr/local/www/apache22/lib/jf/fk/folksoClient.php');
      $reslist = $fc->execute();
 
      if ($fc->query_resultcode() == 200) {
+
 
            $resources = new DOMDocument();
            $resources->loadXML($reslist);

@@ -15,11 +15,22 @@ font-color: orange;}
 
 ul.resourcelist li { margin-bottom: 1em}
 
+
+      div.cloud ul {
+      list-style-type: none;
+      }
+      div.cloud ul li {       display: inline;}
+
+      div.cloud .cloud2 { font-size: 12pt}
+      div.cloud .cloud3 { font-size: 14pt}
+      div.cloud .cloud4 { font-size: 16pt}
+      div.cloud .cloud5 { font-size: 18pt}
+
 </style>
 
   </head>
   <body>
-<div id="containter">
+<div id="container">
     <h1>Un nuage de tags</h1>
 
     <form action="clouddemo.php" method="get">
@@ -43,9 +54,25 @@ $cl = new folksoClient('localhost',
 
 $cl->set_getfields( array('folksoclouduri' => $_GET['demouri']));
 
-
-$result =  $cl->execute();
-print "<p>HTTP code: " . $cl->query_resultcode() . "</p>";
+print '<div class="cloud">';
+print $result =  $cl->execute();
+print "</div>";
+print "<p>HTTP code: " . $cl->query_resultcode()."<br/>" ;
+switch ($cl->query_resultcode()) {
+case '200':
+  print "Ressource trouvée";
+  break;
+case '204':
+  print "Aucun tag n'est associé à cette resource";
+  break;
+case '404':
+  print "Cette ressource n'existe pas dans la base de données";
+  break;
+case '501':
+  print "Erreur base de données - c'est inadmissible";
+  break;
+}
+print "</p>"; 
 
 }
 ?>
