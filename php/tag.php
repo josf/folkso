@@ -231,14 +231,14 @@ function getTagResourcesDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconne
     print $dd->line( $row->id, 
                      $row->href, 
                      array('xml' => 
-                           html_entity_decode(strip_tags($row->display), 
-                                              ENT_NOQUOTES, 
-                                              'UTF-8'),
+                           'Placeholder',
                            'default' => $row->display));
   }
   print $dd->endform();
 }
-
+/*                           html_entity_decode(strip_tags($row->display), 
+                                              ENT_NOQUOTES, 
+                                              'UTF-8'),*/
 /**
  * Add a new tag.
  *
@@ -332,11 +332,11 @@ $querystart =
   while ($row = $i->result->fetch_object()) {
     print $dd->line( $row->id,
                      $row->href,
-                     array('xml' => 
-                           html_entity_decode(strip_tags($row->display), 
-                                              ENT_NOQUOTES, 
-                                              'UTF-8'),
-                           'default' => $row->display),
+                     /*                     array('xml' => 
+                           strip_tags(html_entity_decode($row->display,
+                                              ENT_NOQUOTES, 'ISO-8859-1')),
+                                              'default' => $row->display),*/
+                     $row->href,
                      $row->tags);
   }
   print $dd->endform();

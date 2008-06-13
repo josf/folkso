@@ -26,13 +26,15 @@ require_once('/usr/local/www/apache22/lib/jf/fk/folksoClient.php');
 
      if ($fc->query_resultcode() == 200) {
 
-       print $reslist;
+       //       print $reslist;
 
-           $resources = new DomDocument();
+           $resources = new DOMDocument();
            $resources->loadXML($reslist);
            
-           $xsl = new DomDocument();
+           $xsl = new DOMDocument();
            $xsl->load("/var/www/dom/fabula/commun3/folksonomie/xsl/resourcelist.xsl");
+
+           print $xsl->saveXML();
 
            $proc = new XsltProcessor();
            $xsl = $proc->importStylesheet($xsl);
