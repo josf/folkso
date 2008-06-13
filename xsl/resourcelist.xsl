@@ -6,6 +6,7 @@
   <xsl:template match="/">
 
     <xsl:element name="ul">
+        <xsl:attribute name="class">resourcelist</xsl:attribute>
       <xsl:apply-templates/>
     </xsl:element>
   </xsl:template>

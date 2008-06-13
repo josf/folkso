@@ -1,9 +1,25 @@
 <html>
 <head>
 <title>Resources par tag</title>
+<link 
+   rel="stylesheet" type="text/css" 
+   href="http://www.fabula.org/commun3/template.css" 
+   media="screen">
+<link rel="stylesheet" type="text/css" href="http://www.fabula.org/commun3/print.css" media="print">
+<link rel="shortcut icon" type="image/x-icon" href="http://www.fabula.org/favicon.ico">
+<style type="text/css">
+.tagname { font-weight: bold; font-size: 14pt}
+#container { background-color: white;}
+ul.resourcelist li a, ul.resourcelist li a:link, ul.resourcelist li a:visited { font-size: 14pt; 
+font-color: orange;}
+
+ul.resourcelist li { margin-bottom: 1em}
+
+</style>
+
 </head>
 <body>
-
+<div id="container">
 <form action="/commun3/folksonomie/resourceview.php" method="get">
             <p>Entrer un uri ou un identifiant de resource déjà  présente dans la base</p>
              <input type="text" name="tagthing" maxlength="3" size="3"></input></p>
@@ -26,15 +42,13 @@ require_once('/usr/local/www/apache22/lib/jf/fk/folksoClient.php');
 
      if ($fc->query_resultcode() == 200) {
 
-       //       print $reslist;
+              print $reslist;
 
            $resources = new DOMDocument();
            $resources->loadXML($reslist);
            
            $xsl = new DOMDocument();
            $xsl->load("/var/www/dom/fabula/commun3/folksonomie/xsl/resourcelist.xsl");
-
-           print $xsl->saveXML();
 
            $proc = new XsltProcessor();
            $xsl = $proc->importStylesheet($xsl);
@@ -46,3 +60,7 @@ require_once('/usr/local/www/apache22/lib/jf/fk/folksoClient.php');
      }
    }
 ?>
+
+</div>
+</body>
+</html>
