@@ -11,6 +11,9 @@
    * @copyright 2008 Gnu Public Licence (GPL)
    */
 class folksoQuery {
+  public $tag; // tag id or name
+  public $res; // resource id or url
+
   private $method;
   private $content_type;
   private $fk_params = array(); //will contain only folkso related parameters
@@ -68,12 +71,20 @@ class folksoQuery {
                          $this->field_shorten($param_val));
               }
               else {
-                /** What is this for? **/
-                  if ( $param_key == 'folksopage' ) {
-                      $param_val = $this->checkpage($param_val);
-                  }
+                /* special cases */
+                switch ( $param_key) {
+                case 'folksopage':
+                  $param_val = $this->checkpage($param_val);
+                  break;
+                case 'folksotag':
+                  $this->tag = $param_val;
+                  break;
+                case 'folksores':
+                  $this->res = $param_val;
+                  break;
+                }
 
-                  $accum[$param_key] = $this->field_shorten($param_val);
+                $accum[$param_key] = $this->field_shorten($param_val);
               }
           }
       }
