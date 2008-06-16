@@ -20,17 +20,19 @@ class folksoQuery {
    * authorization is added, there will be an authorization argument
    * as well.
    */
-   function __construct ($server, $get, $post) {
-    $this->method = $server['REQUEST_METHOD'];
+  function __construct ($server, $get, $post) {
+    $this->method = strtolower($server['REQUEST_METHOD']);
     $this->content_type = $server['HTTP_ACCEPT'];
     if (count($get) > 0) {
-      $this->fk_params = array_merge($this->parse_params($get), $this->fk_params);;
+      $this->fk_params = array_merge($this->parse_params($get), 
+                                     $this->fk_params);;
     }
 
     if (count($post) > 0) {
-      $this->fk_params = array_merge($this->parse_params($post), $this->fk_params);
+      $this->fk_params = array_merge($this->parse_params($post), 
+                                     $this->fk_params);
     }
-    /** Will add put and delete support here later **/
+    /** Will add put  support here later (maybe) **/
   }
 
 
@@ -55,7 +57,7 @@ class folksoQuery {
               
               # if fieldname end in 3 digits : folksothing123, we strip off
               # the digits and build up an array of the fields
-              if (preg_match('/\d\d\d$/', $param_key)) {
+            if (is_numeric(substr($param_key, -3))) {
                   $new_key = substr($param_key, 0, -3);
 
                  # for 1st time through
@@ -66,6 +68,7 @@ class folksoQuery {
                          $this->field_shorten($param_val));
               }
               else {
+                /** What is this for? **/
                   if ( $param_key == 'folksopage' ) {
                       $param_val = $this->checkpage($param_val);
                   }
@@ -116,16 +119,17 @@ class folksoQuery {
   public function content_type () {
     return $this->content_type;
   }
+
   /**
    * Returns the method used. In smallcaps, which should be the norm
-   * here.
+   * here. The method is put in smallcaps on object construction.
    */
   public function method () {
-    return strtolower($this->method);
+    return $this->method;
   }
 
-
-  public function params () {
+  /* This should not be publicly used anymore */
+  private function params () {
     return $this->fk_params;
   }
 
@@ -165,7 +169,13 @@ class folksoQuery {
       return false;
     }
   }
-
+  /**
+   * 
+   * Returns true if the parameter exists and is not multiple.
+   * 
+   * @params string $str A parameter name.
+   * @returns boolean
+   */
   public function is_single_param ($str) {
     if ((is_string($this->fk_params[$str])) ||
         (is_string($this->fk_params['folkso'.$str]))){
@@ -179,6 +189,9 @@ class folksoQuery {
   /**
    * Note: returns false for an empty array. This makes sense, I
    * think.
+   *
+   * @params string $str A parameter name.
+   * @returns boolean
    */
   public function is_multiple_param ($str) {
     if ((is_array($this->fk_params[$str])) &&
@@ -192,6 +205,9 @@ class folksoQuery {
 
   /**
    * Shortens a string to a maximum of 300 characters
+   *
+   * @param string $str
+   * @returns string
    */
   private function field_shorten ($str) {
     $str = trim($str);
@@ -203,8 +219,15 @@ class folksoQuery {
       return substr($str, 0, 300);
     }
   }
+
+  /**
+   * Use is_numeric instead...
+   * 
+   * @returns boolean
+   * @params mixed $param
+   */
   public function is_number ($param) {
-    if (preg_match('/^\d+$/', $this->get_param($param))) {
+    if (is_numeric($this->get_param($param))) {
       return true;
     }
     else {

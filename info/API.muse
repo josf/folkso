@@ -10,6 +10,10 @@ associés à une ressource donnée.
 
 * tag.php
 
+When the tag's name or id is known, the field name "tag" ("folksotag"
+if we maintain that system) will always be used. It can be a multiple
+field (that is: "tag001, tag002, tag003...").
+
 ** GET
 
 *** folksotagid

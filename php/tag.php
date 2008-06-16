@@ -2,16 +2,29 @@
 
 include('/usr/local/www/apache22/lib/jf/fk/folksoTags.php');
 
+/** 
+ * When the tag's name or id is known, the field name "tag"
+ * ("folksotag" if we maintain that system) will always be used. It
+ * can be a multiple field (that is: "tag001, tag002, tag003...").
+ *
+ * The "tag" field should be able to accept either a numerical id or a
+ * tag name. In this case the tag name is not necessarily normalized.
+ *
+ */
 
 
-$srv = new folksoServer(array( 'methods' => array('POST', 'GET', 'HEAD', 'DELETE'),
+$srv = new folksoServer(array( 'methods' => 
+                               array('POST', 'GET', 'HEAD', 'DELETE'),
                                'access_mode' => 'ALL'));
+
 $srv->addResponseObj(new folksoResponse('get', 
-                                        array('required' => array('tagid')),
+                                        array('required' => array('tag')),
                                         'getTagDo'));
 
 $srv->addResponseObj(new folksoResponse('get', 
-                                        array('required_single' => array('resources')),
+                                        array('required_single' => 
+                                              array('tag', 
+                                                    'resources')),
                                         'getTagResourcesDo'));
 
 $srv->addResponseObj(new folksoResponse('post',
@@ -21,28 +34,41 @@ $srv->addResponseObj(new folksoResponse('post',
 $srv->addResponseObj(new folksoResponse('get', 
                                         array('required' => array('autotag')),
                                         'autoCompleteTagsDo'));
+
 $srv->addResponseObj(new folksoResponse('get',
                                         array('required' => array('byalpha')),
                                         'byalpha'));
+
 $srv->addResponseObj(new folksoResponse('get',
-                                        array('required' => array('fancy')),
+                                        array('required' => array('fancy'),
+                                              'required_single' => array('tag')),
                                         'fancyResource'));
+
 $srv->addResponseObj(new folksoResponse('head',
                                         array('required' => array('tag')),
                                         'headCheckTagDo'));
 
+/**
+ * Note that the "tag" field here refers to the resource that will be
+ * deleted during the merge.
+ */
 $srv->addResponseObj(new folksoResponse('post',
-                                        array('required' => array('source', 'target')),
+                                        array('required' => array('tag', 'target')),
                                         'tagMerge'));
 
 $srv->addResponseObj(new folksoResponse('delete',
-                                        array('required' => array('delete')),
+                                        array('required' => array('delete'),
+                                              'required_single' => array('tag')),
                                         'deleteTag'));
+
 $srv->addResponseObj(new folksoResponse('post',
-                                        array('required' => array('delete')),
+                                        array('required' => array('delete'),
+                                              'required_single' => array('tag')),
                                         'deleteTag'));
+
 $srv->addResponseObj(new folksoResponse('post',
-                                        array('required' => array('rename', 'newname')),
+                                        array('required_single' => array('tag', 
+                                                                         'newname')),
                                         'renameTag'));
 
 $srv->Respond();
