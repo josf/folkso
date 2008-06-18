@@ -236,10 +236,8 @@ function visitPageDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $db
     trigger_error("Cannot store data in cache", E_USER_ERROR);
   }
 
-
   if ($ic->cache_check() ) {
     $pages_to_parse = $ic->retreive_cache();
-    //    print "count ". count($pages_to_parse);
 
     $i = new folksoDBinteract($dbc);
     if ($i->db_error()) {
@@ -249,8 +247,16 @@ function visitPageDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $db
 
     foreach ($pages_to_parse as $raw) {
       $item = unserialize($raw);
-      //      print $item->get_url();
-      db_store_data($item, $i->db);
+
+      $query = "call url_visit('". 
+        $db->real_escape_string($url_obj->get_url()). "', '" . 
+        $i->dbescape($url_obj->get_title()) ."', 1)";
+
+      $i->query($query);
+      if ($i->result_status == 'DBERR') {
+        header('HTTP/1.1 501 Database error');
+        print $i->error_info() . "\n";
+      }
     }
     $i->done();
   }
@@ -315,17 +321,6 @@ function tagResourceDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $
   }
 }
 
-
-function db_store_data ($url_obj, $db) {
-  
-  $qq = "call url_visit('". $db->real_escape_string($url_obj->get_url()). "', '" . 
-    $db->real_escape_string($url_obj->get_title()) ."', 1)";
-
-  $result = $db->query($qq);
-  if ($mysqli->errno) {
-    die("execution failed : " . $mysqli->errno.": ". $mysqli->error);
-  }
-}
 
 
 ?>
