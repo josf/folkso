@@ -304,34 +304,43 @@ function addResourceDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $
  */
 
 function tagResourceDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
-  $db = $dbc->db_obj();
-  $db->query("call tag_resource('" .
-             $db->real_escape_string($q->get_param('resource')) . "', '" .
-             $db->real_escape_string($q->get_param('tag')) . "')");
+  $i = new folksoDBinteract($dbc);
+  if ($i->db_error()) {
+    header('HTTP/1.0 501 Database connection error');
+    die($i->error_info());
+  }
 
-  if ($db->errno <> 0) {
+  $query = "CALL tag_resource('" .
+    $i->dbescape($q->res) . "', '" .
+    $i->dbescape($q->get_param('tag')) . "', 
+    100)";
 
-    if (($db->errno == 1048) &&
+  if ($i->result_status == 'DBERR') {
+
+    if (($i->db->errno == 1048) &&
         (strpos($db->error, 'resource_id'))) {
       header('HTTP/1.1 404');
-      print "Resource ". $q->get_param('resource') . " has not been indexed yet.";
+      print "Resource ". $q->res . " has not been indexed yet.";
     }
     elseif (($db->errno == 1048) &&
             (strpos($db->error, 'tag_id'))) {
       header('HTTP/1.1 404');
       print "Tag ". $q->get_param('tag') . " does not exist.";
+      $i->done;
+      return;
     }
     else {
       header('HTTP/1.1 501');
+      $i->done();
       print "obscure database problem";
-      printf("Statement failed error number %d: (%s) %s\n", 
-          $db->errno, $db->sqlstate, $db->error); 
+      die($i->error_info());
     }
   }
   else {
     header('HTTP/1.1 200');
     print "Resource has been tagged";
   }
+  $i->done();
 }
 
 
