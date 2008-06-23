@@ -226,35 +226,122 @@ begin
 end$$
 delimiter ;
 
-delimiter $$
-drop procedure if exists url_visit$$
-create procedure url_visit(url varchar(255),
-                           title varchar(255),
-                           userid int)
+DELIMITER $$
+DROP PROCEDURE IF EXISTS bulk_visit$$
+CREATE PROCEDURE bulk_visit(urls_arg TEXT,
+                            titles_arg TEXT,
+                            userid INT)
 
-begin
-declare found_url varchar(255) default '';
-declare url_check varchar(255) default '';
+BEGIN
 
-        set url_check = url_whack(url);
 
-        select uri_normal 
-           into found_url
-           from resource
-           where uri_normal = url_check;
 
-        if (length(found_url))  then
-            update resource 
-               set visited = visited + 1
-               where uri_normal = url_check;
-        else
-            insert into resource
+DECLARE titles TEXT DEFAULT '';
+DECLARE urls TEXT DEFAULT '';
+
+DECLARE remaining_titles TEXT DEFAULT '';
+DECLARE remaining_urls TEXT DEFAULT '';
+
+DECLARE current_url TEXT DEFAULT '';
+DECLARE current_title TEXT DEFAULT '';
+DECLARE existence VARCHAR(255) DEFAULT '';
+
+
+set @useridentifier = userid;
+SET urls = urls_arg;
+SET titles = titles_arg;
+
+PREPARE new_url FROM  'INSERT INTO resource
+                      SET 
+                         uri_raw = ?, 
+                         uri_normal = url_whack(?), 
+                         title = ?,
+                         added_by = ?
+                         last_visited = NOW()';
+
+PREPARE old_url FROM 'UPDATE resource 
+                             SET visited = visited + 1, 
+                             last_visited = NOW() 
+                             where uri_normal = url_whack(?)';
+
+walking: WHILE LENGTH(urls) > 0 DO
+         IF (INSTR(urls, '&&&&&')) THEN
+            SET current_url = 
+                SUBSTRING(urls, 1, INSTR(urls, '&&&&&') - 1);
+
+            SET remaining_urls = SUBSTRING(urls, INSTR(urls, '&&&&&') + 5);
+            SET current_title = SUBSTRING(titles, 1, INSTR(titles, '&&&&&') -1);
+            SET remaining_titles = SUBSTRING(titles, INSTR(titles, '&&&&&') + 5);
+            SET urls = remaining_urls;
+            SET titles = remaining_titles;
+
+         ELSE -- last url
+
+            SET current_url = urls;
+            SET current_title = titles;
+
+            -- avoid infinite loop
+            SET urls = '';
+            SET titles = '';
+
+         END IF;
+
+         SET existence = '';
+
+         SELECT uri_normal 
+             INTO existence
+             FROM resource 
+             WHERE uri_normal = url_whack(current_url);
+
+         IF (LENGTH(current_url) > 0) THEN
+
+         SET @cururl = current_url;
+         SET @curtit = current_title;
+
+         IF (length(existence) > 0) THEN
+            EXECUTE old_url USING @cururl;
+         ELSE
+            EXECUTE new_url USING @cururl, @cururl, @curtit, @useridentifier;
+         END IF;
+         END if;
+
+    END WHILE walking;
+
+END$$
+DELIMITER ;
+
+
+
+
+DELIMITER $$
+DROP PROCEDURE IF EXISTS url_visit$$
+CREATE PROCEDURE url_visit(url VARCHAR(255),
+                           title VARCHAR(255),
+                           userid INT)
+
+BEGIN
+DECLARE found_url VARCHAR(255) DEFAULT '';
+DECLARE url_check VARCHAR(255) DEFAULT '';
+
+        SET url_check = url_whack(url);
+
+        SELECT uri_normal 
+           INTO found_url
+           FROM resource
+           WHERE uri_normal = url_check;
+
+        IF (LENGTH(found_url))  THEN
+            UPDATE resource 
+               SET visited = visited + 1
+               WHERE uri_normal = url_check;
+        ELSE
+            INSERT INTO resource
                     (uri_normal, uri_raw, title, added_by) 
-                    values (url_check, url, title, userid);
-        end if;
+                    VALUES (url_check, url, title, userid);
+        END IF;
 
-end$$
-delimiter ;
+END$$
+DELIMITER ;
 
 drop table if exists urltest;
 create table urltest
@@ -277,3 +364,8 @@ insert into urltest set url='http://example.com:80/work?bob=slob&a=c';
 insert into urltest set url='http://www.eXample.com:80?bob=theslob&action=quit';
 insert into urltest set url='http://www.fabula.org/atelier.php?Biblioth%26egrave%3Bques%2C_Fables_et_M%26eacute%3Bmoires_en_acte%28s%29';
 insert into urltest set url='http://www.example.com/bob.html#whereisthis';
+
+
+call bulk_visit(
+     'http://www.example.com&&&&&http://fabula.org&&&&&http://ditl.info&&&&&http://www.ditl.info&&&&&http://www.selfxx.org',
+     'Example&&&&&Fab1&&&&&Ditl1&&&&&Ditl2&&&&&Self', 5);
