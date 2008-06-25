@@ -256,7 +256,7 @@ PREPARE new_url FROM  'INSERT INTO resource
                          uri_raw = ?, 
                          uri_normal = url_whack(?), 
                          title = ?,
-                         added_by = ?
+                         added_by = ?,
                          last_visited = NOW()';
 
 PREPARE old_url FROM 'UPDATE resource 

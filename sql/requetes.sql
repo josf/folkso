@@ -79,3 +79,16 @@ from
         where tag_id = 57) as tgz 
 join tagevent on tgz.resource_id = tagevent.resource_id 
 group by tagevent.tag_id;
+
+
+select 
+       count(tgz.resource_id) as cnt,   
+       tagevent.tag_id, 
+       tagevent.resource_id 
+from
+       (select * 
+        from tagevent 
+        where (tag_id = 57) or (tag_id = 46)) as tgz 
+join tagevent on tgz.resource_id = tagevent.resource_id 
+group by tagevent.tag_id;
+
