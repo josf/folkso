@@ -13,6 +13,7 @@ include('/usr/local/www/apache22/lib/jf/fk/folksoTags.php');
  */
 
 
+
 $srv = new folksoServer(array( 'methods' => 
                                array('POST', 'GET', 'HEAD', 'DELETE'),
                                'access_mode' => 'ALL'));
@@ -80,7 +81,10 @@ $srv->Respond();
 /**
  * checkTag (Test and Do) : given a string, checks if that tag is
  * already present in the database.
- *
+ * 
+ * If the tag exists, returns 200 and sets an 'X-Folkso-Tagid' header
+ * with the numeric id.
+ * 
  * HEAD, tag
  *
  */
@@ -120,8 +124,8 @@ function headCheckTagDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect 
  */
 
 /**
- * getTag : with tag id, return the display version of
- * the tag. 
+ * getTag : with tag id (or string, but that would be pointless),
+ * return the display version of the tag.
  *
  */
 function getTagDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
@@ -132,8 +136,15 @@ function getTagDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) 
     die( $i->error_info());
   }
 
-  $i->query("select tagdisplay from tag where id ='". 
-            $i->dbquote($q->get_param('folksotagid')) . "'");
+  $query = 'SELECT tagdisplay FROM tag WHERE ';
+
+  if (is_numeric($q->tag)) {
+    $query .= 'id = ' . $q->get_param('tag');
+  }
+  else {
+    $query .= "tagnorm = normalize_tag('" . $q->tag . "')";
+  }
+  $i->query($query);
 
   switch ($i->result_status) {
   case 'DBERR':
@@ -142,7 +153,7 @@ function getTagDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) 
     break;
   case 'NOROWS':
     header('HTTP/1.1 404 Tag not found');
-    die('The tag ' . $q->get_param('tagid') . ' was not found');
+    die('The tag ' . $q->tag . ' was not found');
     break;
   case 'OK':
     header('HTTP/1.1 200');

@@ -99,13 +99,14 @@ function getTagsIdsDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $d
   // check to see if resource is in db.
   if  (!$i->resourcep($q->res))  {
     if ($i->db_error()) {
+      $i->done();
       header('HTTP/1.0 501 Database problem');
-      print $i->error_info() . "\n";
-      return;
+      die($i->error_info());
     }
     else {
       header('HTTP/1.0 404 Resource not found');      
       print "Resource not present in database";
+      $i->done();
       return;
     }
   }
@@ -114,11 +115,11 @@ function getTagsIdsDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $d
                         FROM tag 
                         JOIN tagevent ON tag.id = tagevent.tag_id
                         JOIN resource ON resource.id = tagevent.resource_id ";
-  if ($q->is_param('id')) {
-    $select .= "WHERE resource.id = " . $i->dbquote($q->get_param('id'));
+  if (is_numeric($q->res))
+    $select .= " WHERE resource.id = " . $i->dbescape($q->res);
   }
   else {
-    $select .= "WHERE uri_normal = url_whack('". $i->dbquote($q->get_param('uri')) ."')";
+    $select .= " WHERE uri_normal = url_whack('". $i->dbescape($q->res) ."')";
   }
    
   $i->query($select);
@@ -167,20 +168,17 @@ function getTagsIdsDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $d
  *
  * Parameters: GET, folksoclouduri
  */
-
 function tagCloudLocalPop (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
 
   $i = new folksoDBinteract($dbc);
 
   if ($i->db_error()) {
     header('HTTP/1.0 501 Database connection problem');
-    print $i->error_info() . "\n";
-    return;
+    die( $i->error_info());
   }
 
   // check to see if resource is in db.
-
-  if  (!$i->resourcep($q->get_param('clouduri' )) )  {
+  if  (!$i->resourcep($q->res ))  {
     if ($i->db_error()) {
       header('HTTP/1.0 501 Database problem');
       die( $i->error_info());
@@ -191,9 +189,8 @@ function tagCloudLocalPop (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnec
       return;
     }
   }
-
   
-  $i->query("CALL cloudy('" . $q->get_param('clouduri') . "', 5, 5)");
+  $i->query("CALL cloudy('" . $i->dbsecape($q->res) . "', 5, 5)");
 
   switch ($i->result_status) {
   case 'DBERR':
@@ -209,6 +206,7 @@ function tagCloudLocalPop (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnec
     header('HTTP/1.1 200');
     break;
   }
+
   $df = new folksoDisplayFactory();
   $dd = $df->cloud();
   $dd->activate_style('xhtml'); // only style available right now.
