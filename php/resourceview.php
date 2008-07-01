@@ -31,7 +31,7 @@ ul.resourcelist li a.tocloud, ul.resourcelist li a:visited.tocloud, ul.resourcel
 
 <?php
 
-require_once('/usr/local/www/apache22/lib/jf/fk/folksoClient.php');
+require_once('folksoClient.php');
 
    if ($_GET['tagthing']) {
      $tagthing = substr($_GET['tagthing'], 0, 255);
