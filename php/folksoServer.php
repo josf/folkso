@@ -19,7 +19,7 @@
    * @copyright 2008 Gnu Public Licence (GPL)
    */
 
-include('/usr/local/www/apache22/lib/jf/fk/folksoTags.php');
+require_once('folksoTags.php');
 
 class folksoServer {
 

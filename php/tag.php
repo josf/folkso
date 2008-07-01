@@ -1,6 +1,6 @@
 <?php
 
-include('/usr/local/www/apache22/lib/jf/fk/folksoTags.php');
+require_once('folksoTags.php');
 
 
 

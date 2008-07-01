@@ -9,7 +9,7 @@
    */
 
 
-require_once('/usr/local/www/apache22/lib/jf/fk/folksoDataDisplay.php');
+require_once('folksoDataDisplay.php');
 
 class folksoDisplayFactory {
 

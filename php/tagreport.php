@@ -1,7 +1,7 @@
 <?php
 header('HTTP/1.1 200');
-//require_once('/usr/local/www/apache22/lib/jf/fk/folksoClient.php');
-require_once('/var/www/dom/fabula/lib/jf/fk/folksoClient.php');
+
+require_once('folksoClient.php');
 
 $cl = new folksoClient('localhost', 
                        '/resource.php',
