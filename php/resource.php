@@ -121,11 +121,12 @@ function getTagsIdsDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $d
                         FROM tag 
                         JOIN tagevent ON tag.id = tagevent.tag_id
                         JOIN resource ON resource.id = tagevent.resource_id ";
-  if (is_numeric($q->res))
+
+  if (is_numeric($q->res)) {
     $select .= " WHERE resource.id = " . $i->dbescape($q->res);
   }
   else {
-    $select .= " WHERE uri_normal = url_whack('". $i->dbescape($q->res) ."')";
+    $select .= " WHERE uri_normal = url_whack('". $i->dbescape($q->res) ."') ";
   }
    
   $i->query($select);

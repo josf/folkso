@@ -11,7 +11,7 @@
    *
    */
 
-include_once('/usr/local/www/apache22/lib/jf/fk/folksoDBconnect.php');
+require_once('folksoDBconnect.php');
 
 class folksoDBinteract {
 

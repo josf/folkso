@@ -7,7 +7,7 @@ $cl = new folksoClient('localhost',
                        '/commun3/folksonomie/resource.php',
                        'GET');
 
-$cl->set_getfields( array('folksouri' => curPageURL()));
+$cl->set_getfields( array('folksores' => curPageURL()));
 
 
 $result =  $cl->execute();

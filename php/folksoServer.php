@@ -20,6 +20,7 @@
    */
 
 require_once('folksoTags.php');
+require_once('folksoFabula.php');
 
 class folksoServer {
 

@@ -37,7 +37,7 @@ require_once('folksoClient.php');
      $tagthing = substr($_GET['tagthing'], 0, 255);
 
      $fc = new folksoClient('localhost', '/commun3/folksonomie/tag.php', 'get');
-     $fc->set_getfields(array('folksofancy' => $tagthing));
+     $fc->set_getfields(array('folksotag' => $tagthing, 'folksofancy' => ''));
      $reslist = $fc->execute();
 
      if ($fc->query_resultcode() == 200) {

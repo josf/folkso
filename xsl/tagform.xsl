@@ -53,7 +53,7 @@
               <xsl:attribute name="value">
                 <xsl:value-of select="numid"/>
               </xsl:attribute>
-              <xsl:attribute name="name">folksorename</xsl:attribute>
+              <xsl:attribute name="name">folksotag</xsl:attribute>
             </xsl:element>
 
             <xsl:element name="input">
@@ -70,9 +70,14 @@
           <xsl:element name="p">
             <xsl:text> Supprimer ce tag : </xsl:text>
 
+            <xsl:element name="input">
+              <xsl:attribute name="type">hidden</xsl:attribute>
+              <xsl:attribute name="name">folksodelete</xsl:attribute>
+            </xsl:element>
+
             <xsl:element name="button">
               <xsl:attribute name="type">submit</xsl:attribute>
-              <xsl:attribute name="name">folksodelete</xsl:attribute>
+              <xsl:attribute name="name">folksotag</xsl:attribute>
               <xsl:attribute name="value">
                 <xsl:value-of select="numid"/>
               </xsl:attribute>
@@ -101,7 +106,7 @@
           <xsl:attribute name="value">
             <xsl:value-of select="numid"/>
           </xsl:attribute>
-          <xsl:attribute name="name">folksosource</xsl:attribute>
+          <xsl:attribute name="name">folksotag</xsl:attribute>
           Fusionner
         </xsl:element>
       </xsl:element>
