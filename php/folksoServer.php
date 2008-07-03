@@ -38,6 +38,7 @@ class folksoServer {
 
   private $possibleMethods = array('GET', 'get', 'HEAD', 'head','POST', 'post', 'PUT', 'put', 'DELETE', 'delete');
   private $possibleAccessModes = array('LOCAL', 'LIST', 'ALL');
+
   public $responseObjects = array();
   public $authorize_get_fields = array();
 
@@ -62,7 +63,9 @@ class folksoServer {
    * _do_ require it in an array here.
    */
   function __construct ($config) {
-    $conf_keys = array('methods', 'access_mode','access_list', 'authorize_get_fields' );
+    $conf_keys = array('methods', 
+                       'access_mode','access_list', 
+                       'authorize_get_fields');
     
     // methods
     if ((array_key_exists('methods', $config)) &&
@@ -90,8 +93,8 @@ class folksoServer {
         ( is_array($config['access_list']))) { // this should be an erreur instead!
       $this->clientAllowedHost = $config['access_list'];
     }
-  }
 
+  }
 
   /**
    * Adds a folksoResponse object to the array of response objects.
@@ -116,7 +119,6 @@ class folksoServer {
       print "NOT OK. Illegal request method for this resource.";
       return;
     }
-
     
     if (!($this->validClientAddress($_SERVER['REMOTE_HOST'], $_SERVER['REMOTE_ADDR']))) {
       header('HTTP/1.0 403');
@@ -134,7 +136,12 @@ class folksoServer {
     $cred->parse_auth_header();
 
 //    print var_dump($cred);
-    $dbc = new folksoDBconnect('localhost', 'root', 'hellyes', 'folksonomie');
+
+    $loc = new folksoFabula();
+    $dbc = new folksoDBconnect($loc->db_server ? $loc->db_server : 'localhost',
+                               $loc->db_user,
+                               $loc->db_password,
+                               $loc->db_database_name ? $loc->db_database_name : 'folksonomie');
 
     if ($this->is_auth_necessary($q)) {
 

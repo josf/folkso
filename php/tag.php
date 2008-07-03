@@ -1,7 +1,7 @@
 <?php
 
 require_once('folksoTags.php');
-
+require_once('folksoFabula.php');
 
 
 $srv = new folksoServer(array( 'methods' => array('POST', 'GET', 'HEAD'),

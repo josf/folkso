@@ -1,6 +1,6 @@
 <?php
 
-require('/usr/local/www/apache22/lib/jf/fk/folksoUserValid.php');
+require_once('folksoUserValid.php');
 
 class folksoWsseCreds extends folksoUserValid {
 
