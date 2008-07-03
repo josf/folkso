@@ -143,7 +143,6 @@ class folksoServer {
                                $loc->db_password,
                                $loc->db_database_name ? $loc->db_database_name : 'folksonomie');
 
-
     if ($this->is_auth_necessary($q)) {
 
       // Initial challenge

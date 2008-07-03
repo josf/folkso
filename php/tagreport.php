@@ -1,8 +1,6 @@
 <?php
+
 require_once('folksoClient.php');
-//header('HTTP/1.1 200');
-
-
 
 
 $cl = new folksoClient('localhost', 

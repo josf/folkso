@@ -1,17 +1,32 @@
 <?php
 
+
 require_once('folksoTags.php');
 require_once('folksoFabula.php');
 
+/** 
+ * When the tag's name or id is known, the field name "tag"
+ * ("folksotag" if we maintain that system) will always be used. It
+ * can be a multiple field (that is: "tag001, tag002, tag003...").
+ *
+ * The "tag" field should be able to accept either a numerical id or a
+ * tag name. In this case the tag name is not necessarily normalized.
+ *
+ */
 
-$srv = new folksoServer(array( 'methods' => array('POST', 'GET', 'HEAD', 'DELETE'),
+
+$srv = new folksoServer(array( 'methods' => 
+                               array('POST', 'GET', 'HEAD', 'DELETE'),
                                'access_mode' => 'ALL'));
+
 $srv->addResponseObj(new folksoResponse('get', 
-                                        array('required' => array('tagid')),
+                                        array('required' => array('tag')),
                                         'getTagDo'));
 
 $srv->addResponseObj(new folksoResponse('get', 
-                                        array('required_single' => array('resources')),
+                                        array('required_single' => 
+                                              array('tag', 
+                                                    'resources')),
                                         'getTagResourcesDo'));
 
 $srv->addResponseObj(new folksoResponse('post',
@@ -21,28 +36,41 @@ $srv->addResponseObj(new folksoResponse('post',
 $srv->addResponseObj(new folksoResponse('get', 
                                         array('required' => array('autotag')),
                                         'autoCompleteTagsDo'));
+
 $srv->addResponseObj(new folksoResponse('get',
                                         array('required' => array('byalpha')),
                                         'byalpha'));
+
 $srv->addResponseObj(new folksoResponse('get',
-                                        array('required' => array('fancy')),
+                                        array('required' => array('fancy'),
+                                              'required_single' => array('tag')),
                                         'fancyResource'));
+
 $srv->addResponseObj(new folksoResponse('head',
                                         array('required' => array('tag')),
                                         'headCheckTagDo'));
 
+/**
+ * Note that the "tag" field here refers to the resource that will be
+ * deleted during the merge.
+ */
 $srv->addResponseObj(new folksoResponse('post',
-                                        array('required' => array('source', 'target')),
+                                        array('required' => array('tag', 'target')),
                                         'tagMerge'));
 
 $srv->addResponseObj(new folksoResponse('delete',
-                                        array('required' => array('delete')),
+                                        array('required' => array('delete'),
+                                              'required_single' => array('tag')),
                                         'deleteTag'));
+
 $srv->addResponseObj(new folksoResponse('post',
-                                        array('required' => array('delete')),
+                                        array('required' => array('delete'),
+                                              'required_single' => array('tag')),
                                         'deleteTag'));
+
 $srv->addResponseObj(new folksoResponse('post',
-                                        array('required' => array('rename', 'newname')),
+                                        array('required_single' => array('tag', 
+                                                                         'newname')),
                                         'renameTag'));
 
 $srv->Respond();
@@ -54,7 +82,10 @@ $srv->Respond();
 /**
  * checkTag (Test and Do) : given a string, checks if that tag is
  * already present in the database.
- *
+ * 
+ * If the tag exists, returns 200 and sets an 'X-Folkso-Tagid' header
+ * with the numeric id.
+ * 
  * HEAD, tag
  *
  */
@@ -94,8 +125,8 @@ function headCheckTagDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect 
  */
 
 /**
- * getTag : with tag id, return the display version of
- * the tag. 
+ * getTag : with tag id (or string, but that would be pointless),
+ * return the display version of the tag.
  *
  */
 function getTagDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
@@ -106,8 +137,15 @@ function getTagDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) 
     die( $i->error_info());
   }
 
-  $i->query("select tagdisplay from tag where id ='". 
-            $i->dbquote($q->get_param('folksotagid')) . "'");
+  $query = 'SELECT tagdisplay FROM tag WHERE ';
+
+  if (is_numeric($q->tag)) {
+    $query .= 'id = ' . $q->get_param('tag');
+  }
+  else {
+    $query .= "tagnorm = normalize_tag('" . $q->tag . "')";
+  }
+  $i->query($query);
 
   switch ($i->result_status) {
   case 'DBERR':
@@ -116,7 +154,7 @@ function getTagDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) 
     break;
   case 'NOROWS':
     header('HTTP/1.1 404 Tag not found');
-    die('The tag ' . $q->get_param('tagid') . ' was not found');
+    die('The tag ' . $q->tag . ' was not found');
     break;
   case 'OK':
     header('HTTP/1.1 200');

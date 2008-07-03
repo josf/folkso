@@ -16,8 +16,6 @@
    * @author Joseph Fahey
    * @copyright 2008 Gnu Public Licence (GPL)
    */
-
- 
 class folksoResponse {
 
   public $test_func;

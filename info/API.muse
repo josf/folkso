@@ -10,6 +10,10 @@ associés à une ressource donnée.
 
 * tag.php
 
+When the tag's name or id is known, the field name "tag" ("folksotag"
+if we maintain that system) will always be used. It can be a multiple
+field (that is: "tag001, tag002, tag003...").
+
 ** GET
 
 *** folksotagid
@@ -61,14 +65,16 @@ tag's id (**201**, created).
 
 * resource.php
 
+The basic field is "res" or "folksores". It can be either an numeric
+id or a uri, and each response handler should be able to react
+accordingly. 
+
 ** HEAD
 
-*** folksouri *or* folksoresourceid
+*** res (id or uri)
 
-Returns 200 if the resource provided (id or raw uri) is already present in
+Returns 200 if the resource provided is already present in
 the resource index (resource table).
-
-If both parameters are provided, only resourceid will be used.
 
 **** Errors
 
