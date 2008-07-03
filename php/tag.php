@@ -1,7 +1,7 @@
 <?php
 
-include('/usr/local/www/apache22/lib/jf/fk/folksoTags.php');
-
+require_once('folksoTags.php');
+require_once('folksoFabula.php');
 
 
 $srv = new folksoServer(array( 'methods' => array('POST', 'GET', 'HEAD', 'DELETE'),

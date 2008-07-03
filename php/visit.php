@@ -1,6 +1,6 @@
 <?php
 
-include('/var/www/dom/fabula/commun3/folksonomie/folksoClient.php');
+include('folksoClient.php');
 
 
 function curPageURL() {

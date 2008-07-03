@@ -42,7 +42,6 @@ require_once('folksoClient.php');
 
      if ($fc->query_resultcode() == 200) {
 
-
            $resources = new DOMDocument();
            $resources->loadXML($reslist);
            

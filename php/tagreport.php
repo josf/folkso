@@ -1,8 +1,8 @@
 <?php
-require_once('/var/www/dom/fabula/commun3/folksonomie/folksoClient.php');
-
+require_once('folksoClient.php');
 //header('HTTP/1.1 200');
-//require_once('/usr/local/www/apache22/lib/jf/fk/folksoClient.php');
+
+
 
 
 $cl = new folksoClient('localhost', 

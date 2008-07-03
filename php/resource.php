@@ -10,8 +10,14 @@
    */
 
   //include('/var/www/dom/fabula/commun3/folksonomie/folksoTags.php');
-include('/usr/local/www/apache22/lib/jf/fk/folksoTags.php');
 
+require_once('folksoTags.php');
+/*include('/var/www/dom/fabula/commun3/folksonomie/folksoIndexCache.php');
+include('/var/www/dom/fabula/commun3/folksonomie/folksoUrl.php');
+include('/var/www/dom/fabula/commun3/folksonomie/folksoServer.php');
+include('/var/www/dom/fabula/commun3/folksonomie/folksoResponse.php');
+include('/var/www/dom/fabula/commun3/folksonomie/folksoQuery.php');
+*/
 
 $srv = new folksoServer(array( 'methods' => array('POST', 'GET', 'HEAD'),
                                'access_mode' => 'ALL'));
