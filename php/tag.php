@@ -1,8 +1,12 @@
 <?php
 
 
-require_once('folksoTags.php');
-require_once('folksoFabula.php');
+require_once('folksoDBinteract.php');
+require_once('folksoServer.php');
+require_once('folksoResponse.php');
+require_once('folksoQuery.php');
+require_once('folksoWsseCreds.php');
+require_once('folksoDBconnect.php');
 
 /** 
  * When the tag's name or id is known, the field name "tag"
@@ -59,8 +63,7 @@ $srv->addResponseObj(new folksoResponse('post',
                                         'tagMerge'));
 
 $srv->addResponseObj(new folksoResponse('delete',
-                                        array('required' => array('delete'),
-                                              'required_single' => array('tag')),
+                                        array('required_single' => array('tag')),
                                         'deleteTag'));
 
 $srv->addResponseObj(new folksoResponse('post',
@@ -435,13 +438,15 @@ function tagMerge (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) 
     die($i->error_info());
   }
 
-  // build query
+  /* build query. all the funny quote marks are there because the
+     stored procedure 'tagmerge' needs 4 arguments to distinguish
+     between numeric args and non numeric args*/
   $source_part = '';
-  if (is_numeric($q->get_param('source'))){
-    $source_part = $q->get_param('source'). ", ''";
+  if (is_numeric($q->tag)){
+    $source_part = $q->tag . ", ''";
   }
   else {
-    $source_part = "'', '". $i->dbquote($q->get_param('source')) . "'";
+    $source_part = "'', '". $i->dbquote($q->tag) . "'";
   }
 
   $target_part = '';
@@ -455,7 +460,6 @@ function tagMerge (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) 
   // execute
   $i->query("call tagmerge($source_part, $target_part)");
   
-
   if ($i->result_status == 'DBERR') {
     header('HTTP/1.1 501 Database error');
     die($i->error_info());
@@ -503,14 +507,14 @@ function deleteTag  (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc
 
   /* Check to see if tag is there. This might not be necessary: if the
    * tag does not exist, we just continue */
-  if (!$i->tagp($q->get_param('delete'))) {
+  if (!$i->tagp($q->tag)) {
     if ($i->db_error()) {
       header('HTTP/1.1 501 Database problem');
       die($i->error_info());
     }
     else {
       header('HTTP/1.1 404 Could not delete - tag not found');
-      print $q->get_param('resource') . " does not exist in the database";
+      print $q->tag . " does not exist in the database";
       return;
     }
   }
@@ -518,16 +522,18 @@ function deleteTag  (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc
   // delete 1 : remove tagevents
   // delete 2 : remove the tag itself
   $delete1 = '';
-  $delete2 = "delete from tag  ";
+  $delete2 = "DELETE FROM tag  ";
 
-  if ($q->is_number('delete')) {
-    $delete1 .= ' delete from tagevent where tag_id='. $q->get_param('delete');
-    $delete2 .= ' where id='. $q->get_param('delete');
+  if (is_numeric($q->tag)) {
+    $delete1 .= ' DELETE FROM tagevent WHERE tag_id='. $q->tag;
+    $delete2 .= ' WHERE id='. $q->tag;
   }
   else {
-    $delete1 .= " DELETE tagevent FROM tagevent JOIN ON tag WHERE tagevent.tag_id = tag.id
-                  WHERE tag.tagnorm = normalize_tag('" . $q->get_param('delete') . "')";    
-    $delete2 .= " WHERE tagnorm = normalize_tag('" . $q->get_param('delete') . "')";
+    $delete1 .= " DELETE tagevent ".
+      " FROM tagevent JOIN tag ON tagevent.tag_id = tag.id".
+      "WHERE tag.tagnorm = normalize_tag('" . $i->dbescape($q->tag) . "')";    
+
+    $delete2 .= " WHERE tagnorm = normalize_tag('" . $i->dbescape($q->tag) . "')";
   }
 
   $i->query($delete1); // delete tagevent
@@ -609,9 +615,9 @@ function renameTag (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc)
     die($i->error_info());
   }
 
-  if (!$i->tagp($q->get_param('rename'))) {
+  if (!$i->tagp($q->tag)) {
     header('HTTP/1.1 404 Tag not found');
-    die('Nothing to rename. No such tag: ' . $q->get_param('rename'));
+    die('Nothing to rename. No such tag: ' . $q->tag);
   }
 
   $query = "update tag
@@ -620,12 +626,12 @@ function renameTag (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc)
     "tagnorm = normalize_tag('" . $i->dbescape($q->get_param('newname')) . "') ".
     "where ";
 
-  if (is_numeric($q->get_param('rename'))) {
-    $query .= " id = " . $q->get_param('rename');
+  if (is_numeric($q->tag)) {
+    $query .= " id = " . $q->tag;
   }
   else {
     $query .= " tagnorm = normalize_tag('" . 
-      $i->dbescape($q->get_param('rename')) . "')";
+      $i->dbescape($q->tag) . "')";
   }
   $i->query($query);
   if ($i->result_status == 'DBERR') {

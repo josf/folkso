@@ -2,6 +2,18 @@
 
 
 
+
+require_once('folksoDBinteract.php');
+require_once('folksoDataDisplay.php');
+require_once('folksoDisplayFactory.php');
+require_once('folksoServer.php');
+require_once('folksoResponse.php');
+require_once('folksoQuery.php');
+require_once('folksoWsseCreds.php');
+require_once('folksoDBconnect.php');
+
+
+  /*
   require_once('/usr/local/www/apache22/lib/jf/fk/folksoIndexCache.php');
   require_once('/usr/local/www/apache22/lib/jf/fk/folksoUrl.php');
   require_once('/usr/local/www/apache22/lib/jf/fk/folksoServer.php');
@@ -13,7 +25,7 @@
 require_once('/usr/local/www/apache22/lib/jf/fk/folksoDataDisplay.php');
 require_once('/usr/local/www/apache22/lib/jf/fk/folksoWsseCreds.php');
 require_once('/usr/local/www/apache22/lib/jf/fk/folksoDisplayFactory.php');
-
+  */
 
 
 /*
