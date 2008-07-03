@@ -63,7 +63,7 @@ class folksoClient {
     $this->ch = curl_init($this->build_req());
 
     curl_setopt($this->ch, CURLOPT_USERAGENT, 'folksoClient');
-    //    curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, true);
     if (strtolower($this->method) == 'post'){
       $headers = array( "Content-Type: application/x-www-form-urlencoded",
                         "Content-length: " . $this->content_length());

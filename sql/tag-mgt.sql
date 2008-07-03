@@ -5,7 +5,7 @@
 -- Normalize tag
 
 -- (local-set-key [(control c) (b)] 'sql-snip) 
---(defun sql-snip () (interactive) (snippet-insert "set final_tag = replace(final_tag, '$${1}', '$${2}');
+-- (defun sql-snip () (interactive) (snippet-insert "set final_tag = replace(final_tag, '$${1}', '$${2}');
 -- "))
 
 delimiter $$
@@ -108,4 +108,290 @@ end$$
 DELIMITER ;
            
 
-select 1;
+
+
+delimiter $$
+drop procedure if exists update_tag_popularity$$
+create procedure update_tag_popularity()
+
+BEGIN
+        DECLARE l_last_row_fetched INT;
+        declare this_tag int;
+        DECLARE tag_c CURSOR FOR
+                SELECT id FROM tag;
+        DECLARE CONTINUE HANDLER FOR NOT FOUND SET l_last_row_fetched=1;
+
+        SET l_last_row_fetched = 0;
+        OPEN tag_c;
+        read_tags: LOOP
+                   FETCH tag_c INTO this_tag;
+                   IF l_last_row_fetched=1 THEN
+                      LEAVE read_tags;
+                   END IF;
+
+                   UPDATE tag
+                      SET popularity =  (SELECT COUNT(id) 
+                                            FROM tagevent te
+                                            WHERE te.tag_id = this_tag)
+                      WHERE id = this_tag;
+        END LOOP read_tags;
+        CLOSE tag_c;
+        SET l_last_row_fetched=0;
+
+END$$
+DELIMITER ; 
+
+
+
+DELIMITER $$
+DROP PROCEDURE IF EXISTS cloudy$$
+CREATE PROCEDURE cloudy(url varchar(255), 
+                        localweight int,
+                        globalweight int)
+
+BEGIN
+
+DECLARE url_norm VARCHAR(255);
+
+-- v is to indicate that these are variables, since later we have
+-- identical column names
+DECLARE displayv VARCHAR(255);
+DECLARE normv VARCHAR(255);       
+DECLARE tagidv INT;        
+DECLARE localpopv INT;
+DECLARE globalpopv INT;
+DECLARE weightv INT;        
+
+DECLARE maxlocal INT;
+DECLARE maxglobal INT;
+DECLARE maxweight INT;
+DECLARE minweight INT;
+
+DECLARE l_last_row_fetched INT default 0;
+
+DECLARE ourdata CURSOR FOR
+         SELECT  tag.tagdisplay,
+               tag.tagnorm,
+               tag.id,
+               (SELECT COUNT(tag_id)
+                       FROM tagevent tage
+                       JOIN resource ON tage.resource_id = resource.id
+                       WHERE (resource.uri_normal = url_whack(url)) AND 
+                             (tage.tag_id = tag.id)) AS localcount,
+               tag.popularity AS pop
+       FROM tag
+            JOIN tagevent te ON te.tag_id = tag.id
+            JOIN resource res ON res.id = te.resource_id
+       WHERE res.uri_normal = url_whack(url)
+       GROUP BY tag.id;
+
+DECLARE finaldata CURSOR FOR
+SELECT tagdisplay,
+       tagnorm,
+       tagid,
+       globalpop AS ottglobalpop,
+       localpop AS ottlocalpop,
+       (localweight *
+       (select count(distinct output_temp_table2.tagid)
+               from
+               output_temp_table2 
+               where output_temp_table2.localpop <= ottlocalpop)) +
+       (globalweight *
+       (select count(distinct output_temp_table3.tagid)
+               from
+               output_temp_table3
+               where output_temp_table3.globalpop >= ottglobalpop)) as weight
+       from output_temp_table;
+       
+
+DECLARE CONTINUE HANDLER FOR NOT FOUND SET l_last_row_fetched=1;
+
+-- because of a mysql bug
+-- (http://dev.mysql.com/doc/refman/5.1/en/temporary-table-problems.html),
+-- you cannot refer to a temporary table with an alias. Therefore, we
+-- create two, no three! identical tables...
+
+DROP TABLE IF EXISTS output_temp_table;
+CREATE TABLE output_temp_table
+       (tagid INT UNSIGNED PRIMARY KEY,
+        tagnorm VARCHAR(255) NOT NULL,
+        tagdisplay VARCHAR(255) NOT NULL,
+        globalpop INT UNSIGNED,
+        localpop INT UNSIGNED);
+
+
+DROP TABLE IF EXISTS output_temp_table2;
+CREATE TEMPORARY TABLE output_temp_table2
+       (tagid INT UNSIGNED PRIMARY KEY,
+        tagnorm VARCHAR(255) NOT NULL,
+        tagdisplay VARCHAR(255) NOT NULL,
+        globalpop INT UNSIGNED,
+        localpop INT UNSIGNED);
+
+DROP TABLE IF EXISTS output_temp_table3;
+CREATE TEMPORARY TABLE output_temp_table3
+       (tagid INT UNSIGNED PRIMARY KEY,
+        tagnorm VARCHAR(255) NOT NULL,
+        tagdisplay VARCHAR(255) NOT NULL,
+        globalpop INT UNSIGNED,
+        localpop INT UNSIGNED);
+
+SET l_last_row_fetched = 0;
+OPEN ourdata;
+cursing: LOOP
+         FETCH ourdata INTO displayv, normv, tagidv, localpopv, globalpopv;
+         IF l_last_row_fetched=1 THEN
+            LEAVE cursing;
+         END IF;
+
+         INSERT INTO output_temp_table 
+                SET 
+                    tagdisplay   = displayv,
+                    tagnorm      = normv,
+                    tagid     = tagidv,
+                    localpop  = localpopv,
+                    globalpop = globalpopv;
+
+         INSERT INTO output_temp_table2 
+                SET 
+                    tagdisplay   = displayv,
+                    tagnorm      = normv,
+                    tagid     = tagidv,
+                    localpop  = localpopv,
+                    globalpop = globalpopv;
+
+         INSERT INTO output_temp_table3
+                SET 
+                    tagdisplay   = displayv,
+                    tagnorm      = normv,
+                    tagid     = tagidv,
+                    localpop  = localpopv,
+                    globalpop = globalpopv;
+         
+END LOOP cursing;
+CLOSE ourdata;      
+SET l_last_row_fetched=0;
+
+
+DROP TABLE IF EXISTS final_output;
+CREATE TEMPORARY TABLE final_output
+       (tagdisplay VARCHAR(255) NOT NULL, 
+       tagnorm VARCHAR(255) NOT NULL, 
+       tagid INT UNSIGNED NOT NULL, 
+       weight INT UNSIGNED NOT NULL);
+
+SET l_last_row_fetched = 0;
+OPEN finaldata;
+cussing: LOOP
+         FETCH finaldata INTO displayv, normv, tagidv, globalpopv, localpopv, weightv;
+         IF l_last_row_fetched=1 THEN
+            LEAVE cussing;
+         END IF;
+
+         INSERT INTO final_output
+                SET
+                tagdisplay = displayv,
+                tagnorm    = normv,
+                tagid      = tagidv,
+                weight     = weightv;
+
+END LOOP cussing;
+CLOSE finaldata;      
+SET l_last_row_fetched=0;
+
+select max(weight)
+       into maxweight
+       from final_output;
+
+select min(weight)
+       into minweight
+       from final_output;
+
+select tagdisplay, tagnorm, tagid, weight,
+       case  
+             when (weight - minweight) > 0.8 * (maxweight - minweight) then 5
+             when (weight - minweight) > 0.6 * (maxweight - minweight) then 4
+             when (weight - minweight) > 0.4 * (maxweight - minweight) then 3
+             when (weight - minweight) > 0.2 * (maxweight - minweight) then 2
+       else 1
+       end as cloudweight
+       from final_output;
+
+END$$
+DELIMITER ;
+
+
+-- 
+-- tagmerge
+-- 
+-- Four arguments so that either tag_ids or strings can be used.
+-- 
+-- Do not forget to include all four.
+
+DELIMITER $$
+DROP PROCEDURE IF EXISTS tagmerge$$
+CREATE PROCEDURE tagmerge(source_id_arg INT,
+                          source_str_arg VARCHAR(255),
+                          target_id_arg INT,
+                          target_str_arg VARCHAR(255))
+BEGIN
+
+DECLARE source_id INT;
+DECLARE target_id INT;
+DECLARE return_statement VARCHAR(15);
+
+IF (source_id_arg > 0) THEN
+   SELECT id 
+   INTO source_id
+   FROM tag
+   WHERE id = source_id_arg;
+ELSE
+   SELECT id
+   INTO source_id
+   FROM tag
+   WHERE tagnorm = normalize_tag(source_str_arg);
+END IF;
+
+IF (target_id_arg > 0) THEN
+   SELECT id
+   INTO target_id
+   FROM tag
+   WHERE id = target_id_arg;
+ELSE
+   SELECT id
+   INTO target_id
+   FROM tag
+   WHERE tagnorm = normalize_tag(target_str_arg);
+END IF;
+
+CASE
+  WHEN (target_id is null) THEN
+       SET return_statement = 'NOTARGET';
+  WHEN (source_id is null) then
+       SET return_statement = 'NOSOURCE';
+  ELSE
+       UPDATE tagevent
+         SET tag_id = target_id
+         WHERE tag_id = source_id;
+       DELETE 
+         FROM tag 
+         WHERE id = source_id;
+
+       UPDATE tag
+          SET popularity = (SELECT COUNT(id)
+                                   FROM tagevent te
+                                   WHERE te.tag_id = target_id)
+          WHERE id = target_id;
+         SET return_statement = 'OK';
+END CASE;
+
+SELECT return_statement AS status;
+
+END$$
+DELIMITER ;
+
+
+
+
+
+

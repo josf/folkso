@@ -1,5 +1,6 @@
 <?php
-  /**
+
+/**
    * This class provides a unified interface for all of the data
    * pertaining to the HTTP request, including GET and POST
    * parameters, and possible PUT and DELETE parameters should we end
@@ -10,6 +11,9 @@
    * @copyright 2008 Gnu Public Licence (GPL)
    */
 class folksoQuery {
+  public $tag; // tag id or name
+  public $res; // resource id or url
+
   private $method;
   private $content_type;
   private $fk_params = array(); //will contain only folkso related parameters
@@ -19,21 +23,26 @@ class folksoQuery {
    * authorization is added, there will be an authorization argument
    * as well.
    */
-   function __construct ($server, $get, $post) {
-    $this->method = $server['REQUEST_METHOD'];
+  function __construct ($server, $get, $post) {
+    $this->method = strtolower($server['REQUEST_METHOD']);
     $this->content_type = $server['HTTP_ACCEPT'];
     if (count($get) > 0) {
-      $this->fk_params = array_merge($this->parse_params($get), $this->fk_params);;
+      $this->fk_params = array_merge($this->parse_params($get), 
+                                     $this->fk_params);;
     }
 
     if (count($post) > 0) {
-      $this->fk_params = array_merge($this->parse_params($post), $this->fk_params);
+      $this->fk_params = array_merge($this->parse_params($post), 
+                                     $this->fk_params);
     }
-    /** Will add put and delete support here later **/
+    /** Will add put  support here later (maybe) **/
   }
 
 
    /**
+    *
+    * @params array $array : an array made up of $_SERVER etc.
+    * 
     * Checks for keys starting with 'folkso' and adds them to the
     * object. Values longer than 300 characters are shortened to 300
     * characters. 300 is chosen because it is a bit more than 255, the
@@ -44,29 +53,43 @@ class folksoQuery {
     * single parameter name, stripped of the three finale digits.
     */
   private function parse_params ($array) {
-    $accum = array();
-    $mults = array();
-    foreach ($array as $param_key => $param_val) {
-      if (substr($param_key, 0, 6) == 'folkso') {
+      $accum = array();
+      $mults = array();
+      foreach ($array as $param_key => $param_val) {
+          if (substr($param_key, 0, 6) == 'folkso') {
+              
+              # if fieldname end in 3 digits : folksothing123, we strip off
+              # the digits and build up an array of the fields
+            if (is_numeric(substr($param_key, -3))) {
+                  $new_key = substr($param_key, 0, -3);
 
-        // if fieldname end in 3 digits : folksothing123, we strip off
-        // the digits and build up an array of the fields
-        if (preg_match('/\d\d\d$/', $param_key)) {
-          $new_key = substr($param_key, 0, -3);
+                 # for 1st time through
+                  if (! isset($mults[$new_key])) {
+                      $mults[$new_key] = array();
+                  }      
+                  array_push($mults[$new_key],
+                         $this->field_shorten($param_val));
+              }
+              else {
+                /* special cases */
+                switch ( $param_key) {
+                case 'folksopage':
+                  $param_val = $this->checkpage($param_val);
+                  break;
+                case 'folksotag':
+                  $this->tag = $param_val;
+                  break;
+                case 'folksores':
+                  $this->res = $param_val;
+                  break;
+                }
 
-          // for 1st time through
-          if (! isset($mults[$new_key])) {
-            $mults[$new_key] = array();
+                $accum[$param_key] = $this->field_shorten($param_val);
+              }
           }
-          array_push($mults[$new_key], $this->field_shorten($param_val));
-        }
-        else {
-          $accum[$param_key] = $this->field_shorten($param_val);
-        }
       }
-    }
 
-    // If there are multiple fields, put them into $accum
+    # If there are multiple fields, put them into $accum
     if (count($mults) > 0){
       foreach ($mults as $mkey => $mval) {
         $accum[$mkey] = $mval;
@@ -75,19 +98,49 @@ class folksoQuery {
     return $accum;
   }
 
+/**
+  * If the 'folksopage' parameter is present, this function validates
+  *  it, makes  sure that it is an integer and that it is not longer
+  * than 4 digits. (If it is longer, the first four digits are used.)
+  *
+  * In case of a malformed field, 0 is returned, which should
+  * eliminate the effect of the field.
+  *
+  * @param mixed $page Ideally this is an integer, but we want to be sure
+  * @return integer
+  */
+  private function checkpage( $page ) {
+      if (preg_match('/^\d+$/', $page)) {
+          if ( strlen($page) > 4) {
+            return substr($page, 1, 4);
+      }
+          else {
+              return $page;    
+          }         
+      }         
+         else { 
+             return 0;
+         }              
+  }     
+
+  /**
+   * Simple getter function right now.
+   *
+   */
   public function content_type () {
     return $this->content_type;
   }
+
   /**
    * Returns the method used. In smallcaps, which should be the norm
-   * here.
+   * here. The method is put in smallcaps on object construction.
    */
   public function method () {
-    return strtolower($this->method);
+    return $this->method;
   }
 
-
-  public function params () {
+  /* This should not be publicly used anymore */
+  private function params () {
     return $this->fk_params;
   }
 
@@ -127,7 +180,13 @@ class folksoQuery {
       return false;
     }
   }
-
+  /**
+   * 
+   * Returns true if the parameter exists and is not multiple.
+   * 
+   * @params string $str A parameter name.
+   * @returns boolean
+   */
   public function is_single_param ($str) {
     if ((is_string($this->fk_params[$str])) ||
         (is_string($this->fk_params['folkso'.$str]))){
@@ -141,6 +200,9 @@ class folksoQuery {
   /**
    * Note: returns false for an empty array. This makes sense, I
    * think.
+   *
+   * @params string $str A parameter name.
+   * @returns boolean
    */
   public function is_multiple_param ($str) {
     if ((is_array($this->fk_params[$str])) &&
@@ -154,6 +216,9 @@ class folksoQuery {
 
   /**
    * Shortens a string to a maximum of 300 characters
+   *
+   * @param string $str
+   * @returns string
    */
   private function field_shorten ($str) {
     $str = trim($str);
@@ -165,8 +230,15 @@ class folksoQuery {
       return substr($str, 0, 300);
     }
   }
+
+  /**
+   * Use is_numeric instead...
+   * 
+   * @returns boolean
+   * @params mixed $param
+   */
   public function is_number ($param) {
-    if (preg_match('/^\d+$/', $this->get_param($param))) {
+    if (is_numeric($this->get_param($param))) {
       return true;
     }
     else {

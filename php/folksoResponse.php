@@ -16,12 +16,15 @@
    * @author Joseph Fahey
    * @copyright 2008 Gnu Public Licence (GPL)
    */
-
- 
 class folksoResponse {
-  public $httpMethod = 'GET';
+
   public $test_func;
   public $action_func;
+
+  /**
+   * The required method for this response. Should always be in
+   * lowercase.
+   */
   public $method;
   protected $activate_params;
 
@@ -50,13 +53,16 @@ class folksoResponse {
   /**
    * Tests whether this Response object should respond to the request ($q).
    * 
+   * First the method is tested.
+   * 
    * Using the information in $params passed on object creation, this
    * method tests that information against the query information ($q).
    *
    * @param folksoQuery $q
+   * @uses method
    * @return boolean
    */
-  function activatep (folksoQuery $q) {
+  function activatep (folksoQuery $q, folksoWsseCreds $cred) {
     if (($q->method() == $this->method) &&
         ($this->param_check($q))) {
       return true;
@@ -134,20 +140,23 @@ class folksoResponse {
    */
   function Respond (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
     $aa = $this->action_func;
-    return $aa($query, $cred, $dbc); //action (on DB for example) + return document
+    return $aa($q, $cred, $dbc); //action (on DB for example) + return document
                         //+ status. In fact, returned value does not
                         //matter probably.
   }
 
   function getHttpMethod () {
-    return $this->httpMethod;
+    return strtolower($this->method);
   }
 
+  /**
+   * I think this is deprecated.
+   */
   function setHttpMethod ($meth) {
     if ((is_string($meth)) &&
         in_array(strtolower($meth), array('get', 'put', 'post', 'delete'))) {
-      $this->httpMethod = $meth;
-      return $this->httpMethod;
+      $this->method = strtolower($meth);
+      return $this->method;
     }
     else {
       //Error

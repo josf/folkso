@@ -1,17 +1,20 @@
 <?php
-header('HTTP/1.1 200');
+
+//header('HTTP/1.1 200');
+//require_once('/usr/local/www/apache22/lib/jf/fk/folksoClient.php');
 
 require_once('folksoClient.php');
 
+
 $cl = new folksoClient('localhost', 
-                       '/resource.php',
+                       '/commun3/folksonomie/resource.php',
                        'GET');
 
-$cl->set_getfields( array('folksoresourceuri' => curPageURL()));
+$cl->set_getfields( array('folksouri' => curPageURL()));
 
 
 $result =  $cl->execute();
-//print $cl->query_resultcode();
+print $cl->query_resultcode();
 
 
 

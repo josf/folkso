@@ -18,6 +18,7 @@ class folksoDisplayFactory {
                                  array('type' => 'xhtml',
                                         'start' => '<ul>',
                                         'end' => '</ul>',
+                                       'titleformat' => '<h2>XXX</h2>',
                                         'lineformat' => '<li><a href="XXX">XXX</a></li>',
                                         'argsperline' => 2),
                                  $this->standardTextList(2));
@@ -60,6 +61,7 @@ class folksoDisplayFactory {
     $txt = array('type' => 'text',
                  'start' => "\n",
                  'end' => "\n",
+                 'titleformat' => 'XXX',
                  'argsperline' => $argnum);
 
     $line = '';
@@ -77,12 +79,101 @@ class folksoDisplayFactory {
                                        'start' => '<ul>',
                                        'end' => '</ul>',
                                        'argsperline' => 1,
+                                       'titleformat' => '<h2>XXX</h2>',
                                        'lineformat' => '<li>XXX</li>'),
                                  $this->standardTextList(1));
     $this->addXmlPart($obj, 
                       'list',
                       'list',
                       'element');
+    return $obj;
+  }
+  public function cloud () {
+    $obj = new folksoDataDisplay( array('type' => 'xhtml',
+                                       'start' => '<ul>',
+                                       'end' => '</ul>',
+                                       'argsperline' => 3,
+                                       'lineformat' => '<li class="cloudXXX"><a href="XXX">XXX</a></li>',
+                                        'titleformat' => '<h3>XXX</h3>'));
+    return $obj;
+
+
+  }
+
+  public function TagList () {
+    $obj = new folksoDataDisplay(
+                                 array('type' => 'xhtml',
+                                       'start' => '<ul class="taglist">',
+                                       'end' => '</ul>',
+                                       'titleformat' => '<h2>XXX</h2>',
+                                       'lineformat' => '<li><a id="tagXXX" href="XXX">XXX (XXX)</a></li>',
+                                       'argsperline' => 4),
+                                 $this->standardTextList(4),
+                                 array('type' => 'xml',
+                                       'start' => '<taglist>',
+                                       'end' => '</taglist>',
+                                       'lineformat' => 
+                                       "<tag>\n\t<numid>XXX</numid>".
+                                       "\n\t<tagnorm>XXX</tagnorm>".
+                                       "\n\t<display>XXX</display>".
+                                       "\n\t<popularity>XXX</popularity>".
+                                       "\n</tag>",
+                                       'argsperline' => 4));
+    return $obj;
+  }
+
+
+
+  public function ResourceList () {
+    $obj = new folksoDataDisplay(
+                                 array('type' => 'xhtml',
+                                       'start' => '<ul class="resourcelist">',
+                                       'end' => '<ul>',
+                                       'titleformat' => '<h2 class="resourcelistTitle">XXX</h2>',
+                                       'lineformat' => 
+                                       "<li>\n" .
+                                       "\t<a id=\"resXXX\" href=\"XXX\">XXX</a>\n" .
+                                       "</li>",
+                                       'argsperline' => 3),
+                                 $this->standardTextList(3),
+                                 array('type' => 'xml',
+                                       'start' => '<resourcelist>',
+                                       'end' => '</resourcelist>',
+                                       'lineformat' =>
+                                       "<resource>\n".
+                                       "\t<numid>XXX</numid>\n" .
+                                       "\t<url>XXX</url>\n" .
+                                       "\t<title>XXX</title>\n" .
+                                       '</resource>',
+                                       'argsperline' => 3));
+    return $obj;
+  }
+
+
+  public function FancyResourceList () {
+    $obj = new folksoDataDisplay(
+                                 array('type' => 'xhtml',
+                                       'start' => '<ul class="resourcelist">',
+                                       'end' => '<ul>',
+                                       'titleformat' => '<h2 class="resourcelistTitle">XXX</h2>',
+                                       'lineformat' => 
+                                       "<li>\n" .
+                                       "\t<a id=\"resXXX\" href=\"XXX\">XXX</a>\n" .
+                                       "<span class=\"tags\">XXX</span>" .
+                                       "</li>",
+                                       'argsperline' => 4),
+                                 $this->standardTextList(4),
+                                 array('type' => 'xml',
+                                       'start' => '<resourcelist>',
+                                       'end' => '</resourcelist>',
+                                       'lineformat' =>
+                                       "<resource>\n".
+                                       "\t<numid>XXX</numid>\n" .
+                                       "\t<url>XXX</url>\n" .
+                                       "\t<title><![CDATA[XXX]]></title>\n" .
+                                       "\t<tags>XXX</tags>\n" .
+                                       '</resource>',
+                                       'argsperline' => 4));
     return $obj;
   }
 
