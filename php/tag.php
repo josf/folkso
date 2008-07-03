@@ -23,6 +23,11 @@ $srv = new folksoServer(array( 'methods' =>
                                array('POST', 'GET', 'HEAD', 'DELETE'),
                                'access_mode' => 'ALL'));
 
+$srv->addResponseObj(new folksoResponse('get',
+                                        array('required' => array('fancy'),
+                                              'required_single' => array('tag')),
+                                        'fancyResource'));
+
 $srv->addResponseObj(new folksoResponse('get', 
                                         array('required' => array('tag')),
                                         'getTagDo'));
@@ -44,11 +49,6 @@ $srv->addResponseObj(new folksoResponse('get',
 $srv->addResponseObj(new folksoResponse('get',
                                         array('required' => array('byalpha')),
                                         'byalpha'));
-
-$srv->addResponseObj(new folksoResponse('get',
-                                        array('required' => array('fancy'),
-                                              'required_single' => array('tag')),
-                                        'fancyResource'));
 
 $srv->addResponseObj(new folksoResponse('head',
                                         array('required' => array('tag')),
@@ -338,12 +338,12 @@ $querystart =
 
   $queryend = " LIMIT 20";
   $querywhere = '';
-  if (is_numeric($q->get_param('fancy'))) {
-    $querywhere = 'where t.id = ' . $q->get_param('fancy') . ' ';
+  if (is_numeric($q->tag)) {
+    $querywhere = 'where t.id = ' . $q->tag . ' ';
   }
   else {
     $querywhere = "where t.tagnorm = normalize_tag('" . 
-      $i->dbescape($q->get_param('fancy')) . "') ";
+      $i->dbescape($q->tag) . "') ";
   }
 
   $i->query($querystart . ' '  . $querywhere . ' ' . $queryend);
@@ -355,7 +355,7 @@ $querystart =
   case 'NOROWS':
     header('HTTP/1.1 204 No resources associated with  tag');
     print "No resources are currently associated with " . 
-      $q->get_param('fancy');
+      $q->tag;
     return;
     break;
   case 'OK':
