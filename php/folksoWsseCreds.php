@@ -97,8 +97,6 @@ function buildDigestResponse () {
                  $this->getUserPasswd($this->username));
   
   return base64_encode($first);
-
-
 }
 
 public function Validate () {
