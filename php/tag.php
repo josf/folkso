@@ -29,14 +29,14 @@ $srv->addResponseObj(new folksoResponse('get',
                                         'fancyResource'));
 
 $srv->addResponseObj(new folksoResponse('get', 
-                                        array('required' => array('tag')),
-                                        'getTagDo'));
-
-$srv->addResponseObj(new folksoResponse('get', 
                                         array('required_single' => 
                                               array('tag', 
                                                     'resources')),
                                         'getTagResourcesDo'));
+
+$srv->addResponseObj(new folksoResponse('get', 
+                                        array('required' => array('tag')),
+                                        'getTagDo'));
 
 $srv->addResponseObj(new folksoResponse('post',
                                         array('required_single' => array('newtag')),
