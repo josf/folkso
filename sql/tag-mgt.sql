@@ -107,39 +107,16 @@ BEGIN
 end$$
 DELIMITER ;
            
--- This does the same thing as call update_tag_popularity();
--- update tag set popularity = 
---         (select count(te.tag_id) 
---         from tagevent te where te.tag_id = tag.id);
-
-delimiter $$
-drop procedure if exists update_tag_popularity$$
-create procedure update_tag_popularity()
+-- this should no longer be a procedure
+DELIMITER $$
+DROP PROCEDURE IF EXISTS update_tag_popularity$$
+CREATE PROCEDURE update_tag_popularity()
 
 BEGIN
-        DECLARE l_last_row_fetched INT;
-        declare this_tag int;
-        DECLARE tag_c CURSOR FOR
-                SELECT id FROM tag;
-        DECLARE CONTINUE HANDLER FOR NOT FOUND SET l_last_row_fetched=1;
 
-        SET l_last_row_fetched = 0;
-        OPEN tag_c;
-        read_tags: LOOP
-                   FETCH tag_c INTO this_tag;
-                   IF l_last_row_fetched=1 THEN
-                      LEAVE read_tags;
-                   END IF;
-
-                   UPDATE tag
-                      SET popularity =  (SELECT COUNT(id) 
-                                            FROM tagevent te
-                                            WHERE te.tag_id = this_tag)
-                      WHERE id = this_tag;
-        END LOOP read_tags;
-        CLOSE tag_c;
-        SET l_last_row_fetched=0;
-
+UPDATE tag SET popularity = 
+         (SELECT COUNT(DISTINCT te.tag_id) 
+         FROM tagevent te WHERE te.tag_id = tag.id);
 END$$
 DELIMITER ; 
 
@@ -380,7 +357,7 @@ CASE
          WHERE id = source_id;
 
        UPDATE tag
-          SET popularity = (SELECT COUNT(id)
+          SET popularity = (SELECT COUNT(distinct resource_id)
                                    FROM tagevent te
                                    WHERE te.tag_id = target_id)
           WHERE id = target_id;

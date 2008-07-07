@@ -54,7 +54,7 @@ $srv->addResponseObj(new folksoResponse('head',
  * deleted during the merge.
  */
 $srv->addResponseObj(new folksoResponse('post',
-                                        array('required' => array('tag', 'target')),
+                                        array('required_single' => array('tag', 'target')),
                                         'tagMerge'));
 
 $srv->addResponseObj(new folksoResponse('delete',
@@ -562,10 +562,9 @@ function byalpha (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
   
   $alpha = substr($q->get_param('byalpha'), 0, 3);
 
-
-  $query = "select id, tagdisplay, tagnorm, popularity
-            from tag
-            where tagnorm like '" . $i->dbescape($alpha) . "%'";
+  $query = "SELECT id, tagdisplay, tagnorm, popularity
+            FROM tag
+            WHERE tagnorm LIKE '" . $i->dbescape($alpha) . "%'";
 
   $i->query($query);
   switch ($i->result_status) {

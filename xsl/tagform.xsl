@@ -40,11 +40,11 @@
 
       <!-- Rename -->
       <xsl:element name="form">
-          <xsl:attribute name="action">/tag.php</xsl:attribute>
-          <xsl:attribute name="method">post</xsl:attribute>
-          <xsl:element name="p">
-            <xsl:text> Modifier ce tag : </xsl:text>
-            
+        <xsl:attribute name="class">rename</xsl:attribute>
+        <xsl:attribute name="action">/tag.php</xsl:attribute>
+        <xsl:attribute name="method">post</xsl:attribute>
+        <xsl:element name="p">
+          <xsl:text> Modifier ce tag : </xsl:text>
             <xsl:element name="input">
               <xsl:attribute name="type">text</xsl:attribute>
               <xsl:attribute name="maxlength">255</xsl:attribute>
@@ -67,12 +67,13 @@
           </xsl:element>
       </xsl:element>
 
-
+    <!-- Delete -->
       <xsl:element name="form">
+        <xsl:attribute name="class">delete</xsl:attribute>
           <xsl:attribute name="action">/tag.php</xsl:attribute>
           <xsl:attribute name="method">post</xsl:attribute>
           <xsl:element name="p">
-            <xsl:text> Supprimer ce tag : </xsl:text>
+            <xsl:text>Supprimer ce tag : </xsl:text>
 
             <xsl:element name="input">
               <xsl:attribute name="type">hidden</xsl:attribute>
@@ -93,6 +94,7 @@
 
       <!-- fusionner -->
       <xsl:element name="form">
+        <xsl:attribute name="class">merge</xsl:attribute>
           <xsl:attribute name="action">/tag.php</xsl:attribute>
           <xsl:attribute name="method">post</xsl:attribute>
       <xsl:element name="p">
