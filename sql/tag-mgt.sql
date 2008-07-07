@@ -107,8 +107,10 @@ BEGIN
 end$$
 DELIMITER ;
            
-
-
+-- This does the same thing as call update_tag_popularity();
+-- update tag set popularity = 
+--         (select count(te.tag_id) 
+--         from tagevent te where te.tag_id = tag.id);
 
 delimiter $$
 drop procedure if exists update_tag_popularity$$

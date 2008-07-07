@@ -6,19 +6,23 @@
   <xsl:template match="/">
 
     <xsl:element name="ul">
+      <xsl:attribute name="class">taglist</xsl:attribute>
       <xsl:apply-templates/>
     </xsl:element>
   </xsl:template>
 
   <xsl:template match="tag">
     <xsl:element name="li">
-
+      <xsl:attribute name="class">tagentry</xsl:attribute>
+      <xsl:attribute name="id">
+        <xsl:value-of select="concat('tagid', numid)"/>
+      </xsl:attribute>
       <!-- Name of tag -->
       <xsl:element name="p">
         <xsl:element name="a">
           <xsl:attribute name="class">tagname</xsl:attribute>
         <xsl:attribute name="href">
-        <xsl:value-of select="concat('http://fabula.org/commun3/folksonomie/resourceview.php?tagthing=',
+        <xsl:value-of select="concat('/resourceview.php?tagthing=',
                                      numid)"/>
         </xsl:attribute>
           <xsl:value-of select="display"/>
@@ -36,7 +40,7 @@
 
       <!-- Rename -->
       <xsl:element name="form">
-          <xsl:attribute name="action">/commun3/folksonomie/tag.php</xsl:attribute>
+          <xsl:attribute name="action">/tag.php</xsl:attribute>
           <xsl:attribute name="method">post</xsl:attribute>
           <xsl:element name="p">
             <xsl:text> Modifier ce tag : </xsl:text>
@@ -65,7 +69,7 @@
 
 
       <xsl:element name="form">
-          <xsl:attribute name="action">/commun3/folksonomie/tag.php</xsl:attribute>
+          <xsl:attribute name="action">/tag.php</xsl:attribute>
           <xsl:attribute name="method">post</xsl:attribute>
           <xsl:element name="p">
             <xsl:text> Supprimer ce tag : </xsl:text>
@@ -76,6 +80,7 @@
             </xsl:element>
 
             <xsl:element name="button">
+              <xsl:attribute name="class">delete</xsl:attribute>
               <xsl:attribute name="type">submit</xsl:attribute>
               <xsl:attribute name="name">folksotag</xsl:attribute>
               <xsl:attribute name="value">
@@ -88,7 +93,7 @@
 
       <!-- fusionner -->
       <xsl:element name="form">
-          <xsl:attribute name="action">/commun3/folksonomie/tag.php</xsl:attribute>
+          <xsl:attribute name="action">/tag.php</xsl:attribute>
           <xsl:attribute name="method">post</xsl:attribute>
       <xsl:element name="p">
         <xsl:text> 

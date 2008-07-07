@@ -24,12 +24,15 @@ $srv = new folksoServer(array( 'methods' => array('POST', 'GET', 'HEAD'),
 $srv->addResponseObj(new folksoResponse('head', 
                                         array('required' => array('res')),
                                         'isHeadDo'));
-$srv->addResponseObj(new folksoResponse('get',
-                                        array('required' => array('res')),
-                                        'getTagsIdsDo'));
+
 $srv->addResponseObj(new folksoResponse('get',
                                         array('required' => array('clouduri', 'res')),
                                         'tagCloudLocalPop'));
+
+$srv->addResponseObj(new folksoResponse('get',
+                                        array('required' => array('res')),
+                                        'getTagsIdsDo'));
+
 $srv->addResponseObj(new folksoResponse('post',
                                         array('required' => array('res', 'tag')),
                                         'tagResourceDo'));
@@ -197,7 +200,7 @@ function tagCloudLocalPop (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnec
     }
   }
   
-  $i->query("CALL cloudy('" . $i->dbsecape($q->res) . "', 5, 5)");
+  $i->query("CALL cloudy('" . $i->dbescape($q->res) . "', 5, 5)");
 
   switch ($i->result_status) {
   case 'DBERR':
@@ -221,7 +224,7 @@ function tagCloudLocalPop (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnec
   print $dd->startform();
   while ($row = $i->result->fetch_object()) {
     print $dd->line($row->cloudweight, 
-                    "http://fabula.org/commun3/folksonomie/resourceview.php?tagthing=".
+                    "/resourceview.php?tagthing=".
                     $row->tagid, $row->tagdisplay)."\n";
   }
   print $dd->endform();

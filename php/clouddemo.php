@@ -19,7 +19,7 @@ ul.resourcelist li { margin-bottom: 1em}
       div.cloud ul {
       list-style-type: none;
       }
-      div.cloud ul li {       display: inline;}
+div.cloud ul li {       display: inline; padding-right: 1em;}
 
       div.cloud .cloud2 { font-size: 12pt}
       div.cloud .cloud3 { font-size: 14pt}
@@ -44,15 +44,16 @@ ul.resourcelist li { margin-bottom: 1em}
 
 <?php
 
-require_once('/var/www/dom/fabula/commun3/folksonomie/folksoClient.php');
+require_once('folksoClient.php');
 
 if ($_GET['demouri']) {
 
 $cl = new folksoClient('localhost', 
-                       '/commun3/folksonomie/resource.php',
+                       '/resource.php',
                        'GET');
 
-$cl->set_getfields( array('folksoclouduri' => $_GET['demouri']));
+$cl->set_getfields( array('folksores' => $_GET['demouri'],
+                          'folksoclouduri' => ''));
 
 print '<div class="cloud">';
 print $result =  $cl->execute();

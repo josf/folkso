@@ -1,12 +1,6 @@
 <?php
 
-
-require_once('folksoDBinteract.php');
-require_once('folksoServer.php');
-require_once('folksoResponse.php');
-require_once('folksoQuery.php');
-require_once('folksoWsseCreds.php');
-require_once('folksoDBconnect.php');
+require_once('folksoTags.php');
 
 /** 
  * When the tag's name or id is known, the field name "tag"
@@ -34,6 +28,7 @@ $srv->addResponseObj(new folksoResponse('get',
                                                     'resources')),
                                         'getTagResourcesDo'));
 
+/* Is this useful? */
 $srv->addResponseObj(new folksoResponse('get', 
                                         array('required' => array('tag')),
                                         'getTagDo'));
@@ -193,7 +188,7 @@ function getTagResourcesDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconne
   }
 
   // check to see if tag exists
-  if (!$i->tagp($q->get_param('resources'))) {
+  if (!$i->tagp($q->tag)) {
     if ($i->db_error()) {
       header('HTTP/1.0 501 Database problem');
       print $i->error_info() . "\n";
@@ -201,7 +196,7 @@ function getTagResourcesDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconne
     }
     else {
       header('HTTP/1.1 404 Tag not found');
-      print $q->get_param('resource') . " does not exist in the database";
+      print $q->tag . " does not exist in the database";
       return;
     }
   }
@@ -217,15 +212,15 @@ function getTagResourcesDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconne
                  JOIN tag ON tagevent.tag_id = tag.id ";
 
   // tag by ID
-  if (preg_match( '/^\d+$/', $q->get_param('resources'))) {
+  if (is_numeric($q->tag)) {
     $querybase .= 
       "WHERE tag.id = " . 
-      $i->dbquote($q->get_param('resources'));
+      $i->dbquote($q->tag);
   } //tag by string
   else {
     $querybase .= 
       "WHERE tag.tagnorm = normalize_tag('" .
-      $i->dbquote($q->get_param('resources')) . "')";
+      $i->dbquote($q->tag) . "')";
   }
 
   $querybase .= " ORDER BY r.visited DESC ";  
@@ -250,7 +245,7 @@ function getTagResourcesDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconne
   case 'NOROWS':
     header('HTTP/1.1 204 No resources associated with  tag');
     print "No resources are currently associated with " . 
-      $q->get_param('resources');
+      $q->tag;
     return;
     break;
   case 'OK':
@@ -271,8 +266,7 @@ function getTagResourcesDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconne
   while ($row = $i->result->fetch_object()) {
     print $dd->line( $row->id, 
                      $row->href, 
-                     array('xml' => 
-                           'Placeholder',
+                     array('xml' => $row->display,
                            'default' => $row->display));
   }
   print $dd->endform();

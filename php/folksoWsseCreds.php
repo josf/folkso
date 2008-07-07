@@ -132,8 +132,6 @@ public function validateAuth ($header = '') {
     return false;
   }
 }
-
-
 } // end of class
 
 ?>

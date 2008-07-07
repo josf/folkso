@@ -20,7 +20,7 @@ ul.resourcelist li a.tocloud, ul.resourcelist li a:visited.tocloud, ul.resourcel
 </head>
 <body>
 <div id="container">
-<form action="/commun3/folksonomie/resourceview.php" method="get">
+<form action="/resourceview.php" method="get">
             <p>Entrer un uri ou un identifiant de resource déjà  présente dans la base</p>
              <input type="text" name="tagthing" maxlength="3" size="3"></input></p>
              <input type="submit" value="Submit"/>
@@ -36,7 +36,7 @@ require_once('folksoClient.php');
    if ($_GET['tagthing']) {
      $tagthing = substr($_GET['tagthing'], 0, 255);
 
-     $fc = new folksoClient('localhost', '/commun3/folksonomie/tag.php', 'get');
+     $fc = new folksoClient('localhost', '/tag.php', 'get');
      $fc->set_getfields(array('folksotag' => $tagthing, 'folksofancy' => ''));
      $reslist = $fc->execute();
 
@@ -46,7 +46,7 @@ require_once('folksoClient.php');
            $resources->loadXML($reslist);
            
            $xsl = new DOMDocument();
-           $xsl->load("/var/www/dom/fabula/commun3/folksonomie/xsl/resourcelist.xsl");
+           $xsl->load("/usr/local/www/apache22/data/resourcelist.xsl");
 
            $proc = new XsltProcessor();
            $xsl = $proc->importStylesheet($xsl);

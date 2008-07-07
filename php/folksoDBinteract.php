@@ -122,7 +122,7 @@ public $result;
    */
   public function tagp ($tagstring) {
     $select = '';
-    if (preg_match('/^\d+$/', $tagstring)) {
+    if (is_numeric($tagstring)) {
       $select = "select id from tag
                  where id = " . $tagstring .
                  " limit 1";
