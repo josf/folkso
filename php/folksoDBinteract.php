@@ -15,8 +15,8 @@ require_once('folksoDBconnect.php');
 
 class folksoDBinteract {
 
-public $db;
-public $result;
+  public $db;
+  public $result;
   public $connect_error= '';
   public $query_error = '';
   public $result_status;

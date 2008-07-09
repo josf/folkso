@@ -1,7 +1,7 @@
 <?php
 
 
-
+require_once('folksoUserValid.php');
 
 class folksoUserCreds extends folksoUserValid {
   public $userid;

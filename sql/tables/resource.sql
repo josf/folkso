@@ -10,6 +10,6 @@ create table resource
         added_timestamp timestamp,
         last_visited timestamp,
         added_by int unsigned not null,
-        status_flaq varchar(255) null,
+        status_flag varchar(255) null,
 index resnorm (uri_normal))
         ENGINE = InnoDB;

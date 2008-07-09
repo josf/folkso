@@ -1,5 +1,6 @@
 <?php
 
+
   /**
    * folksoResponse provides objects to be used as args to the
    * addResponseObj method in folksoServer.php. Each object must

@@ -41,97 +41,95 @@ class folksoWsseCreds extends folksoUserValid {
    * instead.
    */
 
-function parse_auth_header ($head = '') {
-  if (empty($head)) {
-    $head = $this->header;
-  }
-  if (empty($head)){
-    return false;
+  function parse_auth_header ($head = '') {
+    if (empty($head)) {
+      $head = $this->header;
+    }
+    if (empty($head)){
+      return false;
+    }
+
+    if (preg_match('/username="([^"]+)"/i', $head, $username_match)) {
+      $this->username = $username_match[1];
+    }
+    elseif (preg_match("/username='([^']+)'/i", $head, $username_match)) {
+      $this->username = $username_match[1];
+    }
+    else {
+      trigger_error("Could not find username in $head", E_USER_ERROR);
+    }
+
+    if (preg_match('/passworddigest="([^"]+)"/i', $head, $digest_match)) {
+      $this->password_digest = $digest_match[1];
+    }
+    elseif (preg_match("/passworddigest='([^']+)'/i", $head, $digest_match)) {
+      $this->password_digest = $digest_match[1];
+    }
+    else {
+      trigger_error("Could not find passwordDigest in $head", E_USER_ERROR);    
+    }
+    if (preg_match('/nonce="([^"]+)"/i', $head, $nonce_match)) {
+      $this->nonce = $nonce_match[1];
+    }
+    elseif (preg_match('/nonce="([^"]+)"/i', $head, $nonce_match)) {
+      $this->nonce = $nonce_match[1];
+    }
+    else {
+      trigger_error("Could not find nonce in $head", E_USER_ERROR);
+    }
+
+    if (preg_match('/created="([^"]+)/i', $head, $created_match)) {
+      $this->created = $created_match[1];
+    }
+    elseif (preg_match("/created='([^']+)/i", $head, $created_match)) {
+      $this->created = $created_match[1];
+    }
+    else {
+      trigger_error("Could not find created in $head", E_USER_ERROR);
+    }
+    return true;
   }
 
-  if (preg_match('/username="([^"]+)"/i', $head, $username_match)) {
-    $this->username = $username_match[1];
-  }
-  elseif (preg_match("/username='([^']+)'/i", $head, $username_match)) {
-    $this->username = $username_match[1];
-  }
-  else {
-    trigger_error("Could not find username in $head", E_USER_ERROR);
-  }
-
-  if (preg_match('/passworddigest="([^"]+)"/i', $head, $digest_match)) {
-    $this->password_digest = $digest_match[1];
-  }
-  elseif (preg_match("/passworddigest='([^']+)'/i", $head, $digest_match)) {
-    $this->password_digest = $digest_match[1];
-  }
-  else {
-    trigger_error("Could not find passwordDigest in $head", E_USER_ERROR);    
-  }
-  if (preg_match('/nonce="([^"]+)"/i', $head, $nonce_match)) {
-    $this->nonce = $nonce_match[1];
-  }
-  elseif (preg_match('/nonce="([^"]+)"/i', $head, $nonce_match)) {
-    $this->nonce = $nonce_match[1];
-  }
-  else {
-    trigger_error("Could not find nonce in $head", E_USER_ERROR);
-  }
-
-  if (preg_match('/created="([^"]+)/i', $head, $created_match)) {
-    $this->created = $created_match[1];
-  }
-  elseif (preg_match("/created='([^']+)/i", $head, $created_match)) {
-    $this->created = $created_match[1];
-  }
-  else {
-    trigger_error("Could not find created in $head", E_USER_ERROR);
-  }
-  return true;
-}
-
-function buildDigestResponse () {
+  function buildDigestResponse () {
+    $first = sha1( $this->nonce . 
+                   $this->created . 
+                   $this->getUserPasswd($this->username));
   
-  $first = sha1( $this->nonce . 
-                 $this->created . 
-                 $this->getUserPasswd($this->username));
-  
-  return base64_encode($first);
-}
-
-public function Validate () {
-  if ( $this->buildDigestResponse() == $this->password_digest)  {
-    return true;
-  }
-  else {
-    return false;
-  }
-}
-
-public function validateAuth ($header = '') {
-
-  // first check if info is already there
-  if ((isset($this->username)) &&
-      (isset($this->nonce)) &&
-      (isset($this->password_digest))) {
-    return true;
+    return base64_encode($first);
   }
 
-  // if not : parse header and check again
-  if (empty($header)) {
-    $header = $this->header;
+  public function Validate () {
+    if ( $this->buildDigestResponse() == $this->password_digest)  {
+      return true;
+    }
+    else {
+      return false;
+    }
   }
 
-  $this->parse_auth_header($header);
-  if ((isset($this->username)) &&
-      (isset($this->nonce)) &&
-      (isset($this->password_digest))) {
-    return true;
+  public function validateAuth ($header = '') {
+    // first check if info is already there
+    if ((isset($this->username)) &&
+        (isset($this->nonce)) &&
+        (isset($this->password_digest))) {
+      return true;
+    }
+
+    // if not : parse header and check again
+    if (empty($header)) {
+      $header = $this->header;
+    }
+
+    $this->parse_auth_header($header);
+    if ((isset($this->username)) &&
+        (isset($this->nonce)) &&
+        (isset($this->password_digest))) {
+      return true;
+    }
+    else {
+      return false;
+    }
   }
-  else {
-    return false;
-  }
-}
 } // end of class
 
 ?>
