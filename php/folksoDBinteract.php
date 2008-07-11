@@ -15,7 +15,15 @@ require_once('folksoDBconnect.php');
 
 class folksoDBinteract {
 
+  /**
+   * The database connection object.
+   */
   public $db;
+
+  /**
+   * Once a query has been executed ($i->query()), the result is
+   * available here.
+   */
   public $result;
   public $connect_error= '';
   public $query_error = '';
@@ -137,11 +145,10 @@ class folksoDBinteract {
     }
     $this->query($select);
     if ($this->result_status == 'OK') {
-    $this->result->free();
+      $this->result->free();
       return true;
     }
     else { 
-    $this->result->free();
       return false;
     }
   }
@@ -176,7 +183,6 @@ class folksoDBinteract {
       return true;
     }
     else {
-    $this->result->free();
       return false;
     }
 
@@ -226,9 +232,10 @@ class folksoDBinteract {
    * destroyed.
    */
   public function done () {
-    $this->result->free();
+       if ($this->result instanceof mysqli_result) {
+      $this->result->free();
+      }
     $this->db->close();
-
   }
 }
 

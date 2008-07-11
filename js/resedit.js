@@ -38,9 +38,35 @@ function tagboxPrepare() {
   I am going to leave this here. */
 
   var tgbx = $(this).find("input.tagbox");
-
   tgbx.autocomplete("http://localhost/tagcomplete.php");
+
+  var url = $(this).find("a.resurl").attr("href");
+  $(this).find("a.tagbutton").click(
+    function(event) {
+      event.preventDefault();
+      if (tgbx.val()) {
+        var xhr = $.ajax({
+                           url: 'http://localhost/resource.php',
+                           type: 'post',
+                           datatype: 'text/text',
+                           data: {
+                             folksores: url,
+                             folksotag: tgbx.val()},
+                           error: function (xhr, msg) {
+                             alert(msg);
+                           },
+                           success: function (str) {
+                             alert(str);
+                           }
+                         });
+        }
+        else {
+          alert('Il faut choisir un tag d\'abord');
+        }
+    });
 }
+
+
 
 function tagremovePrepare() {
 

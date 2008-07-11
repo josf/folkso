@@ -36,6 +36,7 @@ $srv->addResponseObj(new folksoResponse('get',
 $srv->addResponseObj(new folksoResponse('post',
                                         array('required' => array('res', 'tag')),
                                         'tagResourceDo'));
+
 $srv->addResponseObj(new folksoResponse('post',
                                         array('required_single' => array('res'),
                                               'required' => array('visit')),
@@ -94,7 +95,7 @@ function isHeadDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) 
  * Retrieve the tags associated with a given resource. Accepts uri or
  * id. 
  * 
- * Web parameters : GET + folksoresourceuri or folksoresourceid
+ * Web parameters : GET + folksores 
  *
  */
 function getTagsIdsDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
@@ -120,10 +121,11 @@ function getTagsIdsDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $d
     }
   }
 
-  $select = "SELECT DISTINCT tagdisplay 
-                        FROM tag 
-                        JOIN tagevent ON tag.id = tagevent.tag_id
-                        JOIN resource ON resource.id = tagevent.resource_id ";
+  $select = "SELECT 
+               DISTINCT t.id as id, t.tagdisplay as tagdisplay, t.tagnorm as tagnorm, t.popularity as popularity
+             FROM tag t
+             JOIN tagevent ON t.id = tagevent.tag_id
+             JOIN resource ON resource.id = tagevent.resource_id ";
 
   if (is_numeric($q->res)) {
     $select .= " WHERE resource.id = " . $i->dbescape($q->res);
@@ -150,6 +152,7 @@ function getTagsIdsDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $d
   // here everything should be ok
   $df = new folksoDisplayFactory();
   $dd = $df->singleElementList();
+  $xf = $df->Taglist();
 
   switch ($q->content_type()) {
   case 'text/text':
@@ -158,18 +161,35 @@ function getTagsIdsDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $d
   case 'text/html':
     $dd->activate_style('xhtml');
     break;
+  case 'text/xml':
+    $xf->activate_style('xml');
+    break;
   default:
       $dd->activate_style('xhtml');
       break;
   }
 
-  $row = $i->result->fetch_object();
-  print $dd->title($row->uri_normal);
-  print $dd->startform();
-  while ( $row = $i->result->fetch_object() ) {
-    print $dd->line($row->tagdisplay);
+  if ($q->content_type() == 'text/xml') {
+    print $xf->startform();
+    while ($row = $i->result->fetch_object()) {
+      print $xf->line($row->id,
+                      $row->tagnorm,
+                      $row->tagdisplay,
+                      $row->popularity);
+    }
+    print $xf->endform();
   }
-  print $dd->endform();
+  else {
+    $row = $i->result->fetch_object(); //???
+    print $dd->title($row->uri_normal);
+    print $dd->startform();
+    while ( $row = $i->result->fetch_object() ) {
+      print $dd->line($row->tagdisplay);
+    }
+    print $dd->endform();
+    print "  contenttype ". $q->content_type();
+    print " HTTP_ACCEPT ".$_SERVER['HTTP_ACCEPT'];
+  }
 }
 
 
@@ -318,35 +338,53 @@ function tagResourceDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $
     die($i->error_info());
   }
 
-  $query = "CALL tag_resource('" .
-    $i->dbescape($q->res) . "', '" .
-    $i->dbescape($q->get_param('tag')) . "', 
-    100)";
+  $firstpart = '';
+  $secondpart = '';
 
+  if (is_numeric($q->res)) {
+    $firstpart = "'', ". $q->res;
+  }
+  else {
+    $firstpart = "'".$i->dbescape($q->res). "', ''";
+  }
+
+  if (is_numeric($q->tag)) {
+    $secondpart = "'', ". $q->tag;
+  }
+  else {
+    $secondpart = "'". $q->tag. "', ''";
+  }
+
+  $query = "CALL tag_resource($firstpart, $secondpart)";
+  $i->query($query);
   if ($i->result_status == 'DBERR') {
 
     if (($i->db->errno == 1048) &&
-        (strpos($db->error, 'resource_id'))) {
+        (strpos($i->db->error, 'resource_id'))) {
       header('HTTP/1.1 404');
       print "Resource ". $q->res . " has not been indexed yet.";
+      $i->done();
+      return;
     }
-    elseif (($db->errno == 1048) &&
-            (strpos($db->error, 'tag_id'))) {
+    elseif (($i->db->errno == 1048) &&
+            (strpos($i->db->error, 'tag_id'))) {
       header('HTTP/1.1 404');
-      print "Tag ". $q->get_param('tag') . " does not exist.";
+      print "Tag ". $q->tag . " does not exist.";
       $i->done;
       return;
     }
     else {
-      header('HTTP/1.1 501');
+      header('HTTP/1.1 501 Database query error.');
       $i->done();
       print "obscure database problem";
       die($i->error_info());
     }
   }
   else {
-    header('HTTP/1.1 200');
+    header('HTTP/1.1 200 Tagged');
     print "Resource has been tagged";
+    print $query;
+    print "  DB says: ". $i->db->error;
   }
   $i->done();
 }

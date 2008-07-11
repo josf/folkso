@@ -80,31 +80,47 @@ DELIMITER ;
 DELIMITER $$
 DROP PROCEDURE IF EXISTS tag_resource$$
 CREATE PROCEDURE tag_resource(resource_uri      varchar(255),
+                              resource_id       integer,
+                              tag_name          varchar(255),
                               tag_id            integer)
 BEGIN
 
-        declare existing_tag_id int unsigned;
-        declare existing_uri varchar(255);      
-        declare out_status varchar(255);
+        DECLARE existing_tag_id INT UNSIGNED;
+        DECLARE existing_uri VARCHAR(255);     
+        DECLARE out_status VARCHAR(255);
 --        declare exit handler for 1048
 --                set out_status='Tag does not exist';
 
 
-        select id
-               into existing_tag_id
-               from tag
-               where id = tag_id;
+IF (tag_id) THEN
+        SELECT id
+               INTO existing_tag_id     
+               FROM tag
+               WHERE id = tag_id;
+ELSE
+        SELECT id 
+               INTO existing_tag_id
+               FROM tag
+               WHERE tagnorm = normalize_tag(tag_name);
+END IF;
 
-       select id
-              into existing_uri
-              from resource
-              where uri_normal = url_whack(resource_uri);
+IF (resource_id) THEN
+   SELECT id
+          INTO existing_uri
+          FROM resource 
+          WHERE id = resource_id;
+ELSE
+       SELECT id
+              INTO existing_uri
+              FROM resource
+              WHERE uri_normal = url_whack(resource_uri);
+END IF;
 
-       insert into tagevent
-              set tag_id = existing_tag_id,
+       INSERT INTO tagevent
+              SET tag_id = existing_tag_id,
               resource_id = existing_uri,
               user_id = 9999;
-end$$
+END$$
 DELIMITER ;
            
 -- this should no longer be a procedure
