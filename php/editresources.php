@@ -6,8 +6,13 @@
     </script>
     <script type="text/javascript" src="jquery.autocomplete.js">
     </script>
-    <script type="text/javascript" src="resedit.js"></script>
+    <script type="text/javascript" src="xslt.js">
+    </script>
+    <script type="text/javascript" src="jquery.xslt.js">
+    </script>
 
+    <script type="text/javascript" src="resedit.js">
+    </script>
 
     <link 
         rel="stylesheet" type="text/css" 
@@ -206,7 +211,8 @@ while ($row = $i->result->fetch_object()) {
     '<div class="iframeholder"></div> '.
     "<p><a class='openiframe' href='#'>Voir</a> <a class='closeiframe' href='#'>Fermer</a></p>".
     '<p><span class="infohead">Ajouter un tag</span> '.
-    '<input type="text" size="30" class="tagbox" maxlength="100"></input></p>'.
+    '<input type="text" size="30" class="tagbox" maxlength="100"></input>'.
+    '<a class="tagbutton" href="#">Valider</a></p>' .
     '<p>Détails des tags existants. <a class="seetags" href="#">Voir</a> '.
     '<a class="hidetags" href="#">Cacher</a> </p> '.
     '<ul class="taglist">' . $row->taglist . "</ul>\n";
