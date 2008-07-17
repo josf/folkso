@@ -2,7 +2,7 @@ $(document).ready(function() {
   $("ul.editresources li").each(iframePrepare);
   $("ul.editresources li").each(tagboxPrepare);
   $("ul.editresources li").each(taglistHidePrepare);
-  $("ul.taglist li").each(tagremovePrepare);
+//  $("ul.taglist li").each(tagremovePrepare);
 });
 
 function iframePrepare() {
@@ -32,64 +32,124 @@ function iframePrepare() {
 }
 
 function tagboxPrepare() {
-  /** This does not need to be a separate function. (We could just
-  write $(".tagbox").autocomplete(...) but we might want to add  some
-  arguments, to exclude tags already present for exampel. So  for now
-  I am going to leave this here. */
+    var lis = $(this);
+    var tgbx = lis.find("input.tagbox");
+    tgbx.autocomplete("http://localhost/tagcomplete.php");
 
-  var tgbx = $(this).find("input.tagbox");
-  tgbx.autocomplete("http://localhost/tagcomplete.php");
-
-  var url = $(this).find("a.resurl").attr("href");
-  $(this).find("a.tagbutton").click(
-    function(event) {
-      event.preventDefault();
-      if (tgbx.val()) {
-        var xhr = $.ajax({
-                           url: 'http://localhost/resource.php',
-                           type: 'post',
-                           datatype: 'text/text',
-                           data: {
-                             folksores: url,
-                             folksotag: tgbx.val()},
-                           error: function (xhr, msg) {
-                             alert(msg);
-                           },
-                           success: function (str) {
-                             alert(str);
-                           }
-                         });
-        }
-        else {
+    var url = lis.find("a.resurl").attr("href");
+    lis.find("a.tagbutton").click(
+        function(event) {
+            event.preventDefault();
+            if (tgbx.val()) {
+                 $.ajax({
+                   url: 'http://localhost/resource.php',
+                   type: 'post',
+                   datatype: 'text/text',
+                   data: {
+                     folksores: url,
+                     folksotag: tgbx.val()},
+                   error: function(xhr, msg) {
+                       alert(xhr.statusText + " " + xhr.responseText);
+                     },
+                   success: function (str) {
+                     getTagMenu(
+                       lis.find("div.emptytags"),
+                       lis.attr("id").substring(3));
+                   }
+                 });
+            }
+          else {
           alert('Il faut choisir un tag d\'abord');
         }
     });
 }
 
-
-
 function tagremovePrepare() {
+/**
+ * To be called on a ul.tagmenu
+ */
 
-  var tagid = $(this).find("span.tagid").text();
+  var remove = $(this).find("a.remtag");
 
-  var remove = $(this).find("a.removetag");
-  var taglist = $(this).parent();
-  var resourceid = taglist.parent().attr("id").substring(3);
+  var taglistdiv = $(this).parent();
+  var resourceid = taglistdiv.parent().attr("id").substring(3);
 
+  remove.click(function(event) {
+        event.preventDefault();
+        var tagid = $(this).siblings(".tagid").text();
+        $.ajax({
+            url: 'http://localhost/resource.php',
+            type: 'post',
+            data: {
+              folksores: resourceid,
+              folksotag: tagid,
+              folksodelete: 1
+            },
+            error: function(xhr, msg) {
+              alert(msg);
+            },
+            success: function(data) {
+              getTagMenu(
+                taglistdiv,
+                resourceid
+                );
+            }
+            });
+        });
 }
 
 function taglistHidePrepare() {
-  var taglist = $(this).find("ul.taglist");
+  var resourceid = $(this).attr("id").substring(3);
+  var lis = $(this);
+
   $(this).find("a.seetags").click(
     function(event) {
       event.preventDefault();
-      taglist.show();
+      getTagMenu(lis.find("div.emptytags"), resourceid);
     }
   );
-  $(this).find("a.hidetags").click(
-    function(event) {
-      event.preventDefault();
-      taglist.hide();
-    }
-  );
+
+    $(this).find("a.hidetags").click(
+        function(event) {
+            event.preventDefault();
+            lis.find("ul.tagmenu").remove();
+        }
+    );
+}
+
+function getTagMenu(place, resid) {
+
+    var dest = place;
+    dest.find("ul.tagmenu").remove();
+
+    $.ajax({ url: 'http://localhost/resource.php',
+           type: 'get',
+           datatype: 'text/xml',
+           data: {
+             folksores: resid,
+             folksodatatype: 'text/xml'},
+           success: function(xml) {
+             var ul = $('<ul class="tagmenu">');
+             $("taglist tag", xml).each(function() {
+                                          var item = $('<li>');
+                                          var taglink = $('<a>');
+                                          taglink.attr("href", "beebop");
+                                          taglink.append($(this).find('display').text() + ' ');
+                                          var remlink = $('<a class="remtag" href="#">Désassocier</a>');
+                                          item.append(taglink);
+
+                                          /** add tag id **/
+                                          item.append($("<span class='tagid'>"
+                                                        + $(this).find('numid').text()
+                                                        + "</span>"));
+
+                                          item.append(remlink);
+                                          ul.append(item);
+                                        });
+             dest.append(ul);
+             $("ul.tagmenu").each(tagremovePrepare);
+           },
+           error: function(xhr, msg) {
+             alert("An error here: " + msg);
+           }});
 }

@@ -34,6 +34,11 @@ $srv->addResponseObj(new folksoResponse('get',
                                         'getTagsIdsDo'));
 
 $srv->addResponseObj(new folksoResponse('post',
+                                        array('required_single' => array('res', 'tag'),
+                                              'required' => array('delete')),
+                                        'unTag'));
+
+$srv->addResponseObj(new folksoResponse('post',
                                         array('required' => array('res', 'tag')),
                                         'tagResourceDo'));
 
@@ -44,6 +49,10 @@ $srv->addResponseObj(new folksoResponse('post',
 $srv->addResponseObj(new folksoResponse('post',
                                         array('required' => array('res', 'newresource')),
                                         'addResourceDo'));
+$srv->addResponseObj(new folksoResponse('delete',
+                                        array('required' => array('res', 'tag')),
+                                        'unTag'));
+
 $srv->Respond();
 
 /**
@@ -156,10 +165,12 @@ function getTagsIdsDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $d
 
   switch ($q->content_type()) {
   case 'text/text':
-      $dd->activate_style('text');
-      break;
+    header('Content-Type: text/text');
+    $dd->activate_style('text');
+    break;
   case 'text/html':
     $dd->activate_style('xhtml');
+    header('Content-Type: text/xhtml');
     break;
   case 'text/xml':
     $xf->activate_style('xml');
@@ -170,6 +181,7 @@ function getTagsIdsDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $d
   }
 
   if ($q->content_type() == 'text/xml') {
+    header('Content-Type: text/xml');
     print $xf->startform();
     while ($row = $i->result->fetch_object()) {
       print $xf->line($row->id,
@@ -187,8 +199,6 @@ function getTagsIdsDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $d
       print $dd->line($row->tagdisplay);
     }
     print $dd->endform();
-    print "  contenttype ". $q->content_type();
-    print " HTTP_ACCEPT ".$_SERVER['HTTP_ACCEPT'];
   }
 }
 
@@ -225,8 +235,7 @@ function tagCloudLocalPop (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnec
   switch ($i->result_status) {
   case 'DBERR':
     header('HTTP/1.1 501 Database error');
-    print $i->error_info() . "\n";
-    return;
+    die($i->error_info());
     break;
   case 'NOROWS':
     header('HTTP/1.1 204 No tags associated with resource');
@@ -390,5 +399,58 @@ function tagResourceDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $
 }
 
 
+function unTag (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+  $i = new folksoDBinteract($dbc);
+  if ($i->db_error()) {
+    header('HTTP/1.0 501 Database connection error');
+    die($i->error_info());
+  }
+
+  $sql = '';
+
+  if ((is_numeric($q->tag)) &&
+      (is_numeric($q->res))) {
+    $sql = 
+      'delete from tagevent '.
+      'where (tag_id = ' . $q->tag .') '.
+      'and '.
+      '(resource_id = ' . $q->res . ') ';
+  }
+  else {
+    $query = 
+      'delete from tagevent '.
+      'using tagevent join resource r on tagevent.resource_id = r.id '.
+      'join tag t on tagevent.tag_id = t.id ';
+
+    $where = 'where';
+    
+    if (is_numeric($q->tag)) {
+      $where .= ' (tagevent.tag_id = ' . $q->tag . ') ';
+    }
+    else {
+      $where .= 
+        " (t.tagnorm = normalize_tag('". $i->dbescape($q->tag) ."')) ";
+    }
+
+    if (is_numeric($q->res)) {
+      $where .= ' and '.
+        ' (tagevent.resource_id = ' . $q->res . ') ';
+    }
+    else {
+      $where .=  ' and '.
+        " (r.uri_normal = url_whack('". $i->dbescape($q->res) . "')) ";
+    }
+    $sql = $query . $where;
+  }
+    $i->query($sql);
+
+    if ($i->result_status == 'DBERR') {
+      header('HTTP/1.1 501 Database query error');
+      die($i->error_info());
+    }
+    else {
+      header('HTTP/1.1 200 Deleted');
+    }
+}
 
 ?>

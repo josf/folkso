@@ -41,7 +41,7 @@
 
       a.restitle {padding-right: 2em; font-size: 14pt;}
       a.resurl { padding-right: 2em; font-size: 12pt;}
-ul.taglist {display: none;}
+      ul.taglist {display: none;}
     </style>
 
   </head>
@@ -56,7 +56,8 @@ ul.taglist {display: none;}
         </input>
       </p>
       <p>
-        Saisir une séquence de caractères à chercher dans les url. (Peut être combiné avec les caractères initiaux).
+        Saisir une séquence de caractères à chercher dans les
+        url. (Peut être combiné avec les caractères initiaux).
         <input type="text" size="30" maxlength="200" name="sequence">
         </input>
       </p>
@@ -162,7 +163,8 @@ $sql = "SELECT ".
   "WHERE \n";
 
 if ($initial) {
-    $sql .= " (uri_normal LIKE 'fabula.org/" . $i->dbescape($initial) . "%') \n";
+    $sql .= " (uri_normal LIKE 'fabula.org/" 
+      . $i->dbescape($initial) . "%') \n";
 }
 
 if ($initial && $sequence) {
@@ -178,10 +180,14 @@ if (($tagged <> 'all') && ($initial || $sequence)){
 }
 
 if ($tagged == 'notags') {
-  $sql .= " ((SELECT COUNT(*) FROM tagevent teee WHERE teee.resource_id = r.id)  = 0) \n";
+  $sql .= 
+    " ((SELECT COUNT(*) FROM tagevent teee ". 
+    " WHERE teee.resource_id = r.id)  = 0) \n";
 }
 else if ($tagged == 'tags') {
-  $sql .= " ((SELECT COUNT(*) FROM tagevent teee WHERE teee.resource_id = r.id) > 0) \n";
+  $sql .= 
+    " ((SELECT COUNT(*) FROM tagevent teee ".
+    " WHERE teee.resource_id = r.id) > 0) \n";
 }
 
 $sql .= " ORDER BY r.visited \n LIMIT 50 ";
@@ -193,9 +199,6 @@ $i->query($sql);
 if ($i->result_status == 'DBERR') {
   die( $i->error_info());
 }
-
-
-
 
 print '<ul class="editresources">';
 while ($row = $i->result->fetch_object()) {
@@ -215,8 +218,9 @@ while ($row = $i->result->fetch_object()) {
     '<a class="tagbutton" href="#">Valider</a></p>' .
     '<p>Détails des tags existants. <a class="seetags" href="#">Voir</a> '.
     '<a class="hidetags" href="#">Cacher</a> </p> '.
-    '<ul class="taglist">' . $row->taglist . "</ul>\n";
-
+    /*    '<ul class="taglist">' . $row->taglist . "</ul>\n". */
+    '<div class="emptytags"></div>'.
+    '</li>';
 }
 
 ?>

@@ -110,7 +110,7 @@ class folksoDisplayFactory {
                                        'argsperline' => 4),
                                  $this->standardTextList(4),
                                  array('type' => 'xml',
-                                       'start' => '<taglist>',
+                                       'start' => "<?xml version='1.0' encoding='UTF-8'?>\n<taglist>",
                                        'end' => '</taglist>',
                                        'lineformat' => 
                                        "<tag>\n\t<numid>XXX</numid>".

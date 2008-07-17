@@ -82,6 +82,9 @@ class folksoQuery {
                 case 'folksores':
                   $this->res = $param_val;
                   break;
+                case 'folksodatatype':
+                  $this->content_type = $param_val;
+                  break;
                 }
 
                 $accum[$param_key] = $this->field_shorten($param_val);
