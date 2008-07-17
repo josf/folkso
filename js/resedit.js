@@ -21,17 +21,25 @@ function iframePrepare() {
       else {
         holder.append(ifr);
       }
+      $(this).hide();
+      $(this).parent().find("a.closeiframe").show();
     }
   );
   $(this).find("a.closeiframe").click(
     function(event) {
       event.preventDefault();
       holder.hide();
+      $(this).hide();
+      $(this).parent().find("a.openiframe").show();
     }
   );
 }
 
 function tagboxPrepare() {
+  /**
+   * To be called on a <li>. Sets up tagging input box with
+   * autocompletion and refreshes the tagmenu.
+   */
     var lis = $(this);
     var tgbx = lis.find("input.tagbox");
     tgbx.autocomplete("http://localhost/tagcomplete.php");
@@ -55,6 +63,7 @@ function tagboxPrepare() {
                      getTagMenu(
                        lis.find("div.emptytags"),
                        lis.attr("id").substring(3));
+                     tgbx.val('');
                    }
                  });
             }

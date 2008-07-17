@@ -36,12 +36,14 @@
 
       iframe.preview {
       height: 400px;
-      width: 95%;
+      width: 100%;
       }
 
       a.restitle {padding-right: 2em; font-size: 14pt;}
       a.resurl { padding-right: 2em; font-size: 12pt;}
       ul.taglist {display: none;}
+
+.tagid { padding-left: 0.5em; padding-right: 0.5em; }
     </style>
 
   </head>
@@ -140,24 +142,11 @@ $sql = "SELECT ".
   "(SELECT \n".
   "     GROUP_CONCAT(DISTINCT tag.tagdisplay \n".
   "                  ORDER BY tag.tagdisplay \n". 
-  "                  SEPARATOR ' ') \n". 
+  "                  SEPARATOR ' ')  \n". 
   "    FROM tagevent tee \n".
   "    JOIN tag ON tag.id = tee.tag_id \n".
   "    WHERE tee.resource_id = r.id \n".
-  "    GROUP BY tee.resource_id) AS thesetags, \n".
-
-  "(SELECT ".
-  "     GROUP_CONCAT(DISTINCT ".
-  "                  CONCAT('$taglist_before', \n".
-  "                          tag.id, '$taglist_between', \n".
-  "                          tag.tagdisplay, '$taglist_between2', \n".
-  "                          tag.id, '$taglist_after') \n".
-  "                  ORDER BY tag.tagdisplay \n".
-  "                  SEPARATOR ' ') \n".
-  "    FROM tagevent tee \n".
-  "    JOIN tag ON tag.id = tee.tag_id \n".
-  "    WHERE tee.resource_id = r.id \n".
-  "    GROUP BY tee.resource_id) AS taglist \n".
+  "    GROUP BY tee.resource_id) AS thesetags \n".
 
   "FROM resource r \n".
   "WHERE \n";
@@ -218,7 +207,6 @@ while ($row = $i->result->fetch_object()) {
     '<a class="tagbutton" href="#">Valider</a></p>' .
     '<p>Détails des tags existants. <a class="seetags" href="#">Voir</a> '.
     '<a class="hidetags" href="#">Cacher</a> </p> '.
-    /*    '<ul class="taglist">' . $row->taglist . "</ul>\n". */
     '<div class="emptytags"></div>'.
     '</li>';
 }
