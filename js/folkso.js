@@ -1,4 +1,4 @@
-
+var urlbase = "http://fabula.org/commun3/folksonomie/";
 
 $(document).ready(function() {
                     $('.tagentry').each(fkPrepare);
@@ -12,7 +12,7 @@ function fkPrepare(selector) {
   $(this).find("button.delete").click(
     function(event) {
       event.preventDefault();
-      $.post('http://localhost/tag.php',
+      $.post(urlbase + 'tag.php',
              {folksotag: tagid,
               folksodelete: ''},
              function() {
@@ -45,7 +45,7 @@ function modifyTagPrep(itemjq) {
           return;
       }
       //then make that change
-      $.post('http://localhost/tag.php',
+      $.post(urlbase + 'tag.php',
              {folksotag: tagid,
               folksonewname: modtextInput.val()},
              function() {
@@ -79,7 +79,7 @@ function mergeTagPrep(itemjq) {
         return;
       }
 
-      $.post('http://localhost/tag.php',
+      $.post(urlbase + 'tag.php',
              {folksotag: tagid,
               folksotarget: othertag},
                 function () {

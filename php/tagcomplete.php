@@ -29,8 +29,8 @@ function autocomplete (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $d
 
   $sql = "select tagdisplay ".
             "from tag ".
-            "where tagdisplay like '". 
-            $i->dbescape($q->get_param('q')) . "%'";
+            "where tagnorm like '". 
+    $i->dbescape(strtolower($q->get_param('q'))) . "%'";
 
   $i->query($sql);
   switch ($i->result_status) {

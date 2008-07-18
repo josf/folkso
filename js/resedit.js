@@ -1,3 +1,5 @@
+var urlbase = "http://fabula.org/commun3/folksonomie/";
+
 $(document).ready(function() {
   $("ul.editresources li").each(iframePrepare);
   $("ul.editresources li").each(tagboxPrepare);
@@ -43,7 +45,7 @@ function tagboxPrepare() {
    */
     var lis = $(this);
     var tgbx = lis.find("input.tagbox");
-    tgbx.autocomplete("http://localhost/tagcomplete.php");
+    tgbx.autocomplete(urlbase + "tagcomplete.php");
 
     var url = lis.find("a.resurl").attr("href");
     lis.find("a.tagbutton").click(
@@ -51,7 +53,7 @@ function tagboxPrepare() {
             event.preventDefault();
             if (tgbx.val()) {
                  $.ajax({
-                   url: 'http://localhost/resource.php',
+                   url: urlbase + 'resource.php',
                    type: 'post',
                    datatype: 'text/text',
                    data: {
@@ -88,7 +90,7 @@ function tagremovePrepare() {
         event.preventDefault();
         var tagid = $(this).siblings(".tagid").text();
         $.ajax({
-            url: 'http://localhost/resource.php',
+            url: urlbase + 'resource.php',
             type: 'post',
             data: {
               folksores: resourceid,
@@ -132,7 +134,7 @@ function getTagMenu(place, resid) {
     var dest = place;
     dest.find("ul.tagmenu").remove();
 
-    $.ajax({ url: 'http://localhost/resource.php',
+    $.ajax({ url: urlbase + 'resource.php',
            type: 'get',
            datatype: 'text/xml',
            data: {

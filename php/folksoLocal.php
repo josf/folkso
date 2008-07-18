@@ -13,6 +13,11 @@ abstract class folksoLocal {
   public $db_database_name;
 
   /**
+   * Right now assuming that this ends with a slash.
+   */
+  public $xsl_dir;
+
+  /**
    * The path part of the uri where tag.php and resource.php are to
    * be accessed. 
    *

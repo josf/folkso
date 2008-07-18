@@ -2,16 +2,12 @@
   <head>
     <title>Taggons des pages</title>
 
-    <script type="text/javascript" src="jquery.js">
+    <script type="text/javascript" src="js/jquery.js">
     </script>
-    <script type="text/javascript" src="jquery.autocomplete.js">
-    </script>
-    <script type="text/javascript" src="xslt.js">
-    </script>
-    <script type="text/javascript" src="jquery.xslt.js">
+    <script type="text/javascript" src="js/jquery.autocomplete.js">
     </script>
 
-    <script type="text/javascript" src="resedit.js">
+    <script type="text/javascript" src="js/resedit.js">
     </script>
 
     <link 
@@ -201,7 +197,7 @@ while ($row = $i->result->fetch_object()) {
     '<span class="infohead">Ajouté le</span><span class="added">'. $row->added . "</span>\n".
     '<br/><span class="currenttags">Tags : ' . $row->thesetags . "</span>\n".
     '<div class="iframeholder"></div> '.
-    "<p><a class='openiframe' href='#'>Voir</a> <a class='closeiframe' href='#'>Fermer</a></p>".
+    "<p><a class='openiframe' href='#'>Voir la page</a> <a class='closeiframe' href='#'>Fermer</a></p>".
     '<p><span class="infohead">Ajouter un tag</span> '.
     '<input type="text" size="30" class="tagbox" maxlength="100"></input>'.
     '<a class="tagbutton" href="#">Valider</a></p>' .

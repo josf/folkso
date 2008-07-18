@@ -110,7 +110,8 @@ class folksoDisplayFactory {
                                        'argsperline' => 4),
                                  $this->standardTextList(4),
                                  array('type' => 'xml',
-                                       'start' => "<?xml version='1.0' encoding='UTF-8'?>\n<taglist>",
+                                       'start' => '<?xml version="1.0"?>'.
+                                       "\n<taglist>",
                                        'end' => '</taglist>',
                                        'lineformat' => 
                                        "<tag>\n\t<numid>XXX</numid>".
@@ -122,7 +123,7 @@ class folksoDisplayFactory {
     return $obj;
   }
 
-
+  //
 
   public function ResourceList () {
     $obj = new folksoDataDisplay(
