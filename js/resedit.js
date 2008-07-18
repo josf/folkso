@@ -2,6 +2,7 @@ $(document).ready(function() {
   $("ul.editresources li").each(iframePrepare);
   $("ul.editresources li").each(tagboxPrepare);
   $("ul.editresources li").each(taglistHidePrepare);
+    $("a.closeiframe").hide();
 //  $("ul.taglist li").each(tagremovePrepare);
 });
 
