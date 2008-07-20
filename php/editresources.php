@@ -22,6 +22,8 @@
     </link>
     
     <style type="text/css">
+   #sql { display: none;}
+
       ul.editresources {
       background-color: white;
       }
@@ -39,7 +41,14 @@
       a.resurl { padding-right: 2em; font-size: 12pt;}
       ul.taglist {display: none;}
 
-.tagid { padding-left: 0.5em; padding-right: 0.5em; }
+      .tagid { padding-left: 0.5em; padding-right: 0.5em; }
+
+      .explanation {
+      font-size: 9pt;
+      font-style: italic;
+      }
+a.hidedetails {display: none;}
+        div.details {display: none;}
     </style>
 
   </head>
@@ -61,9 +70,9 @@
       </p>
       <p>
         Afficher :<br/>
-        <input type="radio" name="tagged" value="notags" checked="checked">
+        <input type="radio" name="tagged" value="notags">
           </input>Ressources sans tags<br/>
-          <input type="radio" name="tagged" value="tags">
+          <input type="radio" name="tagged" value="tags" checked="checked">
             </input>Ressources déjà taggées<br/>
             <input type="radio" name="tagged" value="all">
               </input>Ressources taggées et non-taggées
@@ -73,6 +82,12 @@
         </input>
       </p>
     </form>
+
+    <p>
+      <strong>Tagger les ressources sélectionnées</strong>
+      <input type="text" size="30" class="tagbox" id="grouptagbox" maxlength="100"></input>
+      <a href="#" id="grouptagvalidate">Valider</a>
+    </p>
 
 <?php
 
@@ -109,22 +124,71 @@ if ($i->db_error()) {
 $initial = $_GET['initial'];
 $sequence = $_GET['sequence'];
 $tagged = $_GET['tagged'];
+$begin = $_GET['begin'];
 
-/** 
- * Formatting the taglist (in the DB).
- *
- * $taglist_before is what will precede each tag link.
- * Putting this here to make it easier to modify.
- */
-$taglist_before = 
-  '<li><a href="/resourceview.php?tagthing=';
-$taglist_between = 
-  '">';
-$taglist_between2 = 
-  '</a> <span class="tagid">(';
-$taglist_after =
-  ')</span> <a class="removetag" href="#">Désassocier</a></li>';
 
+
+if ((!$initial) &&
+    (!$sequence) &&
+    (!$tagged)) {
+  die();
+}
+
+$thispage = '/commun3/folksonomie/editresources.php?';
+
+function nextPrevious ($begin) {
+
+  /** previous **/
+  if ($begin >= 50) {
+
+    $fields = array();
+    if ($initial) {
+      $fields[] = 'initial='.$initial;
+    }
+    if ($sequence) {
+      $fields[] = 'sequence='.$sequence;
+    }
+    if ($tagged) {
+      $fields[] = 'tagged='.$tagged;
+    }
+    $newbegin = $begin - 50;
+
+    if ($newbegin < 0) {
+      $newbegin = 0;
+    }
+
+    $fields[] = 'begin=' . $newbegin;
+
+    print '<p><a href="'. 
+      $thispage . 
+      implode($fields, '&').
+      '">Précédents</a></p>';
+  }
+
+  /** next **/
+  if ($i->result->num_rows > 49) {
+
+    $fields = array();
+    $nexturl = '';
+    if ($initial) {
+      $fields[] = 'initial='.$initial;
+    }
+    if ($sequence) {
+      $fields[] = 'sequence='.$sequence;
+    }
+    if ($tagged) {
+      $fields[] = 'tagged='.$tagged;
+    }
+    $newbegin = $begin + 50;
+    $fields[] = 'begin='.$newbegin;
+
+    $newurl = $thispage . implode($fields, '&');
+    print 
+      '<p><a href="'.$newurl.'">Suivant</a></p>';
+  }
+}
+
+nextPrevious($begin);
 
 $sql = "SELECT ".
   "r.id AS id, r.uri_raw AS url, \n".
@@ -177,7 +241,16 @@ else if ($tagged == 'tags') {
 
 $sql .= " ORDER BY r.visited \n LIMIT 50 ";
 
+if ((is_numeric($begin)) &&
+    ($begin >= 50)) {
+  $offset = $begin + 50;
+  $sql .= " OFFSET $offset";
+}
+
+print '<p><a href="#" id="showsql">Voir requête</a> (pour devel seulement)</p>';
+print '<div id="sql">';
 print '<p>'. str_replace("\n", '<br/>', $sql).'</p>';
+print '</div>';
 
 $i->query($sql);
 
@@ -193,7 +266,12 @@ while ($row = $i->result->fetch_object()) {
     '<a class="resurl" href="' . $row->url . '">' . $row->url . "</a>\n".
     '<span class="tagev_count">Taggé ' . $row->total_tagevs . " fois</span>\n".
     "</p>\n".
-    '<p class="details">'.
+    '<p><input type="checkbox" class="groupmod"></input> '. 
+    '<span class="explanation">Ajouter au taggage groupé</span></p> '.
+    '<p><a href="#" class="seedetails">Voir détails</a> '.
+    '<a href="#" class="hidedetails">Cacher les détails</a></p> '.
+    '<div class="details">'.
+    '<p>'.
     '<span class="infohead">Ajouté le</span><span class="added">'. $row->added . "</span>\n".
     '<br/><span class="currenttags">Tags : ' . $row->thesetags . "</span>\n".
     '<div class="iframeholder"></div> '.
@@ -204,10 +282,17 @@ while ($row = $i->result->fetch_object()) {
     '<p>Détails des tags existants. <a class="seetags" href="#">Voir</a> '.
     '<a class="hidetags" href="#">Cacher</a> </p> '.
     '<div class="emptytags"></div>'.
+    '</div>'.
     '</li>';
 }
 
 ?>
 </ul>
+
+<?php
+
+nextPrevious($begin);
+
+?>
   </body>
 </html>

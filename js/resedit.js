@@ -1,10 +1,38 @@
 var urlbase = "http://fabula.org/commun3/folksonomie/";
 
 $(document).ready(function() {
+  $("#showsql").click(
+    function(event){
+      event.preventDefault();
+      $("#sql").show();
+    });
+
+  $("a.seedetails").click(
+    function(event) {
+      event.preventDefault();
+      $(this).parent().siblings("div.details").show();
+      $(this).siblings("a.hidedetails").show();
+      $(this).hide();
+    });
+
+    $("a.hidedetails").click(
+      function(event) {
+        event.preventDefault();
+        $(this).parent().siblings("div.details").hide();
+        $(this).siblings("a.seedetails").show();
+        $(this).hide();
+      });
+
   $("ul.editresources li").each(iframePrepare);
   $("ul.editresources li").each(tagboxPrepare);
   $("ul.editresources li").each(taglistHidePrepare);
-    $("a.closeiframe").hide();
+  $("a.closeiframe").hide();
+  $("#grouptagvalidate").click(
+    function(event) {
+      event.preventDefault();
+    $("input.groupmod:checked").each(groupTag);
+    });
+  $("#grouptagbox").autocomplete(urlbase + "tagcomplete.php");
 //  $("ul.taglist li").each(tagremovePrepare);
 });
 
@@ -84,7 +112,7 @@ function tagremovePrepare() {
   var remove = $(this).find("a.remtag");
 
   var taglistdiv = $(this).parent();
-  var resourceid = taglistdiv.parent().attr("id").substring(3);
+  var resourceid = taglistdiv.parent().parent().attr("id").substring(3);
 
   remove.click(function(event) {
         event.preventDefault();
@@ -165,3 +193,28 @@ function getTagMenu(place, resid) {
              alert("An error here: " + msg);
            }});
 }
+
+function groupTag() {
+  var lis = $(this).parent().parent("ul.editresources li");
+  var url = lis.find("a.resurl").attr("href");
+  var newtag = $("#grouptagbox").val();
+
+  if (newtag) {
+    $.ajax({
+      url: urlbase + 'resource.php',
+      type: 'post',
+      datatype: 'text/text',
+      data: {
+        folksores: url,
+        folksotag: newtag},
+      error: function(xhr, msg) {
+        alert(xhr.statusText + " " + xhr.responseText);
+      }
+    });
+  }
+}
+
+
+
+
+
