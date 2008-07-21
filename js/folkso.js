@@ -1,5 +1,5 @@
-var urlbase = "http://fabula.org/commun3/folksonomie/";
-
+//var urlbase = "http://fabula.org/commun3/folksonomie/";
+var urlbase = "http://localhost/";
 $(document).ready(function() {
                     $('.tagentry').each(fkPrepare);
                   });

@@ -125,7 +125,7 @@ $initial = $_GET['initial'];
 $sequence = $_GET['sequence'];
 $tagged = $_GET['tagged'];
 $begin = $_GET['begin'];
-
+$sortby = $_GET['sortby'];
 
 
 if ((!$initial) &&
@@ -134,57 +134,40 @@ if ((!$initial) &&
   die();
 }
 
-$thispage = '/commun3/folksonomie/editresources.php?';
-
 function nextPrevious ($begin) {
+  //$thispage = '/commun3/folksonomie/editresources.php?';
+  $thispage = '/editresources.php?';
+  $fields = array();
+  if ($initial) {
+    $fields[] = 'initial='.$initial;
+  }
+  if ($sequence) {
+    $fields[] = 'sequence='.$sequence;
+  }
+  if ($tagged) {
+    $fields[] = 'tagged='.$tagged;
+  }
 
   /** previous **/
   if ($begin >= 50) {
-
-    $fields = array();
-    if ($initial) {
-      $fields[] = 'initial='.$initial;
-    }
-    if ($sequence) {
-      $fields[] = 'sequence='.$sequence;
-    }
-    if ($tagged) {
-      $fields[] = 'tagged='.$tagged;
-    }
     $newbegin = $begin - 50;
-
     if ($newbegin < 0) {
       $newbegin = 0;
     }
-
     $fields[] = 'begin=' . $newbegin;
-
-    print '<p><a href="'. 
+    print 
+      '<p><a href="'. 
       $thispage . 
       implode($fields, '&').
       '">Précédents</a></p>';
   }
-
-  /** next **/
   if ($i->result->num_rows > 49) {
-
-    $fields = array();
-    $nexturl = '';
-    if ($initial) {
-      $fields[] = 'initial='.$initial;
-    }
-    if ($sequence) {
-      $fields[] = 'sequence='.$sequence;
-    }
-    if ($tagged) {
-      $fields[] = 'tagged='.$tagged;
-    }
     $newbegin = $begin + 50;
     $fields[] = 'begin='.$newbegin;
-
-    $newurl = $thispage . implode($fields, '&');
     print 
-      '<p><a href="'.$newurl.'">Suivant</a></p>';
+      '<p><a href="'.
+      $thispage . implode($fields, '&') .
+      '">Suivant</a></p>';
   }
 }
 
