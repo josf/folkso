@@ -9,7 +9,8 @@ CREATE TABLE tagevent
        INDEX tagdex (tag_id, resource_id),
        INDEX resdex (resource_id, tag_id),
        FOREIGN KEY (tag_id) REFERENCES tag (id),
-       FOREIGN KEY (resource_id) REFERENCES resource (id))
+       FOREIGN KEY (resource_id) REFERENCES resource (id),
+       FOREIGN KEY (meta_id) REFERENCES metatag (id))
     ENGINE=InnoDB;
 
 -- (local-set-key [(control c) (b)] 'sql-snip)

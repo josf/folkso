@@ -23,7 +23,7 @@ $srv = new folksoServer(array( 'methods' => array('POST', 'GET', 'HEAD'),
                                'access_mode' => 'ALL'));
 $srv->addResponseObj(new folksoResponse('head', 
                                         array('required' => array('res')),
-                                        'isHeadDo'));
+                                        'isHead'));
 
 $srv->addResponseObj(new folksoResponse('get',
                                         array('required' => array('clouduri', 'res')),
@@ -31,7 +31,7 @@ $srv->addResponseObj(new folksoResponse('get',
 
 $srv->addResponseObj(new folksoResponse('get',
                                         array('required' => array('res')),
-                                        'getTagsIdsDo'));
+                                        'getTagsIds'));
 
 $srv->addResponseObj(new folksoResponse('post',
                                         array('required_single' => array('res', 'tag'),
@@ -40,15 +40,15 @@ $srv->addResponseObj(new folksoResponse('post',
 
 $srv->addResponseObj(new folksoResponse('post',
                                         array('required' => array('res', 'tag')),
-                                        'tagResourceDo'));
+                                        'tagResource'));
 
 $srv->addResponseObj(new folksoResponse('post',
                                         array('required_single' => array('res'),
                                               'required' => array('visit')),
-                                        'visitPageDo'));
+                                        'visitPage'));
 $srv->addResponseObj(new folksoResponse('post',
                                         array('required' => array('res', 'newresource')),
-                                        'addResourceDo'));
+                                        'addResource'));
 $srv->addResponseObj(new folksoResponse('delete',
                                         array('required' => array('res', 'tag')),
                                         'unTag'));
@@ -60,8 +60,7 @@ $srv->Respond();
  * 
  * Web parameters: HEAD + folksouri or folksoid
  */
-
-function isHeadDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+function isHead (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
   $i = new folksoDBinteract($dbc);
   if ($i->db_error()) {
     header('HTTP/1.0 501 Database connection error');
@@ -107,7 +106,7 @@ function isHeadDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) 
  * Web parameters : GET + folksores 
  *
  */
-function getTagsIdsDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+function getTagsIds (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
   $i = new folksoDBinteract($dbc);
 
   if ($i->db_error()){
@@ -269,7 +268,7 @@ function tagCloudLocalPop (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnec
  * Optional parameters: urititle,
  * 
  */
-function visitPageDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+function visitPage (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
   $ic = new folksoIndexCache('/tmp/cachetest', 500);  
 
   $page = new folksoUrl($q->res, 
@@ -309,9 +308,8 @@ function visitPageDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $db
  * Web parameters : POST + folksonewuri
  * Optional : newtitle
  *
- *
  */
-function addResourceDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+function addResource (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
   $i = new folksoDBinteract($dbc);
   if ($i->db_error()) {
     header('HTTP/1.0 501 Database connection error');
@@ -339,8 +337,7 @@ function addResourceDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $
 /**
  * Web parameters: POST + folksoresource + folksotag
  */
-
-function tagResourceDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+function tagResource (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
   $i = new folksoDBinteract($dbc);
   if ($i->db_error()) {
     header('HTTP/1.0 501 Database connection error');
