@@ -15,13 +15,41 @@
 
 class folksoDataDisplay {
 
+  /**
+   * A list containing the different datastyles. (This could be done
+   * in a more elegant way.) Each datastyle is an associative array
+   * containing the basic fields for each display style: xhtml, text,
+   * xml, or any other format that might be needed. Only one style is
+   * activated at a time, and no style is activated on object
+   * creation. (See $dd->activated.) The values of the selected
+   * display style are then copied to the folksoDataDisplay object
+   * itself, as $dd->lineformat, $dd->titleformat etc.
+   */
   public $datastyles = array();
+
+  /**
+   * The name of the current data display style, typically 'xml',
+   * 'xhtml', or 'text'.
+   */
   public $type;
+
+  /**
+   * A formatting string for each line of output. Each occurence of
+   * 'XXX' is replaced with the corresponding value.
+   */
   public $lineformat;
+
+  /**
+   * Number of arguments per line (corresponds to $dd->lineformat).
+   */
   public $argsperline;
   public $titleformat;
   public $start;
   public $end;
+
+  /**
+   * Flag indicating that a style has been activated.
+   */
   public $activated = false;
 
   function __construct ($arr) {
