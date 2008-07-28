@@ -40,7 +40,9 @@ class folksoDataDisplay {
   public $lineformat;
 
   /**
-   * Number of arguments per line (corresponds to $dd->lineformat).
+   * Number of arguments per line (corresponds to
+   * $dd->lineformat). The number of XXX's in the lineformat must be
+   * the same as this value.
    */
   public $argsperline;
   public $titleformat;
@@ -61,7 +63,12 @@ class folksoDataDisplay {
     }
   }
 
-  function activate_style ($type) {
+  /**
+   * Select one of the styles in $dd->datastyles to be the current
+   * style. Copies the values from the style into the corresponding
+   * slots in the $dd object.
+   */
+  public function activate_style ($type) {
     $this->type = $type;
     $changed = false;
     foreach ($this->datastyles as $display) {
@@ -75,8 +82,15 @@ class folksoDataDisplay {
         break;
       }
     }
-    $this->activated = true;
-    return $changed;
+    if ($changed) {
+      $this->activated = true;
+      return $changed;
+    }
+    else {
+      trigger_error(
+                    "Failed to activate style: $type", 
+                    E_USER_ERROR);
+    }
   }
 
 
@@ -99,7 +113,12 @@ class folksoDataDisplay {
     return true;
   }
 
-  function line ($nothing) { // dummy argument, accepts multiple arguments
+  /**
+   * Inserts its arguments into the format string in $dd->lineformat
+   * replacing the XXX's with the arguments. The number of arguments
+   * must be the same as the number of XXX's.
+   */
+  public function line ($nothing) { // dummy argument, accepts multiple arguments
     if ($this->activated == false) {
       trigger_error("No display style activated yet.", E_USER_ERROR);
     }
@@ -111,7 +130,9 @@ class folksoDataDisplay {
     for ($i = 0; $i < count($args); ++$i) {
       $offset = strpos($outline, 'XXX');
       if (!$offset) {
-        trigger_error('Mismatch between arguments and template targets: too many arguments', E_USER_ERROR);
+        trigger_error(
+                      'Mismatch between arguments and template targets: too many arguments', 
+                      E_USER_ERROR);
       }
       
       $outline = substr_replace($outline,
@@ -120,7 +141,8 @@ class folksoDataDisplay {
                                 3);
     }
     if (strpos($outline, 'XXX')) {
-      trigger_error("Template mismatch: not enough arguments: $outline", E_USER_ERROR);
+      trigger_error("Template mismatch: not enough arguments: $outline", 
+                    E_USER_ERROR);
     }
     return $outline;
   }
@@ -138,15 +160,18 @@ class folksoDataDisplay {
     }
   }
 
-  function startform () {
+  public function startform () {
     return $this->start;
   }
 
-  function endform () {
+  public function endform () {
     return $this->end;
   }
 
-  function title ($arg) {
+  /**
+   * Outputs the given argument using the $dd->titleformat string.
+   */
+  public function title ($arg) {
     $out = $this->titleformat;
     $offset = strpos($out, 'XXX');
     if ($offset == false) {
