@@ -159,7 +159,6 @@ function taglistHidePrepare() {
 }
 
 function getTagMenu(place, resid) {
-
     var dest = place;
     dest.find("ul.tagmenu").remove();
 
@@ -169,31 +168,44 @@ function getTagMenu(place, resid) {
            data: {
              folksores: resid,
              folksodatatype: 'text/xml'},
-           success: function(xml) {
-             var ul = $('<ul class="tagmenu">');
-             $("taglist tag", xml).each(function() {
-                                          var item = $('<li>');
-                                          var taglink = $('<a>');
-                                          taglink.attr("href", "beebop");
-                                          taglink.append($(this).find('display').text() + ' ');
-                                          var remlink = $('<a class="remtag" href="#">Désassocier</a>');
-                                          item.append(taglink);
-
-                                          /** add tag id **/
-                                          item.append($("<span class='tagid'>"
-                                                        + $(this).find('numid').text()
-                                                        + "</span>"));
-
-                                          item.append(remlink);
-                                          ul.append(item);
-                                        });
-             dest.append(ul);
-             $("ul.tagmenu").each(tagremovePrepare);
-           },
+           success: tagMenuFromXml,
            error: function(xhr, msg) {
              alert("An error here: " + msg);
            }});
 }
+
+
+function tagMenuFromXml(xml) {
+  var ul = $('<ul class="tagmenu">');
+  $("taglist tag", xml).each(
+    function() {
+      var item = $('<li>');
+      var taglink = $('<a>');
+      taglink.attr("href", "beebop");
+      taglink.append($(this).find('display').text() + ' ');
+
+      var remlink = $('<a class="remtag" href="#">Désassocier</a>');
+      item.append(taglink);
+
+      /** meta tag (if not "normal") **/
+      if ($(this).find('meta').text() != 'normal') {
+        item.append($("<span class='meta'>Relation: ")
+                    + $(this).find('meta').text()
+                    + "</span>");
+      }
+
+      /** add tag id **/
+      item.append($("<span class='tagid'>"
+                    + $(this).find('numid').text()
+                    + "</span>"));
+
+      item.append(remlink);
+      ul.append(item);
+    });
+  dest.append(ul);
+  $("ul.tagmenu").each(tagremovePrepare);
+}
+
 
 function groupTag() {
   var lis = $(this).parent().parent("ul.editresources li");
