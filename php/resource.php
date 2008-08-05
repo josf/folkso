@@ -129,17 +129,24 @@ function getTagsIds (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc
     }
   }
 
-  $select = "SELECT 
-               DISTINCT t.id as id, t.tagdisplay as tagdisplay, t.tagnorm as tagnorm, t.popularity as popularity
+  $select = "SELECT DISTINCT
+                t.id as id, t.tagdisplay as tagdisplay, 
+                t.tagnorm as tagnorm, t.popularity as popularity, 
+                meta.tagdisplay as meta
              FROM tag t
              JOIN tagevent ON t.id = tagevent.tag_id
+             JOIN metatag meta ON tagevent.meta_id = meta.id
              JOIN resource ON resource.id = tagevent.resource_id ";
 
   if (is_numeric($q->res)) {
-    $select .= " WHERE resource.id = " . $i->dbescape($q->res);
+    $select .= 
+      " WHERE resource.id = " . 
+      $q->res;
   }
   else {
-    $select .= " WHERE uri_normal = url_whack('". $i->dbescape($q->res) ."') ";
+    $select .= 
+      " WHERE uri_normal = url_whack('". 
+      $i->dbescape($q->res) ."') ";
   }
    
   $i->query($select);
@@ -157,7 +164,7 @@ function getTagsIds (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc
     header('HTTP/1.1 200');
     break;
   }
-  // here everything should be ok
+  // here everything should be ok (200)
   $df = new folksoDisplayFactory();
   $dd = $df->singleElementList();
   $xf = $df->Taglist();
@@ -186,7 +193,8 @@ function getTagsIds (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc
       print $xf->line($row->id,
                       $row->tagnorm,
                       $row->tagdisplay,
-                      $row->popularity);
+                      $row->popularity,
+                      $row->meta);
     }
     print $xf->endform();
   }
@@ -318,8 +326,7 @@ function addResource (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $db
 
   $query = 
     "CALL url_visit('" .
-    $i->dbescape($q->res) . 
-    "', '" .
+    $i->dbescape($q->res) .     "', '" .
     $i->dbescape($q->get_param('newtitle')) . "', 500)";
       
   if ($i->result_status == 'DBERR') {
@@ -335,7 +342,7 @@ function addResource (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $db
 
 
 /**
- * Web parameters: POST + folksoresource + folksotag
+ * Web parameters: POST + folksores + folksotag
  */
 function tagResource (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
   $i = new folksoDBinteract($dbc);

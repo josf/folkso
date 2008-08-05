@@ -22,8 +22,12 @@ class folksoDisplayFactory {
                                         'lineformat' => '<li><a href="XXX">XXX</a></li>',
                                         'argsperline' => 2),
                                  $this->standardTextList(2));
-                                 $this->addXmlPart($obj, 'list', 'standard list', 'element', 'id');
-    return $obj;
+                                 $this->addXmlPart($obj, 
+                                                   'list', 
+                                                   'standard list', 
+                                                   'element', 
+                                                   'id');
+                                 return $obj;
   }
 
   /**
@@ -118,8 +122,9 @@ class folksoDisplayFactory {
                                        "\n\t<tagnorm>XXX</tagnorm>".
                                        "\n\t<display>XXX</display>".
                                        "\n\t<popularity>XXX</popularity>".
+                                       "\n\t<metatag>XXX</metatag>".
                                        "\n</tag>",
-                                       'argsperline' => 4));
+                                       'argsperline' => 5));
     return $obj;
   }
 
@@ -179,4 +184,4 @@ class folksoDisplayFactory {
   }
 
 }
-?>
+?> 

@@ -37,6 +37,17 @@ $(document).ready(function() {
 //  $("ul.taglist li").each(tagremovePrepare);
 });
 
+
+/**
+ * "tag" can be either a tagnorm or an id. Returns a correct tag url.
+ */
+function tagUrl(tag) {
+  return "http://localhost/tagview.php?tag=" + tag; // this is probably wrong!
+}
+
+/**
+ *  "this" must be a list element from the main list of resources.
+ */
 function iframePrepare() {
   var url = $(this).find("a.resurl").attr("href");
   var holder = $(this).find("div.iframeholder");
@@ -67,11 +78,11 @@ function iframePrepare() {
   );
 }
 
-function tagboxPrepare() {
   /**
    * To be called on a <li>. Sets up tagging input box with
    * autocompletion and refreshes the tagmenu.
    */
+function tagboxPrepare() {
     var lis = $(this);
     var tgbx = lis.find("input.tagbox");
     tgbx.autocomplete(urlbase + "tagcomplete.php");
@@ -105,11 +116,10 @@ function tagboxPrepare() {
     });
 }
 
-function tagremovePrepare() {
 /**
  * To be called on a ul.tagmenu
  */
-
+function tagremovePrepare() {
   var remove = $(this).find("a.remtag");
 
   var taglistdiv = $(this).parent();
@@ -150,16 +160,19 @@ function taglistHidePrepare() {
     }
   );
 
-    $(this).find("a.hidetags").click(
-        function(event) {
-            event.preventDefault();
-            lis.find("ul.tagmenu").remove();
-        }
-    );
+  $(this).find("a.hidetags").click(
+    function(event) {
+      event.preventDefault();
+      lis.find("ul.tagmenu").remove();
+      }
+  );
 }
 
+/**
+ * Create or update a tag menu. (Most of the work is done
+ * by tagMenuFromXml.)
+ */
 function getTagMenu(place, resid) {
-    var dest = place;
     dest.find("ul.tagmenu").remove();
 
     $.ajax({ url: urlbase + 'resource.php',
@@ -174,7 +187,9 @@ function getTagMenu(place, resid) {
            }});
 }
 
-
+/**
+ * For use with getTagMenu.
+ */
 function tagMenuFromXml(xml) {
   var ul = $('<ul class="tagmenu">');
   $("taglist tag", xml).each(
@@ -183,14 +198,12 @@ function tagMenuFromXml(xml) {
       var taglink = $('<a>');
       taglink.attr("href", "beebop");
       taglink.append($(this).find('display').text() + ' ');
-
-      var remlink = $('<a class="remtag" href="#">Désassocier</a>');
       item.append(taglink);
 
       /** meta tag (if not "normal") **/
-      if ($(this).find('meta').text() != 'normal') {
+      if ($(this).find('metatag').text() != 'normal') {
         item.append($("<span class='meta'>Relation: ")
-                    + $(this).find('meta').text()
+                    + $(this).find('metatag').text()
                     + "</span>");
       }
 
@@ -199,7 +212,7 @@ function tagMenuFromXml(xml) {
                     + $(this).find('numid').text()
                     + "</span>"));
 
-      item.append(remlink);
+      item.append($('<a class="remtag" href="#">Désassocier</a>');
       ul.append(item);
     });
   dest.append(ul);

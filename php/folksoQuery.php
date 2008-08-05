@@ -15,7 +15,17 @@ class folksoQuery {
   public $res; // resource id or url
 
   private $method;
-  private $content_type;
+
+  /**
+   * We store the raw server HTTP_ACCEPT data here.
+   */
+  private $req_content_type;
+
+  /**
+   * Once the internal content type has been calculated, we cache it here.
+   */
+  private $fk_content_type;
+
   private $fk_params = array(); //will contain only folkso related parameters
 
   /**
@@ -25,7 +35,7 @@ class folksoQuery {
    */
   function __construct ($server, $get, $post) {
     $this->method = strtolower($server['REQUEST_METHOD']);
-    $this->content_type = $server['HTTP_ACCEPT'];
+    $this->req_content_type = $server['HTTP_ACCEPT'];
     if (count($get) > 0) {
       $this->fk_params = array_merge($this->parse_params($get), 
                                      $this->fk_params);;
@@ -83,7 +93,10 @@ class folksoQuery {
                   $this->res = $param_val;
                   break;
                 case 'folksodatatype':
-                  $this->content_type = $param_val;
+                  $this->req_content_type = $param_val;
+                  if (is_valid_datatype($param_val)) {
+                    $this->fk_content_type = $param_val;
+                  }
                   break;
                 }
 
@@ -131,8 +144,51 @@ class folksoQuery {
    *
    */
   public function content_type () {
-    return $this->content_type;
+    if (is_string($this->fk_content_type)) {
+      return $this->fk_content_type;
+    }
+    else {
+      return parse_content_type($this->req_content_type);
+    }
   }
+
+  /**
+   * Check if string is one of the basic request datatypes.
+   */
+  private function is_valid_datatype (str) {
+    $valid_types = array('xml', 'html', 'text');
+    if (in_array(str, $valid_types)) {
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
+
+  /**
+   * Parses the string to see which datatype will become the content
+   * type. Returns one of the basic internal datatypes.
+   */
+  private function parse_content_type($content) {
+    $parts = explode(',' $content);
+    $returns = array('xml' => 'xml',
+                     'xml' => 'xml',
+                     'html' => 'html',
+                     'xhtml' => 'html',
+                     'xhtml-xml' => 'html',
+                     'text' => 'text');
+    for ($parts as $accept) {
+      $acc = $accept; // default is to keep the whole thing, just in case.
+
+      // otherwise, get rid of the 'text' or 'application' part...
+      if (strpos('/', $accept)) {
+        $acc = substr($accept, strpos('/') + 1);
+      }
+      return $returns[$acc];
+    }
+  }
+
+
 
   /**
    * Returns the method used. In smallcaps, which should be the norm

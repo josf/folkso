@@ -148,7 +148,7 @@ class folksoDataDisplay {
   }
 
 
-  function eval_element ($thing) {
+  private function eval_element ($thing) {
     if (is_string($thing)) {
       return $thing;
     }
@@ -175,7 +175,8 @@ class folksoDataDisplay {
     $out = $this->titleformat;
     $offset = strpos($out, 'XXX');
     if ($offset == false) {
-      trigger_error('Template mismatch in title', E_USER_WARNING);
+      trigger_error('Template mismatch in title', 
+                    E_USER_WARNING);
     }
     $out = substr_replace($out, $arg, $offset, 3);
     return $out;
