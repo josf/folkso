@@ -29,6 +29,20 @@ abstract class folksoLocal {
    */
   protected $server_web_path;
 
+
+  /**
+   * For use when indexing new resources.
+   *
+   * Array containing strings that, when found in the new URI, prevent
+   * that URI from being indexed.
+   */
+  public $visit_ignore_url;
+
+  /**
+   * Like $visit_ignore_url but used against page titles.
+   */
+  public $visit_ignore_title;
+
   /**
    * Simple setter function. 
    * 
