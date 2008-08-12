@@ -94,7 +94,7 @@ class folksoQuery {
                   break;
                 case 'folksodatatype':
                   $this->req_content_type = $param_val;
-                  if (is_valid_datatype($param_val)) {
+                  if ($this->is_valid_datatype($param_val)) {
                     $this->fk_content_type = $param_val;
                   }
                   break;
@@ -148,16 +148,16 @@ class folksoQuery {
       return $this->fk_content_type;
     }
     else {
-      return parse_content_type($this->req_content_type);
+      return $this->parse_content_type($this->req_content_type);
     }
   }
 
   /**
    * Check if string is one of the basic request datatypes.
    */
-  private function is_valid_datatype (str) {
+  private function is_valid_datatype ($str) {
     $valid_types = array('xml', 'html', 'text');
-    if (in_array(str, $valid_types)) {
+    if (in_array($str, $valid_types)) {
       return true;
     }
     else {
@@ -170,19 +170,19 @@ class folksoQuery {
    * type. Returns one of the basic internal datatypes.
    */
   private function parse_content_type($content) {
-    $parts = explode(',' $content);
+    $parts = explode(',', $content);
     $returns = array('xml' => 'xml',
                      'xml' => 'xml',
                      'html' => 'html',
                      'xhtml' => 'html',
                      'xhtml-xml' => 'html',
                      'text' => 'text');
-    for ($parts as $accept) {
+    foreach ($parts as $accept) {
       $acc = $accept; // default is to keep the whole thing, just in case.
 
       // otherwise, get rid of the 'text' or 'application' part...
-      if (strpos('/', $accept)) {
-        $acc = substr($accept, strpos('/') + 1);
+      if (strpos($accept, '/')) {
+        $acc = substr($accept, strpos($accept, '/') + 1);
       }
       return $returns[$acc];
     }
