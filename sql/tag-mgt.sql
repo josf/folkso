@@ -384,6 +384,56 @@ END$$
 DELIMITER ;
 
 
+DELIMITER $$
+DROP PROCEDURE IF EXISTS metamod$$
+CREATE PROCEDURE metamod(       resource_id_arg INT,
+                                resource_url_arg VARCHAR(255),
+                                tag_id_arg INT,
+                                tag_str_arg VARCHAR(255),
+                                new_meta_id_arg INT,
+                                new_meta_str_arg VARCHAR(255))
+
+BEGIN
+
+DECLARE resid INT;
+DECLARE tagid INT;
+DECLARE metaid INT;
+
+IF (resource_id_arg > 0) THEN
+   SET resid = resource_id_arg;
+ELSE
+   SELECT id
+   INTO resid
+   FROM resource
+   WHERE uri_normal = url_whack(resource_url_arg);
+END IF;
+
+IF (tag_id_arg > 0) THEN
+   SET tagid = tag_id_arg;
+ELSE
+   SELECT id 
+   INTO tagid
+   FROM tag
+   WHERE tagnorm = normalize_tag(tag_str_arg);
+END IF;
+
+IF (new_meta_id_arg > 0) THEN
+      SET metaid = new_meta_id_arg;
+ELSE
+      SELECT id
+      INTO metaid
+      FROM metatag 
+      WHERE tagnorm = normalize_tag(new_meta_str_arg);
+END IF;
+
+UPDATE tagevent
+       SET meta_id = metaid
+       WHERE (resource_id = resid)
+             AND
+             (tag_id = tagid);
+
+END$$
+DELIMITER ; 
 
 
 

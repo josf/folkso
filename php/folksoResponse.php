@@ -76,7 +76,10 @@ class folksoResponse {
   /**
    * Checks to see if this Response should be used to respond to the query $q.
    *
-   * First check the 'required' parameters in $this->activate_params
+   * If there are 'exclude' parameters, they are checked first. If any
+   * of them are present, param_check returns 'false'.
+   *
+   * Then we check the 'required' parameters in $this->activate_params
    * and returns false if any of them are missing. If one of the
    * 'oneof' fields is present (and assuming conditions in the other
    * arrays are met), 'true' is returned.
@@ -84,8 +87,15 @@ class folksoResponse {
    * @param folksoQuery $q
    * @return boolean
    */
-  function param_check(folksoQuery $q) {
+  private function param_check(folksoQuery $q) {
 
+    if (is_array($this->activate_params['exclude'])) {
+        foreach ($this->activate_params['exclude'] as $no) {
+          if ($q->is_param($no)) {
+            return false;
+          }
+        }
+      }
     $all_requireds = array();
     foreach (array($this->activate_params['required'],
                    $this->activate_params['required_single'],

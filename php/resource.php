@@ -33,28 +33,39 @@ $srv->addResponseObj(new folksoResponse('get',
                                         'tagCloudLocalPop'));
 
 $srv->addResponseObj(new folksoResponse('get',
-                                        array('required' => array('res')),
+                                        array('required' => array('res'),
+                                              'exclude' => array('clouduri')),
                                         'getTagsIds'));
+
 
 $srv->addResponseObj(new folksoResponse('post',
                                         array('required_single' => array('res', 'tag'),
-                                              'required' => array('delete')),
+                                              'required' => array('delete'),
+                                              'exclude' => array('meta', 'newresource')),
                                         'unTag'));
 
 $srv->addResponseObj(new folksoResponse('post',
-                                        array('required' => array('res', 'tag')),
+                                        array('required' => array('res', 'tag'),
+                                              'exclude' => array('meta', 'delete', 'newresource')),
                                         'tagResource'));
 
 $srv->addResponseObj(new folksoResponse('post',
                                         array('required_single' => array('res'),
                                               'required' => array('visit')),
                                         'visitPage'));
+
 $srv->addResponseObj(new folksoResponse('post',
                                         array('required' => array('res', 'newresource')),
                                         'addResource'));
+
 $srv->addResponseObj(new folksoResponse('delete',
                                         array('required' => array('res', 'tag')),
                                         'unTag'));
+
+$srv->addResponseObj(new folksoResponse('post',
+                                        array('required' => array('res', 'tag', 'meta')),
+                                        'metaModify'));
+
 
 $srv->Respond();
 
@@ -423,11 +434,11 @@ function unTag (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
   }
   else {
     $query = 
-      'delete from tagevent '.
-      'using tagevent join resource r on tagevent.resource_id = r.id '.
-      'join tag t on tagevent.tag_id = t.id ';
+      'DELETE FROM tagevent '.
+      'USING tagevent JOIN resource r ON tagevent.resource_id = r.id '.
+      'JOIN tag t ON tagevent.tag_id = t.id ';
 
-    $where = 'where';
+    $where = 'WHERE';
     
     if (is_numeric($q->tag)) {
       $where .= ' (tagevent.tag_id = ' . $q->tag . ') ';
@@ -438,11 +449,11 @@ function unTag (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
     }
 
     if (is_numeric($q->res)) {
-      $where .= ' and '.
+      $where .= ' AND '.
         ' (tagevent.resource_id = ' . $q->res . ') ';
     }
     else {
-      $where .=  ' and '.
+      $where .=  ' AND '.
         " (r.uri_normal = url_whack('". $i->dbescape($q->res) . "')) ";
     }
     $sql = $query . $where;
@@ -456,6 +467,67 @@ function unTag (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
     else {
       header('HTTP/1.1 200 Deleted');
     }
+}
+
+function metaModify (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+  $i = new folksoDBinteract($dbc);
+  if ($i->db_error()) {
+    header('HTTP/1.0 501 Database connection error');
+    die($i->error_info());
+  }
+
+  $res_arg_num = 0;
+  $res_arg_str = '';
+  $tag_arg_num = 0;
+  $tag_arg_str = '';
+  $meta_arg_num = 0;
+  $meta_arg_str = '';
+
+  if (is_numeric($q->res)) {
+    $res_arg_num = $q->res;
+    $res_arg_str = "''";
+  }
+  else {
+    $res_arg_num = "''";
+    $res_arg_str = $i->dbescape($q->res);
+  }
+
+  if (is_numeric($q->tag)) {
+    $tag_arg_num = $q->tag;
+    $tag_arg_str = "''";
+  }
+  else {
+    $tag_arg_str = $i->dbescape($q->tag);
+    $tag_arg_num = "''";
+  }
+
+  if (is_numeric($q->get_param('meta'))) {
+    $meta_arg_num = $q->get_param('meta');
+    $meta_arg_str = "''";
+  }
+  else {
+    $meta_arg_str = $q->get_param('meta');
+    $meta_arg_num = "''";
+  }
+
+  $sql = 
+    "call metamod(" . 
+    $res_arg_num . ", ".
+    $res_arg_str . ", " .
+    $tag_arg_num . ", " .
+    $tag_arg_str . ", " .
+    $meta_arg_num . ", " .
+    $meta_arg_str . ")";
+    
+  $i->query($sql);
+
+  if ($i->result_status == 'DBERR') {
+    header('HTTP/1.1 501 Database update error');
+    die($i->error_info());
+  }
+  else {
+    header('HTTP/1.1 200 Deleted');
+  }
 }
 
 ?>
