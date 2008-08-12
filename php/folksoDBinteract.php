@@ -2,7 +2,7 @@
 
   /**
    * Interact with the database. A thin layer of abstraction between
-   * scripts and the DB.
+   * scripts and the DB with some helpful functions.
    * 
    * 
    * @package Folkso
@@ -44,11 +44,12 @@ class folksoDBinteract {
   public function __construct (folksoDBconnect $dbc) {
     $this->db = $dbc->db_obj();
     $this->db->set_charset('utf8');
-    if ( mysqli_connect_errno()) {
-      $this->connect_error = sprintf("Connect failed: %s Error code: %s", 
-                                     mysqli_connect_error(), 
-                                     mysqli_connect_errno());
-    }
+        if ( mysqli_connect_errno()) {
+      //      $this->connect_error = 
+        die(sprintf("Connect failed: %s Error code: %s", 
+                    mysqli_connect_error(), 
+                    mysqli_connect_errno()));
+        } 
   }
 
   /**
@@ -131,17 +132,17 @@ class folksoDBinteract {
   public function tagp ($tagstring) {
     $select = '';
     if (is_numeric($tagstring)) {
-      $select = "select id from tag
-                 where id = " . $tagstring .
-                 " limit 1";
+      $select = "SELECT id FROM tag
+                 WHERE id = " . $tagstring .
+                 " LIMIT 1";
     }
     else {
       $select = 
-        "select id from tag
-                  where tagnorm = normalize_tag('" .
+        "SELECT id FROM tag
+                  WHERE tagnorm = normalize_tag('" .
         $this->db->real_escape_string($tagstring) .
         "') 
-         limit 1";
+         LIMIT 1";
     }
     $this->query($select);
     if ($this->result_status == 'OK') {
@@ -240,4 +241,3 @@ class folksoDBinteract {
 }
 
 ?>
-

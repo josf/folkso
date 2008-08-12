@@ -184,7 +184,7 @@ class folksoQuery {
       if (strpos($accept, '/')) {
         $acc = substr($accept, strpos($accept, '/') + 1);
       }
-      return $returns[$acc];
+      return $returns[$acc] ? $returns[$acc] : $acc;
     }
   }
 

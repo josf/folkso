@@ -1,13 +1,13 @@
-delimiter $$
-drop function if exists remove_end$$
-create function remove_end(input_string VARCHAR(250),
+DELIMITER $$
+DROP FUNCTION IF EXISTS remove_end$$
+CREATE FUNCTION remove_end(input_string VARCHAR(250),
                            remove_target VARCHAR(250))
                 RETURNS VARCHAR(250)
                 DETERMINISTIC
 BEGIN
-        declare target_length INT;
-        declare output_string VARCHAR(250);
-        set target_length=length(remove_target);
+        DECLARE target_length INT;
+        DECLARE output_string VARCHAR(250);
+        SET target_length=LENGTH(remove_target);
 
         IF (target_length=0) THEN
            SET output_string=input_string;
@@ -20,19 +20,19 @@ BEGIN
 
 END$$
 
-delimiter ;
+DELIMITER ;
         
 
 
          
-delimiter $$
-drop function if exists query_sort$$
-create function query_sort(input_string varchar(255))
+DELIMITER $$
+DROP FUNCTION IF EXISTS query_sort$$
+CREATE FUNCTION query_sort(input_string VARCHAR(255))
        RETURNS text
        DETERMINISTIC
-begin
-        declare orig varchar(255) default '';
-        declare accum varchar(255) default '';
+BEGIN
+        DECLARE orig VARCHAR(255) DEFAULT '';
+        DECLARE accum VARCHAR(255) DEFAULT '';
         declare current_seg varchar(255) default '';
         declare seg_end tinyint default 0;
         declare sorted text default '';
@@ -143,7 +143,6 @@ begin
                                set sorted = substr(sorted, 1, length(sorted) -1);
                             end if;
                             return sorted;
-
 end$$
 delimiter ;
                                            
@@ -177,55 +176,55 @@ begin
         DECLARE query_part VARCHAR(255) DEFAULT '';
         DECLARE query_start INT DEFAULT 0;
 
+        SET my_url=LOWER(input_url);
 
-        set my_url=lower(input_url);
-
-        if (instr(my_url, '#')) then 
-          set my_url = substring(my_url, 1, instr(my_url, '#') - 1);
-        end if;
+        IF (INSTR(my_url, '#')) THEN 
+          SET my_url = SUBSTRING(my_url, 1, INSTR(my_url, '#') - 1);
+        END IF;
 
         IF (INSTR(my_url, '?')) THEN
            SET query_part=query_sort(
-                                    substring(my_url, 
-                                              instr(my_url, '?') + 1));
-           SET my_url=substring(my_url, 1,
-                                instr(my_url, '?'));
-           set my_url = concat(my_url, query_part);
+                                    SUBSTRING(my_url, 
+                                              INSTR(my_url, '?') + 1));
+           SET my_url=SUBSTRING(my_url, 1,
+                                INSTR(my_url, '?'));
+           SET my_url = CONCAT(my_url, query_part);
         END IF;                                                                
         
 
-        if ( substring(my_url, 1, 7) = 'http://') THEN
-                set my_url=substring(my_url, 8);
-        end if;
-        IF (substring(my_url, 1, 4) = 'www.') THEN
-           SET my_url=substring(my_url, 5);
+        IF ( SUBSTRING(my_url, 1, 7) = 'http://') THEN
+                SET my_url=substring(my_url, 8);
+        END IF;
+        IF (SUBSTRING(my_url, 1, 4) = 'www.') THEN
+           SET my_url=SUBSTRING(my_url, 5);
         END IF; 
 
-        if (instr(my_url, ':80') and
-         ( instr(my_url, ':80/') < instr(my_url, '/'))) then  -- port number before 1st slash
-           set my_url = concat(
-                substr(my_url, 1, instr(my_url, ':80/') - 1),
-                substr(my_url, instr(my_url, ':80/') + 3));
-        end if;
+        IF (INSTR(my_url, ':80') AND
+         ( INSTR(my_url, ':80/') < INSTR(my_url, '/'))) then  -- port number before 1st slash
+           SET my_url = CONCAT(
+                SUBSTR(my_url, 1, INSTR(my_url, ':80/') - 1),
+                SUBSTR(my_url, INSTR(my_url, ':80/') + 3));
+        END IF;
 
-        if (instr(my_url, ':80?') and
-            (instr(my_url, ':80?') < instr(my_url, '/'))) then
-            set  my_url = concat(
-                substr(my_url, 1, instr(my_url, ':80?') - 1),
-                substr(my_url, instr(my_url, ':80?') + 3));
-        end if;  
+        IF (INSTR(my_url, ':80?') AND
+            (INSTR(my_url, ':80?') < INSTR(my_url, '/'))) THEN
+            SET  my_url = CONCAT(
+                SUBSTR(my_url, 1, INSTR(my_url, ':80?') - 1),
+                SUBSTR(my_url, INSTR(my_url, ':80?') + 3));
+        END IF;  
 
         
-        set my_url=remove_end(my_url, 'index.php');
-        set my_url=remove_end(my_url, 'index.html');
-        set my_url=remove_end(my_url, 'index.htm');
-        set my_url=remove_end(my_url, '/');         
-        set my_url=remove_end(my_url, '?');
+        SET my_url=remove_end(my_url, 'index.php');
+        SET my_url=remove_end(my_url, 'index.html');
+        SET my_url=remove_end(my_url, 'index.htm');
+        SET my_url=remove_end(my_url, '/');         
+        SET my_url=remove_end(my_url, '?');
 
         RETURN(my_url);        
-end$$
-delimiter ;
+END$$
+DELIMITER ;
 
+-- Bulk visit
 DELIMITER $$
 DROP PROCEDURE IF EXISTS bulk_visit$$
 CREATE PROCEDURE bulk_visit(urls_arg TEXT,
@@ -233,8 +232,6 @@ CREATE PROCEDURE bulk_visit(urls_arg TEXT,
                             userid INT)
 
 BEGIN
-
-
 
 DECLARE titles TEXT DEFAULT '';
 DECLARE urls TEXT DEFAULT '';
@@ -246,8 +243,7 @@ DECLARE current_url TEXT DEFAULT '';
 DECLARE current_title TEXT DEFAULT '';
 DECLARE existence VARCHAR(255) DEFAULT '';
 
-
-set @useridentifier = userid;
+SET @useridentifier = userid;
 SET urls = urls_arg;
 SET titles = titles_arg;
 
@@ -275,7 +271,7 @@ walking: WHILE LENGTH(urls) > 0 DO
             SET urls = remaining_urls;
             SET titles = remaining_titles;
 
-         ELSE -- last url
+         ELSE -- last or single url
 
             SET current_url = urls;
             SET current_title = titles;
@@ -295,16 +291,15 @@ walking: WHILE LENGTH(urls) > 0 DO
 
          IF (LENGTH(current_url) > 0) THEN
 
-         SET @cururl = current_url;
-         SET @curtit = current_title;
+                  SET @cururl = current_url;
+                  SET @curtit = current_title;
 
-         IF (length(existence) > 0) THEN
-            EXECUTE old_url USING @cururl;
-         ELSE
-            EXECUTE new_url USING @cururl, @cururl, @curtit, @useridentifier;
+                  IF (LENGTH(existence) > 0) THEN
+                        EXECUTE old_url USING @cururl;
+                  ELSE
+                        EXECUTE new_url USING @cururl, @cururl, @curtit, @useridentifier;
+                  END IF;        
          END IF;
-         END if;
-
     END WHILE walking;
 
 END$$

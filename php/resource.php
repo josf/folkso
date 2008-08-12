@@ -2,7 +2,8 @@
 
 
   /**
-   * Web interface providing information about resources.
+   * Web service for accessing, creating and modifying tag information
+   * about resources (URLs).
    *
    * @package Folkso
    * @author Joseph Fahey
@@ -11,7 +12,9 @@
 
   //include('/var/www/dom/fabula/commun3/folksonomie/folksoTags.php');
 
-require_once('folksoTags.php');
+  require_once('folksoTags.php');
+
+
 /*include('/var/www/dom/fabula/commun3/folksonomie/folksoIndexCache.php');
 include('/var/www/dom/fabula/commun3/folksonomie/folksoUrl.php');
 include('/var/www/dom/fabula/commun3/folksonomie/folksoServer.php');
@@ -107,13 +110,14 @@ function isHead (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
  *
  */
 function getTagsIds (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+
   $i = new folksoDBinteract($dbc);
 
   if ($i->db_error()){
     header('HTTP/1.0 501 Database connection problem');
     die($i->error_info());
   }
-  
+
   // check to see if resource is in db.
   if  (!$i->resourcep($q->res))  {
     if ($i->db_error()) {
@@ -148,7 +152,7 @@ function getTagsIds (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc
       " WHERE uri_normal = url_whack('". 
       $i->dbescape($q->res) ."') ";
   }
-   
+
   $i->query($select);
 
   switch ($i->result_status) {
@@ -170,23 +174,16 @@ function getTagsIds (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc
   $xf = $df->Taglist();
 
   switch ($q->content_type()) {
-  case 'text/text':
+  case 'text':
     header('Content-Type: text/text');
     $dd->activate_style('text');
     break;
-  case 'text/html':
+  case 'html':
     $dd->activate_style('xhtml');
     header('Content-Type: text/xhtml');
     break;
-  case 'text/xml':
+  case 'xml':
     $xf->activate_style('xml');
-    break;
-  default:
-      $dd->activate_style('xhtml');
-      break;
-  }
-
-  if ($q->content_type() == 'text/xml') {
     header('Content-Type: text/xml');
     print $xf->startform();
     while ($row = $i->result->fetch_object()) {
@@ -197,16 +194,20 @@ function getTagsIds (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc
                       $row->meta);
     }
     print $xf->endform();
+    return;
+    break;
+  default:
+      $dd->activate_style('xhtml');
+      break;
   }
-  else {
-    $row = $i->result->fetch_object(); //???
+
+  //    $row = $i->result->fetch_object(); //???
     print $dd->title($row->uri_normal);
     print $dd->startform();
     while ( $row = $i->result->fetch_object() ) {
       print $dd->line($row->tagdisplay);
     }
     print $dd->endform();
-  }
 }
 
 

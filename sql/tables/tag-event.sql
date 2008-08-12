@@ -3,7 +3,7 @@ CREATE TABLE tagevent
        (id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
        tag_id INT UNSIGNED NOT NULL,
        resource_id INT UNSIGNED NOT NULL, 
-       meta_id INT UNSIGNED DEFAULT 0 NOT NULL,
+       meta_id INT UNSIGNED DEFAULT 1 NOT NULL,
        user_id INT UNSIGNED NOT NULL,
        tagtime TIMESTAMP NOT NULL,
        INDEX tagdex (tag_id, resource_id),

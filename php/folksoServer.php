@@ -19,8 +19,12 @@
    * @copyright 2008 Gnu Public Licence (GPL)
    */
 
-require_once('folksoTags.php');
+  //require_once('folksoTags.php');
+require_once('folksoDBconnect.php');
+require_once('folksoQuery.php');
+require_once('folksoWsseCreds.php');
 require_once('folksoFabula.php');
+require_once('folksoResponse.php');
 
 class folksoServer {
 
@@ -104,9 +108,9 @@ class folksoServer {
    *
    */ 
   public function addResponseObj (folksoResponse $resp) { //one arg here to indicate
-                                           //that at least one is
-                                           //necessary
-        $this->responseObjects[] = $resp;
+    //that at least one is
+    //necessary
+    $this->responseObjects[] = $resp;
   }
 
   /**
@@ -121,7 +125,8 @@ class folksoServer {
       return;
     }
     
-    if (!($this->validClientAddress($_SERVER['REMOTE_HOST'], $_SERVER['REMOTE_ADDR']))) {
+    if (!($this->validClientAddress($_SERVER['REMOTE_HOST'], 
+                                    $_SERVER['REMOTE_ADDR']))) {
       header('HTTP/1.0 403');
       print "Sorry, this not available to you";
       return;
@@ -129,14 +134,14 @@ class folksoServer {
 
     $q = new folksoQuery($_SERVER, $_GET, $_POST); 
     $realm = 'folkso';
-/*    $cred = new folksoUserCreds( $_SERVER['PHP_AUTH_DIGEST'], 
-                                 $_SERVER['REQUEST_METHOD'], 
-                                 $realm);*/
+    /*    $cred = new folksoUserCreds( $_SERVER['PHP_AUTH_DIGEST'], 
+          $_SERVER['REQUEST_METHOD'], 
+          $realm);*/
 
     $cred = new folksoWsseCreds($_SERVER['HTTP_X_WSSE']);
     $cred->parse_auth_header();
 
-//    print var_dump($cred);
+    //    print var_dump($cred);
 
     $loc = new folksoFabula();
     $dbc = new folksoDBconnect($loc->db_server ? $loc->db_server : 'localhost',
@@ -145,7 +150,6 @@ class folksoServer {
                                $loc->db_database_name ? $loc->db_database_name : 'folksonomie');
 
     if ($this->is_auth_necessary($q)) {
-
       // Initial challenge
       if (empty($_SERVER['HTTP_X_WSSE'])) {
         header('HTTP/1.0 401 Unauthorized');
@@ -162,20 +166,21 @@ class folksoServer {
         }
 
         if (!$cred->Validate()) {
-//        if ($cred->digest_data['response'] !== md5($together_uh)) {
+          //        if ($cred->digest_data['response'] !== md5($together_uh)) {
           header('HTTP/1.0 403 Forbidden'); // is this right?
           die('You do not seem to be who you say you are (bad response).'. $together_uh . " a1uh " . $a1uh . "a2uh" . $a2uh);
         }
       }
     }
     /* check each response object and run the response if activatep
-     returns true*/
+       returns true*/
 
     $repflag = false;
     if (count($this->responseObjects) === 0) {
       trigger_error("No responseObjects available", E_USER_ERROR);
     }
 
+    /** Walking the response objects **/
     foreach ($this->responseObjects as $resp) {
       if ($resp->activatep($q, $cred)) {
         $resp->Respond($q, $cred, $dbc);
@@ -183,6 +188,8 @@ class folksoServer {
         break;
       }
     }
+
+    /** check for no valid response **/
     if (!$repflag) {
       header('HTTP/1.1 400');
       print "Client did not make a valid query. (folksoServer)";
@@ -222,29 +229,27 @@ class folksoServer {
     return false;
   }
 
-/** 
- * "True" means authorization _is_ necessary, false means it isn't. We
- * could check the fields for some GETs here too, to see if this is an
- * individualized GET request. (Or maybe it isn't necessary to do so
- * either.)
- *
- * @param folksoQuery $q
- */
-function is_auth_necessary (folksoQuery $q) {
-  return false;
-  if (($q->method()== 'get') ||
-      ($q->method() == 'head') ||
-      ($this->clientAccessRestrict == 'LOCAL')) {
+  /** 
+   * "True" means authorization _is_ necessary, false means it isn't. We
+   * could check the fields for some GETs here too, to see if this is an
+   * individualized GET request. (Or maybe it isn't necessary to do so
+   * either.)
+   *
+   * @param folksoQuery $q
+   */
+  function is_auth_necessary (folksoQuery $q) {
     return false;
+    if (($q->method()== 'get') ||
+        ($q->method() == 'head') ||
+        ($this->clientAccessRestrict == 'LOCAL')) {
+      return false;
+    }
+    else {
+      return true;
+    }
   }
-  else {
-    return true;
-  }
-}
 
-
-  } //end of class
+} //end of class
 
 
 ?>
-

@@ -12,13 +12,11 @@
    * @copyright 2008 Gnu Public Licence (GPL)
    */
 
-
 class folksoDBconnect {
   private $host;
   private $user;
   private $passwd;
   private $database;
-
 
   /**
    * This contains either nothing or a (reference to a) database
@@ -27,7 +25,6 @@ class folksoDBconnect {
    *
    */
   private $dbx; 
-
 
   /**
    * Right now, this contains any connection error data. This should
@@ -42,7 +39,6 @@ class folksoDBconnect {
     $this->user = $user;
     $this->passwd = $passwd;
     $this->database = $database;
-
   }
 
   /**
@@ -55,24 +51,16 @@ class folksoDBconnect {
     if ((!empty($this->dbx)) &&
         ($this->dbx instanceof mysqli)) {
       $this->dberr = '';
-      return $this->dbx;
     }
     else {
       $this->dbx = new mysqli($this->host, $this->user, $this->passwd, $this->database);
-
       // TODO : this should be handled by our own (future) error handling system
       if ( mysqli_connect_errno()) {
-        $this->dberr = printf("Connect failed: %s\n", mysqli_connect_error());
+        $this->dberr = die("Connect failed: %s\n". mysqli_connect_error());
         return ''; // or should this be false?
-      }
-      else {
-        return $this->dbx;
-      }
+        }
     }
+    return $this->dbx;
   }
-
   } //end of class
-
-
 ?>
-

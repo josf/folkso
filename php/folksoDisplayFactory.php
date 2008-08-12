@@ -155,7 +155,10 @@ class folksoDisplayFactory {
     return $obj;
   }
 
-
+  /**
+   * Resource list with lots of data.
+   *
+   */
   public function FancyResourceList () {
     $obj = new folksoDataDisplay(
                                  array('type' => 'xhtml',
@@ -182,6 +185,5 @@ class folksoDisplayFactory {
                                        'argsperline' => 4));
     return $obj;
   }
-
 }
-?> 
+?>

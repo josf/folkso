@@ -73,24 +73,21 @@ BEGIN
 END$$
 DELIMITER ;
 
-
--- tag page We recommend calling url_visit _before_ calling this
+-- TAG A RESOURCE
+-- tag page You might want to call url_visit before calling this
 -- procedure, to make sure that the resource already
 -- exists. Especially true if this were to be used for external URIs.
 DELIMITER $$
 DROP PROCEDURE IF EXISTS tag_resource$$
-CREATE PROCEDURE tag_resource(resource_uri      varchar(255),
-                              resource_id       integer,
-                              tag_name          varchar(255),
-                              tag_id            integer)
+CREATE PROCEDURE tag_resource(resource_uri      VARCHAR(255),
+                              resource_id       INTEGER,
+                              tag_name          VARCHAR(255),
+                              tag_id            INTEGER,
+                              meta_arg           INTEGER)
 BEGIN
-
         DECLARE existing_tag_id INT UNSIGNED;
         DECLARE existing_uri VARCHAR(255);     
         DECLARE out_status VARCHAR(255);
---        declare exit handler for 1048
---                set out_status='Tag does not exist';
-
 
 IF (tag_id) THEN
         SELECT id
@@ -119,6 +116,7 @@ END IF;
        INSERT INTO tagevent
               SET tag_id = existing_tag_id,
               resource_id = existing_uri,
+              meta_id = meta_arg,
               user_id = 9999;
 END$$
 DELIMITER ;
