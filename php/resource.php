@@ -427,9 +427,9 @@ function unTag (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
   if ((is_numeric($q->tag)) &&
       (is_numeric($q->res))) {
     $sql = 
-      'delete from tagevent '.
-      'where (tag_id = ' . $q->tag .') '.
-      'and '.
+      'DELETE FROM tagevent '.
+      'WHERE (tag_id = ' . $q->tag .') '.
+      'AND '.
       '(resource_id = ' . $q->res . ') ';
   }
   else {
@@ -469,6 +469,12 @@ function unTag (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
     }
 }
 
+/**
+ * Web parameters : res, tag, meta
+ *
+ * Returns: 200 on success (or no change at all), 404 on failure due
+ * to absent tag or metatag, or of course 501.
+ */
 function metaModify (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
   $i = new folksoDBinteract($dbc);
   if ($i->db_error()) {
@@ -489,7 +495,7 @@ function metaModify (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc
   }
   else {
     $res_arg_num = "''";
-    $res_arg_str = $i->dbescape($q->res);
+    $res_arg_str = "'".$i->dbescape($q->res)."'";
   }
 
   if (is_numeric($q->tag)) {
@@ -497,7 +503,7 @@ function metaModify (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc
     $tag_arg_str = "''";
   }
   else {
-    $tag_arg_str = $i->dbescape($q->tag);
+    $tag_arg_str = "'".$i->dbescape($q->tag). "'";
     $tag_arg_num = "''";
   }
 
@@ -506,7 +512,7 @@ function metaModify (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc
     $meta_arg_str = "''";
   }
   else {
-    $meta_arg_str = $q->get_param('meta');
+    $meta_arg_str = "'". $i->dbescape($q->get_param('meta')) . "'";
     $meta_arg_num = "''";
   }
 
@@ -522,11 +528,18 @@ function metaModify (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc
   $i->query($sql);
 
   if ($i->result_status == 'DBERR') {
-    header('HTTP/1.1 501 Database update error');
-    die($i->error_info());
+    if ($i->db->errno == 1452) {
+      header('HTTP/1.1 404 Missing tag');
+      die("One of the tags or metatags you are trying ". 
+            "to modify does not seem to exist.");
+    }
+    else {
+      header('HTTP/1.1 501 Database update error');
+      die($i->error_info());
+    }
   }
   else {
-    header('HTTP/1.1 200 Deleted');
+    header('HTTP/1.1 200 Metatag modified');
   }
 }
 

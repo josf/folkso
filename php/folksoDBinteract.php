@@ -166,17 +166,17 @@ class folksoDBinteract {
     $select = '';
 
     if (preg_match('/^\d+$/', $url)) {
-      $select = "select id from resource
-                 where id = " .
+      $select = "SELECT id FROM resource
+                 WHERE id = " .
         $this->db->real_escape_string($url) . 
-        "  limit 1";
+        "  LIMIT 1";
     }
     else {
-      $select = "select id from resource 
-                  where uri_normal = url_whack('" .
+      $select = "SELECT id FROM resource 
+                  WHERE uri_normal = url_whack('" .
         $this->db->real_escape_string($url) .
         "')
-                 limit 1";
+                 LIMIT 1";
     }
     $this->query($select);
     if ($this->result_status == 'OK') {
