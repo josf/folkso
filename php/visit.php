@@ -5,18 +5,6 @@ include('folksoFabula.php');
 
 $loc = new folksoFabula();
 
-function curPageURL() {
- $pageURL = 'http';
- if ($_SERVER["HTTPS"] == "on") {$pageURL .= "s";}
- $pageURL .= "://";
- if ($_SERVER["SERVER_PORT"] != "80") {
-  $pageURL .= $_SERVER["SERVER_NAME"].":".$_SERVER["SERVER_PORT"].$_SERVER["REQUEST_URI"];
- } else {
-  $pageURL .= $_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"];
- }
- return $pageURL;
-}
-
 $our_current_url = curPageURL(); //ridiculous var name to avoid namespace problems
 
 if (ignore_check($our_current_url, $loc->visit_ignore_url)) {
@@ -37,6 +25,17 @@ $fc->set_postfields(array('folksovisituri' => $our_current_url,
 $fc->execute();
 //print $fc->query_resultcode();
 
+function curPageURL() {
+ $pageURL = 'http';
+ if ($_SERVER["HTTPS"] == "on") {$pageURL .= "s";}
+ $pageURL .= "://";
+ if ($_SERVER["SERVER_PORT"] != "80") {
+  $pageURL .= $_SERVER["SERVER_NAME"].":".$_SERVER["SERVER_PORT"].$_SERVER["REQUEST_URI"];
+ } else {
+  $pageURL .= $_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"];
+ }
+ return $pageURL;
+}
 
 function ignore_check($str, $ignore) {
   if (!is_array($ignore)) {

@@ -3,6 +3,9 @@
   /**
    * Class for caching resource information to reduce database access.
    *
+   * This was written with the assumption that losing a little bit of
+   * data is no big deal.
+   *
    * @package Folkso
    * @author Joseph Fahey
    * @copyright 2008 Gnu Public Licence (GPL)
@@ -10,16 +13,18 @@
 
 class folksoIndexCache {
 
-  var $cachedir;
-  var $cache_prefix = 'folksoindex-';
-  var $cache_suffix = '.cache';
-  var $cache_file_limit;
+  public $cachedir;
+  public  $cache_prefix = 'folksoindex-';
+  public $cache_suffix = '.cache';
+  public $cache_file_limit;
 
   //private!
-  var $dh;
+  private $dh;
 
-  function folksoIndexCache ($dir, $file_limit = 100, $cache_prefix = 'folksoindex-', 
-                             $cache_suffix = '.cache')
+  function __construct ($dir, 
+                        $file_limit = 100, 
+                        $cache_prefix = 'folksoindex-', 
+                        $cache_suffix = '.cache')
                              {
     $this->cachedir = $dir;
     $this->cache_prefix = $cache_prefix;;
@@ -36,8 +41,6 @@ class folksoIndexCache {
         (substr($this->cachedir, 0, 4) == '/tmp')) {
       mkdir($this->cachedir, 0700);
     }
-
-
   }
 
   function check_filecount () {
@@ -55,14 +58,14 @@ class folksoIndexCache {
     }
   }
 
+  /**
+   * returns either the currently open dirhandle, or a new one 
+   */
   function dirhandle () {
-    /* returns either the currently open dirhandle, or a new one */
-
     if (!($this->dh = opendir($this->cachedir))) {
       trigger_error("cannot open cache directory: $this->cachedir", E_USER_ERROR);
       return 0;
     }
-
     return $this->dh;
   }
   
