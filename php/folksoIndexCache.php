@@ -12,7 +12,6 @@
    */
 
 class folksoIndexCache {
-
   public $cachedir;
   public  $cache_prefix = 'folksoindex-';
   public $cache_suffix = '.cache';
@@ -156,7 +155,6 @@ class folksoIndexCache {
       return false;
     }
   }
-
 } //end of class
 
 

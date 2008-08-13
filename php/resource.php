@@ -12,8 +12,9 @@
 
   //include('/var/www/dom/fabula/commun3/folksonomie/folksoTags.php');
 
-  require_once('folksoTags.php');
-
+require_once('folksoTags.php');
+require_once('folksoIndexCache.php');
+require_once('folksoUrl.php');
 
 /*include('/var/www/dom/fabula/commun3/folksonomie/folksoIndexCache.php');
 include('/var/www/dom/fabula/commun3/folksonomie/folksoUrl.php');
@@ -34,7 +35,7 @@ $srv->addResponseObj(new folksoResponse('get',
 
 $srv->addResponseObj(new folksoResponse('get',
                                         array('required' => array('res'),
-                                              'exclude' => array('clouduri')),
+                                              'exclude' => array('clouduri', 'visit')),
                                         'getTagsIds'));
 
 
@@ -289,7 +290,7 @@ function tagCloudLocalPop (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnec
  * 
  */
 function visitPage (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
-  $ic = new folksoIndexCache('/tmp/cachetest', 500);  
+  $ic = new folksoIndexCache('/tmp/cachetest', 5);  
 
   $page = new folksoUrl($q->res, 
                         $q->is_single_param('urititle') ? $q->get_param('urititle') : '' );
@@ -298,7 +299,7 @@ function visitPage (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc)
     trigger_error("Cannot store data in cache", E_USER_ERROR);
   }
 
-  if ($ic->cache_check() ) {
+  if ($ic->cache_check()) {
     $pages_to_parse = $ic->retreive_cache();
 
     $i = new folksoDBinteract($dbc);
@@ -307,22 +308,33 @@ function visitPage (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc)
       die( $i->error_info());
     }
 
+    $urls = array();
+    $title = array();
     foreach ($pages_to_parse as $raw) {
       $item = unserialize($raw);
 
-      $query = "CALL url_visit('". 
-        $db->real_escape_string($url_obj->get_url()). "', '" . 
-        $i->dbescape($url_obj->get_title()) ."', 1)";
+      $urls[] = $i->dbescape($url_obj->get_url());
+      $titles[] = $i->dbescape($url_obj->get_title());
+    }
 
-      $i->query($query);
+    $sql = 
+      "call bulk_visit('".
+      implode('&&&&&', $urls) . "', ".
+      implode('&&&&&', $titles) . "', 1)";
+
+      $i->query($sql);
       if ($i->result_status == 'DBERR') {
         header('HTTP/1.1 501 Database error');
         print $i->error_info() . "\n";
       }
-    }
-    $i->done();
+      print "updated db";
+      $i->done();
+    } 
+  else {
+    print "caching visit";
   }
 }
+
 
 /**
  * Web parameters : POST + folksonewuri

@@ -44,6 +44,12 @@ abstract class folksoLocal {
   public $visit_ignore_title;
 
   /**
+   * List of strings of allowed user agents. 'Mozilla' is already part
+   * of the default but you can add more UAs here.
+   */
+  public $visit_valid_useragents;
+
+  /**
    * Simple setter function. 
    * 
    * @params string $path : the path part of the uri for your
