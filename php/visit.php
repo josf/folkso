@@ -8,10 +8,9 @@ $loc = new folksoFabula();
 $our_current_url = curPageURL(); //ridiculous var name to avoid namespace problems
 
 
-if (ua_check($_SERVER['HTTP_USER_AGENT'], $loc->visit_ignore_useragent)) {
-
+if (ua_ignore($_SERVER['HTTP_USER_AGENT'], $loc->visit_ignore_useragent)) {
+  exit();
 }
-
 
 if (ignore_check($our_current_url, $loc->visit_ignore_url)) {
   exit();
@@ -46,8 +45,13 @@ function curPageURL() {
 /**
  * Check user agents against list of strings. Standard list is used
  * first, then optional site specific list.
+ *
+ * Note: returns false if the ua is valid and should _not_ be ignored,
+ * and true if the ua _should_ be ignored.
+ *
+ * @return Boolean
  */
-function ua_check($ua, $valid_uas) {
+function ua_ignore($ua, $valid_uas) {
 
   $hard_list =
     array('Mozilla', 'MSIE', 'Opera', 
@@ -55,10 +59,10 @@ function ua_check($ua, $valid_uas) {
 
   foreach (array_merge($hard_list, $valid_uas) as $valid) {
     if (strpos($ua, $valid)) {
-      return true;
+      return false;
     }
   }
-  return false; //no matching ua found
+  return true; //no matching ua found
 }
 
 function ignore_check($str, $ignore) {
