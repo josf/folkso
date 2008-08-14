@@ -1,5 +1,5 @@
-//var urlbase = "http://fabula.org/commun3/folksonomie/";
-var urlbase = "http://localhost/";
+var urlbase = "http://www.fabula.org/commun3/folksonomie/";
+//var urlbase = "http://localhost/";
 
 $(document).ready(function() {
   $("#showsql").click(
@@ -36,7 +36,6 @@ $(document).ready(function() {
   $("#grouptagbox").autocomplete(urlbase + "tagcomplete.php");
 //  $("ul.taglist li").each(tagremovePrepare);
 });
-
 
 /**
  * "tag" can be either a tagnorm or an id. Returns a correct tag url.
@@ -100,7 +99,8 @@ function tagboxPrepare() {
                      folksores: url,
                      folksotag: tgbx.val()},
                    error: function(xhr, msg) {
-                       alert(xhr.statusText + " " + xhr.responseText);
+                       alert("Autocomplete request failed: " +
+                              xhr.statusText + " " + xhr.responseText);
                      },
                    success: function (str) {
                      getTagMenu(
@@ -148,7 +148,9 @@ function tagremovePrepare() {
             });
         });
 }
-
+/**
+* To be called on a list element.
+*/
 function taglistHidePrepare() {
   var resourceid = $(this).attr("id").substring(3);
   var lis = $(this);
@@ -173,52 +175,57 @@ function taglistHidePrepare() {
  * by tagMenuFromXml.)
  */
 function getTagMenu(place, resid) {
-    dest.find("ul.tagmenu").remove();
-
+    place.find("ul.tagmenu").remove();
+    var tagMenuFromXmlFunction = tagMenuFunkMaker(place);
     $.ajax({ url: urlbase + 'resource.php',
            type: 'get',
            datatype: 'text/xml',
            data: {
              folksores: resid,
-             folksodatatype: 'text/xml'},
-           success: tagMenuFromXml,
+             folksodatatype: 'xml'},
+           success: tagMenuFromXmlFunction,
            error: function(xhr, msg) {
              alert("An error here: " + msg);
            }});
 }
 
 /**
- * For use with getTagMenu.
+ * Returns a function closed over "place", allowing us to get
+ * to this variable when called without arguments in the $.ajax call.
+ *
+ *  Had to use this fancy closure system to get this to work.
  */
-function tagMenuFromXml(xml) {
-  var ul = $('<ul class="tagmenu">');
-  $("taglist tag", xml).each(
-    function() {
-      var item = $('<li>');
-      var taglink = $('<a>');
-      taglink.attr("href", "beebop");
-      taglink.append($(this).find('display').text() + ' ');
-      item.append(taglink);
+function tagMenuFunkMaker(place) {
+  var dest = place;
+  return function(xml) {
+    var ul = $('<ul class="tagmenu">');
+    $("taglist tag", xml).each(
+      function() {
+        var item = $('<li>');
+        var taglink = $('<a>');
+        taglink.attr("href", "beebop");
+        taglink.append($(this).find('display').text() + ' ');
+        item.append(taglink);
 
-      /** meta tag (if not "normal") **/
-      if ($(this).find('metatag').text() != 'normal') {
-        item.append($("<span class='meta'>Relation: ")
-                    + $(this).find('metatag').text()
-                    + "</span>");
-      }
+        /** meta tag (if not "normal") **/
+        if ($(this).find('metatag').text() != 'normal') {
+          item.append($("<span class='meta'>Relation: ")
+                      + $(this).find('metatag').text()
+                      + "</span>");
+        }
 
-      /** add tag id **/
-      item.append($("<span class='tagid'>"
-                    + $(this).find('numid').text()
-                    + "</span>"));
+        /** add tag id **/
+        item.append($("<span class='tagid'>"
+                      + $(this).find('numid').text()
+                      + "</span>"));
 
-      item.append($('<a class="remtag" href="#">Désassocier</a>');
-      ul.append(item);
-    });
-  dest.append(ul);
-  $("ul.tagmenu").each(tagremovePrepare);
+        item.append($('<a class="remtag" href="#">Désassocier</a>'));
+        ul.append(item);
+      });
+    dest.append(ul);
+    $("ul.tagmenu").each(tagremovePrepare);
+  };
 }
-
 
 function groupTag() {
   var lis = $(this).parent().parent("ul.editresources li");
