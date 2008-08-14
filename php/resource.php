@@ -321,7 +321,7 @@ function visitPage (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc)
       implode('&&&&&', $urls) . "', ".
       implode('&&&&&', $titles) . "', 1)";
 
-    $fh = fopen('/tmp/folksolog', 'w');
+    $fh = fopen('/tmp/folksologfile', 'w');
     fwrite($fh, "\n\n$sql");
       $i->query($sql);
       if ($i->result_status == 'DBERR') {
