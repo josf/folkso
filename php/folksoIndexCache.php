@@ -17,13 +17,14 @@ class folksoIndexCache {
   public $cache_suffix = '.cache';
   public $cache_file_limit;
 
+  //private!
   private $dh;
 
   function __construct ($dir, 
                         $file_limit = 100, 
                         $cache_prefix = 'folksoindex-', 
                         $cache_suffix = '.cache')
-  {
+                             {
     $this->cachedir = $dir;
     $this->cache_prefix = $cache_prefix;;
     $this->cache_suffix = $cache_suffix;

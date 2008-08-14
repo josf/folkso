@@ -321,8 +321,12 @@ function visitPage (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc)
       implode('&&&&&', $urls) . "', ".
       implode('&&&&&', $titles) . "', 1)";
 
-    $fh = fopen('/tmp/folksologfile', 'w');
+    if (!($fh = fopen('/tmp/folksologfile', 'a'))){
+      trigger_error("logfile failed to open", E_USER_ERROR);
+    }
     fwrite($fh, "\n\n$sql");
+    fclose($fh);
+
       $i->query($sql);
       if ($i->result_status == 'DBERR') {
         header('HTTP/1.1 501 Database error');
