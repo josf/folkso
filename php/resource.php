@@ -404,7 +404,7 @@ function tagResource (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $db
     $secondpart = "'". $i->dbescape($q->tag). "', ''";
   }
 
-  $query = "CALL tag_resource($firstpart, $secondpart)";
+  $query = "CALL tag_resource($firstpart, $secondpart, 1)";
   $i->query($query);
 
   if ($i->result_status == 'DBERR') {
