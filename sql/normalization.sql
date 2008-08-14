@@ -338,29 +338,7 @@ DECLARE url_check VARCHAR(255) DEFAULT '';
 END$$
 DELIMITER ;
 
-drop table if exists urltest;
-create table urltest
-       (id bigint(20) unsigned primary key auto_increment,
-       url varchar(250) not null);
 
-insert into urltest set url='http://example.com';
-insert into urltest set url='example.com';
-insert into urltest set url='http://example.com/';
-insert into urltest set url='http://EXAMPLE.com/';
-insert into urltest set url='http://www.example.com/index.htm';
-insert into urltest set url='http://www.example.com/index.html';
-insert into urltest set url='http://www.example.com/index.php';
-insert into urltest set url='http://www.example.com/';
-insert into urltest set url='http://www.example.com';
-insert into urltest set url='http://www.example.com?user=bob&page=4';
-insert into urltest set url='http://example.com?user=bob';
-insert into urltest set url='http://www.Example.com?page=44&aaa=ddd&bob';
-insert into urltest set url='http://example.com:80/work?bob=slob&a=c';
-insert into urltest set url='http://www.eXample.com:80?bob=theslob&action=quit';
-insert into urltest set url='http://www.fabula.org/atelier.php?Biblioth%26egrave%3Bques%2C_Fables_et_M%26eacute%3Bmoires_en_acte%28s%29';
-insert into urltest set url='http://www.example.com/bob.html#whereisthis';
-
-
-call bulk_visit(
-     'http://www.example.com&&&&&http://fabula.org&&&&&http://ditl.info&&&&&http://www.ditl.info&&&&&http://www.selfxx.org',
-     'Example&&&&&Fab1&&&&&Ditl1&&&&&Ditl2&&&&&Self', 5);
+-- call bulk_visit(
+--      'http://www.example.com&&&&&http://fabula.org&&&&&http://ditl.info&&&&&http://www.ditl.info&&&&&http://www.selfxx.org',
+--     'Example&&&&&Fab1&&&&&Ditl1&&&&&Ditl2&&&&&Self', 5);
