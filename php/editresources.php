@@ -255,7 +255,7 @@ while ($row = $i->result->fetch_object()) {
     '<a href="#" class="hidedetails">Cacher les détails</a></p> '.
     '<div class="details">'.
     '<p>'.
-    '<span class="infohead">Ajouté le</span><span class="added">'. $row->added . "</span>\n".
+    '<span class="infohead">Ajouté le </span><span class="added">'. $row->added . "</span>\n".
     '<br/><span class="currenttags">Tags : ' . $row->thesetags . "</span>\n".
     '<div class="iframeholder"></div> '.
     "<p><a class='openiframe' href='#'>Voir la page</a> <a class='closeiframe' href='#'>Fermer</a></p>".
