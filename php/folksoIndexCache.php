@@ -19,6 +19,19 @@ class folksoIndexCache {
 
   private $dh;
 
+  /**
+   * Prepares variables and initializes (if necessary) the cache
+   * directory in /tmp. (/tmp is hardwired in at this point.)
+   * 
+   * Note that $cache_prefix and $cache_suffix are important since
+   * they are used to determine if a file is a cachefile or not. 
+   * (We won't try to read random files that might get written to our directory.)
+   * 
+   * @param $dir string The directory name for the file cache (inside /tmp).
+   * @param $file_limit integer Number of files to collect before emptying cache. Default 100.
+   * @param $cache_prefix string Prefix for cache files. Default: folksoindex-
+   * @param $cache_suffix string Default: .cache
+   */
   function __construct ($dir, 
                         $file_limit = 100, 
                         $cache_prefix = 'folksoindex-', 
@@ -27,7 +40,7 @@ class folksoIndexCache {
     $this->cachedir = $dir;
     $this->cache_prefix = $cache_prefix;;
     $this->cache_suffix = $cache_suffix;
-    $this->cache_file_limit = $file_limit ? $file_limit : 4;
+    $this->cache_file_limit = $file_limit;
    
     //make sure we have trailing '/'
     $slash = '/'; //no idea why these contorsions are necessary
@@ -62,7 +75,7 @@ class folksoIndexCache {
   function dirhandle () {
     if (!($this->dh = opendir($this->cachedir))) {
       trigger_error("cannot open cache directory: $this->cachedir", E_USER_ERROR);
-      return 0;
+      return;
     }
     return $this->dh;
   }
@@ -91,8 +104,11 @@ class folksoIndexCache {
     }
   } 
     
-  function new_cache_filename () {
-    return $this->cache_prefix . sprintf('%09d', rand(0, 999999999)) . $this->cache_suffix;
+  private function new_cache_filename () {
+    return 
+      $this->cache_prefix . 
+      sprintf('%09d', rand(0, 999999999)) . 
+      $this->cache_suffix;
   }
 
   function retreive_cache () {
@@ -113,7 +129,6 @@ class folksoIndexCache {
             trigger_error("cannot unlink $afile", E_USER_ERROR);
           }
         array_push( $an_array, $data);
-
       }
       else {
         continue; // just here to say that we don't complain if we can't
@@ -125,7 +140,7 @@ class folksoIndexCache {
     return $an_array;
   }
 
-  function is_cache_file ($file) { // a test
+  private function is_cache_file ($file) { // a test
     if ((is_file( $this->cachedir.$file)) and
         (substr($file, 0, strlen($this->cache_prefix)) == $this->cache_prefix)) {
       return true;
@@ -135,9 +150,14 @@ class folksoIndexCache {
     }
   }
 
-
-  function cache_check () {
-    /* true if cache is full, false if empty */
+  /** 
+   * 
+   * Returns true if cache is full, false if not yet full. Full is
+   * defined by $ic->cache_file_limit.
+   *
+   * @return Boolean
+   */
+  private function cache_check () {
     $acounter = 0;
     $dh = $this->dirhandle();
     while ( $file = readdir( $dh )) {
@@ -155,7 +175,5 @@ class folksoIndexCache {
     }
   }
 } //end of class
-
-
 
 ?>
