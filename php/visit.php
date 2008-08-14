@@ -23,12 +23,13 @@ if ($page_titre &&
 }
 
 $fc = new folksoClient('localhost', '/commun3/folksonomie/resource.php', 'POST');
-$fc->set_postfields(array('folksovisituri' => $our_current_url,
+$fc->set_postfields(array('folksovisit' => 1,
+                          'folksores' => $our_current_url,
                           'folksourititle' => $page_titre ? $page_titre : ''));
 //print $fc->build_req();
 
 $fc->execute();
-//print $fc->query_resultcode();
+// print $fc->query_resultcode();
 
 function curPageURL() {
  $pageURL = 'http';
@@ -64,23 +65,20 @@ function ua_ignore($ua, $valid_uas) {
     if ((strpos(strtolower($ua), strtolower($valid))) > -1)  {
       return false; // false = do not ignore
     }
-    else {
-      print strtolower($valid) . " not found in ".strtolower($ua);
-    }
   }
   return true; //no matching ua found
 }
 
 function ignore_check($str, $ignore) {
   if (!is_array($ignore)) {
-    return true;
+    return false;
   }
   foreach ($ignore as $pattern) {
     if ((strpos(strtolower($str), strtolower($pattern))) > -1) {
-      return false;
+      return true;
     }
   }
-  return true;
+  return false;
 }
 
 ?>
