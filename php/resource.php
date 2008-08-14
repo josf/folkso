@@ -314,7 +314,7 @@ function visitPage (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc)
     foreach ($pages_to_parse as $raw) {
       $item = unserialize($raw);
       $urls[] = $i->dbescape($item->get_url());
-      $titles[] = $i->dbescape($item->get_title());
+      $titles[] = $item->get_title();
     }
 
     $sql = 
@@ -326,7 +326,6 @@ function visitPage (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc)
     if (!($fh = fopen('/tmp/folksologfile', 'a'))){
       trigger_error("logfile failed to open", E_USER_ERROR);
     }
-
     fwrite($fh, "\n\n$sql");
     fclose($fh);
     */

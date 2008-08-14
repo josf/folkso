@@ -22,7 +22,7 @@ if ($page_titre &&
   exit();
 }
 
-$fc = new folksoClient('localhost', '/resource.php', 'POST');
+$fc = new folksoClient('localhost', '/commun3/folksonomie/resource.php', 'POST');
 $fc->set_postfields(array('folksovisit' => 1,
                           'folksores' => $our_current_url,
                           'folksourititle' => $page_titre ? $page_titre : ''));
