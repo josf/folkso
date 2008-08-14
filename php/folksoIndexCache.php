@@ -140,7 +140,7 @@ class folksoIndexCache {
     return $an_array;
   }
 
-  private function is_cache_file ($file) { // a test
+ function is_cache_file ($file) { // a test
     if ((is_file( $this->cachedir.$file)) and
         (substr($file, 0, strlen($this->cache_prefix)) == $this->cache_prefix)) {
       return true;
@@ -157,7 +157,7 @@ class folksoIndexCache {
    *
    * @return Boolean
    */
-  private function cache_check () {
+   function cache_check () {
     $acounter = 0;
     $dh = $this->dirhandle();
     while ( $file = readdir( $dh )) {

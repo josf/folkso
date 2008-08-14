@@ -307,22 +307,27 @@ function visitPage (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc)
       header('HTTP/1.0 501 Database connection problem');
       die( $i->error_info());
     }
+    header('HTTP/1.1 200 Going to read cache');
 
     $urls = array();
     $title = array();
     foreach ($pages_to_parse as $raw) {
       $item = unserialize($raw);
-      $urls[] = $i->dbescape($url_obj->get_url());
-      $titles[] = $i->dbescape($url_obj->get_title());
+      $urls[] = $i->dbescape($item->get_url());
+      $titles[] = $i->dbescape($item->get_title());
     }
 
     $sql = 
       "call bulk_visit('".
-      implode('&&&&&', $urls) . "', ".
+      implode('&&&&&', $urls) . "', '".
       implode('&&&&&', $titles) . "', 1)";
-
-    $fh = fopen('/tmp/folksolog', 'w');
+    /**
+    $fh = fopen('/tmp/folksolog', 'a');
     fwrite($fh, "\n\n$sql");
+    fclose($fh);
+    */
+
+    print $sql;
       $i->query($sql);
       if ($i->result_status == 'DBERR') {
         header('HTTP/1.1 501 Database error');
@@ -332,6 +337,7 @@ function visitPage (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc)
       $i->done();
     } 
   else {
+    header("HTTP/1.1 304 Caching visit");
     print "caching visit";
   }
 }
