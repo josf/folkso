@@ -52,14 +52,20 @@ function curPageURL() {
  * @return Boolean
  */
 function ua_ignore($ua, $valid_uas) {
-
-  $hard_list =
+  $ua_list =
     array('Mozilla', 'MSIE', 'Opera', 
           'w3m', 'Safari','Links','Lynx');
 
-  foreach (array_merge($hard_list, $valid_uas) as $valid) {
-    if (strpos($ua, $valid)) {
-      return false;
+  if (is_array($valid_uas)) {
+    $ua_list = array_merge($ua_list, $valid_uas);
+  }
+
+  foreach ($ua_list as $valid) {
+    if ((strpos(strtolower($ua), strtolower($valid))) > -1)  {
+      return false; // false = do not ignore
+    }
+    else {
+      print strtolower($valid) . " not found in ".strtolower($ua);
     }
   }
   return true; //no matching ua found
@@ -69,9 +75,8 @@ function ignore_check($str, $ignore) {
   if (!is_array($ignore)) {
     return true;
   }
-
   foreach ($ignore as $pattern) {
-    if (strpos($str, $pattern)) {
+    if ((strpos(strtolower($str), strtolower($pattern))) > -1) {
       return false;
     }
   }
