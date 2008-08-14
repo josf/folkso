@@ -312,7 +312,6 @@ function visitPage (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc)
     $title = array();
     foreach ($pages_to_parse as $raw) {
       $item = unserialize($raw);
-
       $urls[] = $i->dbescape($url_obj->get_url());
       $titles[] = $i->dbescape($url_obj->get_title());
     }
@@ -322,6 +321,8 @@ function visitPage (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc)
       implode('&&&&&', $urls) . "', ".
       implode('&&&&&', $titles) . "', 1)";
 
+    $fh = fopen('/tmp/folksolog', 'w');
+    fwrite($fh, "\n\n$sql");
       $i->query($sql);
       if ($i->result_status == 'DBERR') {
         header('HTTP/1.1 501 Database error');
@@ -389,13 +390,13 @@ function tagResource (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $db
     $secondpart = "'', ". $q->tag;
   }
   else {
-    $secondpart = "'". $q->tag. "', ''";
+    $secondpart = "'". $i->dbescape($q->tag). "', ''";
   }
 
   $query = "CALL tag_resource($firstpart, $secondpart)";
   $i->query($query);
-  if ($i->result_status == 'DBERR') {
 
+  if ($i->result_status == 'DBERR') {
     if (($i->db->errno == 1048) &&
         (strpos($i->db->error, 'resource_id'))) {
       header('HTTP/1.1 404');
