@@ -47,12 +47,13 @@ $srv->addResponseObj(new folksoResponse('post',
 
 $srv->addResponseObj(new folksoResponse('post',
                                         array('required' => array('res', 'tag'),
-                                              'exclude' => array('meta', 'delete', 'newresource')),
+                                              'exclude' => array('delete', 'newresource')),
                                         'tagResource'));
 
 $srv->addResponseObj(new folksoResponse('post',
                                         array('required_single' => array('res'),
-                                              'required' => array('visit')),
+                                              'required' => array('visit'),
+                                              'exclude' => array('tag')),
                                         'visitPage'));
 
 $srv->addResponseObj(new folksoResponse('post',
@@ -122,7 +123,6 @@ function isHead (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
  *
  */
 function getTagsIds (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
-
   $i = new folksoDBinteract($dbc);
 
   if ($i->db_error()){
@@ -386,24 +386,9 @@ function tagResource (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $db
     die($i->error_info());
   }
 
-  $firstpart = '';
-  $secondpart = '';
+  $tag_args = argSort($q->res, $q->tag, $q->get_param('meta'), $i);
 
-  if (is_numeric($q->res)) {
-    $firstpart = "'', ". $q->res;
-  }
-  else {
-    $firstpart = "'".$i->dbescape($q->res). "', ''";
-  }
-
-  if (is_numeric($q->tag)) {
-    $secondpart = "'', ". $q->tag;
-  }
-  else {
-    $secondpart = "'". $i->dbescape($q->tag). "', ''";
-  }
-
-  $query = "CALL tag_resource($firstpart, $secondpart, 1)";
+  $query = "CALL tag_resource($tag_args)";
   $i->query($query);
 
   if ($i->result_status == 'DBERR') {
@@ -418,6 +403,7 @@ function tagResource (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $db
             (strpos($i->db->error, 'tag_id'))) {
       header('HTTP/1.1 404');
       print "Tag ". $q->tag . " does not exist.";
+      print $i->error_info();
       $i->done;
       return;
     }
@@ -505,50 +491,8 @@ function metaModify (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc
     die($i->error_info());
   }
 
-  $res_arg_num = 0;
-  $res_arg_str = '';
-  $tag_arg_num = 0;
-  $tag_arg_str = '';
-  $meta_arg_num = 0;
-  $meta_arg_str = '';
-
-  if (is_numeric($q->res)) {
-    $res_arg_num = $q->res;
-    $res_arg_str = "''";
-  }
-  else {
-    $res_arg_num = "''";
-    $res_arg_str = "'".$i->dbescape($q->res)."'";
-  }
-
-  if (is_numeric($q->tag)) {
-    $tag_arg_num = $q->tag;
-    $tag_arg_str = "''";
-  }
-  else {
-    $tag_arg_str = "'".$i->dbescape($q->tag). "'";
-    $tag_arg_num = "''";
-  }
-
-  if (is_numeric($q->get_param('meta'))) {
-    $meta_arg_num = $q->get_param('meta');
-    $meta_arg_str = "''";
-  }
-  else {
-    $meta_arg_str = "'". $i->dbescape($q->get_param('meta')) . "'";
-    $meta_arg_num = "''";
-  }
-
-  $sql = 
-    "call metamod(" . 
-    $res_arg_num . ", ".
-    $res_arg_str . ", " .
-    $tag_arg_num . ", " .
-    $tag_arg_str . ", " .
-    $meta_arg_num . ", " .
-    $meta_arg_str . ")";
-    
-  $i->query($sql);
+  $tag_args = argSort($q->res, $q->tag, $q->get_param('meta'), $i);
+  $i->query("call metamod($tag_args)");
 
   if ($i->result_status == 'DBERR') {
     if ($i->db->errno == 1452) {
@@ -563,6 +507,41 @@ function metaModify (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc
   }
   else {
     header('HTTP/1.1 200 Metatag modified');
+    print "The relationship between resource '". 
+      $q->res . "' and tag '" . $q->tag . 
+      "' now considered to be of nature '" . $q->get_param('meta'). "'\n";
+  }
+}
+
+/**
+ * @param $res string (url) or integer 
+ * @param $tag string (tagname) or integer
+ * @param $meta string (metatagname) or integer
+ * @param $i folksoDBinteract object for quoting
+ *
+ * @returns Argument string ready to be sent to stored procedure
+ *
+ * Return format (example, not including the double quotes): 
+ *
+ *  "'', 'http://example.com', 55, '', '', 'author'"
+ */
+function argSort ($res, $tag, $meta, folksoDBinteract $i) {
+  $result = array();
+  foreach (array($res, $tag, $meta) as $arg) {
+    $result[] = argParse($arg, $i);
+  }
+  return implode(', ', $result);
+}
+
+
+ function argParse ($aa, $i) {
+  if (is_numeric($aa)) {
+    return  "'', " . $aa;
+  }
+  else {
+    return "'" .
+      $i->dbescape($aa) .
+      "', ''";
   }
 }
 
