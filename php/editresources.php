@@ -43,9 +43,9 @@ $i = new folksoDBinteract($dbc);
       else {
         $mtags = array();
         while ($row = $i->result->fetch_object()) {
-          $mtags[] = $row->tagdisplay; 
+          $mtags[] = '"'.$row->tagdisplay.'"'; 
         }
-        print '"' . implode(" ", $mtags) . '"';
+        print '['.implode(',', $mtags) . ']';
       }
 }
 fk_metatag_simple_list($i);
@@ -307,9 +307,6 @@ while ($row = $i->result->fetch_object()) {
     '<p><span class="infohead">Ajouter un tag</span> '.
     '<input type="text" size="30" class="tagbox" maxlength="100"></input>'.
     '<a class="tagbutton" href="#">Valider</a></p>' .
-    '<span class="infohead">Meta</span>'.
-    '<input type="text" size="25" class="metatagbox" maxlength="100"></input>'.
-    '<a class="metatagbutton" href="#">meta Valider</a></p>'.
     '<p>Détails des tags existants. <a class="seetags" href="#">Voir</a> '.
     '<a class="hidetags" href="#">Cacher</a> </p> '.
     '<div class="emptytags"></div>'.
