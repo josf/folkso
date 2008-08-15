@@ -64,7 +64,8 @@ $(document).ready(function() {
          holder.append(ifr);
        }
        $(this).hide();
-       $(this).parent().find("a.closeiframe").show();
+//       $(this).parent().find("a.closeiframe").show();
+       $(this).parent().parent().find("a.closeiframe").show();
      }
    );
    $(this).find("a.closeiframe").click(
@@ -72,6 +73,7 @@ $(document).ready(function() {
        event.preventDefault();
        holder.hide();
        $(this).hide();
+       $(this).parent().parent().find("a.closeiframe").hide();
        $(this).parent().find("a.openiframe").show();
      }
    );
@@ -205,15 +207,9 @@ function tagMenuFunkMaker(place, resid) {
         var item = $('<li>');
         var taglink = $('<a>');
         taglink.attr("href", "beebop");
+        taglink.attr("class", "tagdisplay");
         taglink.append($(this).find('display').text() + ' ');
         item.append(taglink);
-
-        /** meta tag (if not "normal") **/
-        if ($(this).find('metatag').text() != 'normal') {
-          item.append($("<span class='meta'>Relation: ")
-                      + $(this).find('metatag').text()
-                      + "</span>");
-        }
 
         /** add tag id **/
         item.append($("<span class='tagid'>"
@@ -221,6 +217,13 @@ function tagMenuFunkMaker(place, resid) {
                       + "</span>"));
 
         item.append($('<a class="remtag" href="#">Désassocier</a>'));
+
+        /** meta tag (if not "normal") **/
+        if ($(this).find('metatag').text() != 'normal') {
+          item.append($("<span class='meta'> Relation: "
+                      + $(this).find('metatag').text()
+                      + "</span>"));
+        }
 
         item.append(makeMetatagBox(resid, //closure
                                    $(this).find('numid').text(),
@@ -246,7 +249,7 @@ function makeMetatagBox (resource, tag, lis) {
   var box = $("<input type='text' class='metatagbox'>");
   box.autocomplete(metatag_autocomplete_list); //array defined in <script> on page.
 
-  var button = $("<a href='#'>metaValider</a>")
+  var button = $("<a href='#' class='metatagbutton'>metaValider</a>")
     .click(
       function(event){
         event.preventDefault();
