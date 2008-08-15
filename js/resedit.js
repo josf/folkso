@@ -244,25 +244,26 @@ function makeMetatagBox (resource, tag, lis) {
     .append("<span class='infohead'>Modifier le metatag </class>");
 
   var box = $("<input type='text' class='metatagbox'>");
-  box.autocomplete(metatag_autocomplete_list); //variable defined in <script> on page.
+  box.autocomplete(metatag_autocomplete_list); //array defined in <script> on page.
 
   var button = $("<a href='#'>metaValider</a>")
     .click(
       function(event){
         event.preventDefault();
+        var newmeta = $(this).siblings("input").val();
         $.ajax({
                  url: urlbase + 'resource.php',
                  type: 'post',
                  data: {
                    folksores: resource,
                    folksotag: tag,
-                   folksometa: this.val()
+                   folksometa: newmeta
                  },
                  error: function(xhr, msg) {
                    alert(msg);
                  },
                  success: function(data) {
-                   getTagMendu(lis, resource);
+                   getTagMenu(lis, resource);
                  }
                });
       });
