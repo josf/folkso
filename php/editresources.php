@@ -294,16 +294,16 @@ while ($row = $i->result->fetch_object()) {
     '<a class="resurl" href="' . $row->url . '">' . $row->url . "</a>\n".
     '<span class="tagev_count">Taggé ' . $row->total_tagevs . " fois</span>\n".
     "</p>\n".
+    '<p><span class="currenttags">Tags : ' . $row->thesetags . "</span><p>\n".
     '<p><input type="checkbox" class="groupmod"></input> '. 
     '<span class="explanation">Ajouter au taggage groupé</span></p> '.
+    '<div class="iframeholder"></div> '.
+    "<p><a class='openiframe' href='#'>Voir la page</a> <a class='closeiframe' href='#'>Fermer</a></p>".
     '<p><a href="#" class="seedetails">Voir détails</a> '.
     '<a href="#" class="hidedetails">Cacher les détails</a></p> '.
     '<div class="details">'.
     '<p>'.
     '<span class="infohead">Ajouté le </span><span class="added">'. $row->added . "</span>\n".
-    '<br/><span class="currenttags">Tags : ' . $row->thesetags . "</span>\n".
-    '<div class="iframeholder"></div> '.
-    "<p><a class='openiframe' href='#'>Voir la page</a> <a class='closeiframe' href='#'>Fermer</a></p>".
     '<p><span class="infohead">Ajouter un tag</span> '.
     '<input type="text" size="30" class="tagbox" maxlength="100"></input>'.
     '<a class="tagbutton" href="#">Valider</a></p>' .
