@@ -1,3 +1,27 @@
+<?php
+
+  /** Since DB connection etc. are used both in the <head> and <body>,
+ all the initialization stuff goes here. **/
+
+require_once('folksoDBconnect.php');
+require_once('folksoDBinteract.php');
+require_once('folksoFabula.php');
+
+$loc = new folksoFabula();
+
+$dbc = new folksoDBconnect($loc->db_server,
+                           $loc->db_user,
+                           $loc->db_password,
+                           $loc->db_database_name);
+/*
+ * We could just do a simple connect here, but it seems safer to
+ * connect through our standard connection system.
+ */
+$i = new folksoDBinteract($dbc);
+
+?>
+
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <title>Taggons des pages</title>
@@ -6,6 +30,27 @@
     </script>
     <script type="text/javascript" src="js/jquery.autocomplete.js">
     </script>
+
+   <script type="text/javascript">
+   var metatag_autocomplete_list = 
+  <?php
+  function fk_metatag_simple_list (folksoDBinteract $i) {
+       $i->query('select tagdisplay from metatag');
+      if ($i->result_status == 'DBERR') {
+        alert('Problem with metatag autocomplete');
+        print "''";
+      }
+      else {
+        $mtags = array();
+        while ($row = $i->result->fetch_object()) {
+          $mtags[] = $row->tagdisplay; 
+        }
+        print '"' . implode(" ", $mtags) . '"';
+      }
+}
+fk_metatag_simple_list($i);
+?>;
+</script>
 
     <script type="text/javascript" src="js/resedit.js">
     </script>
