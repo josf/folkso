@@ -83,11 +83,14 @@ CREATE PROCEDURE tag_resource(resource_uri      VARCHAR(255),
                               resource_id       INTEGER,
                               tag_name          VARCHAR(255),
                               tag_id            INTEGER,
-                              meta_arg           INTEGER)
+                              meta_name         VARCHAR(255),
+                              meta_id           INTEGER)
 BEGIN
         DECLARE existing_tag_id INT UNSIGNED;
-        DECLARE existing_uri VARCHAR(255);     
+        DECLARE existing_uri VARCHAR(255);
+        DECLARE existing_meta_id INT UNSIGNED;
         DECLARE out_status VARCHAR(255);
+        DECLARE already_tagged INT UNSIGNED;
 
 IF (tag_id) THEN
         SELECT id
@@ -113,11 +116,40 @@ ELSE
               WHERE uri_normal = url_whack(resource_uri);
 END IF;
 
-       INSERT INTO tagevent
-              SET tag_id = existing_tag_id,
-              resource_id = existing_uri,
-              meta_id = meta_arg,
-              user_id = 9999;
+IF (meta_id) THEN
+   SELECT id
+   INTO existing_meta_id
+   FROM metatag
+   WHERE id = meta_id;
+ELSE
+   SELECT id
+   INTO existing_meta_id
+   FROM metatag
+   WHERE tagnorm = normalize_tag(meta_name);
+END IF;        
+
+SELECT COUNT(*)
+INTO already_tagged
+FROM tagevent t
+WHERE (t.resource_id = existing_uri)
+AND (t.tag_id = existing_tag_id)
+AND (user_id = 9999)
+LIMIT 1;
+
+IF (already_tagged > 0) THEN
+   UPDATE tagevent t
+   SET meta_id = existing_meta_id
+   WHERE (t.resource_id = existing_uri)
+   AND (t.tag_id = existing_tag_id)
+   AND (user_id = 9999);
+ELSE
+    INSERT INTO tagevent
+    SET tag_id = existing_tag_id,
+        resource_id = existing_uri,
+        meta_id = existing_meta_id,
+        user_id = 9999;
+END IF;
+
 END$$
 DELIMITER ;
            
