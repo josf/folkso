@@ -3,33 +3,38 @@
 include('folksoClient.php');
 include('folksoFabula.php');
 
-$loc = new folksoFabula();
+visit_resource();
 
-$our_current_url = curPageURL(); //ridiculous var name to avoid namespace problems
+function visit_resource () {
+  $loc = new folksoFabula();
+  $our_current_url = curPageURL(); //ridiculous var name to avoid namespace problems
 
+  if (ua_ignore($_SERVER['HTTP_USER_AGENT'], $loc->visit_ignore_useragent)) {
+    return;
+  }
 
-if (ua_ignore($_SERVER['HTTP_USER_AGENT'], $loc->visit_ignore_useragent)) {
-  exit();
+  if (ignore_check($our_current_url, $loc->visit_ignore_url)) {
+    return;
+  }
+
+  // NB: fabula specific $page_titre
+  if ($page_titre &&
+      (ignore_check($page_titre, $loc->visit_ignore_title))) {
+    return;
+  }
+
+  $fc = new folksoClient('localhost', '/commun3/folksonomie/resource.php', 'POST');
+  $fc->set_postfields(array('folksovisit' => 1,
+                            'folksores' => $our_current_url,
+                            'folksourititle' => $page_titre ? $page_titre : ''));
+  //print $fc->build_req();
+
+  $fc->execute();
+  // print $fc->query_resultcode();
+
 }
 
-if (ignore_check($our_current_url, $loc->visit_ignore_url)) {
-  exit();
-}
 
-// NB: fabula specific $page_titre
-if ($page_titre &&
-    (ignore_check($page_titre, $loc->visit_ignore_title))) {
-  exit();
-}
-
-$fc = new folksoClient('localhost', '/commun3/folksonomie/resource.php', 'POST');
-$fc->set_postfields(array('folksovisit' => 1,
-                          'folksores' => $our_current_url,
-                          'folksourititle' => $page_titre ? $page_titre : ''));
-//print $fc->build_req();
-
-$fc->execute();
-// print $fc->query_resultcode();
 
 function curPageURL() {
  $pageURL = 'http';
