@@ -92,8 +92,16 @@ fk_metatag_simple_list($i);
       font-size: 9pt;
       font-style: italic;
       }
-a.hidedetails {display: none;}
-        div.details {display: none;}
+      a.hidedetails {display: none;}
+      div.details {display: none;}
+      span.tagid {font-size: 8pt;
+                 font-style: italic;}
+      a.remtag, a.tagbutton, a.metatagbutton { font-weight: bold;
+                color: #e66322;
+                margin-left: 0.5em; margin-right: 0.5em;
+               }
+      a.tagdisplay {font-weight: bold}
+      .infohead {margin-left: 0.5em;}
     </style>
 
   </head>
@@ -296,7 +304,8 @@ while ($row = $i->result->fetch_object()) {
     "</p>\n".
     '<p><span class="currenttags">Tags : ' . $row->thesetags . "</span><p>\n".
     '<p><input type="checkbox" class="groupmod"></input> '. 
-    '<span class="explanation">Ajouter au taggage groupé</span></p> '.
+    '<span class="explanation">Taggage groupé</span></p> '.
+    "<p><a class='closeiframe' href='#'>Fermer</a></p>".
     '<div class="iframeholder"></div> '.
     "<p><a class='openiframe' href='#'>Voir la page</a> <a class='closeiframe' href='#'>Fermer</a></p>".
     '<p><a href="#" class="seedetails">Voir détails</a> '.
