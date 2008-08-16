@@ -378,6 +378,7 @@ function addResource (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $db
 
 /**
  * Web parameters: POST + folksores + folksotag
+ * Optional : folksometa (defaults to 'normal' (1)). 
  */
 function tagResource (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
   $i = new folksoDBinteract($dbc);
