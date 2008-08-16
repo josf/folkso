@@ -366,7 +366,7 @@ function buildWhere ($first, $inside, $tagp, folksoDBinteract $i) {
       $i->dbescape($inside) . "%') ";
   }
 
-  switch ($tagged) {
+  switch ($tagp) {
   case 'all':
     return $where; // we are done
     break;
@@ -385,9 +385,6 @@ function buildWhere ($first, $inside, $tagp, folksoDBinteract $i) {
   }
   return $where;
 }
-
-
-
 
 function nextPrevious ($begin) {
   //$thispage = '/commun3/folksonomie/editresources.php?';
