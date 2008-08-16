@@ -128,6 +128,13 @@ ELSE
    WHERE tagnorm = normalize_tag(meta_name);
 END IF;        
 
+-- manually setting default value for meta_id 
+IF ((existing_meta_id IS NULL) OR
+   (existing_meta_id == 0)) THEN                  
+   SET existing_meta_id = 1;
+END IF;   
+
+
 SELECT COUNT(*)
 INTO already_tagged
 FROM tagevent t
