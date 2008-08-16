@@ -224,7 +224,6 @@ function getTagsIds (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc
  * Parameters: GET, folksoclouduri
  */
 function tagCloudLocalPop (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
-
   $i = new folksoDBinteract($dbc);
 
   if ($i->db_error()) {
