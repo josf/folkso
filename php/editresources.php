@@ -121,14 +121,32 @@ fk_metatag_simple_list($i);
         <input type="text" size="30" maxlength="200" name="sequence">
         </input>
       </p>
+
+        <h3>Afficher :</h3>
       <p>
-        Afficher :<br/>
         <input type="radio" name="tagged" value="notags">
           </input>Ressources sans tags<br/>
           <input type="radio" name="tagged" value="tags" checked="checked">
             </input>Ressources déjà taggées<br/>
             <input type="radio" name="tagged" value="all">
               </input>Ressources taggées et non-taggées
+      </p>
+      <h3>Trier par :</h3>
+      <p>
+        <input type="radio" name="orderby" value="whenindexeddesc" checked="checked">
+        </input><em>Date d'indexation à partir du plus récent</em><br/>
+
+        <input type="radio" name="orderby" value="whenindexedasc">
+        </input><em>Date d'indexation à partir du plus ancien</em><br/>
+
+        <input type="radio" name="orderby" value="popularitydesc">
+        </input><em>Popularité descendante</em> 
+        (par nombre de visites, commençant par la resource la plus visitée)<br/>
+
+        <input type="radio" name="orderby" value="popularityasc">
+        </input><em>Popularité croissante</em> 
+        (par nombre de visites, commençant par la resource la moins visitée)<br/>
+
       </p>
       <p>
         <input type="submit" name="submit">
@@ -313,10 +331,14 @@ while ($row = $i->result->fetch_object()) {
     '<div class="details">'.
     '<p>'.
     '<span class="infohead">Ajouté le </span><span class="added">'. $row->added . "</span>\n".
-    '<p><span class="infohead">Ajouter un tag</span> '.
-    '<input type="text" size="30" class="tagbox" maxlength="100"></input>'.
-    '<a class="tagbutton" href="#">Valider</a></p>' .
-    '<p>Détails des tags existants. <a class="seetags" href="#">Voir</a> '.
+    '<div class="tagger">'. 
+    '<span class="infohead">Ajouter un tag</span> '.
+    '<input type="text" size="25" class="tagbox" maxlength="100"></input>'.
+    '<span class="infohead">Metatag (facultatif)</span>'.
+    '<input type="text" size="20" class="metatagbox" maxlength="100"></input>'.
+    '<a class="tagbutton" href="#">Valider</a>' .
+    '</div>'.
+    '<p>Détails des tags déjà associés à cette ressource. <a class="seetags" href="#">Voir</a> '.
     '<a class="hidetags" href="#">Cacher</a> </p> '.
     '<div class="emptytags"></div>'.
     '</div>'.
