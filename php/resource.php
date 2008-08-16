@@ -64,11 +64,6 @@ $srv->addResponseObj(new folksoResponse('delete',
                                         array('required' => array('res', 'tag')),
                                         'unTag'));
 
-$srv->addResponseObj(new folksoResponse('post',
-                                        array('required' => array('res', 'tag', 'meta')),
-                                        'metaModify'));
-
-
 $srv->Respond();
 
 /**
@@ -477,41 +472,6 @@ function unTag (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
     else {
       header('HTTP/1.1 200 Deleted');
     }
-}
-
-/**
- * Web parameters : res, tag, meta
- *
- * Returns: 200 on success (or no change at all), 404 on failure due
- * to absent tag or metatag, or of course 501.
- */
-function metaModify (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
-  $i = new folksoDBinteract($dbc);
-  if ($i->db_error()) {
-    header('HTTP/1.0 501 Database connection error');
-    die($i->error_info());
-  }
-
-  $tag_args = argSort($q->res, $q->tag, $q->get_param('meta'), $i);
-  $i->query("call metamod($tag_args)");
-
-  if ($i->result_status == 'DBERR') {
-    if ($i->db->errno == 1452) {
-      header('HTTP/1.1 404 Missing tag');
-      die("One of the tags or metatags you are trying ". 
-            "to modify does not seem to exist.");
-    }
-    else {
-      header('HTTP/1.1 501 Database update error');
-      die($i->error_info());
-    }
-  }
-  else {
-    header('HTTP/1.1 200 Metatag modified');
-    print "The relationship between resource '". 
-      $q->res . "' and tag '" . $q->tag . 
-      "' now considered to be of nature '" . $q->get_param('meta'). "'\n";
-  }
 }
 
 /**
