@@ -133,17 +133,27 @@ fk_metatag_simple_list($i);
       </p>
       <h3>Trier par :</h3>
       <p>
-        <input type="radio" name="orderby" value="whenindexeddesc" checked="checked">
+        <input type="radio" name="orderby" value="whenindexeddesc" 
+        <?php
+        print radioOrderbyDefault($_GET['orderby'], "whenindexeddesc", true);
+       ?> >
         </input><em>Date d'indexation à partir du plus récent</em><br/>
 
-        <input type="radio" name="orderby" value="whenindexedasc">
+        <input type="radio" name="orderby" value="whenindexedasc"         
+       <?php
+          print radioOrderbyDefault($_GET['orderby'], "whenindexedasc", false);
+       ?>>
         </input><em>Date d'indexation à partir du plus ancien</em><br/>
 
-        <input type="radio" name="orderby" value="popularitydesc">
+        <input type="radio" name="orderby" value="popularitydesc"<?php
+          print radioOrderbyDefault($_GET['orderby'], "popularitydesc", false);
+       ?>>
         </input><em>Popularité descendante</em> 
         (par nombre de visites, commençant par la resource la plus visitée)<br/>
 
-        <input type="radio" name="orderby" value="popularityasc">
+        <input type="radio" name="orderby" value="popularityasc"<?php
+          print radioOrderbyDefault($_GET['orderby'], "popularityasc", false);
+       ?>>
         </input><em>Popularité croissante</em> 
         (par nombre de visites, commençant par la resource la moins visitée)<br/>
 
@@ -422,7 +432,24 @@ function nextPrevious ($begin) {
       '">Suivant</a></p>';
   }
 }
-          
+
+/**
+ * @param $thisradio The "value" of the <input> element.
+ * 
+ * When this function is called on the default checkbox, $defaultp should be true.
+ */
+function radioOrderbyDefault ($orderby, $thisbox, $defaultp = false) {
+  $checked =  ' checked="checked" ';
+  if (!$orderby && !$defaultp) {
+    return '';
+  }
+  if (!$orderby && $defaultp) {
+    return $checked;
+  }
+  if ($orderby == $thisbox) {
+    return $checked;
+  }
+}          
 
 
 
