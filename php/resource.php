@@ -386,12 +386,7 @@ function tagResource (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $db
     die($i->error_info());
   }
 
-  $meta = 1;
-  if ($q->get_param('meta')) {
-    $meta = $q->get_param('meta');
-  }
-
-  $tag_args = argSort($q->res, $q->tag, $meta, $i);
+  $tag_args = argSort($q->res, $q->tag, $q->get_param('meta'), $i);
 
   $query = "CALL tag_resource($tag_args)";
   $i->query($query);
