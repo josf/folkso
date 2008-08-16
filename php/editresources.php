@@ -382,11 +382,13 @@ function buildWhere ($first, $inside, $tagp, folksoDBinteract $i) {
     break;
   case 'notags':
     $where .=
+      " AND ".
       " ((SELECT COUNT(*) FROM tagevent teee ". 
       " WHERE teee.resource_id = r.id)  = 0) \n";
     break;
   case 'tags':
     $where .=
+      " AND ".
     " ((SELECT COUNT(*) FROM tagevent teee ".
     " WHERE teee.resource_id = r.id) > 0) \n";
     break;
