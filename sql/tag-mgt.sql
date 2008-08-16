@@ -130,7 +130,7 @@ END IF;
 
 -- manually setting default value for meta_id 
 IF ((existing_meta_id IS NULL) OR
-   (existing_meta_id == 0)) THEN                  
+   (existing_meta_id = 0)) THEN                  
    SET existing_meta_id = 1;
 END IF;   
 
