@@ -169,7 +169,7 @@ if ($i->db_error()) {
   die($i->error_info());
 }
 
-$i->query('set group_concat_max_len = 3072');
+$i->query('SET group_concat_max_len = 3072');
 
 if ($i->db_error()) {
   print "connection problem";
@@ -180,51 +180,23 @@ $initial = $_GET['initial'];
 $sequence = $_GET['sequence'];
 $tagged = $_GET['tagged'];
 $begin = $_GET['begin'];
-$sortby = $_GET['sortby'];
-
+$orderby = $_GET['orderby'];
 
 if ((!$initial) &&
     (!$sequence) &&
     (!$tagged)) {
-  die();
+  die(); // not the best way to die
 }
 
-function nextPrevious ($begin) {
-  //$thispage = '/commun3/folksonomie/editresources.php?';
-  $thispage = '/editresources.php?';
-  $fields = array();
-  if ($initial) {
-    $fields[] = 'initial='.$initial;
-  }
-  if ($sequence) {
-    $fields[] = 'sequence='.$sequence;
-  }
-  if ($tagged) {
-    $fields[] = 'tagged='.$tagged;
-  }
+$rescount_sql = 
+  'select count(*) as rows '.
+  ' from resource r ' .
+  ' where '.
+  buildWhere($initial, $sequence, $tagged, $i);
 
-  /** previous **/
-  if ($begin >= 50) {
-    $newbegin = $begin - 50;
-    if ($newbegin < 0) {
-      $newbegin = 0;
-    }
-    $fields[] = 'begin=' . $newbegin;
-    print 
-      '<p><a href="'. 
-      $thispage . 
-      implode($fields, '&').
-      '">Précédents</a></p>';
-  }
-  if ($i->result->num_rows > 49) {
-    $newbegin = $begin + 50;
-    $fields[] = 'begin='.$newbegin;
-    print 
-      '<p><a href="'.
-      $thispage . implode($fields, '&') .
-      '">Suivant</a></p>';
-  }
-}
+$i->query($rescount_sql);
+
+$total_results = $i->first_val('rows');
 
 nextPrevious($begin);
 
@@ -249,6 +221,9 @@ $sql = "SELECT ".
   "FROM resource r \n".
   "WHERE \n";
 
+$sql .= buildWhere( $initial, $sequence, $tagged, $i);
+
+          /**
 if ($initial) {
     $sql .= " (uri_normal LIKE 'fabula.org/" 
       . $i->dbescape($initial) . "%') \n";
@@ -276,8 +251,9 @@ else if ($tagged == 'tags') {
     " ((SELECT COUNT(*) FROM tagevent teee ".
     " WHERE teee.resource_id = r.id) > 0) \n";
 }
-
-$sql .= " ORDER BY r.visited \n LIMIT 50 ";
+          **/
+$sql .= orderBySql($orderby);
+$sql .= " LIMIT 50\n";
 
 if ((is_numeric($begin)) &&
     ($begin >= 50)) {
@@ -295,6 +271,14 @@ $i->query($sql);
 if ($i->result_status == 'DBERR') {
   die( $i->error_info());
 }
+
+$begin_with_current_results = $begin + $i->result->num_rows;
+$begin_display =  $begin ? $begin : 1;
+
+print '<p>Reponses '. $begin_display . ' a ' . 
+    $begin_with_current_results. " sur  $total_results. </p>";
+print '<p>'. $rescount_sql . '</p>';
+
 
 print '<ul class="editresources">';
 while ($row = $i->result->fetch_object()) {
@@ -335,6 +319,115 @@ while ($row = $i->result->fetch_object()) {
 <?php
 
 nextPrevious($begin);
+
+/**
+ * Produces the "order by" part of the query based on the
+ * $_GET['orderby'] parameter that it accepts as an argument.
+ *
+ * @param string 
+ * @returns string where clause
+ */
+
+function orderBySql ($arg) {
+  switch ($arg) {
+  case 'whenindexeddesc':
+    return " ORDER BY r.added_timestamp DESC\n";
+    break;
+  case 'whenindexedasc':
+    return " ORDER BY r.added_timestamp ASC\n";
+    break;
+  case 'popularitydesc':
+    return " ORDER BY r.visited DESC\n";
+    break;
+  case 'popularityasc':
+    return " ORDER BY r.visited ASC\n";
+    break;
+  }
+  return "ORDER BY r.added_timestamp DESC\n"; // default
+}
+
+
+
+function buildWhere ($first, $inside, $tagp, folksoDBinteract $i) { 
+  $where = '';
+  if (strlen($first) > 0) {
+    $where = 
+      " (uri_normal LIKE 'fabula.org/".
+      $i->dbescape($first) . "%') \n";
+
+    if (strlen($inside) > 0) {
+      $where .= " AND \n";
+    }
+  }
+
+  if (strlen($inside) > 0) {
+    $where .=
+      " (uri_normal LIKE '%" . 
+      $i->dbescape($inside) . "%') ";
+  }
+
+  switch ($tagged) {
+  case 'all':
+    return $where; // we are done
+    break;
+  case 'notags':
+    $where .=
+      " ((SELECT COUNT(*) FROM tagevent teee ". 
+      " WHERE teee.resource_id = r.id)  = 0) \n";
+    break;
+  case 'tags':
+    $where .=
+    " ((SELECT COUNT(*) FROM tagevent teee ".
+    " WHERE teee.resource_id = r.id) > 0) \n";
+    break;
+  default:
+    return $where;
+  }
+  return $where;
+}
+
+
+
+
+function nextPrevious ($begin) {
+  //$thispage = '/commun3/folksonomie/editresources.php?';
+  $thispage = '/editresources.php?';
+  $fields = array();
+  if ($initial) {
+    $fields[] = 'initial='.$initial;
+  }
+  if ($sequence) {
+    $fields[] = 'sequence='.$sequence;
+  }
+  if ($tagged) {
+    $fields[] = 'tagged='.$tagged;
+  }
+
+  /** previous **/
+  if ($begin >= 50) {
+    $newbegin = $begin - 50;
+    if ($newbegin < 0) {
+      $newbegin = 0;
+    }
+    $fields[] = 'begin=' . $newbegin;
+    print 
+      '<p><a href="'. 
+      $thispage . 
+      implode($fields, '&').
+      '">Précédents</a></p>';
+  }
+  if ($i->result->num_rows > 49) {
+    $newbegin = $begin + 50;
+    $fields[] = 'begin='.$newbegin;
+    print 
+      '<p><a href="'.
+      $thispage . implode($fields, '&') .
+      '">Suivant</a></p>';
+  }
+}
+          
+
+
 
 ?>
   </body>
