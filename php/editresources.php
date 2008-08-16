@@ -162,22 +162,6 @@ fk_metatag_simple_list($i);
 
 <?php
 
-require_once('folksoDBconnect.php');
-require_once('folksoDBinteract.php');
-require_once('folksoFabula.php');
-
-$loc = new folksoFabula();
-
-$dbc = new folksoDBconnect($loc->db_server,
-                           $loc->db_user,
-                           $loc->db_password,
-                           $loc->db_database_name);
-/*
- * We could just do a simple connect here, but it seems safer to
- * connect through our standard connection system.
- */
-$i = new folksoDBinteract($dbc);
-
 print $i->db_error();
 
 if ($i->db_error()) {
