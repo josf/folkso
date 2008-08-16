@@ -1,20 +1,21 @@
 //var urlbase = "http://www.fabula.org/commun3/folksonomie/";
 var urlbase = "http://localhost/";
 
-$(document).ready(function() {
-  $("#showsql").click(
-    function(event){
-      event.preventDefault();
-      $("#sql").show();
-    });
+$(document).ready(
+  function() {
+    $("#showsql").click(
+      function(event){
+        event.preventDefault();
+        $("#sql").show();
+      });
 
-  $("a.seedetails").click(
-    function(event) {
-      event.preventDefault();
-      $(this).parent().siblings("div.details").show();
-      $(this).siblings("a.hidedetails").show();
-      $(this).hide();
-    });
+    $("a.seedetails").click(
+      function(event) {
+        event.preventDefault();
+        $(this).parent().siblings("div.details").show();
+        $(this).siblings("a.hidedetails").show();
+        $(this).hide();
+      });
 
     $("a.hidedetails").click(
       function(event) {
@@ -24,18 +25,21 @@ $(document).ready(function() {
         $(this).hide();
       });
 
-  $("ul.editresources li").each(iframePrepare);
-  $("ul.editresources li").each(tagboxPrepare);
-   $("ul.editresources li").each(taglistHidePrepare);
-   $("a.closeiframe").hide();
-   $("#grouptagvalidate").click(
-     function(event) {
-       event.preventDefault();
-     $("input.groupmod:checked").each(groupTag);
-     });
-   $("#grouptagbox").autocomplete(urlbase + "tagcomplete.php");
- //  $("ul.taglist li").each(tagremovePrepare);
- });
+    $("ul.editresources li").each(iframePrepare);
+    $("ul.editresources li").each(tagboxPrepare);
+    $("ul.editresources li").each(taglistHidePrepare);
+
+    $(".tagger .metatagbox").autocomplete(metatag_autocomplete_list);
+
+    $("a.closeiframe").hide();
+    $("#grouptagvalidate").click(
+      function(event) {
+        event.preventDefault();
+        $("input.groupmod:checked").each(groupTag);
+      });
+    $("#grouptagbox").autocomplete(urlbase + "tagcomplete.php");
+    //  $("ul.taglist li").each(tagremovePrepare);
+  });
 
  /**
   * "tag" can be either a tagnorm or an id. Returns a correct tag url.
@@ -89,9 +93,16 @@ $(document).ready(function() {
      tgbx.autocomplete(urlbase + "tagcomplete.php");
 
      var url = lis.find("a.resurl").attr("href");
+
      lis.find("a.tagbutton").click(
          function(event) {
              event.preventDefault();
+
+             var meta = '';
+             if (lis.find("div.tagger input.metatagbox").val()) {
+               meta = lis.find(".tagger input.metatagbox").val();
+             }
+
              if (tgbx.val()) {
                   $.ajax({
                     url: urlbase + 'resource.php',
@@ -99,7 +110,8 @@ $(document).ready(function() {
                     datatype: 'text/text',
                    data: {
                       folksores: url,
-                      folksotag: tgbx.val()},
+                      folksotag: tgbx.val(),
+                      folksometa: meta},
                     error: function(xhr, msg) {
                         alert("Autocomplete request failed: " +
                                xhr.statusText + " " + xhr.responseText);
