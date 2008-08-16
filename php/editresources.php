@@ -108,17 +108,30 @@ fk_metatag_simple_list($i);
 
   <body>
     <h1>Edition et taggage des resources</h1>
-    
+
+    <h3>Sélection de l'URL</h3> <!-- ' -->
     <form action="editresources.php" method="get">
       <p>
         Saisir les premières lettres de l'url (après 'fabula.org') <!-- '-->
-        <input type="text" size="5" maxlength="15" name="initial">
+        <input type="text" size="5" maxlength="15" name="initial"
+        <?php
+        if ($_GET['initial']) { // automatically initialize with previous value
+          print 'value="'. substr($_GET['initial'], 0, 15) . '"';
+        }
+        ?>
+        >
         </input>
       </p>
       <p>
         Saisir une séquence de caractères à chercher dans les
         url. (Peut être combiné avec les caractères initiaux).
-        <input type="text" size="30" maxlength="200" name="sequence">
+        <input type="text" size="30" maxlength="200" name="sequence"
+        <?php
+        if ($_GET['sequence']) { // automatically initialize with previous value
+          print 'value="'. substr($_GET['sequence'], 0, 30) . '"';
+        }
+        ?>
+        >
         </input>
       </p>
 
@@ -233,35 +246,6 @@ $sql = "SELECT ".
 
 $sql .= buildWhere( $initial, $sequence, $tagged, $i);
 
-          /**
-if ($initial) {
-    $sql .= " (uri_normal LIKE 'fabula.org/" 
-      . $i->dbescape($initial) . "%') \n";
-}
-
-if ($initial && $sequence) {
-  $sql .= " AND \n";
-}
-
-if ($sequence) {
-  $sql .= " (uri_normal LIKE '%" . $i->dbescape($sequence) . "%')\n";
-}
-
-if (($tagged <> 'all') && ($initial || $sequence)){
-  $sql .= " AND \n";
-}
-
-if ($tagged == 'notags') {
-  $sql .= 
-    " ((SELECT COUNT(*) FROM tagevent teee ". 
-    " WHERE teee.resource_id = r.id)  = 0) \n";
-}
-else if ($tagged == 'tags') {
-  $sql .= 
-    " ((SELECT COUNT(*) FROM tagevent teee ".
-    " WHERE teee.resource_id = r.id) > 0) \n";
-}
-          **/
 $sql .= orderBySql($orderby);
 $sql .= " LIMIT 50\n";
 
@@ -287,8 +271,7 @@ $begin_display =  $begin ? $begin : 1;
 
 print '<p>Reponses '. $begin_display . ' a ' . 
     $begin_with_current_results. " sur  $total_results. </p>";
-print '<p>'. $rescount_sql . '</p>';
-
+//print '<p>'. $rescount_sql . '</p>';
 
 print '<ul class="editresources">';
 while ($row = $i->result->fetch_object()) {
