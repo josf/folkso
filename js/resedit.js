@@ -1,5 +1,5 @@
-var urlbase = "/commun3/folksonomie/";
-//var urlbase = "/";
+//var urlbase = "/commun3/folksonomie/";
+var urlbase = "/";
 
 $(document).ready(
   function() {
@@ -45,16 +45,17 @@ $(document).ready(
   * "tag" can be either a tagnorm or an id. Returns a correct tag url.
   */
  function tagUrl(tag) {
-   return "http://localhost/tagview.php?tag=" + tag; // this is probably wrong!
+   return  urlbase + "tagview.php?tag=" + tag; // this is probably wrong!
  }
 
  /**
   *  "this" must be a list element from the main list of resources.
   */
  function iframePrepare() {
-   var url = $(this).find("a.resurl").attr("href");
-   var holder = $(this).find("div.iframeholder");
-   $(this).find("a.openiframe").click(
+   var lis = $(this);
+   var url = lis.find("a.resurl").attr("href");
+   var holder = lis.find("div.iframeholder");
+   lis.find("a.openiframe").click(
      function(event) {
        event.preventDefault();
        var ifr = document.createElement("iframe");
@@ -68,17 +69,17 @@ $(document).ready(
          holder.append(ifr);
        }
        $(this).hide();
-//       $(this).parent().find("a.closeiframe").show();
-       $(this).parent().parent().find("a.closeiframe").show();
+       lis.find("a.closeiframe").show();
      }
    );
+
    $(this).find("a.closeiframe").click(
      function(event) {
        event.preventDefault();
        holder.hide();
        $(this).hide();
        $(this).parent().parent().find("a.closeiframe").hide();
-       $(this).parent().find("a.openiframe").show();
+       lis.find("a.openiframe").show();
      }
    );
  }
