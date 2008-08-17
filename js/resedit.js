@@ -128,7 +128,6 @@ $(document).ready(
                    error: function(xhr, msg) {
                      if (xhr.status == 404) {
                        if (xhr.statusText.indexOf('ag does not exist') != -1) {
-                         alert(url);
                          infoMessage(createTagMessage(tgbx.val(), url, meta, lis));
                        }
                         else {
@@ -408,11 +407,6 @@ function createTagMessage(tag, url, meta, lis) {
  */
 function tagResourceFunc (url, tag, meta, lisarg) {
   var lis = lisarg;
-
-  alert("Going to try to tag with " + url + " " + tag);
-/*  var url = urlarg;
-  var tag = tagarg;
-  var meta = metaarg; */
 
   return function() {
     $.ajax({
