@@ -79,8 +79,10 @@ fk_metatag_simple_list($i);
       background-color: white;
       }
       ul.editresources li {
-      margin-top: 1em; margin-bottom: 1em;
-      width: 80%;
+      margin-top: 2em; margin-bottom: 1em;
+      border-top: 2px solid grey;
+      padding-left: 4em;
+      width: 90%;
       }
 
       iframe.preview {
@@ -88,8 +90,8 @@ fk_metatag_simple_list($i);
       width: 100%;
       }
 
-      a.restitle {padding-right: 2em; font-size: 14pt;}
-      a.resurl { padding-right: 2em; font-size: 12pt;}
+      a.restitle {padding-right: 2em; font-size: 12pt; font-weight: bold;}
+      a.resurl { padding-right: 2em; font-size: 10pt;}
       ul.taglist {display: none;}
 
       .tagid { padding-left: 0.5em; padding-right: 0.5em; }
@@ -143,12 +145,12 @@ fk_metatag_simple_list($i);
 
         <h3>Afficher :</h3>
       <p>
-        <input type="radio" name="tagged" value="notags">
+        <input type="radio" name="tagged" value="notags" checked="checked">
           </input>Ressources sans tags<br/>
-          <input type="radio" name="tagged" value="tags" checked="checked">
-            </input>Ressources déjà taggées<br/>
-            <input type="radio" name="tagged" value="all">
-              </input>Ressources taggées et non-taggées
+        <input type="radio" name="tagged" value="tags">
+        </input>Ressources déjà taggées<br/>
+        <input type="radio" name="tagged" value="all">
+        </input>Ressources taggées et non-taggées
       </p>
       <h3>Trier par :</h3>
       <p>
@@ -156,13 +158,13 @@ fk_metatag_simple_list($i);
         <?php
         print radioOrderbyDefault($_GET['orderby'], "whenindexeddesc", true);
        ?> >
-        </input><em>Date d'indexation à partir du plus récent</em><br/>
+        </input><em>Date de la première indexation à partir de la plus récente</em><br/> 
 
         <input type="radio" name="orderby" value="whenindexedasc"         
        <?php
           print radioOrderbyDefault($_GET['orderby'], "whenindexedasc", false);
        ?>>
-        </input><em>Date d'indexation à partir du plus ancien</em><br/>
+        </input><em>Date de la première indexation à partir de la plus ancienne</em><br/> 
 
         <input type="radio" name="orderby" value="popularitydesc"<?php
           print radioOrderbyDefault($_GET['orderby'], "popularitydesc", false);
