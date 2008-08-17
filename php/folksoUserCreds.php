@@ -204,6 +204,4 @@ function displayDigestData () {
 
   } //end class
 
-
-
 ?>
