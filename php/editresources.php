@@ -123,8 +123,19 @@ fk_metatag_simple_list($i);
       width: 100%;
       }
 
+
+
       a.restitle {padding-right: 2em; font-size: 12pt; font-weight: bold;}
       a.resurl { padding-right: 2em; font-size: 10pt;}
+
+      li.nottagged a.restitle {
+          background-color: #e5966e;
+      }
+
+      li.nottagged span.tagev_count {
+          color: #e66322;
+      }
+
       ul.taglist {display: none;}
 
 ul.tagmenu li {border: none;}
@@ -135,8 +146,9 @@ ul.tagmenu li {border: none;}
       font-size: 9pt;
       font-style: italic;
       }
-      a.hidedetails {display: none;}
-      div.details {display: none;}
+/*      a.hidedetails {display: none;} */
+      a.seedetails {display: none; margin-left: 0.2em; margin-right: 0.2em;}
+/*      div.details {display: none;} */
       span.tagid {font-size: 8pt;
                  font-style: italic;}
       a.remtag, a.tagbutton, a.metatagbutton { font-weight: bold;
@@ -317,7 +329,19 @@ print '<p>Reponses '. $begin_display . ' a ' .
 
 print '<ul class="editresources">';
 while ($row = $i->result->fetch_object()) {
-  print '<li id="res' . $row->id .'">'.
+  print 
+  '<li id="res' . $row->id .'"';
+
+if ($row->total_tagevs > 0) {
+  print 'class="tagged"';
+}
+else {
+  print 'class="nottagged"';
+}
+
+print '> ';
+
+  print 
     '<p class="principal">'.
     '<a class="restitle" href="' . $row->url . '">' . $row->title . "</a>\n".
     '<a class="resurl" href="' . $row->url . '">' . $row->url . "</a>\n".
@@ -328,8 +352,8 @@ while ($row = $i->result->fetch_object()) {
     '<span class="explanation">Taggage groupé</span></p> '.
     "<p><a class='closeiframe' href='#'>Fermer</a></p>".
     '<div class="iframeholder"></div> '.
-    "<p><a class='openiframe' href='#'>Voir la page</a> <a class='closeiframe' href='#'>Fermer</a></p>".
-    '<p><a href="#" class="seedetails">Voir détails</a> '.
+    "<p><a class='openiframe' href='#'>Voir la page</a> <a class='closeiframe' href='#'>Fermer</a> ".
+    '<a href="#" class="seedetails">Voir détails</a> '.
     '<a href="#" class="hidedetails">Cacher les détails</a></p> '.
     '<div class="details">'.
     '<p>'.
