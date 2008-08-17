@@ -339,6 +339,7 @@ else {
   print 'class="nottagged"';
 }
 
+
 print '> ';
 
   print 
@@ -347,7 +348,20 @@ print '> ';
     '<a class="resurl" href="' . $row->url . '">' . $row->url . "</a>\n".
     '<span class="tagev_count">Taggé ' . $row->total_tagevs . " fois</span>\n".
     "</p>\n".
-    '<p><span class="currenttags">Tags : "' . $row->thesetags . "\"</span><p>\n".
+    '<p><span class="currenttags">Tags : ';
+
+  if (strlen($row->thesetags) > 0) {
+    print '"';
+  }
+
+  print $row->thesetags;
+
+  if (strlen($row->thesetags) > 0) {
+    print '"';
+  }
+
+  print 
+    <"/span><p>\n".
     '<p><input type="checkbox" class="groupmod"></input> '. 
     '<span class="explanation">Taggage groupé</span></p> '.
     "<p><a class='closeiframe' href='#'>Fermer</a></p>".
