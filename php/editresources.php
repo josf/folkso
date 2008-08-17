@@ -277,7 +277,7 @@ $total_results = $i->first_val('rows');
 
 nextPrevious($begin);
 
-$sql = "SELECT ".
+$fksql = "SELECT ".
   "r.id AS id, r.uri_raw AS url, \n".
   "r.title AS title, r.visited AS visits, \n".
   "r.added_timestamp AS added, \n".
@@ -298,23 +298,23 @@ $sql = "SELECT ".
   "FROM resource r \n".
   "WHERE \n";
 
-$sql .= buildWhere( $initial, $sequence, $tagged, $i);
+$fksql .= buildWhere( $initial, $sequence, $tagged, $i);
 
-$sql .= orderBySql($orderby);
-$sql .= " LIMIT 50\n";
+$fksql .= orderBySql($orderby);
+$fksql .= " LIMIT 50\n";
 
 if ((is_numeric($begin)) &&
     ($begin >= 50)) {
   $offset = $begin + 50;
-  $sql .= " OFFSET $offset";
+  $fksql .= " OFFSET $offset";
 }
 
 print '<p><a href="#" id="showsql">Voir requête</a> (pour devel seulement)</p>';
 print '<div id="sql">';
-print '<p>'. str_replace("\n", '<br/>', $sql).'</p>';
+print '<p>'. str_replace("\n", '<br/>', $fksql).'</p>';
 print '</div>';
 
-$i->query($sql);
+$i->query($fksql);
 
 if ($i->result_status == 'DBERR') {
   die( $i->error_info());
@@ -361,7 +361,7 @@ print '> ';
   }
 
   print 
-    <"/span><p>\n".
+    "</span><p>\n".
     '<p><input type="checkbox" class="groupmod"></input> '. 
     '<span class="explanation">Taggage groupé</span></p> '.
     "<p><a class='closeiframe' href='#'>Fermer</a></p>".
