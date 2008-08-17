@@ -289,7 +289,7 @@ $sql = "SELECT ".
   "(SELECT \n".
   "     GROUP_CONCAT(DISTINCT tag.tagdisplay \n".
   "                  ORDER BY tag.tagdisplay \n". 
-  "                  SEPARATOR ' ')  \n". 
+  "                  SEPARATOR '\" \"')  \n". 
   "    FROM tagevent tee \n".
   "    JOIN tag ON tag.id = tee.tag_id \n".
   "    WHERE tee.resource_id = r.id \n".
@@ -347,7 +347,7 @@ print '> ';
     '<a class="resurl" href="' . $row->url . '">' . $row->url . "</a>\n".
     '<span class="tagev_count">Taggé ' . $row->total_tagevs . " fois</span>\n".
     "</p>\n".
-    '<p><span class="currenttags">Tags : ' . $row->thesetags . "</span><p>\n".
+    '<p><span class="currenttags">Tags : "' . $row->thesetags . "\"</span><p>\n".
     '<p><input type="checkbox" class="groupmod"></input> '. 
     '<span class="explanation">Taggage groupé</span></p> '.
     "<p><a class='closeiframe' href='#'>Fermer</a></p>".
