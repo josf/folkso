@@ -73,7 +73,40 @@ fk_metatag_simple_list($i);
     </link>
     
     <style type="text/css">
-   #sql { display: none;}
+    #superscreen {
+        display: none; 
+        z-index: 50;
+        background-color: grey;
+    }
+
+    #superinfobox {
+        background-color: white;
+        height: 300px;
+        width: 500px;
+        position: fixed;
+        top: 15%; left: 20%;
+        border: 10px solid red;
+        padding-top: 1em; padding-bottom: 1.2em;
+        padding-left: 2em; padding-right: 2em;
+    }
+    #superinfobox h3 {
+        color: red;
+        font-size: 16pt;
+        text-align: center;
+        margin: 0.5em;
+    }
+    #superinfobox p {
+        margin-top: 0.3em;
+    }
+    #superinfobox em {
+        color: red;
+        font-weight: bold;
+        letter-spacing: 1px;
+    }
+    .yesno {
+        margin-left: 0.3em; margin-right: 0.3em;
+    }
+    #sql { display: none;}
 
       ul.editresources {
       background-color: white;
@@ -115,6 +148,11 @@ fk_metatag_simple_list($i);
   </head>
 
   <body>
+  <div id="superscreen">
+  <div id="superinfobox">
+     <a id="closess" href="#">Fermer</a>
+  </div>
+  </div> <!-- end of superscreen -->
     <h1>Edition et taggage des resources</h1>
 
     <h3>Sélection de l'URL</h3> <!-- ' -->
@@ -445,5 +483,6 @@ function radioOrderbyDefault ($orderby, $thisbox, $defaultp = false) {
 
 
 ?>
+
   </body>
 </html>
