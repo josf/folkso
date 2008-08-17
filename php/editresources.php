@@ -127,6 +127,8 @@ fk_metatag_simple_list($i);
       a.resurl { padding-right: 2em; font-size: 10pt;}
       ul.taglist {display: none;}
 
+ul.tagmenu li {border: none;}
+
       .tagid { padding-left: 0.5em; padding-right: 0.5em; }
 
       .explanation {
