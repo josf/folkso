@@ -1,4 +1,10 @@
 <?php
+  /**
+   * @package Folkso
+   * @author Joseph Fahey
+   * @copyright 2008 Gnu Public Licence (GPL)
+   */
+
 
   /** Since DB connection etc. are used both in the <head> and <body>,
  all the initialization stuff goes here. **/
@@ -205,12 +211,6 @@ $tagged = $_GET['tagged'];
 $begin = $_GET['begin'];
 $orderby = $_GET['orderby'];
 
-if ((!$initial) &&
-    (!$sequence) &&
-    (!$tagged)) {
-  die(); // not the best way to die
-}
-
 $rescount_sql = 
   'select count(*) as rows '.
   ' from resource r ' .
@@ -339,8 +339,6 @@ function orderBySql ($arg) {
   return "ORDER BY r.added_timestamp DESC\n"; // default
 }
 
-
-
 function buildWhere ($first, $inside, $tagp, folksoDBinteract $i) { 
   $where = '';
   if (strlen($first) > 0) {
@@ -357,6 +355,12 @@ function buildWhere ($first, $inside, $tagp, folksoDBinteract $i) {
     $where .=
       " (uri_normal LIKE '%" . 
       $i->dbescape($inside) . "%') ";
+  }
+
+  // when there are no arguments, we list everything.
+  if ((strlen($inside) == 0) &&
+      (strlen($first) == 0)) {
+    $where = " (1 = 1) ";
   }
 
   switch ($tagp) {
