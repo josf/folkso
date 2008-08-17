@@ -39,6 +39,18 @@ $(document).ready(
       });
     $("#grouptagbox").autocomplete(urlbase + "tagcomplete.php");
     //  $("ul.taglist li").each(tagremovePrepare);
+    $("#ss").click(
+      function(event){
+        event.preventDefault();
+        showSuperScreen();
+      }
+    );
+
+    $("#closess").click(
+      function(event) {
+        event.preventDefault();
+        $("#superscreen").hide();
+      });
   });
 
  /**
@@ -113,10 +125,20 @@ $(document).ready(
                       folksores: url,
                       folksotag: tgbx.val(),
                       folksometa: meta},
-                    error: function(xhr, msg) {
-                        alert("Autocomplete request failed: " +
-                               xhr.statusText + " " + xhr.responseText);
-                      },
+                   error: function(xhr, msg) {
+                     if (xhr.status == 404) {
+                       if (xhr.statusText.indexOf('ag does not exist') != -1) {
+                         alert(url);
+                         infoMessage(createTagMessage(tgbx.val(), url, meta, lis));
+                       }
+                        else {
+                          alert("404 but no tag " + xhr.statusText);
+                        }
+                     }
+                     else {
+                       alert('something else');
+                     }
+                   },
                     success: function (str) {
                       getTagMenu(
                         lis.find("div.emptytags"),
@@ -283,8 +305,6 @@ function makeMetatagBox (resource, tag, lis) {
                  }
                });
       });
-
-
    container.append(box);
    return container.append(button);
 }
@@ -310,7 +330,105 @@ function groupTag() {
   }
 }
 
+function showSuperScreen() {
+  var sscreen = $("#superscreen");
+  var ibox = $("#superinfogox");
 
+  if (sscreen.css("display") == "none") {
+    var bheight = $("body").outerHeight();
+    var bwidth = $("body").outerWidth();
 
+    sscreen.height(bheight);
+    sscreen.width(bwidth);
+    sscreen.show();
+  }
+}
 
+function infoMessage(elem) {
+  var ibox = $("#superinfobox");
+  ibox.append(elem);
+  showSuperScreen();
+}
 
+function createTagMessage(tag, url, meta, lis) {
+  var tagFunk = tagResourceFunc(url, tag, meta, lis);
+  var thediv = $("<div class='innerinfobox></div>");
+  thediv.append($("<h3>Tag non trouvé</h3>"));
+  thediv.append($("<p>Le tag <em>"
+                  + tag +
+                  " n'est pas présent dans la base de données"
+                  + "<p>"));
+  thediv.append($("<p>Ajouter définitivement "
+                  + tag +
+                  " à la base ?</p>"));
+
+  var yesbutton = $("<a class=\"yesno\" href=\"#\"></a>");
+  yesbutton.html('Oui');
+  yesbutton.click(
+    function(event){
+      event.preventDefault();
+      $.ajax({
+               url: urlbase + 'tag.php',
+               type: 'post',
+               datatype: 'text/text',
+               data: {
+                 folksonewtag: tag
+               },
+               error: function(xhr, msg){
+                 alert(xhr.statusText);
+               },
+               success: function (str) {
+                 tagFunk();
+                 alert("Succès!");
+                 thediv.html("");
+                 $("#superscreen").hide();
+
+               }
+             });
+      });
+    var lastpar = $("<p>");
+
+  var nobutton = $("<a class=\"yesno\" href=\"#\">Non</a>").
+    click(
+      function(event){
+        event.preventDefault();
+        $("#superscreen").hide();
+      }
+    );
+
+  lastpar.append(yesbutton);
+  lastpar.append(nobutton);
+  thediv.append(lastpar);
+  return thediv;
+}
+
+/**
+ *  Creates a function closed over some useful variables.
+ *
+ */
+function tagResourceFunc (url, tag, meta, lisarg) {
+  var lis = lisarg;
+
+  alert("Going to try to tag with " + url + " " + tag);
+/*  var url = urlarg;
+  var tag = tagarg;
+  var meta = metaarg; */
+
+  return function() {
+    $.ajax({
+           url: urlbase + 'resource.php',
+           type: 'post',
+           datatype: 'text/text',
+           data: {
+             folksores: url,
+             folksotag: tag,
+             folksometa: meta
+           },
+           error: function(xhr, msg) {
+             alert("Erreur : " + xhr.statusText);
+           },
+           success: function(data) {
+             getTagMenu(lis, url);
+           }});
+  };
+}
