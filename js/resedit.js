@@ -139,6 +139,9 @@ $(document).ready(
                      }
                    },
                     success: function (str) {
+                      lis.addClass = "tagged";
+                      lis.removeClass = "nottagged";
+                      currentTagsUpdate(tgbx.val(), lis);
                       getTagMenu(
                         lis.find("div.emptytags"),
                         lis.attr("id").substring(3));
@@ -308,7 +311,9 @@ function makeMetatagBox (resource, tag, lis) {
    return container.append(button);
 }
 
-
+/**
+ * Operates on the groupmod check box in each <li>
+ */
 function groupTag() {
   var lis = $(this).parent().parent("ul.editresources li");
   var url = lis.find("a.resurl").attr("href");
@@ -322,6 +327,11 @@ function groupTag() {
       data: {
         folksores: url,
         folksotag: newtag},
+      success: function(str) {
+        lis.removeClass("nottagged");
+        lis.addClass("tagged");
+        currentTagsUpdate(newtag, lis);
+      },
       error: function(xhr, msg) {
         alert(xhr.statusText + " " + xhr.responseText);
       }
@@ -423,7 +433,15 @@ function tagResourceFunc (url, tag, meta, lisarg) {
              alert("Erreur : " + xhr.statusText);
            },
            success: function(data) {
+             lis.addClass("tagged");
+             lis.removeClass("nottagged");
+             currentTagsUpdate(tag, lis);
              getTagMenu(lis, url);
            }});
   };
+}
+
+function currentTagsUpdate (tag, lis) {
+  alert("current tags: " + tag + " thang " + lis);
+  lis.find("span.currenttags").append(' "' + tag + '" ');
 }
