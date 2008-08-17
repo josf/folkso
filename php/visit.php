@@ -3,9 +3,9 @@
 include('folksoClient.php');
 include('folksoFabula.php');
 
-visit_resource();
+visit_resource($page_titre);
 
-function visit_resource () {
+function visit_resource ($page_titre) {
   $loc = new folksoFabula();
   $our_current_url = curPageURL(); //ridiculous var name to avoid namespace problems
 
