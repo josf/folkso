@@ -355,11 +355,11 @@ function createTagMessage(tag, url, meta, lis) {
   thediv.append($("<h3>Tag non trouvé</h3>"));
   thediv.append($("<p>Le tag <em>"
                   + tag +
-                  " n'est pas présent dans la base de données"
+                  "</em> n'est pas présent dans la base de données"
                   + "<p>"));
-  thediv.append($("<p>Ajouter définitivement "
+  thediv.append($("<p>Ajouter définitivement <em>"
                   + tag +
-                  " à la base ?</p>"));
+                  "</em> à la base ?</p>"));
 
   var yesbutton = $("<a class=\"yesno\" href=\"#\"></a>");
   yesbutton.html('Oui');
@@ -379,7 +379,7 @@ function createTagMessage(tag, url, meta, lis) {
                success: function (str) {
                  tagFunk();
                  alert("Succès!");
-                 thediv.html("");
+                 thediv.html("");  // reinitialize, otherwise messages accumulate
                  $("#superscreen").hide();
 
                }
@@ -391,6 +391,7 @@ function createTagMessage(tag, url, meta, lis) {
     click(
       function(event){
         event.preventDefault();
+        thediv.html(""); // reinitialize, otherwise messages accumulate
         $("#superscreen").hide();
       }
     );
