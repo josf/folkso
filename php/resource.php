@@ -389,14 +389,14 @@ function tagResource (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $db
   if ($i->result_status == 'DBERR') {
     if (($i->db->errno == 1048) &&
         (strpos($i->db->error, 'resource_id'))) {
-      header('HTTP/1.1 404');
+      header('HTTP/1.1 404 Missing resource');
       print "Resource ". $q->res . " has not been indexed yet.";
       $i->done();
       return;
     }
     elseif (($i->db->errno == 1048) &&
             (strpos($i->db->error, 'tag_id'))) {
-      header('HTTP/1.1 404');
+      header('HTTP/1.1 404 Tag does not exist');
       print "Tag ". $q->tag . " does not exist.";
       print $i->error_info();
       $i->done;
