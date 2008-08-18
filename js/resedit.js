@@ -1,5 +1,5 @@
-var urlbase = "/commun3/folksonomie/";
-//var urlbase = "/";
+//var urlbase = "/commun3/folksonomie/";
+var urlbase = "/";
 
 $(document).ready(
   function() {
@@ -95,71 +95,6 @@ $(document).ready(
      }
    );
  }
-
-   /**
-    * To be called on a <li>. Sets up tagging input box with
-    * autocompletion and refreshes the tagmenu.
-    */
- function tagboxPrepare() {
-     var lis = $(this);
-     var tgbx = lis.find("input.tagbox");
-     tgbx.autocomplete(urlbase + "tagcomplete.php");
-
-     var url = lis.find("a.resurl").attr("href");
-
-     lis.find("a.tagbutton").click(
-         function(event) {
-           event.preventDefault();
-           var meta = '';
-           if (lis.find("div.tagger input.metatagbox").val()) {
-             meta = lis.find(".tagger input.metatagbox").val();
-           }
-
-           if (tgbx.val()) {
-             var cleanup = tagMenuCleanupFunc(lis, tgbx.val());
-             $.ajax({
-                      url: urlbase + 'resource.php',
-                      type: 'post',
-                      datatype: 'text/text',
-                      data: {
-                        folksores: url,
-                        folksotag: tgbx.val(),
-                        folksometa: meta},
-                      error: function(xhr, msg) {
-                        if (xhr.status == 404) {
-                          if (xhr.statusText.indexOf('ag does not exist') != -1) {
-                            infoMessage(createTagMessage(tgbx.val(), url, meta, lis));
-                          }
-                          else {
-                            alert("404 but no tag " + xhr.statusText);
-                          }
-                        }
-                        else {
-                          alert('something else');
-                        }
-                      },
-                      success: function (str) {
-                        cleanup();
-                        getTagMenu(
-                          lis.find("div.emptytags"),
-                          lis.attr("id").substring(3));
-                        tgbx.val('');
-                      }
-                    });
-           }
-           else {
-             alert('Il faut choisir un tag d\'abord');
-           }
-         });
- }
-
-function tagMenuCleanupFunc(lis, tag) {
-  return function() {
-    lis.attr("class", "tagged");
-    lis.find("inbox.tagbox").val('');
-    currentTagsUpdate(tag, lis);
-  };
-}
 
  /**
   * To be called on a ul.tagmenu
@@ -277,44 +212,6 @@ function tagMenuFunkMaker(place, resid) {
   };
 }
 
-
-/**
- *  Parameter lis is a list item so that we know where to plug the
- *  new taglist back in when we are done.
- *
- * resource and tag can be either text or ids.
- */
-function makeMetatagBox (resource, tag, lis) {
-  var container = $("<span class='metatagbox'></span>")
-    .append("<span class='infohead'>Modifier le metatag </class>");
-
-  var box = $("<input type='text' class='metatagbox'>");
-  box.autocomplete(metatag_autocomplete_list); //array defined in <script> on page.
-
-  var button = $("<a href='#' class='metatagbutton'>metaValider</a>")
-    .click(
-      function(event){
-        event.preventDefault();
-        var newmeta = $(this).siblings("input").val();
-        $.ajax({
-                 url: urlbase + 'resource.php',
-                 type: 'post',
-                 data: {
-                   folksores: resource,
-                   folksotag: tag,
-                   folksometa: newmeta
-                 },
-                 error: function(xhr, msg) {
-                   alert(msg);
-                 },
-                 success: function(data) {
-                   getTagMenu(lis, resource);
-                 }
-               });
-      });
-   container.append(box);
-   return container.append(button);
-}
 
 /**
  * Operates on the groupmod check box in each <li>
