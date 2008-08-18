@@ -62,6 +62,10 @@ li.nottagged span.tagev_count {
     color: #e66322;
 }
 
+li.nottagged span.lasttaggage, li.nottagged span.currenttags {
+             display: none;
+}
+
 ul.taglist {display: none;}
 ul.tagmenu li {border: none;}
 .tagid { padding-left: 0.5em; padding-right: 0.5em; }
