@@ -73,7 +73,7 @@ fk_metatag_simple_list($i);
     </link>
   <link
       rel="stylesheet" type="text/css" 
-      href="/editres.css"
+      href="editres.css"
       media="screen">
   </link>
 
