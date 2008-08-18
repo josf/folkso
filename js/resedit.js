@@ -1,5 +1,5 @@
-var urlbase = "/commun3/folksonomie/";
-//var urlbase = "/";
+//var urlbase = "/commun3/folksonomie/";
+var urlbase = "/";
 
 $(document).ready(
   function() {
@@ -109,56 +109,56 @@ $(document).ready(
 
      lis.find("a.tagbutton").click(
          function(event) {
-             event.preventDefault();
+           event.preventDefault();
+           var meta = '';
+           if (lis.find("div.tagger input.metatagbox").val()) {
+             meta = lis.find(".tagger input.metatagbox").val();
+           }
 
-             var meta = '';
-             if (lis.find("div.tagger input.metatagbox").val()) {
-               meta = lis.find(".tagger input.metatagbox").val();
-             }
-
-             if (tgbx.val()) {
-               var cleanup = tagMenuCleanupFunc(lis, tgbx.val());
-               $.ajax({
-                    url: urlbase + 'resource.php',
-                    type: 'post',
-                    datatype: 'text/text',
-                   data: {
-                      folksores: url,
-                      folksotag: tgbx.val(),
-                      folksometa: meta},
-                   error: function(xhr, msg) {
-                     if (xhr.status == 404) {
-                       if (xhr.statusText.indexOf('ag does not exist') != -1) {
-                         infoMessage(createTagMessage(tgbx.val(), url, meta, lis));
-                       }
-                        else {
-                          alert("404 but no tag " + xhr.statusText);
+           if (tgbx.val()) {
+             var cleanup = tagMenuCleanupFunc(lis, tgbx.val());
+             $.ajax({
+                      url: urlbase + 'resource.php',
+                      type: 'post',
+                      datatype: 'text/text',
+                      data: {
+                        folksores: url,
+                        folksotag: tgbx.val(),
+                        folksometa: meta},
+                      error: function(xhr, msg) {
+                        if (xhr.status == 404) {
+                          if (xhr.statusText.indexOf('ag does not exist') != -1) {
+                            infoMessage(createTagMessage(tgbx.val(), url, meta, lis));
+                          }
+                          else {
+                            alert("404 but no tag " + xhr.statusText);
+                          }
                         }
-                     }
-                     else {
-                       alert('something else');
-                     }
-                   },
-                    success: function (str) {
-                      cleanup();
-                      getTagMenu(
-                        lis.find("div.emptytags"),
-                        lis.attr("id").substring(3));
-                      tgbx.val('');
-                    }
-                  });
-             }
+                        else {
+                          alert('something else');
+                        }
+                      },
+                      success: function (str) {
+                        cleanup();
+                        getTagMenu(
+                          lis.find("div.emptytags"),
+                          lis.attr("id").substring(3));
+                        tgbx.val('');
+                      }
+                    });
+           }
            else {
-           alert('Il faut choisir un tag d\'abord');
-         }
-     });
+             alert('Il faut choisir un tag d\'abord');
+           }
+         });
  }
 
 function tagMenuCleanupFunc(lis, tag) {
   return function() {
-    lis.addClass = "tagged";
-    lis.removeClass = "nottagged";
+    alert("cleanup" + tag + lis.attr('class'));
+    lis.attr("class", "tagged");
     currentTagsUpdate(tag, lis);
+    alert("result " + lis.attr('id'));
   };
 }
 
