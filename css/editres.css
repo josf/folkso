@@ -1,0 +1,89 @@
+#superscreen {
+    display: none; 
+    z-index: 50;
+    background-color: grey;
+    opacity: 0.7;
+}
+
+#superinfobox {
+    background-color: white;
+    height: 300px;
+    width: 500px;
+    position: fixed;
+    top: 15%; left: 20%;
+    border: 10px solid red;
+    padding-top: 1em; padding-bottom: 1.2em;
+    padding-left: 2em; padding-right: 2em;
+}
+#superinfobox h3 {
+    color: red;
+    font-size: 16pt;
+    text-align: center;
+    margin: 0.5em;
+}
+#superinfobox p {
+    margin-top: 0.3em;
+}
+#superinfobox em {
+    color: red;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+.yesno {
+    margin-left: 0.3em; margin-right: 0.3em;
+}
+#sql { display: none;}
+
+ul.editresources {
+    background-color: white;
+}
+ul.editresources li {
+    margin-top: 2em; margin-bottom: 1em;
+    border-top: 2px solid grey;
+    padding-left: 4em;
+    width: 90%;
+}
+
+iframe.preview {
+    height: 400px;
+    width: 100%;
+}
+
+
+
+a.restitle {padding-right: 2em; font-size: 12pt; font-weight: bold;}
+a.resurl { padding-right: 2em; font-size: 10pt;}
+
+li.nottagged a.restitle {
+    background-color: #e5966e;
+}
+
+li.nottagged span.tagev_count {
+    color: #e66322;
+}
+
+ul.taglist {display: none;}
+ul.tagmenu li {border: none;}
+.tagid { padding-left: 0.5em; padding-right: 0.5em; }
+.explanation {
+    font-size: 9pt;
+    font-style: italic;
+}
+
+a.seedetails {display: none; margin-left: 0.2em; margin-right: 0.2em;}
+span.tagid {font-size: 8pt;
+            font-style: italic;}
+a.remtag, a.tagbutton, a.metatagbutton { font-weight: bold;
+                                         color: #e66322;
+                                         margin-left: 0.5em; margin-right: 0.5em;
+                                       }
+a.tagdisplay {font-weight: bold}
+.infohead {margin-left: 0.5em;}
+
+a.currentpagination, a.currentpagination:visited  {
+    color: #e66322; font-weight: bold;
+}
+
+a.pagination, a.currentpagination  {
+    margin-left: 0.2em; margin-right: 0.2em;
+}
