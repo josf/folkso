@@ -159,7 +159,8 @@ ul.tagmenu li {border: none;}
       a.tagdisplay {font-weight: bold}
       .infohead {margin-left: 0.5em;}
 
-a.currentpage, a.currentpage:visited {color: red; font-weight: bold;}
+a.currentpagination, a.currentpagination:visited {color: #e66322; font-weight: bold;}
+a.pagination, a.currentpagination  { margin-left: 0.2em; margin-right: 0.2em;}
     </style>
 
   </head>
@@ -474,21 +475,31 @@ function buildWhere ($first, $inside, $tagp, folksoDBinteract $i) {
  * $numrows should be $i->result->num_rows
  */
 function nextPrevious ($begin, $numrows, $totalresults) {
-  $thispage = $_SERVER['REQUEST_URI'] . '?';
+  $thispage = $_SERVER['REQUEST_URI'];
   /** rebuilding the request **/
 
-  if (preg_match('/(?:\?|&)begin=\d+/',
-                 $thispage)) {
-    $thispage = preg_replace('/\??(&?begin=\d+)/', '', $thispage);
+  /* remove begin parameter from url */
+  $thispage = preg_replace('/\??(&?begin=\d+)/', '', $thispage);
+  
+  $base = round($begin / 500) * 500;
+
+
+  print "<div class='paginations'>";
+  if ($base > 499) {
+    $base = $base - 250;
+
+    // link to get back to first page
+    print paginationElement($thispage,
+                            0,
+                            $current_begin,
+                            $totalresults);
+       print " ... ";
   }
 
+  $last_end = 0;
   for ($it = 0; $it <= 14; $it++) {
-    $base = round($begin / 500) * 500;
-    if ($base > 499) {
-      $base = $base - 250;
-    }
-
     $start = $it * 50 + $base;
+    $last_end = $start + 50;
     if ($start >= $totalresults) {
       break;
     }
@@ -497,8 +508,16 @@ function nextPrevious ($begin, $numrows, $totalresults) {
                             $begin,
                             $totalresults);
     print " ";
-
   }
+
+  if (($totalresults - $last_end) > 50) {
+    print " ... ";
+    print paginationElement($thispage,
+                            floor($totalresults / 50) * 50,
+                            $begin,
+                            $totalresults);
+  }
+  print "</div>";
 }
 
 function paginationElement ($thispage, 
@@ -511,21 +530,26 @@ function paginationElement ($thispage,
     $end = $total_pages;
   }
 
-  if (substr($thispage, -1) == '?') {
+  $return = '<a class='; 
+
+  //check if current page
+  if ($current_begin == $start) {
+    $return .= '"currentpagination" '; //add class
+  }
+  else { //just close the quotes
+    $return .= '"pagination" ';
+  }
+
+  // "begin" might be the first parameter after '.php'
+  if (substr($thispage, -4) == 'php?') {
     $begin_part = 'begin='.$start;
   }
   else {
     $begin_part = '&begin='.$start;
   }
-  $return =  "<a class='pagination' href='" . $thispage . $begin_part . "'";
 
-  //check if current page
-  if (($current_begin >= $start) &&
-      ($current_begin <= $end)) {
-    $return .= ' class="currentpage" ';
-  }
-  
-  $return .=  ">$start - $end</a>";
+  $return .=  " href='" . $thispage . $begin_part . "'";
+  $return .=  ">$start - " . $end . "</a>";
   return $return;
 }
 
