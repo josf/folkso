@@ -301,7 +301,7 @@ function visitPage (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc)
       header('HTTP/1.0 501 Database connection problem');
       die( $i->error_info());
     }
-    header('HTTP/1.1 200 Going to read cache');
+
 
     $urls = array();
     $title = array();
@@ -312,7 +312,7 @@ function visitPage (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc)
     }
 
     $sql = 
-      "call bulk_visit('".
+      "CALL bulk_visit('".
       implode('&&&&&', $urls) . "', '".
       implode('&&&&&', $titles) . "', 1)";
 
@@ -322,15 +322,16 @@ function visitPage (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc)
     }
     fwrite($fh, "\n\n$sql");
     fclose($fh);
-    */
 
     print $sql;
+    */
 
       $i->query($sql);
       if ($i->result_status == 'DBERR') {
         header('HTTP/1.1 501 Database error');
         print $i->error_info() . "\n";
       }
+      header('HTTP/1.1 200 Read cache');
       print "updated db";
       $i->done();
     } 
@@ -339,7 +340,6 @@ function visitPage (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc)
     print "caching visit";
   }
 }
-
 
 /**
  * Web parameters : POST + folksonewuri
