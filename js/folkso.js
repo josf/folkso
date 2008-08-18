@@ -1,5 +1,28 @@
-//var urlbase = "http://fabula.org/commun3/folksonomie/";
-var urlbase = "";
+var urlbase = "http://fabula.org/commun3/folksonomie/";
+//var urlbase = "http://localhost/";
+$(document).ready(function() {
+                    $('.tagentry').each(fkPrepare);
+                  });
+
+function fkPrepare(selector) {
+  // tagid is 'tagid' + number
+  var thisid = $(this).attr('id');
+  var tagid = thisid.substring(5);
+
+  $(this).find("button.delete").click(
+    function(event) {
+      event.preventDefault();
+      $.post(urlbase + 'tag.php',
+             {folksotag: tagid,
+              folksodelete: ''},
+             function() {
+               $("#" + thisid).hide("slow");
+               $("#" + thisid).remove();
+             });
+    });
+  modifyTagPrep($(this));
+  mergeTagPrep($(this));
+}
 
 function modifyTagPrep(itemjq) {
   var thisid = itemjq.attr('id');
@@ -68,40 +91,3 @@ function mergeTagPrep(itemjq) {
 
 
 
-/**
- *  Parameter lis is a list item so that we know where to plug the
- *  new taglist back in when we are done.
- *
- * resource and tag can be either text or ids.
- */
-function makeMetatagBox (resource, tag, lis) {
-  var container = $("<span class='metatagbox'></span>")
-    .append("<span class='infohead'>Modifier le metatag </class>");
-
-  var box = $("<input type='text' class='metatagbox'>");
-  box.autocomplete(metatag_autocomplete_list); //array defined in <script> on page.
-
-  var button = $("<a href='#' class='metatagbutton'>metaValider</a>")
-    .click(
-      function(event){
-        event.preventDefault();
-        var newmeta = $(this).siblings("input").val();
-        $.ajax({
-                 url: urlbase + 'resource.php',
-                 type: 'post',
-                 data: {
-                   folksores: resource,
-                   folksotag: tag,
-                   folksometa: newmeta
-                 },
-                 error: function(xhr, msg) {
-                   alert(msg);
-                 },
-                 success: function(data) {
-                   getTagMenu(lis, resource);
-                 }
-               });
-      });
-   container.append(box);
-   return container.append(button);
-}
