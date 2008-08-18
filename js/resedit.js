@@ -155,10 +155,9 @@ $(document).ready(
 
 function tagMenuCleanupFunc(lis, tag) {
   return function() {
-    alert("cleanup" + tag + lis.attr('class'));
     lis.attr("class", "tagged");
+    lis.find("inbox.tagbox").val('');
     currentTagsUpdate(tag, lis);
-    alert("result " + lis.attr('id'));
   };
 }
 
@@ -400,7 +399,7 @@ function createTagMessage(tag, url, meta, lis) {
                  alert("Succès!");
                  thediv.html("");  // reinitialize, otherwise messages accumulate
                  $("#superscreen").hide();
-
+                 lis.find(".tagbox").val('');
                }
              });
       });
