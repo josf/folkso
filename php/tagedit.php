@@ -10,6 +10,7 @@
 
 <script type="text/javascript" src="js/jquery.js"></script>
 <script type="text/javascript" src="js/folkso.js"></script>
+<script type="text/javascript" src="js/tagedit.js"></script>
 
 <style type="text/css">
 .tagname { font-weight: bold; font-size: 14pt}
@@ -21,7 +22,7 @@
 <div id="container">
 <h1>Gestion des tags</h1>
 
-<form action="/commun3/folksonomie/tagedit.php" method="get">
+<form action="tagedit.php" method="get">
    <p>Taper une, deux ou trois lettres pour sélectionner les tags à éditer: 
         <input type="text" name="letters" maxlength="3" size="3"></input>
     </p>
@@ -30,7 +31,7 @@
    </p>
 </form>
 
-<form action="/commun3/folksonomie/tag.php" method="post">
+<form action="tag.php" method="post">
    <p>Créer un nouveau tag : 
       <input type="text" name="folksonewtag" maxlength="255" size="50"/>
       <input type="submit" value="Créer"/>
