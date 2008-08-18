@@ -590,7 +590,8 @@ function byalpha (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
     print $dd->line($row->id, 
                     $row->tagnorm,
                     $row->tagdisplay,
-                    $row->popularity) . "\n";
+                    $row->popularity,
+                    '') . "\n"; // empty field because there are no metatags here
   }
   print $dd->endform();
 }
