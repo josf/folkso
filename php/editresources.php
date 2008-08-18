@@ -57,8 +57,7 @@ $i = new folksoDBinteract($dbc);
 fk_metatag_simple_list($i);
 ?>;
 </script>
-<script type="text/javascript" src="js/folkso.js">
-</script>
+
     <script type="text/javascript" src="js/resedit.js">
     </script>
 
