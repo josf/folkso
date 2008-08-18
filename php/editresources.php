@@ -77,6 +77,7 @@ fk_metatag_simple_list($i);
         display: none; 
         z-index: 50;
         background-color: grey;
+opacity: 0.7;
     }
 
     #superinfobox {
@@ -157,6 +158,8 @@ ul.tagmenu li {border: none;}
                }
       a.tagdisplay {font-weight: bold}
       .infohead {margin-left: 0.5em;}
+
+a.currentpage, a.currentpage:visited {color: red; font-weight: bold;}
     </style>
 
   </head>
@@ -275,7 +278,7 @@ $i->query($rescount_sql);
 
 $total_results = $i->first_val('rows');
 
-nextPrevious($begin);
+
 
 $fksql = "SELECT ".
   "r.id AS id, r.uri_raw AS url, \n".
@@ -319,6 +322,8 @@ $i->query($fksql);
 if ($i->result_status == 'DBERR') {
   die( $i->error_info());
 }
+
+nextPrevious($begin, $i->result->num_rows, $total_results);
 
 $begin_with_current_results = $begin + $i->result->num_rows;
 $begin_display =  $begin ? $begin : 1;
@@ -378,7 +383,7 @@ print '> ';
     '<span class="infohead">Metatag (facultatif)</span>'.
     '<input type="text" size="20" class="metatagbox" maxlength="100"></input>'.
     '<a class="tagbutton" href="#">Valider</a>' .
-    '</div>'.
+    '</div>' .
     '<p>Détails des tags déjà associés à cette ressource. <a class="seetags" href="#">Voir</a> '.
     '<a class="hidetags" href="#">Cacher</a> </p> '.
     '<div class="emptytags"></div>'.
@@ -391,7 +396,7 @@ print '> ';
 
 <?php
 
-nextPrevious($begin);
+nextPrevious($begin, $i->result->num_rows, $total_results);
 
 /**
  * Produces the "order by" part of the query based on the
@@ -465,41 +470,63 @@ function buildWhere ($first, $inside, $tagp, folksoDBinteract $i) {
   return $where;
 }
 
-function nextPrevious ($begin) {
-  //$thispage = '/commun3/folksonomie/editresources.php?';
-  $thispage = '/editresources.php?';
-  $fields = array();
-  if ($initial) {
-    $fields[] = 'initial='.$initial;
-  }
-  if ($sequence) {
-    $fields[] = 'sequence='.$sequence;
-  }
-  if ($tagged) {
-    $fields[] = 'tagged='.$tagged;
+/**
+ * $numrows should be $i->result->num_rows
+ */
+function nextPrevious ($begin, $numrows, $totalresults) {
+  $thispage = $_SERVER['REQUEST_URI'] . '?';
+  /** rebuilding the request **/
+
+  if (preg_match('/(?:\?|&)begin=\d+/',
+                 $thispage)) {
+    $thispage = preg_replace('/\??(&?begin=\d+)/', '', $thispage);
   }
 
-  /** previous **/
-  if ($begin >= 50) {
-    $newbegin = $begin - 50;
-    if ($newbegin < 0) {
-      $newbegin = 0;
+  for ($it = 0; $it <= 14; $it++) {
+    $base = round($begin / 500) * 500;
+    if ($base > 499) {
+      $base = $base - 250;
     }
-    $fields[] = 'begin=' . $newbegin;
-    print 
-      '<p><a href="'. 
-      $thispage . 
-      implode($fields, '&').
-      '">Précédents</a></p>';
+
+    $start = $it * 50 + $base;
+    if ($start >= $totalresults) {
+      break;
+    }
+    print paginationElement($thispage,
+                            $start, 
+                            $begin,
+                            $totalresults);
+    print " ";
+
   }
-  if ($i->result->num_rows > 49) {
-    $newbegin = $begin + 50;
-    $fields[] = 'begin='.$newbegin;
-    print 
-      '<p><a href="'.
-      $thispage . implode($fields, '&') .
-      '">Suivant</a></p>';
+}
+
+function paginationElement ($thispage, 
+                            $start,  // this section begins
+                            $current_begin, // to identify current section
+                            $total_pages) {
+  $end = $start + 50;
+  $start++;
+  if ( $end  > $total_pages) {
+    $end = $total_pages;
   }
+
+  if (substr($thispage, -1) == '?') {
+    $begin_part = 'begin='.$start;
+  }
+  else {
+    $begin_part = '&begin='.$start;
+  }
+  $return =  "<a class='pagination' href='" . $thispage . $begin_part . "'";
+
+  //check if current page
+  if (($current_begin >= $start) &&
+      ($current_begin <= $end)) {
+    $return .= ' class="currentpage" ';
+  }
+  
+  $return .=  ">$start - $end</a>";
+  return $return;
 }
 
 /**
@@ -519,8 +546,6 @@ function radioOrderbyDefault ($orderby, $thisbox, $defaultp = false) {
     return $checked;
   }
 }          
-
-
 
 ?>
 
