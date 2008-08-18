@@ -54,6 +54,10 @@ iframe.preview {
 a.restitle {padding-right: 2em; font-size: 12pt; font-weight: bold;}
 a.resurl { padding-right: 2em; font-size: 10pt;}
 
+li.nottagged {
+             background-color: #f8c5ac;
+}
+
 li.nottagged a.restitle {
     background-color: #e5966e;
 }
@@ -67,7 +71,7 @@ li.nottagged span.lasttaggage, li.nottagged span.currenttags {
 }
 
 ul.taglist {display: none;}
-ul.tagmenu li {border: none;}
+ul.tagmenu li {border: none; margin-top: 0.3em; margin-bottom: 0.1em;}
 .tagid { padding-left: 0.5em; padding-right: 0.5em; }
 .explanation {
     font-size: 9pt;

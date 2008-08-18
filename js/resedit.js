@@ -1,5 +1,5 @@
-//var urlbase = "/commun3/folksonomie/";
-var urlbase = "/";
+var urlbase = "/commun3/folksonomie/";
+//var urlbase = "/";
 
 $(document).ready(
   function() {
@@ -155,10 +155,8 @@ $(document).ready(
 
 function tagMenuCleanupFunc(lis, tag) {
   return function() {
-    alert("cleanup" + tag + lis.attr('class'));
     lis.attr("class", "tagged");
     currentTagsUpdate(tag, lis);
-    alert("result " + lis.attr('id'));
   };
 }
 
