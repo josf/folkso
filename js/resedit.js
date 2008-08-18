@@ -442,6 +442,5 @@ function tagResourceFunc (url, tag, meta, lisarg) {
 }
 
 function currentTagsUpdate (tag, lis) {
-  alert("current tags: " + tag + " thang " + lis);
   lis.find("span.currenttags").append(' "' + tag + '" ');
 }
