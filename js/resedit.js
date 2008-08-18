@@ -117,7 +117,8 @@ $(document).ready(
              }
 
              if (tgbx.val()) {
-                  $.ajax({
+               var cleanup = tagMenuCleanupFunc(lis, tgbx.val());
+               $.ajax({
                     url: urlbase + 'resource.php',
                     type: 'post',
                     datatype: 'text/text',
@@ -139,9 +140,7 @@ $(document).ready(
                      }
                    },
                     success: function (str) {
-                      lis.addClass = "tagged";
-                      lis.removeClass = "nottagged";
-                      currentTagsUpdate(tgbx.val(), lis);
+                      cleanup();
                       getTagMenu(
                         lis.find("div.emptytags"),
                         lis.attr("id").substring(3));
@@ -155,6 +154,13 @@ $(document).ready(
      });
  }
 
+function tagMenuCleanupFunc(lis, tag) {
+  return function() {
+    lis.addClass = "tagged";
+    lis.removeClass = "nottagged";
+    currentTagsUpdate(tag, lis);
+  };
+}
 
  /**
   * To be called on a ul.tagmenu
@@ -359,6 +365,9 @@ function infoMessage(elem) {
   showSuperScreen();
 }
 
+/**
+ * For the superscreen tag creation dialogue.
+ */
 function createTagMessage(tag, url, meta, lis) {
   var tagFunk = tagResourceFunc(url, tag, meta, lis);
   var thediv = $("<div class='innerinfobox></div>");
