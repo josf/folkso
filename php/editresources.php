@@ -73,7 +73,7 @@ fk_metatag_simple_list($i);
     </link>
   <link
       rel="stylesheet" type="text/css" 
-      href="editres.css"
+      href="/editres.css"
       media="screen">
   </link>
 
@@ -147,7 +147,11 @@ fk_metatag_simple_list($i);
        ?>>
         </input><em>Popularité croissante</em> 
         (par nombre de visites, commençant par la resource la moins visitée)<br/>
-
+        
+        <input type="radio" name="orderby" value="tagdate" <?php
+          print radioOrderbyDefault($_GET['orderby'], "tagdate", false);
+       ?>>
+        </input><em>Date du dernier tag</em><br/>
       </p>
       <p>
         <input type="submit" name="submit">
@@ -182,6 +186,12 @@ $sequence = $_GET['sequence'];
 $tagged = $_GET['tagged'];
 $begin = $_GET['begin'];
 $orderby = $_GET['orderby'];
+
+
+/* tagdate makes no sense if 'tags' is not selected */
+if ($orderby == 'tagdate') {
+  $tagged = 'tags';
+}
 
 $rescount_sql = 
   'select count(*) as rows '.
@@ -338,6 +348,9 @@ function orderBySql ($arg) {
     break;
   case 'popularityasc':
     return " ORDER BY r.visited ASC\n";
+    break;
+  case 'tagdate':
+    return " ORDER BY last_tagged DESC\n";
     break;
   }
   return "ORDER BY r.added_timestamp DESC\n"; // default
