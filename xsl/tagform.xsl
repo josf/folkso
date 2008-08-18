@@ -22,7 +22,7 @@
         <xsl:element name="a">
           <xsl:attribute name="class">tagname</xsl:attribute>
         <xsl:attribute name="href">
-        <xsl:value-of select="concat('/commun3/folksonomie/resourceview.php?tagthing=',
+        <xsl:value-of select="concat('resourceview.php?tagthing=',
                                      numid)"/>
         </xsl:attribute>
           <xsl:value-of select="display"/>
@@ -41,7 +41,7 @@
       <!-- Rename -->
       <xsl:element name="form">
         <xsl:attribute name="class">rename</xsl:attribute>
-        <xsl:attribute name="action">/commun3/folksonomie/tag.php</xsl:attribute>
+        <xsl:attribute name="action">tag.php</xsl:attribute>
         <xsl:attribute name="method">post</xsl:attribute>
         <xsl:element name="p">
           <xsl:text> Modifier ce tag : </xsl:text>
@@ -70,7 +70,7 @@
     <!-- Delete -->
       <xsl:element name="form">
         <xsl:attribute name="class">delete</xsl:attribute>
-          <xsl:attribute name="action">/commun3/folksonomie/tag.php</xsl:attribute>
+          <xsl:attribute name="action">tag.php</xsl:attribute>
           <xsl:attribute name="method">post</xsl:attribute>
           <xsl:element name="p">
             <xsl:text>Supprimer ce tag : </xsl:text>
@@ -95,7 +95,7 @@
       <!-- fusionner -->
       <xsl:element name="form">
         <xsl:attribute name="class">merge</xsl:attribute>
-          <xsl:attribute name="action">/commun3/folksonomie/tag.php</xsl:attribute>
+          <xsl:attribute name="action">tag.php</xsl:attribute>
           <xsl:attribute name="method">post</xsl:attribute>
       <xsl:element name="p">
         <xsl:text> 
