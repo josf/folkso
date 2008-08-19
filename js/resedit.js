@@ -1,5 +1,5 @@
-var urlbase = "/commun3/folksonomie/";
-//var urlbase = "/";
+//var urlbase = "/commun3/folksonomie/";
+var urlbase = "/";
 
 $(document).ready(
   function() {
@@ -323,6 +323,7 @@ function groupTag() {
   var lis = $(this).parent().parent("ul.editresources li");
   var url = lis.find("a.resurl").attr("href");
   var newtag = $("#grouptagbox").val();
+  var cleanup = tagMenuCleanupFunc(lis, newtag);
 
   if (newtag) {
     $.ajax({
@@ -333,12 +334,21 @@ function groupTag() {
         folksores: url,
         folksotag: newtag},
       success: function(str) {
-        lis.removeClass("nottagged");
-        lis.addClass("tagged");
-        currentTagsUpdate(newtag, lis);
+        cleanup();
+        $("#grouptagbox").val('');
       },
       error: function(xhr, msg) {
-        alert(xhr.statusText + " " + xhr.responseText);
+        if (xhr.status == 404) {
+          if (xhr.statusText.indexOf('ag does not exist') != -1) {
+            infoMessage(createTagMessage(newtag, url, '',  lis)); //no meta yet
+          }
+          else {
+            alert("404 but no tag " + xhr.statusText);
+          }
+        }
+        else {
+          alert('something else');
+        }
       }
     });
   }
@@ -468,6 +478,7 @@ function createTagMessage(tag, url, meta, lis) {
                  thediv.html("");  // reinitialize, otherwise messages accumulate
                  $("#superscreen").hide();
                  lis.find(".tagbox").val('');
+                 $("#grouptagbox").val('');
                }
              });
       });
