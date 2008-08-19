@@ -381,11 +381,9 @@ function oldgroupTag() {
 }
 
 function groupTag() {
-  alert("in groupTag");
   var newtag = $("#grouptagbox").val();
   var firstlis = $("input.groupmod:checked:first").parent().parent("li");
   var firstres = firstlis.attr('id').substring(3);
-  alert("groupTag firstres is " + firstres );
 
   $.ajax({
            url: urlbase + 'resource.php',
@@ -398,8 +396,17 @@ function groupTag() {
            error: function(xhr, msg) {
              if (xhr.status == 404) {
                if (xhr.statusText.indexOf('ag does not exist') != -1) {
-                 infoMessage(createTagMessage(newtag, firstres, '', firstlis));
-                 groupTagRest(newtag);
+                 infoMessage(
+                   createTagMessage(newtag,
+                                    firstres,
+                                    '',
+                                    firstlis,
+                                    function() {
+                                      alert("Création réussie du nouveau tag");
+                                      $("#superscreen").hide();
+                                      groupTagRest(newtag);
+                                      $("#grouptagbox").val('');
+                                      }));
                }
                else {
                  alert("404 but no tag " + xhr.statusText);
@@ -528,9 +535,25 @@ function tagMenuCleanupFunc(lis, tag) {
 /**
  * For the superscreen tag creation dialogue.
  */
-function createTagMessage(tag, url, meta, lis) {
+function createTagMessage(tag, url, meta, lis, successfunc) {
   var tagFunk = tagResourceFunc(url, tag, meta, lis);
   var thediv = $("<div class='innerinfobox></div>");
+
+  var onSuccessFunc; //to be called on successful tag creation
+  if (!successfunc) {
+    onSuccessFunc = function () {
+      tagFunk();
+      thediv.append("<h2>Succès!</h2>");
+      thediv.html("");  // reinitialize, otherwise messages accumulate
+      $("#superscreen").hide();
+      lis.find(".tagbox").val('');
+      $("#grouptagbox").val('');
+    };
+  }
+  else {
+    onSuccessFunc = successfunc;
+  }
+
   thediv.append($("<h3>Tag non trouvé</h3>"));
   thediv.append($("<p>Le tag <em>"
                   + tag +
@@ -555,14 +578,7 @@ function createTagMessage(tag, url, meta, lis) {
                error: function(xhr, msg){
                  alert(xhr.statusText);
                },
-               success: function (str) {
-                 tagFunk();
-                 alert("Succès!");
-                 thediv.html("");  // reinitialize, otherwise messages accumulate
-                 $("#superscreen").hide();
-                 lis.find(".tagbox").val('');
-                 $("#grouptagbox").val('');
-               }
+               success: onSuccessFunc
              });
       });
     var lastpar = $("<p>");
