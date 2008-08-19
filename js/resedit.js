@@ -317,40 +317,63 @@ function makeMetatagBox (resource, tag, lis) {
 }
 
 /**
+ * Returns a function that will post a tag + res + metatag. For use in
+ * a grouptag action where errors can be ignored.
+ */
+function groupTagPostFunc(res, tag, meta, clean) {
+
+  $.ajax({
+           url: urlbase + 'resource.php',
+           type: 'post',
+           datatype: 'text/text',
+           data: {
+             folksores: res,
+             folksotag: tag,
+             folksometa: meta
+           },
+           success: clean
+    });
+}
+
+
+/**
  * Operates on the groupmod check box in each <li>
  */
 function groupTag() {
   var lis = $(this).parent().parent("ul.editresources li");
   var url = lis.find("a.resurl").attr("href");
   var newtag = $("#grouptagbox").val();
-  var cleanup = tagMenuCleanupFunc(lis, newtag);
+  var cleanup = function(lis, tag) {
+    lis.attr("class", "tagged");
+    $("#grouptagbox").val('');
+    currentTagsUpdate(tag, lis);
+  };
+  var tagFunc = groupTagPostFunc(url, newtag, '', cleanup);
 
   if (newtag) {
     $.ajax({
-      url: urlbase + 'resource.php',
-      type: 'post',
-      datatype: 'text/text',
-      data: {
-        folksores: url,
-        folksotag: newtag},
-      success: function(str) {
-        cleanup();
-        $("#grouptagbox").val('');
-      },
-      error: function(xhr, msg) {
-        if (xhr.status == 404) {
-          if (xhr.statusText.indexOf('ag does not exist') != -1) {
-            infoMessage(createTagMessage(newtag, url, '',  lis)); //no meta yet
-          }
-          else {
-            alert("404 but no tag " + xhr.statusText);
-          }
-        }
-        else {
-          alert('something else');
-        }
-      }
-    });
+             url: urlbase + 'tag.php?folksotag=' + tag,
+             type: 'head',
+             datatype: 'text/text',
+             data: {
+             },
+//             success: tagFunc,
+             success: function(str) {
+               alert(str + " head worked ");
+             },
+             error: function(xhr, msg) {
+               if (xhr.status == 404) {
+                 if (xhr.statusText.indexOf('ag does not exist') != -1) {
+                   infoMessage(createTagMessage(tgbx.val(), url, meta, lis));
+                 }
+                 else {
+                   alert("404 but no tag " + xhr.statusText);
+                 }
+               }
+               else {
+                 alert('something else');
+               }
+             }});
   }
 }
 
