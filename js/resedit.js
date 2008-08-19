@@ -31,7 +31,7 @@ $(document).ready(
 
     $(".tagger .metatagbox").autocomplete(metatag_autocomplete_list);
 
-    $("a.closeiframe").hide();
+        $("a.closeiframe").hide();
     $("#grouptagvalidate").click(
       function(event) {
         event.preventDefault();
@@ -42,6 +42,15 @@ $(document).ready(
       });
     $("#grouptagbox").autocomplete(urlbase + "tagcomplete.php");
     //  $("ul.taglist li").each(tagremovePrepare);
+
+    $("#cleargroupchecks").click(
+      function(event) {
+        event.preventDefault();
+        $("input.groupmod:checked").attr("checked", "");
+      }
+    );
+
+    // for debugging
     $("#ss").click(
       function(event){
         event.preventDefault();
