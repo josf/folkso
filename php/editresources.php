@@ -414,7 +414,6 @@ function nextPrevious ($begin, $numrows, $totalresults) {
   
   $base = round($begin / 500) * 500;
 
-
   print "<div class='paginations'>";
   if ($base > 499) {
     $base = $base - 250;
@@ -474,6 +473,9 @@ function paginationElement ($thispage,
   // "begin" might be the first parameter after '.php'
   if (substr($thispage, -4) == 'php?') {
     $begin_part = 'begin='.$start;
+  }
+  elseif (substr($thispage, -4) == '.php') {
+    $begin_part = '?begin='.$start;
   }
   else {
     $begin_part = '&begin='.$start;
