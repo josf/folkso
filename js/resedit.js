@@ -35,7 +35,10 @@ $(document).ready(
     $("#grouptagvalidate").click(
       function(event) {
         event.preventDefault();
-        $("input.groupmod:checked").each(groupTag);
+        if ($("#grouptagbox").val()) {
+          alert("GT");
+          groupTag();
+        }
       });
     $("#grouptagbox").autocomplete(urlbase + "tagcomplete.php");
     //  $("ul.taglist li").each(tagremovePrepare);
@@ -339,7 +342,7 @@ function groupTagPostFunc(res, tag, meta, clean) {
 /**
  * Operates on the groupmod check box in each <li>
  */
-function groupTag() {
+function oldgroupTag() {
   var lis = $(this).parent().parent("ul.editresources li");
   var url = lis.find("a.resurl").attr("href");
   var newtag = $("#grouptagbox").val();
@@ -375,6 +378,63 @@ function groupTag() {
                }
              }});
   }
+}
+
+function groupTag() {
+  alert("in groupTag");
+  var newtag = $("#grouptagbox").val();
+  var firstlis = $("input.groupmod:checked:first").parent().parent("li");
+  var firstres = firstlis.attr('id').substring(3);
+  alert("groupTag firstres is " + firstres );
+
+  $.ajax({
+           url: urlbase + 'resource.php',
+           type: 'post',
+           datatype: 'text/text',
+           data: {
+             folksores: firstres,
+             folksotag: newtag
+           },
+           error: function(xhr, msg) {
+             if (xhr.status == 404) {
+               if (xhr.statusText.indexOf('ag does not exist') != -1) {
+                 infoMessage(createTagMessage(newtag, firstres, '', firstlis));
+                 groupTagRest(newtag);
+               }
+               else {
+                 alert("404 but no tag " + xhr.statusText);
+               }
+             }
+             else {
+               alert('something else');
+             }
+           },
+           success: function(str) {
+             groupTagRest(newtag);
+           }
+         });
+}
+
+function groupTagRest(tag) {
+  $("input.groupmod:checked:not(first)").each(
+    function() {
+      alert("inside grouptagrest inside the other anony func");
+      var lis = $(this).parent().parent("li");
+      var resid = lis.attr("id").substring(3);
+      $.ajax({
+               url: urlbase + 'resource.php',
+               type: 'post',
+               datatype: 'text/text',
+               data: {
+                 folksores: resid,
+                 folksotag: tag
+               },
+               success: function(str){
+                 lis.attr("class", "tagged");
+                 currentTagsUpdate(tag, lis);
+               }
+             });
+    });
 }
 
 function showSuperScreen() {
