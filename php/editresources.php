@@ -162,7 +162,7 @@ fk_metatag_simple_list($i);
     <p>
       <strong>Tagger les ressources sélectionnées</strong>
       <input type="text" size="30" class="tagbox" id="grouptagbox" maxlength="100"></input>
-      <a href="#" id="grouptagvalidate">Valider</a>
+      <a href="#" id="grouptagvalidate">Valider</a> <span> </span> <a href="#" id="cleargroupchecks">Décocher tous</a>
     </p>
 
 <?php
