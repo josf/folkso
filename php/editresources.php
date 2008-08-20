@@ -80,12 +80,12 @@ fk_metatag_simple_list($i);
   </head>
 
   <body>
-  <div id="superscreen">
+  <div id="superscreen"> <!-- screen that appears with dialogue boxes -->
   <div id="superinfobox">
      <a id="closess" href="#">Fermer</a>
   </div>
   </div> <!-- end of superscreen -->
-    <h1>Edition et taggage des resources</h1>
+    <h1>Edition et taggage des ressources</h1>
 
     <h3>Sélection de l'URL</h3> <!-- ' -->
     <form action="editresources.php" method="get">
@@ -190,8 +190,8 @@ if ($i->db_error()) {
   die($i->error_info());
 }
 
-$initial = $_GET['initial'];
-$sequence = $_GET['sequence'];
+$initial = substr($_GET['initial'], 0, 15);
+$sequence = substr($_GET['sequence'], 0, 50);
 $tagged = $_GET['tagged'];
 $begin = $_GET['begin'];
 $orderby = $_GET['orderby'];
