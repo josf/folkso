@@ -159,12 +159,21 @@ fk_metatag_simple_list($i);
       </p>
     </form>
 
+      <h3>Tagger les ressources sélectionnées</h3>
+      <div id="grouptagging">
     <p>
-      <strong>Tagger les ressources sélectionnées</strong>
-      <input type="text" size="30" class="tagbox" id="grouptagbox" maxlength="100"></input>
-      <a href="#" id="grouptagvalidate">Valider</a> <span> </span> <a href="#" id="cleargroupchecks">Décocher tous</a>
+      <span class="infohead">Tag</span>
+      <input type="text" size="30" class="tagbox" id="grouptagbox" maxlength="100">
+      </input> <span class="infohead"> Metatag </span>
+      <input type="text" size="25" class="tagbox" id="groupmetatagbox" maxlength="100">
+      </input>
     </p>
-
+    <p>
+      <a href="#" id="grouptagvalidate" class="control">Valider</a> <span> </span> 
+      <a href="#" id="groupchecksall" class="control">Cocher tous</a>
+      <a href="#" id="cleargroupchecks" class="control">Décocher tous</a>
+    </p>
+      </div>
 <?php
 
 print $i->db_error();
