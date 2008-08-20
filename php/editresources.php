@@ -306,7 +306,7 @@ print '> ';
     '<a href="#" class="hidedetails">Cacher les détails</a></p> '.
     '<div class="details">'.
     '<p>'.
-    '<span class="infohead">Ajouté le </span><span class="added">' . $row->display_date ."</span>\n".
+    '<span class="infohead">Ajouté le </span><span class="added">' . datesToFrench($row->display_date) ."</span>\n".
     '<div class="tagger">'. 
     '<span class="infohead">Ajouter un tag</span> '.
     '<input type="text" size="25" class="tagbox" maxlength="100"></input>'.
@@ -504,6 +504,20 @@ function radioOrderbyDefault ($orderby, $thisbox, $defaultp = false) {
     return $checked;
   }
 }          
+
+function datesToFrench ($date) {
+
+  $fr = array('janvier', 'février', 'mars', 'avril', 'mai', 'juin', 
+         'juillet', 'août', 'septembre', 'octobre', 'novembre', 
+         'décembre');
+
+  $us = array('January', 'February', 'March', 'April', 'May', 'June',
+         'July', 'August', 'September', 'October', 'November', 'December');
+
+  return str_replace($us, $fr, $date);
+
+}
+
 
 ?>
 
