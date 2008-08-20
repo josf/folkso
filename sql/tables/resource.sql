@@ -1,15 +1,15 @@
 /* resource */
-drop table if exists resource;
-create table resource
-       (id int unsigned primary key auto_increment,
-        uri_normal varchar(255)  unique not null,
-        uri_raw mediumtext not null,
-        title mediumtext null,
-        site_section varchar(255) null,
-        visited int unsigned default 1 not null, -- number of total visits
-        added_timestamp timestamp,
-        last_visited timestamp,
-        added_by int unsigned not null,
-        status_flag varchar(255) null,
-index resnorm (uri_normal))
+DROP TABLE IF EXISTS resource;
+CREATE TABLE resource
+       (id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+        uri_normal VARCHAR(255)  UNIQUE NOT NULL,
+        uri_raw MEDIUMTEXT NOT NULL,
+        title MEDIUMTEXT NULL,
+        site_section VARCHAR(255) NULL,
+        visited INT UNSIGNED DEFAULT 1 NOT NULL, -- number of total visits
+        added_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        last_visited TIMESTAMP,
+        added_by INT UNSIGNED NOT NULL,
+        status_flag VARCHAR(255) NULL,
+INDEX resnorm (uri_normal))
         ENGINE = InnoDB;
