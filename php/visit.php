@@ -26,7 +26,7 @@ function visit_resource ($page_titre) {
   $fc = new folksoClient('localhost', '/commun3/folksonomie/resource.php', 'POST');
   $fc->set_postfields(array('folksovisit' => 1,
                             'folksores' => $our_current_url,
-                            'folksourititle' => $page_titre ? $page_titre : ''));
+                            'folksourititle' => $page_titre ? stripslashes($page_titre) : ''));
   //print $fc->build_req();
 
   $fc->execute();
