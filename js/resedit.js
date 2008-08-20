@@ -147,7 +147,7 @@ $(document).ready(
                           }
                         }
                         else {
-                          alert('something else');
+                          alert('Erreur. ' + xhr.statusText);
                         }
                       },
                       success: function (str) {
@@ -347,47 +347,6 @@ function groupTagPostFunc(res, tag, meta, clean) {
     });
 }
 
-
-/**
- * Operates on the groupmod check box in each <li>
- */
-function oldgroupTag() {
-  var lis = $(this).parent().parent("ul.editresources li");
-  var url = lis.find("a.resurl").attr("href");
-  var newtag = $("#grouptagbox").val();
-  var cleanup = function(lis, tag) {
-    lis.attr("class", "tagged");
-    $("#grouptagbox").val('');
-    currentTagsUpdate(tag, lis);
-  };
-  var tagFunc = groupTagPostFunc(url, newtag, '', cleanup);
-
-  if (newtag) {
-    $.ajax({
-             url: urlbase + 'tag.php?folksotag=' + tag,
-             type: 'head',
-             datatype: 'text/text',
-             data: {
-             },
-//             success: tagFunc,
-             success: function(str) {
-               alert(str + " head worked ");
-             },
-             error: function(xhr, msg) {
-               if (xhr.status == 404) {
-                 if (xhr.statusText.indexOf('ag does not exist') != -1) {
-                   infoMessage(createTagMessage(tgbx.val(), url, meta, lis));
-                 }
-                 else {
-                   alert("404 but no tag " + xhr.statusText);
-                 }
-               }
-               else {
-                 alert('something else');
-               }
-             }});
-  }
-}
 
 function groupTag() {
   var newtag = $("#grouptagbox").val();
