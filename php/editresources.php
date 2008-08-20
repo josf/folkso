@@ -207,6 +207,7 @@ $fksql = "SELECT ".
   "r.id AS id, r.uri_raw AS url, \n".
   "r.title AS title, r.visited AS visits, \n".
   "r.added_timestamp AS added, \n".
+  "date_format(r.added_timestamp, '%e %M %Y à %T') as display_date, \n".
   "(SELECT COUNT(resource_id) \n". 
   "        FROM tagevent te \n".
   "        WHERE te.resource_id = r.id) \n". 
@@ -305,7 +306,7 @@ print '> ';
     '<a href="#" class="hidedetails">Cacher les détails</a></p> '.
     '<div class="details">'.
     '<p>'.
-    '<span class="infohead">Ajouté le </span><span class="added">'. $row->added . "</span>\n".
+    '<span class="infohead">Ajouté le </span><span class="added">' . $row->display_date ."</span>\n".
     '<div class="tagger">'. 
     '<span class="infohead">Ajouter un tag</span> '.
     '<input type="text" size="25" class="tagbox" maxlength="100"></input>'.
