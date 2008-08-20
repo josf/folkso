@@ -6,6 +6,7 @@ include('folksoFabula.php');
 visit_resource($page_titre);
 
 function visit_resource ($page_titre) {
+  $titre = stripslashes(stripslashes(stripslashes($page_titre)));
   $loc = new folksoFabula();
   $our_current_url = curPageURL(); //ridiculous var name to avoid namespace problems
 
@@ -26,7 +27,7 @@ function visit_resource ($page_titre) {
   $fc = new folksoClient('localhost', '/commun3/folksonomie/resource.php', 'POST');
   $fc->set_postfields(array('folksovisit' => 1,
                             'folksores' => $our_current_url,
-                            'folksourititle' => $page_titre ? stripslashes($page_titre) : ''));
+                            'folksourititle' => $titre ? $titre : ''));
   //print $fc->build_req();
 
   $fc->execute();
