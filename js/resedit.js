@@ -1,5 +1,5 @@
-var urlbase = "/commun3/folksonomie/";
-//var urlbase = "/";
+//var urlbase = "/commun3/folksonomie/";
+var urlbase = "";
 
 $(document).ready(
   function() {
@@ -30,8 +30,9 @@ $(document).ready(
     $("ul.editresources li").each(taglistHidePrepare);
 
     $(".tagger .metatagbox").autocomplete(metatag_autocomplete_list);
+    $("#groupmetatagbox").autocomplete(metatag_autocomplete_list);
 
-        $("a.closeiframe").hide();
+    $("a.closeiframe").hide();
     $("#grouptagvalidate").click(
       function(event) {
         event.preventDefault();
@@ -46,8 +47,13 @@ $(document).ready(
       function(event) {
         event.preventDefault();
         $("input.groupmod:checked").attr("checked", "");
-      }
-    );
+      });
+
+    $("#groupchecksall").click(
+      function(event) {
+        event.preventDefault();
+        $("input.groupmod").attr("checked", "checked");
+      });
 
     // for debugging
     $("#ss").click(
@@ -332,7 +338,6 @@ function makeMetatagBox (resource, tag, lis) {
  * a grouptag action where errors can be ignored.
  */
 function groupTagPostFunc(res, tag, meta, clean) {
-
   $.ajax({
            url: urlbase + 'resource.php',
            type: 'post',
@@ -351,6 +356,9 @@ function groupTag() {
   var newtag = $("#grouptagbox").val();
   var firstlis = $("input.groupmod:checked:first").parent().parent("li");
   var firstres = firstlis.attr('id').substring(3);
+  var meta = $("#groupmetatagbox").val();
+
+  alert("meta " + meta);
 
   $.ajax({
            url: urlbase + 'resource.php',
@@ -358,11 +366,14 @@ function groupTag() {
            datatype: 'text/text',
            data: {
              folksores: firstres,
-             folksotag: newtag
+             folksotag: newtag,
+             folksometa: meta
            },
            error: function(xhr, msg) {
              if (xhr.status == 404) {
                if (xhr.statusText.indexOf('ag does not exist') != -1) {
+                 var meta2 = meta;
+                 alert("meta2 " + meta2);
                  infoMessage(
                    createTagMessage(newtag,
                                     firstres,
@@ -371,7 +382,7 @@ function groupTag() {
                                     function() {
                                       alert("Création réussie du nouveau tag");
                                       $("#superscreen").hide();
-                                      groupTagRest(newtag);
+                                      groupTagRest(newtag, meta);
                                       $("#grouptagbox").val('');
                                       }));
                }
@@ -384,12 +395,14 @@ function groupTag() {
              }
            },
            success: function(str) {
-             groupTagRest(newtag);
+             groupTagRest(newtag, meta);
            }
          });
 }
 
-function groupTagRest(tag) {
+function groupTagRest(tag, meta) {
+
+  alert("meta from gtRest " + meta);
   $("input.groupmod:checked:not(first)").each(
     function() {
 
@@ -401,7 +414,8 @@ function groupTagRest(tag) {
                datatype: 'text/text',
                data: {
                  folksores: resid,
-                 folksotag: tag
+                 folksotag: tag,
+                 folksometa: meta
                },
                success: function(str){
                  lis.attr("class", "tagged");
