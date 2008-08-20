@@ -358,8 +358,6 @@ function groupTag() {
   var firstres = firstlis.attr('id').substring(3);
   var meta = $("#groupmetatagbox").val();
 
-  alert("meta " + meta);
-
   $.ajax({
            url: urlbase + 'resource.php',
            type: 'post',
@@ -373,7 +371,6 @@ function groupTag() {
              if (xhr.status == 404) {
                if (xhr.statusText.indexOf('ag does not exist') != -1) {
                  var meta2 = meta;
-                 alert("meta2 " + meta2);
                  infoMessage(
                    createTagMessage(newtag,
                                     firstres,
@@ -401,8 +398,6 @@ function groupTag() {
 }
 
 function groupTagRest(tag, meta) {
-
-  alert("meta from gtRest " + meta);
   $("input.groupmod:checked:not(first)").each(
     function() {
 
