@@ -1,5 +1,5 @@
-//var urlbase = "/commun3/folksonomie/";
-var urlbase = "/";
+var urlbase = "/commun3/folksonomie/";
+//var urlbase = "/";
 
 $(document).ready(
   function() {
@@ -36,7 +36,6 @@ $(document).ready(
       function(event) {
         event.preventDefault();
         if ($("#grouptagbox").val()) {
-          alert("GT");
           groupTag();
         }
       });
@@ -393,7 +392,7 @@ function groupTag() {
 function groupTagRest(tag) {
   $("input.groupmod:checked:not(first)").each(
     function() {
-      alert("inside grouptagrest inside the other anony func");
+
       var lis = $(this).parent().parent("li");
       var resid = lis.attr("id").substring(3);
       $.ajax({
