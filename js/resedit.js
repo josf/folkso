@@ -306,10 +306,14 @@ function tagMenuFunkMaker(place, resid) {
  */
 function makeMetatagBox (resource, tag, lis) {
   var container = $("<span class='metatagbox'></span>")
-    .append("<span class='infohead'>Modifier le metatag </class>");
+    .append("<span class='infohead'>Modifier le metatag </span>");
 
-  var box = $("<input type='text' class='metatagbox'>");
-  box.autocomplete(metatag_autocomplete_list); //array defined in <script> on page.
+  var box = $("<select class='metatagbox'>");
+//  box.autocomplete(metatag_autocomplete_list); //array defined in <script> on page.
+  box.append("<option></option>"); // empty first choice
+  for (var i = 0; i < metatag_autocomplete_list.length; i++) {
+    box.append("<option>" + metatag_autocomplete_list[i] + "</option>");
+  }
 
   var button = $("<a href='#' class='metatagbutton'>metaValider</a>")
     .click(
@@ -612,4 +616,5 @@ function currentTagsUpdate (tag, lis) {
     lis.find("span.currenttags").append('"' + tag + '"');
   }
 }
+
 
