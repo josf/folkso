@@ -311,10 +311,33 @@ function fancyResource (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $
     die( $i->error_info());
   }
 
+  /*
+   * This is a bit of a hack. We are using a UNION to put the tag name
+   * in the first row of the result set, to avoid two separate
+   * queries. If columns are to be added to the main query, equivalent
+   * dummy columns should be added to the first part of the UNION.
+   */
+$querytagtitle = 
+  "select tagdisplay as title, \n\t" .
+  "id as id, \n\t" .
+  "'dummy' as href, \n\t" .
+  "'dummy' as display, \n\t" .
+  "'dummy' as tags \n".
+  "from tag \n\t";
+  if (is_numeric($q->tag)) {
+    $querytagtitle .= ' where id = ' . $q->tag . ' ';
+  }
+  else {
+    $querytagtitle = " where tagnorm = normalize_tag('" . 
+      $i->dbescape($q->tag) . "') ";
+  }
+
+  $querytagtitle .= ' limit 1 '; // just to be sure
+
 $querystart = 
-  'select 
+'  select 
   r.title as title, 
-  r.id,
+  r.id as id,
   r.uri_raw as href,
   CASE 
     WHEN title IS NULL THEN uri_normal 
@@ -340,12 +363,7 @@ $querystart =
       $i->dbescape($q->tag) . "') ";
   }
 
-  $i->query($querystart . ' '  . $querywhere . ' ' . $queryend);
-
-  $df = new folksoDisplayFactory();
-  $dd = $df->FancyResourceList();
-  
-  $dd->activate_style('xml');
+  $i->query($querytagtitle . " UNION \n" .  $querystart . ' '  . $querywhere . ' ' . $queryend);
 
   switch ($i->result_status) {
   case 'DBERR':
@@ -369,7 +387,17 @@ $querystart =
   $dd = $df->FancyResourceList();
   
   $dd->activate_style('xml');
+
+  print "<tag>\n";
+
+  $row1 = $i->result->fetch_object();  
+  print $dd->title($row1->title);
   print $dd->startform();
+
+  //pop the first line of the results containing the tagtitle
+
+  print "\n";
+
   while ($row = $i->result->fetch_object()) {
     print $dd->line( $row->id,
                      $row->href,
@@ -378,7 +406,7 @@ $querystart =
   }
   print $dd->endform();
 }
-
+print "</tag>";
 
 /** 
  * GET, autotag
