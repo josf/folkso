@@ -36,24 +36,13 @@ $i = new folksoDBinteract($dbc);
     </script>
     <script type="text/javascript" src="js/jquery.autocomplete.js">
     </script>
+  <script type="text/javascript" src="js/jquery.mcdropdown.js">
+  </script>
 
    <script type="text/javascript">
    var metatag_autocomplete_list = 
   <?php
-  function fk_metatag_simple_list (folksoDBinteract $i) {
-       $i->query('select tagdisplay from metatag');
-      if ($i->result_status == 'DBERR') {
-        alert('Problem with metatag autocomplete');
-        print "''";
-      }
-      else {
-        $mtags = array();
-        while ($row = $i->result->fetch_object()) {
-          $mtags[] = '"'.$row->tagdisplay.'"'; 
-        }
-        print '['.implode(',', $mtags) . ']';
-      }
-}
+
 fk_metatag_simple_list($i);
 ?>;
 </script>
@@ -71,12 +60,16 @@ fk_metatag_simple_list($i);
         href="jquery.autocomplete.css"
         media="screen">
     </link>
+  <link 
+      rel="stylesheet" type="text/css"
+      href="jquery.mcdropdown.css"
+      media="screen">
+  </link>
   <link
       rel="stylesheet" type="text/css" 
       href="editres.css"
       media="screen">
   </link>
-
   </head>
 
   <body>
@@ -167,6 +160,12 @@ fk_metatag_simple_list($i);
       </input> <span class="infohead"> Metatag </span>
       <input type="text" size="25" class="tagbox" id="groupmetatagbox" maxlength="100">
       </input>
+      <select multiple="multiple" size="15">
+  <?php
+  $metatagOptions = metatagSelectBoxOptions($i);
+  print $metatagOptions;
+?>
+      </select>
     </p>
     <p>
       <a href="#" id="grouptagvalidate" class="control">Valider</a> <span> </span> 
@@ -526,6 +525,37 @@ function datesToFrench ($date) {
   return str_replace($us, $fr, $date);
 
 }
+function fk_metatag_simple_list (folksoDBinteract $i) {
+  $i->query('SELECT tagdisplay FROM metatag');
+  if ($i->result_status == 'DBERR') {
+    alert('Problem with metatag autocomplete');
+    print "''";
+  }
+  else {
+    $mtags = array();
+    while ($row = $i->result->fetch_object()) {
+      $mtags[] = '"'.$row->tagdisplay.'"'; 
+    }
+    print '['.implode(',', $mtags) . ']';
+  }
+}
+
+function metatagSelectBoxOptions (folksoDBinteract $i) {
+  $i->query('SELECT tagdisplay FROM metatag');
+  $return = '';
+  if ($i->result_status == 'DBERR') {
+    alert('Problem with metatag autocomplete');
+    print "''";
+  }
+  else {
+    while ($row = $i->result->fetch_object()) {
+      $return .= "<option>". $row->tagdisplay . "</option>\n";
+    }
+  }
+  return $return;
+}
+
+
 
 
 ?>
