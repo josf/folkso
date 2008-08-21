@@ -43,7 +43,7 @@ $i = new folksoDBinteract($dbc);
    var metatag_autocomplete_list = 
   <?php
 
-fk_metatag_simple_list($i);
+print fk_metatag_simple_list($i);
 ?>;
 </script>
 
@@ -536,7 +536,7 @@ function fk_metatag_simple_list (folksoDBinteract $i) {
     while ($row = $i->result->fetch_object()) {
       $mtags[] = '"'.$row->tagdisplay.'"'; 
     }
-    print '['.implode(',', $mtags) . ']';
+    return '['.implode(',', $mtags) . ']';
   }
 }
 
