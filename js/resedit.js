@@ -237,7 +237,7 @@ function tagMenuCleanupFunc(lis, tag) {
   * by tagMenuFromXml.)
   */
  function getTagMenu(place, resid) {
-     place.find("ul.tagmenu").remove();
+//     place.find("ul.tagmenu li").hide();
      var tagMenuFromXmlFunction = tagMenuFunkMaker(place, resid);
     $.ajax({ url: urlbase + 'resource.php',
            type: 'get',
@@ -255,7 +255,6 @@ function tagMenuCleanupFunc(lis, tag) {
  * Returns a function closed over "place", allowing us to get
  * to this variable when called without arguments in the $.ajax call.
  *
- *  Had to use this fancy closure system to get this to work.
  */
 function tagMenuFunkMaker(place, resid) {
   var dest = place;
@@ -269,19 +268,16 @@ function tagMenuFunkMaker(place, resid) {
         taglink.attr("class", "tagdisplay");
         taglink.append($(this).find('display').text() + ' ');
         item.append(taglink);
-
         /** add tag id **/
         item.append($("<span class='tagid'>"
                       + $(this).find('numid').text()
                       + "</span>"));
-
         item.append($('<a class="remtag" href="#">Désassocier</a>'));
-
         /** meta tag (if not "normal") **/
         if ($(this).find('metatag').text() != 'normal') {
           item.append($("<span class='meta'> Relation: "
-                      + $(this).find('metatag').text()
-                      + "</span>"));
+                        + $(this).find('metatag').text()
+                        + "</span>"));
         }
 
         item.append(makeMetatagBox(resid, //closure
@@ -289,8 +285,23 @@ function tagMenuFunkMaker(place, resid) {
                                    place));
         ul.append(item);
       });
-    dest.append(ul);
-    $("ul.tagmenu").each(tagremovePrepare);
+
+    /** Now that we have our new list, put it back into the DOM **/
+    if (dest.find("ul.tagmenu").length) {
+      dest.find("ul.tagmenu").replaceWith(ul);
+    }
+    else {
+      alert("append! dammit");
+      if (dest.find("div.emptytags").length) {
+        alert("empty tags are here again");
+      }
+        else {
+          alert(dest.find(".details").length);
+          alert(dest.html());
+        }
+//      dest.find("div.emptytags").append(ul);)
+    }
+    dest.find("ul.tagmenu").each(tagremovePrepare);
   };
 }
 
@@ -476,7 +487,7 @@ function infoMessage(elem) {
                             infoMessage(createTagMessage(tgbx.val(), url, meta, lis));
                           }
                           else {
-                            alert("Erreur:  ressource non indexée. 404 " 
+                            alert("Erreur:  ressource non indexée. 404 "
                                   + xhr.statusText);
                           }
                         }
