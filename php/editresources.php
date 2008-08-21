@@ -158,10 +158,7 @@ print fk_metatag_simple_list($i);
       <span class="infohead">Tag</span>
       <input type="text" size="30" class="tagbox" id="grouptagbox" maxlength="100">
       </input> <span class="infohead"> Metatag </span>
-      <input type="text" size="25" class="tagbox" id="groupmetatagbox" maxlength="100">
-      </input>
-      <select multiple="multiple" size="15">
-  <?php
+      <select size="1" id="groupmetatagbox">  <?php
   $metatagOptions = metatagSelectBoxOptions($i);
   print $metatagOptions;
 ?>
@@ -319,7 +316,7 @@ print '> ';
     '<span class="infohead">Ajouter un tag</span> '.
     '<input type="text" size="25" class="tagbox" maxlength="100"></input>'.
     '<span class="infohead">Metatag (facultatif)</span>'.
-    '<input type="text" size="20" class="metatagbox" maxlength="100"></input>'.
+    '<select size="1" class="metatagbox">' . $metatagOptions . '</select>'.
     '<a class="tagbutton" href="#">Valider</a>' .
     '</div>' .
     '<p>Détails des tags déjà associés à cette ressource. <a class="seetags" href="#">Voir</a> '.
@@ -548,15 +545,13 @@ function metatagSelectBoxOptions (folksoDBinteract $i) {
     print "''";
   }
   else {
+    $return .= "<option></option>";
     while ($row = $i->result->fetch_object()) {
       $return .= "<option>". $row->tagdisplay . "</option>\n";
     }
   }
   return $return;
 }
-
-
-
 
 ?>
 
