@@ -341,15 +341,19 @@ $querystart =
   }
 
   $i->query($querystart . ' '  . $querywhere . ' ' . $queryend);
+
+  $df = new folksoDisplayFactory();
+  $dd = $df->FancyResourceList();
+  
+  $dd->activate_style('xml');
+
   switch ($i->result_status) {
   case 'DBERR':
     header('HTTP/1.1 501 Database query error');
     die($i->error_info());
     break;
   case 'NOROWS':
-    header('HTTP/1.1 204 No resources associated with  tag');
-    print "No resources are currently associated with " . 
-      $q->tag;
+    header('HTTP/1.1 200 No resources associated with  tag');
     return;
     break;
   case 'OK':
@@ -562,7 +566,12 @@ function byalpha (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
   
   $alpha = substr($q->get_param('byalpha'), 0, 3);
 
-  $query = "SELECT id, tagdisplay, tagnorm, popularity
+  $query = 
+    "SELECT id, tagdisplay, tagnorm, \n".
+    "(SELECT COUNT(*) \n".
+    "FROM tagevent te  \n".
+    "JOIN tag t  ON t.id = te.tag_id \n".
+    "WHERE t.id = tag.id) AS popularity
             FROM tag
             WHERE tagnorm LIKE '" . $i->dbescape($alpha) . "%'";
 
