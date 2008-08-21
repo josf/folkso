@@ -174,6 +174,7 @@ class folksoDisplayFactory {
                                  $this->standardTextList(4),
                                  array('type' => 'xml',
                                        'start' => '<resourcelist>',
+                                       'titleformat' => '<tagtitle>XXX</tagtitle>',
                                        'end' => '</resourcelist>',
                                        'lineformat' =>
                                        "<resource>\n".
