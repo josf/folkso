@@ -36,15 +36,12 @@ $i = new folksoDBinteract($dbc);
     </script>
     <script type="text/javascript" src="js/jquery.autocomplete.js">
     </script>
-  <script type="text/javascript" src="js/jquery.mcdropdown.js">
-  </script>
 
    <script type="text/javascript">
    var metatag_autocomplete_list = 
   <?php
-
-print fk_metatag_simple_list($i);
-?>;
+  print fk_metatag_simple_list($i);
+   ?>;
 </script>
 
     <script type="text/javascript" src="js/resedit.js">
