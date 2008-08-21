@@ -29,8 +29,8 @@ $(document).ready(
     $("ul.editresources li").each(tagboxPrepare);
     $("ul.editresources li").each(taglistHidePrepare);
 
-    $(".tagger .metatagbox").autocomplete(metatag_autocomplete_list);
-    $("#groupmetatagbox").autocomplete(metatag_autocomplete_list);
+//    $(".tagger .metatagbox").autocomplete(metatag_autocomplete_list);
+//    $("#groupmetatagbox").autocomplete(metatag_autocomplete_list);
 
     $("a.closeiframe").hide();
     $("#grouptagvalidate").click(
@@ -117,21 +117,19 @@ $(document).ready(
     * To be called on a <li>. Sets up tagging input box with
     * autocompletion and refreshes the tagmenu.
     */
+/**
  function tagboxPrepare() {
      var lis = $(this);
      var tgbx = lis.find("input.tagbox");
      tgbx.autocomplete(urlbase + "tagcomplete.php");
 
+     var meta = lis.find("select.metatagbox").val();
      var url = lis.find("a.resurl").attr("href");
 
      lis.find("a.tagbutton").click(
          function(event) {
            event.preventDefault();
-           var meta = '';
-           if (lis.find("div.tagger input.metatagbox").val()) {
-             meta = lis.find(".tagger input.metatagbox").val();
-           }
-
+           alert("hoohaa");
            if (tgbx.val()) {
              var cleanup = tagMenuCleanupFunc(lis, tgbx.val());
              $.ajax({
@@ -165,11 +163,11 @@ $(document).ready(
                     });
            }
            else {
-             alert('Il faut choisir un tag d\'abord');
+             alert('Il faudrait choisir un tag d\'abord');
            }
          });
  }
-
+**/
 function tagMenuCleanupFunc(lis, tag) {
   return function() {
     lis.attr("class", "tagged");
@@ -298,6 +296,24 @@ function tagMenuFunkMaker(place, resid) {
 }
 
 
+function metatagDropdown (list, boxclass) {
+  var theclass;
+  if ((typeof boxclass == "string") &&
+    (boxclass.length > 0)){
+    theclass = boxclass;
+  }
+  else {
+    theclass = "metatagbox";
+  }
+
+  var box = $("<select class='" + theclass + "'>");
+  box.append("<option></option>"); // empty first choice
+  for (var i = 0; i < metatag_autocomplete_list.length; i++) {
+    box.append("<option>" + metatag_autocomplete_list[i] + "</option>");
+  }
+  return box;
+}
+
 /**
  *  Parameter lis is a list item so that we know where to plug the
  *  new taglist back in when we are done.
@@ -307,19 +323,14 @@ function tagMenuFunkMaker(place, resid) {
 function makeMetatagBox (resource, tag, lis) {
   var container = $("<span class='metatagbox'></span>")
     .append("<span class='infohead'>Modifier le metatag </span>");
-
-  var box = $("<select class='metatagbox'>");
 //  box.autocomplete(metatag_autocomplete_list); //array defined in <script> on page.
-  box.append("<option></option>"); // empty first choice
-  for (var i = 0; i < metatag_autocomplete_list.length; i++) {
-    box.append("<option>" + metatag_autocomplete_list[i] + "</option>");
-  }
 
+  var box = metatagDropdown(metatag_autocomplete_list, "metatagbox");
   var button = $("<a href='#' class='metatagbutton'>metaValider</a>")
     .click(
       function(event){
         event.preventDefault();
-        var newmeta = $(this).siblings("input").val();
+        var newmeta = $(this).siblings("select").val();
         $.ajax({
                  url: urlbase + 'resource.php',
                  type: 'post',
@@ -462,10 +473,7 @@ function infoMessage(elem) {
      lis.find("a.tagbutton").click(
          function(event) {
            event.preventDefault();
-           var meta = '';
-           if (lis.find("div.tagger input.metatagbox").val()) {
-             meta = lis.find(".tagger input.metatagbox").val();
-           }
+         var meta = lis.find(".tagger select.metatagbox").val();
 
            if (tgbx.val()) {
              var cleanup = tagMenuCleanupFunc(lis, tgbx.val());
