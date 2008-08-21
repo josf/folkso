@@ -3,7 +3,21 @@
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
   <xsl:output method="xml"/>
+
   <xsl:template match="/">
+    <xsl:apply-templates/>
+  </xsl:template>
+
+    
+  <xsl:template match="tagtitle">
+    <xsl:element name="h2">
+      <xsl:attribute name="class">tagtitle</xsl:attribute>
+      <xsl:value-of select="."/>
+    </xsl:element>
+  </xsl:template>
+
+
+  <xsl:template match="resourcelist">
 
     <xsl:element name="ul">
         <xsl:attribute name="class">resourcelist</xsl:attribute>
