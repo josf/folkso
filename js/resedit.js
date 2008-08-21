@@ -476,11 +476,12 @@ function infoMessage(elem) {
                             infoMessage(createTagMessage(tgbx.val(), url, meta, lis));
                           }
                           else {
-                            alert("404 but no tag " + xhr.statusText);
+                            alert("Erreur:  ressource non indexée. 404 " 
+                                  + xhr.statusText);
                           }
                         }
                         else {
-                          alert('something else');
+                          alert('Erreur interne ' + xhr.statusText);
                         }
                       },
                       success: function (str) {
