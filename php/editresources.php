@@ -203,9 +203,9 @@ if ($orderby == 'tagdate') {
 }
 
 $rescount_sql = 
-  'select count(*) as rows '.
-  ' from resource r ' .
-  ' where '.
+  'SELECT COUNT(*) AS rows '.
+  ' FROM resource r ' .
+  ' WHERE '.
   buildWhere($initial, $sequence, $tagged, $i);
 
 $i->query($rescount_sql);
