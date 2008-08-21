@@ -32,12 +32,15 @@ ul.resourcelist li a.tocloud, ul.resourcelist li a:visited.tocloud, ul.resourcel
 <?php
 
 require_once('folksoClient.php');
+require_once('folksoFabula.php');
+
+$loc = new folksoFabula();
 
    if ($_GET['tagthing']) {
      $tagthing = substr($_GET['tagthing'], 0, 255);
 
      $fc = new folksoClient('localhost', '/tag.php', 'get');
-     $fc->set_getfields(array('folksotag' => $tagthing, 'folksofancy' => ''));
+     $fc->set_getfields(array('folksotag' => $tagthing, 'folksofancy' => '1'));
      $reslist = $fc->execute();
 
      if ($fc->query_resultcode() == 200) {
@@ -46,7 +49,7 @@ require_once('folksoClient.php');
            $resources->loadXML($reslist);
            
            $xsl = new DOMDocument();
-           $xsl->load("/usr/local/www/apache22/data/resourcelist.xsl");
+           $xsl->load($loc->xsl_dir . "resourcelist.xsl");
 
            $proc = new XsltProcessor();
            $xsl = $proc->importStylesheet($xsl);
