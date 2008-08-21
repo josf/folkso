@@ -605,6 +605,8 @@ function tagResourceFunc (url, tag, meta, lisarg) {
 }
 
 function currentTagsUpdate (tag, lis) {
-  lis.find("span.currenttags").append(' "' + tag + '" ');
+  if (lis.find("span.currenttags").html().indexOf('"' + tag + '"') == -1)  {
+    lis.find("span.currenttags").append('"' + tag + '"');
+  }
 }
 
