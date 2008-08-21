@@ -291,15 +291,7 @@ function tagMenuFunkMaker(place, resid) {
       dest.find("ul.tagmenu").replaceWith(ul);
     }
     else {
-      alert("append! dammit");
-      if (dest.find("div.emptytags").length) {
-        alert("empty tags are here again");
-      }
-        else {
-          alert(dest.find(".details").length);
-          alert(dest.html());
-        }
-//      dest.find("div.emptytags").append(ul);)
+      dest.append(ul);
     }
     dest.find("ul.tagmenu").each(tagremovePrepare);
   };
