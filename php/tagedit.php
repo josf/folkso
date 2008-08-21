@@ -7,8 +7,16 @@
    media="screen">
 <link rel="stylesheet" type="text/css" href="http://www.fabula.org/commun3/print.css" media="print">
 <link rel="shortcut icon" type="image/x-icon" href="http://www.fabula.org/favicon.ico">
+   <link 
+        rel="stylesheet" type="text/css"
+        href="jquery.autocomplete.css"
+        media="screen">
+    </link>
+
 
 <script type="text/javascript" src="js/jquery.js"></script>
+<script type="text/javascript" src="js/jquery.autocomplete.js">
+  </script>
 <script type="text/javascript" src="js/folkso.js"></script>
 <script type="text/javascript" src="js/tagedit.js"></script>
 
