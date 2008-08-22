@@ -175,7 +175,7 @@ class folksoDisplayFactory {
                                        'argsperline' => 4),
                                  $this->standardTextList(4),
                                  array('type' => 'xml',
-                                       'start' => '<?xml version="1.0"?>'."\n".'<resourcelist>',
+                                       'start' => '<resourcelist>',
                                        'titleformat' => '<tagtitle>XXX</tagtitle>',
                                        'end' => '</resourcelist>',
                                        'lineformat' =>
