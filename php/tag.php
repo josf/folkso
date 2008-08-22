@@ -362,8 +362,8 @@ $querystart =
     $querywhere = "where t.tagnorm = normalize_tag('" . 
       $i->dbescape($q->tag) . "') ";
   }
-
-  $i->query($querytagtitle . " UNION \n" .  $querystart . ' '  . $querywhere . ' ' . $queryend);
+  $total_query = $querytagtitle . " UNION \n" .  $querystart . ' '  . $querywhere . ' ' . $queryend;
+  $i->query($total_query);
 
   switch ($i->result_status) {
   case 'DBERR':
@@ -390,14 +390,12 @@ $querystart =
 
   print "<tag>\n";
 
+  //pop the first line of the results containing the tagtitle
   $row1 = $i->result->fetch_object();  
   print $dd->title($row1->title);
   print $dd->startform();
 
-  //pop the first line of the results containing the tagtitle
-
   print "\n";
-
   while ($row = $i->result->fetch_object()) {
     print $dd->line( $row->id,
                      $row->href,
@@ -405,7 +403,7 @@ $querystart =
                      $row->tags);
   }
   print $dd->endform();
-print "</tag>";
+  print "</tag>";
 }
 
 
