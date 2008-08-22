@@ -45,7 +45,7 @@
         <xsl:element name="a">
                 <xsl:attribute name="class">tocloud</xsl:attribute>
         <xsl:attribute name="href">
-        <xsl:value-of select="concat('/clouddemo.php?demouri=',
+        <xsl:value-of select="concat('/commun3/folksonomie/clouddemo.php?demouri=',
                      url)"/>
         </xsl:attribute>
         <xsl:text> Voir cloud </xsl:text>

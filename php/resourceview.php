@@ -36,8 +36,8 @@ require_once('folksoFabula.php');
 
 $loc = new folksoFabula();
 
-   if ($_GET['tagthing']) {
-     $tagthing = substr($_GET['tagthing'], 0, 255);
+   if ($_GET['tag']) {
+     $tagthing = substr($_GET['tag'], 0, 255);
 
      $fc = new folksoClient('localhost', 
                             $loc->server_web_path . 'tag.php', 

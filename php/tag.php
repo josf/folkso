@@ -353,7 +353,7 @@ $querystart =
   join tagevent te on r.id = te.resource_id
   join tag t on te.tag_id = t.id';
 
-  $queryend = " LIMIT 20";
+  $queryend = " LIMIT 100";
   $querywhere = '';
   if (is_numeric($q->tag)) {
     $querywhere = 'where t.id = ' . $q->tag . ' ';

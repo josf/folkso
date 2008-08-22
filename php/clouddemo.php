@@ -33,27 +33,21 @@ div.cloud ul li {       display: inline; padding-right: 1em;}
 <div id="container">
     <h1>Un nuage de tags</h1>
 
-    <form action="clouddemo.php" method="get">
-      <p>Saisir l'URI d'une page du site: 
-      <input type="text" name="demouri" maxlength="255" size="80"></input>
-      </p>
-      <p>
-        <input type="submit"/>
-      </p>
-    </form>
-
 <?php
 
 require_once('folksoClient.php');
+require_once('folksoFabula.php');
+
+$loc = new folksoFabula();
 
 if ($_GET['demouri']) {
 
 $cl = new folksoClient('localhost', 
-                       '/resource.php',
+                       $loc->server_web_path . 'resource.php',
                        'GET');
 
 $cl->set_getfields( array('folksores' => $_GET['demouri'],
-                          'folksoclouduri' => ''));
+                          'folksoclouduri' => '1'));
 
 print '<div class="cloud">';
 print $result =  $cl->execute();

@@ -22,7 +22,7 @@
         <xsl:element name="a">
           <xsl:attribute name="class">tagname</xsl:attribute>
         <xsl:attribute name="href">
-        <xsl:value-of select="concat('resourceview.php?tagthing=',
+        <xsl:value-of select="concat('resourceview.php?tag=',
                                      numid)"/>
         </xsl:attribute>
           <xsl:value-of select="display"/>
