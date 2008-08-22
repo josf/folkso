@@ -27,7 +27,7 @@ abstract class folksoLocal {
    * Must not include the hostname.
    *
    */
-  protected $server_web_path;
+  public $server_web_path;
 
 
   /**
