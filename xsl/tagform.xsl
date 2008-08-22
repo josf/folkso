@@ -103,6 +103,7 @@
         </xsl:text>
 
         <xsl:element name="input">
+          <xsl:attribute name="class">fusionbox</xsl:attribute>
           <xsl:attribute name="name">folksotarget</xsl:attribute>
           <xsl:attribute name="type">text</xsl:attribute>
           <xsl:attribute name="maxlength">255</xsl:attribute>
