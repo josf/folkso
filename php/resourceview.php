@@ -39,7 +39,7 @@ $loc = new folksoFabula();
    if ($_GET['tagthing']) {
      $tagthing = substr($_GET['tagthing'], 0, 255);
 
-     $fc = new folksoClient('localhost', '/tag.php', 'get');
+     $fc = new folksoClient('localhost', 'tag.php', 'get');
      $fc->set_getfields(array('folksotag' => $tagthing, 'folksofancy' => '1'));
      $reslist = $fc->execute();
 
