@@ -113,61 +113,6 @@ $(document).ready(
    );
  }
 
-   /**
-    * To be called on a <li>. Sets up tagging input box with
-    * autocompletion and refreshes the tagmenu.
-    */
-/**
- function tagboxPrepare() {
-     var lis = $(this);
-     var tgbx = lis.find("input.tagbox");
-     tgbx.autocomplete(urlbase + "tagcomplete.php");
-
-     var meta = lis.find("select.metatagbox").val();
-     var url = lis.find("a.resurl").attr("href");
-
-     lis.find("a.tagbutton").click(
-         function(event) {
-           event.preventDefault();
-           alert("hoohaa");
-           if (tgbx.val()) {
-             var cleanup = tagMenuCleanupFunc(lis, tgbx.val());
-             $.ajax({
-                      url: urlbase + 'resource.php',
-                      type: 'post',
-                      datatype: 'text/text',
-                      data: {
-                        folksores: url,
-                        folksotag: tgbx.val(),
-                        folksometa: meta},
-                      error: function(xhr, msg) {
-                        if (xhr.status == 404) {
-                          if (xhr.statusText.indexOf('ag does not exist') != -1) {
-                            infoMessage(createTagMessage(tgbx.val(), url, meta, lis));
-                          }
-                          else {
-                            alert("404 but no tag " + xhr.statusText);
-                          }
-                        }
-                        else {
-                          alert('Erreur. ' + xhr.statusText);
-                        }
-                      },
-                      success: function (str) {
-                        cleanup();
-                        getTagMenu(
-                          lis.find("div.emptytags"),
-                          lis.attr("id").substring(3));
-                        tgbx.val('');
-                      }
-                    });
-           }
-           else {
-             alert('Il faudrait choisir un tag d\'abord');
-           }
-         });
- }
-**/
 function tagMenuCleanupFunc(lis, tag) {
   return function() {
     lis.attr("class", "tagged");
