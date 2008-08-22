@@ -388,6 +388,7 @@ $querystart =
   
   $dd->activate_style('xml');
 
+  print '<?xml version="1.0"?>'."\n";
   print "<tag>\n";
 
   //pop the first line of the results containing the tagtitle
