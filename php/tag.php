@@ -405,8 +405,9 @@ $querystart =
                      $row->tags);
   }
   print $dd->endform();
-}
 print "</tag>";
+}
+
 
 /** 
  * GET, autotag
@@ -598,8 +599,7 @@ function byalpha (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
     "SELECT id, tagdisplay, tagnorm, \n".
     "(SELECT COUNT(*) \n".
     "FROM tagevent te  \n".
-    "JOIN tag t  ON t.id = te.tag_id \n".
-    "WHERE t.id = tag.id) AS popularity
+    "WHERE te.tag_id = tag.id) AS popularity
             FROM tag
             WHERE tagnorm LIKE '" . $i->dbescape($alpha) . "%'";
 
@@ -630,7 +630,8 @@ function byalpha (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
                     $row->popularity,
                     '') . "\n"; // empty field because there are no metatags here
   }
-  print $dd->endform();
+   print $dd->endform();
+  return;
 }
 
 /**
