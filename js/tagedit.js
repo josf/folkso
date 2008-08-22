@@ -1,4 +1,7 @@
+var urlbase = '';
+
 $(document).ready(function() {
+                    $(".fusionbox").autocomplete(urlbase + "tagcomplete.php");
                     $('.tagentry').each(fkPrepare);
                   });
 
