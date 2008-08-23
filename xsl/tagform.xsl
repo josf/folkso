@@ -140,6 +140,7 @@
           <xsl:attribute name="value">
             <xsl:value-of select="numid"/>
           </xsl:attribute>
+          <xsl:attribute name="class">fusionbutton</xsl:attribute>
           <xsl:attribute name="name">folksotag</xsl:attribute>
           Fusionner
         </xsl:element>
