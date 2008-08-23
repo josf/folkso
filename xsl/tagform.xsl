@@ -13,10 +13,9 @@
 
   <xsl:template match="tag">
     <xsl:element name="li">
-      <xsl:attribute name="class">tagentry</xsl:attribute>
-
       <!-- change class depending on whether this tag has resources or not -->
       <xsl:attribute name="class">
+        <xsl:text>tagentry </xsl:text>
         <xsl:choose>
           <xsl:when test="./popularity = 0">
             <xsl:text>nores</xsl:text>
@@ -89,6 +88,7 @@
             <xsl:element name="input">
               <xsl:attribute name="type">submit</xsl:attribute>
               <xsl:attribute name="value">Modifier</xsl:attribute>
+              <xsl:attribute name="class">renamebutton</xsl:attribute>
             </xsl:element>
           </xsl:element>
       </xsl:element>
