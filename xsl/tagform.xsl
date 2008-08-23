@@ -14,6 +14,16 @@
   <xsl:template match="tag">
     <xsl:element name="li">
       <xsl:attribute name="class">tagentry</xsl:attribute>
+      <xsl:attribute name="class">
+        <xsl:choose>
+          <xsl:when test="./popularity = 0">
+            <xsl:text>nores</xsl:text>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:text>res</xsl:text>
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:attribute>
       <xsl:attribute name="id">
         <xsl:value-of select="concat('tagid', numid)"/>
       </xsl:attribute>
@@ -33,11 +43,18 @@
           <xsl:attribute name="class">tagpopularity</xsl:attribute>
           <xsl:text> (</xsl:text>
           <xsl:value-of select="popularity"/>
-          <xsl:text> ressources)</xsl:text>
+          <xsl:text> ressources) </xsl:text>
         </xsl:element>
 
-      </xsl:element>
 
+
+      <xsl:element name="a">
+        <xsl:attribute name="href">#</xsl:attribute>
+        <xsl:attribute name="class">edit</xsl:attribute>
+        <xsl:text>Editer</xsl:text>
+      </xsl:element>
+      </xsl:element>
+      <!-- commands -->
       <xsl:element name="div">
         <xsl:attribute name="class">tagcommands</xsl:attribute>
 
