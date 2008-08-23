@@ -693,7 +693,8 @@ function allTags (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
     "SELECT t.tagdisplay AS display, t.id AS tagid, \n\t" .
     "t.tagnorm AS tagnorm, \n\t".
     "(SELECT COUNT(*) FROM tagevent te WHERE te.tag_id = t.id) AS popularity \n".
-    "FROM tag t \n";
+    "FROM tag t \n".
+  " ORDER BY display ";
 
     
   $i->query($query);
