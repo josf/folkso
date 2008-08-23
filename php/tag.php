@@ -714,7 +714,7 @@ function allTags (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
                     $row->popularity,
                     '');
   }
-  print $dd->endform;
+  print $dd->endform();
 }
 
 ?>
