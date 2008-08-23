@@ -1,7 +1,11 @@
 var urlbase = '';
 
-$(document).ready(function() {
+$.ajaxSetup({
+              url: urlbase + 'tag.php',
+              datatype: 'text/text',
+              type: 'post'});
 
+$(document).ready(function() {
                     $(".fusionbox").autocomplete(urlbase + "tagcomplete.php");
                     $('.tagentry').each(fkPrepare);
 
@@ -11,6 +15,12 @@ $(document).ready(function() {
                         // first parent is a <p>
                         $(this).parent().parent("li").find(".tagcommands").show();
                         $(this).hide();
+                      });
+                    $('a.closeeditbox').click(
+                      function(event){
+                        event.preventDefault();
+                        $(this).parent().parent(".tagcommands").hide();
+                        $(this).parent().parent("li").find("a.edit").show();
                       });
 
                     $("a.restags").click(
@@ -70,20 +80,44 @@ $(document).ready(function() {
 
 function fkPrepare(selector) {
   // tagid is 'tagid' + number
-  var thisid = $(this).attr('id');
+  var lis = $(this);
+  var thisid = lis.attr('id');
   var tagid = thisid.substring(5);
 
-  $(this).find("button.delete").click(
+  lis.find("button.delete").click(
     function(event) {
       event.preventDefault();
       $.post(urlbase + 'tag.php',
              {folksotag: tagid,
-              folksodelete: ''},
+              folksodelete: '1'},
              function() {
-               $("#" + thisid).hide("slow");
+               $("#" + thisid).hide();
                $("#" + thisid).remove();
              });
     });
+
+
+    lis.find("input.renamebutton").click(
+      function(event) {
+        event.preventDefault();
+        alert("you clicked?");
+        var newname = lis.find("input.renamebox").val();
+        if (newname &&
+            (newname != lis.find("a.tagname").text())) {
+          $.ajax({
+                   data: {
+                     folksotag: tagid,
+                     folksonewname: newname
+                   },
+                   success: function(data, str) {
+                     lis.find("a.tagname").text(newname);
+                   },
+                   error: function(xhr, msg) {
+                     alert("Echéc: " + xhr.statusText);
+                   }
+                 });
+          }
+        });
 }
 
 /**
