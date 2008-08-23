@@ -57,8 +57,10 @@ if (isset($_GET['letters'])) {
     $fc = new folksoClient('localhost', 
                            $loc->get_server_web_path(). 'tag.php', 
                            'get');
-    $fc->set_getfields(array('folksobyalpha' => $alpha));
+    $fc->set_getfields(array('folksoalltags' => $alpha));
     $taglist = $fc->execute();
+
+    print $taglist;
 
     if ($fc->query_resultcode() == 200) {
       if (strlen($taglist) == 0) {
