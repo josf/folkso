@@ -48,9 +48,6 @@ $srv->addResponseObj(new folksoResponse('get',
 $srv->addResponseObj(new folksoResponse('head',
                                         array('required' => array('tag')),
                                         'headCheckTagDo'));
-$srv->addResponseObj(new folksoResponse('get',
-                                        array('required' => array('alltags')),
-                                        'allTags'));
 
 /**
  * Note that the "tag" field here refers to the resource that will be
@@ -678,43 +675,5 @@ function renameTag (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc)
   }
 }
 
-
-/**
- * List of all the tags.
- */
-function allTags (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
-  $i = new folksoDBinteract($dbc);
-  if ($i->db_error()) {
-    header('HTTP/1.1 501 Database connection problem');
-    die($i->error_info());
-  }
-
-  $query = 
-    "SELECT t.tagdisplay AS display, t.id AS tagid, \n\t" .
-    "t.tagnorm AS tagnorm, \n\t".
-    "(SELECT COUNT(*) FROM tagevent te WHERE te.tag_id = t.id) AS popularity \n".
-    "FROM tag t \n";
-
-    
-  $i->query($query);
-  if ($i->result_status != 'OK') {
-    header("HTTP/1.1 501 Database error");
-    die($i->error_info());
-  }
-            
-  $df = new folksoDisplayFactory();
-  $dd = $df->TagList();
-  $dd->activate_style('xml');
-
-  print $dd->startform();
-  while ($row = $i->result->fetch_object()) {
-    print $dd->line($row->tagid,
-                    $row->tagnorm,
-                    $row->display,
-                    $row->popularity,
-                    '');
-  }
-  print $dd->endform;
-}
 
 ?>
