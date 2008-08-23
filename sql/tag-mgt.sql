@@ -417,7 +417,7 @@ CASE
          SET return_statement = 'OK';
 END CASE;
 
-SELECT return_statement AS status;
+SELECT return_statement AS status, target_id AS newid;
 
 END$$
 DELIMITER ;
