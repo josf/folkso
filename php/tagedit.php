@@ -21,8 +21,9 @@
 <script type="text/javascript" src="js/tagedit.js"></script>
 
 <style type="text/css">
-.tagname { font-weight: bold; font-size: 14pt}
-   .tagcommands { display: none; }
+.tagname { font-weight: bold; font-size: 12pt}
+   .tagcommands { display: none; 
+ border: 2px solid grey; width: 400px; padding: 0.5em }
 #container { background-color: white;}
 </style>
 
@@ -32,7 +33,7 @@
 <h1>Gestion des tags</h1>
 
 <form action="tagedit.php" method="get">
-   <p>Taper une, deux ou trois lettres pour sélectionner les tags à éditer: 
+   <p>Taper une, deux ou trois lettres pour  sélectionner les tags à éditer: 
         <input type="text" name="letters" maxlength="3" size="3"></input>
     </p>
    <p>
@@ -47,21 +48,33 @@
    </p>
 </form> 
 
+<ul class="pagecommands">
+  <li><a href="#" class="seealltags">Afficher tous les tags</a></li>
+  <li><a href="#" class="restags">Afficher seulement les tags <em>déjà utilisés</em></a> (Associés à des ressources)</li>
+  <li><a href="#" class="norestags">Afficher seulement les tags <em>non utilisés</em></a> (Associés à aucune ressource)</li>
+</ul>
+
 <?php
 require_once('folksoClient.php');
 require_once('folksoFabula.php');
 
 $loc = new folksoFabula();
 
+$fc = new folksoClient('localhost', 
+                       $loc->get_server_web_path(). 'tag.php', 
+                       'get');
+
 if (isset($_GET['letters'])) {
     $alpha = substr($_GET['letters'], 0, 3);
-    $fc = new folksoClient('localhost', 
-                           $loc->get_server_web_path(). 'tag.php', 
-                           'get');
-    $fc->set_getfields(array('folksoalltags' => $alpha));
+    $fc->set_getfields(array('folksobyalpha' => $alpha));
+}
+else { //if no letter specified, get all tags 
+  $fc->set_getfields(array('folksoalltags' => 1));
+}
+
     $taglist = $fc->execute();
 
-    print $taglist;
+//    print $taglist;
 
     if ($fc->query_resultcode() == 200) {
       if (strlen($taglist) == 0) {
@@ -83,10 +96,15 @@ if (isset($_GET['letters'])) {
       print $fc->query_resultcode();
       print $taglist;
     }
-
-  }
-
 ?>
+
+
+<ul class="pagecommands">
+  <li><a href="#" class="seealltags">Afficher tous les tags</a></li>
+  <li><a href="#" class="restags">Afficher seulement les tags <em>déjà utilisés</em></a> (Associés à des ressources)</li>
+  <li><a href="#" class="norestags">Afficher seulement les tags <em>non utilisés</em></a> (Associés à aucune ressource)</li>
+</ul>
+
 </div>
 </body>
 </html>
