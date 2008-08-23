@@ -451,7 +451,7 @@ function autoCompleteTagsDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconn
 }
 
 /**
- * POST, target source
+ * POST, res, target 
  * 
  * Retags all the tagevents tagged by "source" as "target", then
  * deletes "source".
@@ -486,34 +486,37 @@ function tagMerge (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) 
     $target_part = "'', '" . $i->dbquote($q->get_param('target')) . "'";
   }
   
-  // execute
-  $i->query("call tagmerge($source_part, $target_part)");
+  $i->query("CALL TAGMERGE($source_part, $target_part)");
   
   if ($i->result_status == 'DBERR') {
     header('HTTP/1.1 501 Database error');
     die($i->error_info());
   }
   else {
-    switch ($i->first_val('status')) {
+    $row = $i->result->fetch_object();
+    $status = $row->status;
+    $newid = $row->newid;
+    switch ($status) {
     case 'OK':
       header('HTTP/1.1 204 Merge successful');
       print $i->first_val('status');
+      header('X-Folksonomie-TargetId: ' . $newid);
       return;
       break;
     case 'NOTARGET':
       header('HTTP/1.1 404 Invalid target tag');
-      print $i->first_val('status');
+      print $status;
       die($q->get_param('target') . 
           " is not present in the database. Merge not accomplished.");
       break;
     case 'NOSOURCE':
       header('HTTP/1.1 404 Invalid source tag');
-      die($q->get_param('source') . 
+      die($q->res . 
           " is not present in the database. Merge not accomplished.");
       break;
     }
     header('HTTP/1.1 501 Strange server error');
-    print "fv: ".$i->first_val('status');
+    print "fv: ". $status;
     die('This should not have happened.');
   }
 }
@@ -654,8 +657,8 @@ function renameTag (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc)
     die('Nothing to rename. No such tag: ' . $q->tag);
   }
 
-  $query = "update tag
-            set tagdisplay = '" . 
+  $query = "UPDATE tag
+            SET tagdisplay = '" . 
     $i->dbescape($q->get_param('newname')) . "', " .
     "tagnorm = normalize_tag('" . $i->dbescape($q->get_param('newname')) . "') ".
     "where ";
