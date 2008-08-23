@@ -7,7 +7,7 @@ $.ajaxSetup({
 
 $(document).ready(function() {
                     $(".fusionbox").autocomplete(urlbase + "tagcomplete.php");
-                    $('.tagentry').each(fkPrepare);
+                    $('li.tagentry').each(fkPrepare);
 
                     $('a.edit').click(
                       function(event) {
@@ -47,7 +47,6 @@ $(document).ready(function() {
 
                         if( $("#tagcreatebox").val()) {
                           var newtag = $("#tagcreatebox").val();
-                          alert(newtag);
                           $.ajax({
                                    url: urlbase + 'tag.php',
                                    type: 'post',
@@ -78,7 +77,7 @@ $(document).ready(function() {
                       });
                   });
 
-function fkPrepare(selector) {
+function fkPrepare() {
   // tagid is 'tagid' + number
   var lis = $(this);
   var thisid = lis.attr('id');
@@ -96,12 +95,10 @@ function fkPrepare(selector) {
              });
     });
 
-
     lis.find("input.renamebutton").click(
       function(event) {
         event.preventDefault();
-        alert("you clicked?");
-        var newname = lis.find("input.renamebox").val();
+         var newname = lis.find("input.renamebox").val();
         if (newname &&
             (newname != lis.find("a.tagname").text())) {
           $.ajax({
@@ -120,9 +117,13 @@ function fkPrepare(selector) {
           }
         });
 
-  var fusiontarget = lis.find("input.fusionbox").val();
-  if (fusiontarget) {
-    $.ajax({
+  lis.find(".fusionbutton").click(
+    function(event){
+      event.preventDefault();
+      var oldpopularity = getPopularity(lis);
+      var fusiontarget = lis.find("input.fusionbox").val();
+      if (fusiontarget) {
+        $.ajax({
              type: 'post',
              data: {
                folksotag: tagid,
@@ -135,9 +136,9 @@ function fkPrepare(selector) {
                alert("Echec: " + xhr.statusText);
              }
            });
-    }
+      }
+    });
 }
-
 /**
  * Retreive the tag id on successful tag creation.
  */
@@ -145,4 +146,9 @@ function fkPrepare(selector) {
 function getTagId(data) {
   var tagid = data.match(/\d+/);
   return tagid[0];
+}
+
+function getPopularity(lis) {
+  var matches = lis.find("span.tagpopularity").text().match(/\(\d+/);
+  return matches[0];
 }
