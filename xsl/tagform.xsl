@@ -3,8 +3,8 @@
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
   <xsl:output method="xml"/>
-  <xsl:template match="/">
 
+  <xsl:template match="/">
     <xsl:element name="ul">
       <xsl:attribute name="class">taglist</xsl:attribute>
       <xsl:apply-templates/>
@@ -14,6 +14,8 @@
   <xsl:template match="tag">
     <xsl:element name="li">
       <xsl:attribute name="class">tagentry</xsl:attribute>
+
+      <!-- change class depending on whether this tag has resources or not -->
       <xsl:attribute name="class">
         <xsl:choose>
           <xsl:when test="./popularity = 0">
@@ -24,6 +26,7 @@
           </xsl:otherwise>
         </xsl:choose>
       </xsl:attribute>
+
       <xsl:attribute name="id">
         <xsl:value-of select="concat('tagid', numid)"/>
       </xsl:attribute>
@@ -46,8 +49,6 @@
           <xsl:text> ressources) </xsl:text>
         </xsl:element>
 
-
-
       <xsl:element name="a">
         <xsl:attribute name="href">#</xsl:attribute>
         <xsl:attribute name="class">edit</xsl:attribute>
@@ -64,11 +65,11 @@
         <xsl:attribute name="action">tag.php</xsl:attribute>
         <xsl:attribute name="method">post</xsl:attribute>
         <xsl:element name="p">
-          <xsl:text> Modifier ce tag : </xsl:text>
+          <xsl:text> Modifier : </xsl:text>
             <xsl:element name="input">
               <xsl:attribute name="type">text</xsl:attribute>
               <xsl:attribute name="maxlength">255</xsl:attribute>
-              <xsl:attribute name="size">30</xsl:attribute>
+              <xsl:attribute name="size">20</xsl:attribute>
               <xsl:attribute name="name">folksonewname</xsl:attribute>
             </xsl:element>
 
@@ -93,7 +94,7 @@
           <xsl:attribute name="action">tag.php</xsl:attribute>
           <xsl:attribute name="method">post</xsl:attribute>
           <xsl:element name="p">
-            <xsl:text>Supprimer ce tag : </xsl:text>
+            <xsl:text>Supprimer : </xsl:text>
 
             <xsl:element name="input">
               <xsl:attribute name="type">hidden</xsl:attribute>
@@ -119,7 +120,7 @@
           <xsl:attribute name="method">post</xsl:attribute>
       <xsl:element name="p">
         <xsl:text> 
-          Fusionner ce tag avec :
+          Fusionner avec :
         </xsl:text>
 
         <xsl:element name="input">
@@ -127,7 +128,7 @@
           <xsl:attribute name="name">folksotarget</xsl:attribute>
           <xsl:attribute name="type">text</xsl:attribute>
           <xsl:attribute name="maxlength">255</xsl:attribute>
-          <xsl:attribute name="size">30</xsl:attribute>
+          <xsl:attribute name="size">20</xsl:attribute>
         </xsl:element>
         <xsl:element name="button">
           <xsl:attribute name="type">submit</xsl:attribute>
