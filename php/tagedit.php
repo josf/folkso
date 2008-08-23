@@ -22,6 +22,7 @@
 
 <style type="text/css">
 .tagname { font-weight: bold; font-size: 14pt}
+   .tagcommands { display: none; }
 #container { background-color: white;}
 </style>
 
