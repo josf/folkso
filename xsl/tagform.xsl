@@ -67,10 +67,15 @@
         <xsl:element name="p">
           <xsl:text> Modifier : </xsl:text>
             <xsl:element name="input">
+              <xsl:attribute name="class">renamebox</xsl:attribute>
               <xsl:attribute name="type">text</xsl:attribute>
               <xsl:attribute name="maxlength">255</xsl:attribute>
               <xsl:attribute name="size">20</xsl:attribute>
               <xsl:attribute name="name">folksonewname</xsl:attribute>
+              <xsl:attribute name="value"> 
+                <xsl:value-of select="display"/>
+              </xsl:attribute>
+
             </xsl:element>
 
             <xsl:element name="input">
@@ -140,9 +145,19 @@
         </xsl:element>
       </xsl:element>
       </xsl:element>
+
+    <!-- close box -->
+    <xsl:element name="p">
+      <xsl:element name="a">
+        <xsl:attribute name="href">#</xsl:attribute>
+        <xsl:attribute name="class">closeeditbox</xsl:attribute>
+        <xsl:text>Fermer</xsl:text>
+      </xsl:element>
     </xsl:element>
 
-    </xsl:element> <!-- end of commands div -->
+    </xsl:element>  <!-- end of commands div -->
+
+    </xsl:element>
   </xsl:template>
 
 </xsl:stylesheet>
