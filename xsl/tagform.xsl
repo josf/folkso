@@ -38,6 +38,9 @@
 
       </xsl:element>
 
+      <xsl:element name="div">
+        <xsl:attribute name="class">tagcommands</xsl:attribute>
+
       <!-- Rename -->
       <xsl:element name="form">
         <xsl:attribute name="class">rename</xsl:attribute>
@@ -120,6 +123,8 @@
       </xsl:element>
       </xsl:element>
     </xsl:element>
+
+    </xsl:element> <!-- end of commands div -->
   </xsl:template>
 
 </xsl:stylesheet>
