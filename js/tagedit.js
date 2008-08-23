@@ -2,8 +2,8 @@ var urlbase = '';
 
 $.ajaxSetup({
               url: urlbase + 'tag.php',
-              datatype: 'text/text',
-              type: 'post'});
+              datatype: 'text/text'
+              });
 
 $(document).ready(function() {
                     $(".fusionbox").autocomplete(urlbase + "tagcomplete.php");
@@ -105,6 +105,7 @@ function fkPrepare(selector) {
         if (newname &&
             (newname != lis.find("a.tagname").text())) {
           $.ajax({
+                   type: 'post',
                    data: {
                      folksotag: tagid,
                      folksonewname: newname
@@ -113,11 +114,28 @@ function fkPrepare(selector) {
                      lis.find("a.tagname").text(newname);
                    },
                    error: function(xhr, msg) {
-                     alert("Echéc: " + xhr.statusText);
+                     alert("Echec: " + xhr.statusText);
                    }
                  });
           }
         });
+
+  var fusiontarget = lis.find("input.fusionbox").val();
+  if (fusiontarget) {
+    $.ajax({
+             type: 'post',
+             data: {
+               folksotag: tagid,
+               folksotarget: fusiontarget
+             },
+             success: function(data, str){
+               lis.remove();
+             },
+             error: function(xhr, msg){
+               alert("Echec: " + xhr.statusText);
+             }
+           });
+    }
 }
 
 /**
