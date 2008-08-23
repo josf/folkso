@@ -1,12 +1,14 @@
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title>Editons les tags</title>
 <link 
    rel="stylesheet" type="text/css" 
    href="http://www.fabula.org/commun3/template.css" 
    media="screen">
+</link>
 <link rel="stylesheet" type="text/css" href="http://www.fabula.org/commun3/print.css" media="print">
-<link rel="shortcut icon" type="image/x-icon" href="http://www.fabula.org/favicon.ico">
+</link>
+<!-- <link rel="shortcut icon" type="image/x-icon" href="http://www.fabula.org/favicon.ico"></link> -->
    <link 
         rel="stylesheet" type="text/css"
         href="jquery.autocomplete.css"
@@ -22,9 +24,14 @@
 
 <style type="text/css">
 .tagname { font-weight: bold; font-size: 12pt}
-   .tagcommands { display: none; 
- border: 2px solid grey; width: 400px; padding: 0.5em }
+.tagcommands { display: none; 
+               border: 2px solid grey; 
+               width: 400px; 
+               padding: 0.5em }
 #container { background-color: white;}
+a.nores {color: blue;}
+a.closeeditbox, a.closeeditbox:link, a.closeeditbox:visited { margin-left: 300px;}
+
 </style>
 
 </head>
@@ -43,8 +50,8 @@
 
 <form action="tag.php" method="post">
    <p>Créer un nouveau tag : 
-      <input type="text" name="folksonewtag" maxlength="255" size="50"/>
-      <input type="submit" value="Créer"/>
+      <input type="text" name="folksonewtag" id="tagcreatebox" maxlength="255" size="50"/>
+      <input type="submit" id="tagcreatebutton" value="Créer"/>
    </p>
 </form> 
 
