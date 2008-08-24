@@ -134,6 +134,15 @@ function fkPrepare() {
              },
              error: function(xhr, msg){
                alert("Echec: " + xhr.statusText);
+             },
+             complete: function(xhr){
+               if (xhr.status == '204'){
+                 var targetid = xhr.getResponseHeader('X-Folksonomie-TargetId');
+                 var targetpop = getPopularity($("#tagid" + targetid));
+                 var newpop = Number(oldpopularity) + Number(targetpop);
+                 $("#tagid" + targetid).find("span.tagpopularity")
+                   .text(" (" + newpop + " ressources) ");
+               }
              }
            });
       }
@@ -149,6 +158,6 @@ function getTagId(data) {
 }
 
 function getPopularity(lis) {
-  var matches = lis.find("span.tagpopularity").text().match(/\(\d+/);
+  var matches = lis.find("span.tagpopularity").text().match(/\d+/);
   return matches[0];
 }
