@@ -316,15 +316,11 @@ function visitPage (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc)
       implode('&&&&&', $urls) . "', '".
       implode('&&&&&', $titles) . "', 1)";
 
-    /*
-    if (!($fh = fopen('/tmp/folksologfile', 'a'))){
+    if (!($lfh = fopen('/tmp/folksologfile', 'a'))){
       trigger_error("logfile failed to open", E_USER_ERROR);
     }
-    fwrite($fh, "\n\n$sql");
-    fclose($fh);
-
-    print $sql;
-    */
+    fwrite($lfh, "\n\n$sql");
+    fclose($lfh);
 
       $i->query($sql);
       if ($i->result_status == 'DBERR') {
