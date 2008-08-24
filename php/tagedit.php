@@ -32,13 +32,22 @@
 #container { background-color: white;}
 a.nores {color: blue;}
 a.closeeditbox, a.closeeditbox:link, a.closeeditbox:visited { margin-left: 300px;}
-
+#pagehead { border-bottom: 2px solid grey; margin: 1em; margin-top: 2em; padding-top: 3em; }
+#pagehead p { width: 80%}
 </style>
 
 </head>
 <body>
 <div id="container">
+<div id="pagehead">
 <h1>Gestion des tags : création, suppression, modification, fusion</h1>
+
+<p>
+  La <em>suppression</em> d'un tag détruit en même temps et
+  définitivement toutes les références vers ce tag. En revanche, la
+  <em>fusion</em> d'un tag avec un autre préserve les références en
+  les dirigeant vers le tag "cible" de la fusion.
+</p>
 
 <h3>Sélection des tags</h3>
 <form action="tagedit.php" method="get">
@@ -64,7 +73,7 @@ a.closeeditbox, a.closeeditbox:link, a.closeeditbox:visited { margin-left: 300px
   <li><a href="#" class="restags">Afficher seulement les tags <em>déjà utilisés</em></a> (Associés à des ressources)</li>
   <li><a href="#" class="norestags">Afficher seulement les tags <em>non utilisés</em></a> (Associés à aucune ressource)</li>
 </ul>
-
+</div>
 <?php
 require_once('folksoClient.php');
 require_once('folksoFabula.php');
