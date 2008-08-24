@@ -60,7 +60,7 @@ $(document).ready(function() {
                                    success: function(data, status) {
                                      var tagid = getTagId(data);
                                      var clone = $("ul.taglist li:first").clone();
-                                     clone.attr("id", 'tag' + tagid);
+                                     clone.attr("id", 'tagid' + tagid);
                                      clone.find("a.tagname").text(newtag);
                                      clone.find("a.edit").click(
                                        function(event) {
@@ -69,8 +69,11 @@ $(document).ready(function() {
                                          $(this).parent().parent("li").find(".tagcommands").show();
                                          $(this).hide();
                                        });
-                                     clone.find("input.renamebox").text(newtag);
+                                     clone.find("input.renamebox").attr("value", newtag);
+                                     clone.find("span.tagpopularity").text(" (0 ressources) ");
+                                     clone.each(fkPrepare);
                                      $("ul.taglist").prepend(clone);
+                                     $("#tagcreatebox").val('');
                                    }
                                  });
                         }
