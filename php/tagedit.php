@@ -1,6 +1,6 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<title>Editons les tags</title>
+<title>Fabula -> Folksonomie : édition des tags</title>
 <link 
    rel="stylesheet" type="text/css" 
    href="http://www.fabula.org/commun3/template.css" 
@@ -38,8 +38,9 @@ a.closeeditbox, a.closeeditbox:link, a.closeeditbox:visited { margin-left: 300px
 </head>
 <body>
 <div id="container">
-<h1>Gestion des tags</h1>
+<h1>Gestion des tags : création, suppression, modification, fusion</h1>
 
+<h3>Sélection des tags</h3>
 <form action="tagedit.php" method="get">
    <p>Pour mieux cibler les tags à éditer, saisir une, deux ou trois
    lettres du début des tags recherchés: <input type="text"
@@ -51,7 +52,8 @@ a.closeeditbox, a.closeeditbox:link, a.closeeditbox:visited { margin-left: 300px
 </form>
 
 <form action="tag.php" method="post">
-   <p>Créer un nouveau tag : 
+   <h3>Créer un nouveau tag :</h3>
+   <p>
       <input type="text" name="folksonewtag" id="tagcreatebox" maxlength="255" size="50"/>
       <input type="submit" id="tagcreatebutton" value="Créer"/>
    </p>
@@ -112,6 +114,7 @@ else { //if no letter specified, get all tags
   <li><a href="#" class="seealltags">Afficher tous les tags</a></li>
   <li><a href="#" class="restags">Afficher seulement les tags <em>déjà utilisés</em></a> (Associés à des ressources)</li>
   <li><a href="#" class="norestags">Afficher seulement les tags <em>non utilisés</em></a> (Associés à aucune ressource)</li>
+  <li><a href="#">Retour au début de la page</a></li>
 </ul>
 
 </div>
