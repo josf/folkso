@@ -21,10 +21,7 @@ BEGIN
 END$$
 
 DELIMITER ;
-        
 
-
-         
 DELIMITER $$
 DROP FUNCTION IF EXISTS query_sort$$
 CREATE FUNCTION query_sort(input_string VARCHAR(255))
@@ -33,29 +30,29 @@ CREATE FUNCTION query_sort(input_string VARCHAR(255))
 BEGIN
         DECLARE orig VARCHAR(255) DEFAULT '';
         DECLARE accum VARCHAR(255) DEFAULT '';
-        declare current_seg varchar(255) default '';
-        declare seg_end tinyint default 0;
-        declare sorted text default '';
-        declare counter smallint default 1;
-        declare next_sorted_seg varchar(255) default '';
-        declare sorted_seg_end smallint default 0;
-        declare debug text default '';
+        DECLARE current_seg VARCHAR(255) DEFAULT '';
+        DECLARE seg_end TINYINT DEFAULT 0;
+        DECLARE sorted TEXT DEFAULT '';
+        DECLARE counter SMALLINT DEFAULT 1;
+        DECLARE next_sorted_seg VARCHAR(255) DEFAULT '';
+        DECLARE sorted_seg_end SMALLINT DEFAULT 0;
+        DECLARE debug TEXT DEFAULT '';
         
-        set orig = input_string;
-        case
+        SET orig = input_string;
+        CASE
                 /* no string */
-             when (length(input_string) = 0) then
-                   return '';
+             WHEN (LENGTH(input_string) = 0) THEN
+                   RETURN '';
              
               /* single element */
-             when (instr(input_string, '&') = 0) then
-                  set sorted = input_string;
+             WHEN (INSTR(input_string, '&') = 0) THEN
+                  SET sorted = input_string;
 
              /* multiple parameters */
-             else
-                  if (substr(orig, -1) <> '&') then
-                      set orig = concat(orig, '&');
-                  end if;
+             ELSE
+                  IF (SUBSTR(orig, -1) <> '&') THEN
+                      SET orig = CONCAT(orig, '&');
+                  END IF;
                   orig_walk: while (  length(orig) > 0) do
                         set seg_end = instr(orig, '&');
 
