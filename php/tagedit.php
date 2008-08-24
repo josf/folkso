@@ -23,6 +23,7 @@
 <script type="text/javascript" src="js/tagedit.js"></script>
 
 <style type="text/css">
+
 .tagname { font-weight: bold; font-size: 12pt}
 .tagcommands { display: none; 
                border: 2px solid grey; 
@@ -40,8 +41,9 @@ a.closeeditbox, a.closeeditbox:link, a.closeeditbox:visited { margin-left: 300px
 <h1>Gestion des tags</h1>
 
 <form action="tagedit.php" method="get">
-   <p>Taper une, deux ou trois lettres pour  sélectionner les tags à éditer: 
-        <input type="text" name="letters" maxlength="3" size="3"></input>
+   <p>Pour mieux cibler les tags à éditer, saisir une, deux ou trois
+   lettres du début des tags recherchés: <input type="text"
+   name="letters" maxlength="3" size="3"></input>
     </p>
    <p>
         <input type="submit" value="Submit"/>
