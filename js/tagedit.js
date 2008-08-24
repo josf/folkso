@@ -122,7 +122,11 @@ function fkPrepare() {
       event.preventDefault();
       var oldpopularity = getPopularity(lis);
       var fusiontarget = lis.find("input.fusionbox").val();
-      if (fusiontarget) {
+      if (fusiontarget){
+        if (fusiontarget == lis.find("a.tagname").text()) {
+          alert("On ne peut pas fusionner un tag avec le même tag");
+          }
+        else {
         $.ajax({
              type: 'post',
              data: {
@@ -145,6 +149,7 @@ function fkPrepare() {
                }
              }
            });
+          }
       }
     });
 }
