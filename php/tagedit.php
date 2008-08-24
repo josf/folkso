@@ -19,7 +19,7 @@
 <script type="text/javascript" src="js/jquery.js"></script>
 <script type="text/javascript" src="js/jquery.autocomplete.js">
   </script>
-<script type="text/javascript" src="js/folkso.js"></script>
+<!-- <script type="text/javascript" src="js/folkso.js"></script> -->
 <script type="text/javascript" src="js/tagedit.js"></script>
 
 <style type="text/css">
