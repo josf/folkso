@@ -74,8 +74,14 @@ $(document).ready(function() {
                                      clone.each(fkPrepare);
                                      $("ul.taglist").prepend(clone);
                                      $("#tagcreatebox").val('');
+                                     clone.find("a.closeeditbox").click(
+                                       function(event){
+                                         event.preventDefault();
+                                         $(this).parent().parent(".tagcommands").hide();
+                                         $(this).parent().parent("li").find("a.edit").show();
+                                       });
                                    }
-                                 });
+                          });
                         }
                       });
                   });
