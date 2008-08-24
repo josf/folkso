@@ -271,7 +271,7 @@ function makeMetatagBox (resource, tag, lis) {
 //  box.autocomplete(metatag_autocomplete_list); //array defined in <script> on page.
 
   var box = metatagDropdown(metatag_autocomplete_list, "metatagbox");
-  var button = $("<a href='#' class='metatagbutton'>metaValider</a>")
+  var button = $("<a href='#' class='metatagbutton'>Ajouter métatag</a>")
     .click(
       function(event){
         event.preventDefault();
