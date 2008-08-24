@@ -20,7 +20,7 @@ $(document).ready(function() {
                       function(event){
                         event.preventDefault();
                         $(this).parent().parent(".tagcommands").hide();
-                        $(this).parent().parent("li").find("a.edit").show();
+                        $(this).parent().parent().parent("li").find("a.edit").show();
                       });
 
                     $("a.restags").click(
@@ -78,7 +78,7 @@ $(document).ready(function() {
                                        function(event){
                                          event.preventDefault();
                                          $(this).parent().parent(".tagcommands").hide();
-                                         $(this).parent().parent("li").find("a.edit").show();
+                                         $(this).parent().parent().parent("li").find("a.edit").show();
                                        });
                                    }
                           });
