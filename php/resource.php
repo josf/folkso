@@ -319,7 +319,7 @@ function visitPage (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc)
     if (!($lfh = fopen('/tmp/folksologfile', 'a'))){
       trigger_error("logfile failed to open", E_USER_ERROR);
     }
-    fwrite($lfh, "\n\n$sql");
+    fwrite($lfh, localtime() . "\n\n$sql");
     fclose($lfh);
 
       $i->query($sql);
