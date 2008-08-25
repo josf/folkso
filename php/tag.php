@@ -97,10 +97,10 @@ function headCheckTagDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect 
     die($i->error_info());
   }
 
-  $i->query("SELECT id FROM tag WHERE tagnorm = normalize_tag('" .
+  $i->query("select id from tag where tagnorm = normalize_tag('" .
             $i->dbquote($q->get_param('tag')) .
             "') " . 
-            " LIMIT 1");
+            " limit 1");
   
   switch ($i->result_status) {
   case 'DBERR':
@@ -217,18 +217,16 @@ function getTagResourcesDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconne
   // tag by ID
   if (is_numeric($q->tag)) {
     $querybase .= 
-      "WHERE (tag.id = " . 
-      $i->dbquote($q->tag) . ') ';
+      "WHERE tag.id = " . 
+      $i->dbquote($q->tag);
   } //tag by string
   else {
     $querybase .= 
-      "WHERE (tag.tagnorm = normalize_tag('" .
-      $i->dbquote($q->tag) . "')) ";
+      "WHERE tag.tagnorm = normalize_tag('" .
+      $i->dbquote($q->tag) . "')";
   }
 
-  $querybase .= 
-    " AND (r.status_flag = 'NORMAL') ".
-    " ORDER BY r.visited DESC ";  
+  $querybase .= " ORDER BY r.visited DESC ";  
 
   //pagination
   if  ((!$q->is_param('page')) ||
@@ -323,48 +321,48 @@ function fancyResource (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $
    * dummy columns should be added to the first part of the UNION.
    */
 $querytagtitle = 
-  "SELECT tagdisplay AS title, \n\t" .
-  "id AS id, \n\t" .
-  "'dummy' AS href, \n\t" .
-  "'dummy' AS display, \n\t" .
-  "'dummy' AS tags \n".
-  "FROM tag \n\t";
+  "select tagdisplay as title, \n\t" .
+  "id as id, \n\t" .
+  "'dummy' as href, \n\t" .
+  "'dummy' as display, \n\t" .
+  "'dummy' as tags \n".
+  "from tag \n\t";
   if (is_numeric($q->tag)) {
-    $querytagtitle .= ' WHERE id = ' . $q->tag . ' ';
+    $querytagtitle .= ' where id = ' . $q->tag . ' ';
   }
   else {
-    $querytagtitle = " WHERE tagnorm = normalize_tag('" . 
+    $querytagtitle = " where tagnorm = normalize_tag('" . 
       $i->dbescape($q->tag) . "') ";
   }
 
-  $querytagtitle .= ' LIMIT 1 '; // just to be sure
+  $querytagtitle .= ' limit 1 '; // just to be sure
 
 $querystart = 
-'  SELECT 
-  r.title AS title, 
-  r.id AS id,
-  r.uri_raw AS href,
+'  select 
+  r.title as title, 
+  r.id as id,
+  r.uri_raw as href,
   CASE 
     WHEN title IS NULL THEN uri_normal 
     ELSE title
   END AS display,
-  (SELECT GROUP_CONCAT(DISTINCT tagdisplay SEPARATOR \' - \')
-               FROM tag t2
-               JOIN tagevent te2 ON t2.id = te2.tag_id
-               JOIN resource r2 ON r2.id = te2.resource_id
-               WHERE r2.id = r.id
-               ) AS tags
-  FROM resource r
-  JOIN tagevent te ON r.id = te.resource_id
-  JOIN tag t ON te.tag_id = t.id';
+  (select group_concat(distinct tagdisplay separator \' - \')
+               from tag t2
+               join tagevent te2 on t2.id = te2.tag_id
+               join resource r2 on r2.id = te2.resource_id
+               where r2.id = r.id
+               ) as tags
+  from resource r
+  join tagevent te on r.id = te.resource_id
+  join tag t on te.tag_id = t.id';
 
 //  $queryend = " LIMIT 100";
   $querywhere = '';
   if (is_numeric($q->tag)) {
-    $querywhere = ' t.id = ' . $q->tag . ' ';
+    $querywhere = 'where t.id = ' . $q->tag . ' ';
   }
   else {
-    $querywhere = "t.tagnorm = normalize_tag('" . 
+    $querywhere = "where t.tagnorm = normalize_tag('" . 
       $i->dbescape($q->tag) . "') ";
   }
   $total_query = $querytagtitle . " UNION \n" .  $querystart . ' '  . $querywhere . ' ' . $queryend;
