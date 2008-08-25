@@ -81,13 +81,13 @@ function isHead (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
   $query = '';
   if (is_numeric($q->res)) {
     $query = 
-      "SELECT id FROM resource WHERE id = " .
+      "select id from resource where id = " .
       $i->dbescape($q->res);
   }
   else {
-    $query = "SELECT id
-           FROM resource
-           WHERE uri_normal = url_whack('" .
+    $query = "select id
+           from resource
+           where uri_normal = url_whack('" .
       $i->dbescape($q->res) . "')";
   }
 
@@ -151,14 +151,13 @@ function getTagsIds (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc
 
   if (is_numeric($q->res)) {
     $select .= 
-      " WHERE (resource.id = " . $q->res . ') '.
-      " and (resource.status_flag = 'NORMAL')";
+      " WHERE resource.id = " . 
+      $q->res;
   }
   else {
     $select .= 
-      " WHERE (uri_normal = url_whack('". 
-      $i->dbescape($q->res) ."')) " .
-      " AND (resource.status_flag = 'NORMAL')"; 
+      " WHERE uri_normal = url_whack('". 
+      $i->dbescape($q->res) ."') ";
   }
 
   $i->query($select);
@@ -303,12 +302,13 @@ function visitPage (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc)
       die( $i->error_info());
     }
 
+
     $urls = array();
     $title = array();
     foreach ($pages_to_parse as $raw) {
       $item = unserialize($raw);
       $urls[] = $i->dbescape($item->get_url());
-      $titles[] = $->dbescape($item->get_title());
+      $titles[] = $item->get_title();
     }
 
     $sql = 
@@ -319,7 +319,7 @@ function visitPage (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc)
     if (!($lfh = fopen('/tmp/folksologfile', 'a'))){
       trigger_error("logfile failed to open", E_USER_ERROR);
     }
-    fwrite($lfh,  "$sql\n");
+    fwrite($lfh, localtime() . "\n\n$sql");
     fclose($lfh);
 
       $i->query($sql);
