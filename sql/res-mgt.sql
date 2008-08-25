@@ -2,7 +2,7 @@
 -- REMOVE RESOURCE
 DELIMITER $$
 DROP PROCEDURE IF EXISTS rmres$$
-CREATE PROCEDURE rmres (res_norm VARCHAR(250),
+CREATE PROCEDURE rmres (res_norm VARCHAR(255),
                         res_id INT)
 
 BEGIN
