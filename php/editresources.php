@@ -309,12 +309,14 @@ print '> ';
     '<div class="details">'.
     '<p>'.
     '<span class="infohead">Ajouté le </span><span class="added">' . datesToFrench($row->display_date) ."</span>\n".
+    '<a href="#" class="resdeletebutton">Supprimer cette resource</a>'.
     '<div class="tagger">'. 
     '<span class="infohead">Ajouter un tag</span> '.
     '<input type="text" size="25" class="tagbox" maxlength="100"></input>'.
     '<span class="infohead">Metatag (facultatif)</span>'.
     '<select size="1" class="metatagbox">' . $metatagOptions . '</select>'.
     '<a class="tagbutton" href="#">Valider</a>' .
+
     '</div>' .
     '<p>Détails des tags déjà associés à cette ressource. <a class="seetags" href="#">Voir</a> '.
     '<a class="hidetags" href="#">Cacher</a> </p> '.
