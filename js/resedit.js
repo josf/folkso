@@ -28,6 +28,7 @@ $(document).ready(
     $("ul.editresources li").each(iframePrepare);
     $("ul.editresources li").each(tagboxPrepare);
     $("ul.editresources li").each(taglistHidePrepare);
+    $("ul.editresources li").each(deleteButtonPrepare);
 
 //    $(".tagger .metatagbox").autocomplete(metatag_autocomplete_list);
 //    $("#groupmetatagbox").autocomplete(metatag_autocomplete_list);
@@ -190,7 +191,7 @@ function tagMenuCleanupFunc(lis, tag) {
              folksodatatype: 'xml'},
            success: tagMenuFromXmlFunction,
            error: function(xhr, msg) {
-             alert("An error here: " + msg);
+             alert("An error here: " + xhr.statusText);
            }});
 }
 
@@ -474,7 +475,7 @@ function tagMenuCleanupFunc(lis, tag) {
  */
 function createTagMessage(tag, url, meta, lis, successfunc) {
   var tagFunk = tagResourceFunc(url, tag, meta, lis);
-  var thediv = $("<div class='innerinfobox></div>");
+  var thediv = $("<div class='innerinfobox'></div>");
 
   var onSuccessFunc; //to be called on successful tag creation
   if (!successfunc) {
@@ -570,4 +571,63 @@ function currentTagsUpdate (tag, lis) {
   }
 }
 
+function deleteButtonPrepare () {
+  var lis = $(this);
+  var button = lis.find("a.resdeletebutton");
+  var resid = lis.attr("id").substring(3);
+
+  button.click(
+    function(event) {
+      event.preventDefault();
+      infoMessage(deleteResourceMessage(resid, lis));
+    });
+}
+
+function deleteResourceMessage(resid, lis) {
+  var thediv = $("<div class='innerinfobox'>");
+  thediv.append($("<h3>Suppression définitive d'une resource</h3>"));
+  thediv.append($("<p>Cette ressource sera effacée, ainsi que toutes"
+                  + " ses associations avec des tags. La ressource ne "
+                  + "sera plus réindexée. Cette action est définitive.</p>" ));
+
+  thediv.append($("<p>Supprimer définitivement <em>\""
+                  + lis.find("a.restitle").text()
+                  + "\"</em> ?</p>"));
+
+  var lastpar = $("<p>");
+  var yesbutton = $("<a class=\"yesno\" href=\"#\">Oui</a>");
+  yesbutton.click(
+    function(event) {
+      event.preventDefault();
+      $.ajax({url: urlbase + 'resource.php',
+              type: 'post',
+              datatype: 'text/text',
+              data: {
+                folksores: resid,
+                folksodelete: 1
+              },
+              error: function(xhr, msg){
+                alert(xhr.statusText);
+                $("#superscreen").hide();
+                thediv.html("");
+              },
+              success: function(data, msg){
+                lis.hide();
+                $("#superscreen").hide();
+                thediv.html("");
+              }
+             });
+    });
+  lastpar.append(yesbutton);
+  var nobutton = $("<a class=\"yesno\" href=\"#\">Non</a>").
+    click(
+      function(event){
+        event.preventDefault();
+        thediv.html("");
+        $("superscreen").hide();
+        } );
+  lastpar.append(nobutton);
+  thediv.append(lastpar);
+  return thediv;
+}
 
