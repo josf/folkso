@@ -16,7 +16,11 @@ DECLARE remaining_urls TEXT DEFAULT '';
 
 DECLARE current_url TEXT DEFAULT '';
 DECLARE current_title TEXT DEFAULT '';
+
+-- whether or not the resource is already present
 DECLARE existence VARCHAR(255) DEFAULT '';
+-- whether or not the resource is in the exclude table
+DECLARE excludep VARCHAR(10) DEFAULT '';
 
 SET @useridentifier = userid;
 SET urls = urls_arg;
@@ -69,12 +73,19 @@ walking: WHILE LENGTH(urls) > 0 DO
                   SET @cururl = current_url;
                   SET @curtit = current_title;
 
+                  select substr(uri_normal, 1, 9)
+                  into excludep
+                  from exclude
+                  where uri_normal = url_whack(current_url);
+
+                  IF (LENGTH(excludep) = 0) THEN
                   IF (LENGTH(existence) > 0) THEN
                         EXECUTE old_url USING @cururl;
                   ELSE
                         EXECUTE new_url USING @cururl, @cururl, @curtit, @useridentifier;
                   END IF;        
          END IF;
+         END IF; -- do nothing if url found in exclude
     END WHILE walking;
 
 END$$
