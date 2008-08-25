@@ -10,6 +10,6 @@ CREATE TABLE resource
         added_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         last_visited TIMESTAMP,
         added_by INT UNSIGNED NOT NULL,
-        status_flag VARCHAR(255) NULL,
-INDEX resnorm (uri_normal))
+        status_flag VARCHAR(100) DEFAULT 'NORMAL' NOT NULL,
+        INDEX resnorm (uri_normal))
         ENGINE = InnoDB;
