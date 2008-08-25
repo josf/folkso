@@ -474,6 +474,3 @@ UPDATE tagevent
 END$$
 DELIMITER ; 
 
-
-
-
