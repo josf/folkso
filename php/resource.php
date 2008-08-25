@@ -64,6 +64,15 @@ $srv->addResponseObj(new folksoResponse('delete',
                                         array('required' => array('res', 'tag')),
                                         'unTag'));
 
+$srv->addResponseObj(new folksoResponse('delete',
+                                        array('required_single' => array('res'),
+                                              'exclude' => array('tag')),
+                                        'rmRes'));
+$srv->addResponseObj(new folksoResponse('post',
+                                        array('required_single' => array('res', 'delete'),
+                                              'exclude' => array('tag')),
+                                        'rmRes'));
+
 $srv->Respond();
 
 /**
@@ -277,7 +286,9 @@ function tagCloudLocalPop (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnec
 /**
  * VisitPage : add a resource (uri) to the resource index
  * 
- * Web parameters: POST + folksovisituri
+ * Web parameters: POST + folksores + folksovisit
+ * Optional: folksourititle
+ *
  * This uses a cache in /tmp to reduce (drastically) the number of database connections.
  *
  * Optional parameters: urititle,
@@ -301,7 +312,6 @@ function visitPage (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc)
       header('HTTP/1.0 501 Database connection problem');
       die( $i->error_info());
     }
-
 
     $urls = array();
     $title = array();
@@ -469,6 +479,40 @@ function unTag (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
     }
 }
 
+function rmRes (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+  $i = new folksoDBinteract($dbc);
+  if ($i->db_error()) {
+    header('HTTP/1.0 501 Database connection error');
+    die($i->error_info());
+  }
+
+  // call rmres('url', id);
+  $sql = "CALL rmres('";
+  if (is_numeric($q->res)) {
+    $sql .= "', ". $q->res . ")";
+  }
+  else {
+    $sql .= $i->dbescape($q->res) . "', '')";
+  }
+  $i->query($sql);
+
+ if ($i->result_status == 'DBERR') {
+    header('HTTP/1.1 501 Database error');
+    die($i->error_info());
+ }
+ else {
+   header('HTTP/1.1 200 Resource deleted');
+   print "Resource " . $q->res . " permanently deleted\n";
+   print "This resource will not be indexed in the future.";
+   //   print $sql;
+ }
+
+  
+
+
+
+}
+
 /**
  * @param $res string (url) or integer 
  * @param $tag string (tagname) or integer
@@ -500,5 +544,8 @@ function argSort ($res, $tag, $meta, folksoDBinteract $i) {
       "', ''";
   }
 }
+
+
+
 
 ?>
