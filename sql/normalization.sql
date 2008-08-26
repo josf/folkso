@@ -37,7 +37,8 @@ BEGIN
         DECLARE next_sorted_seg VARCHAR(255) DEFAULT '';
         DECLARE sorted_seg_end SMALLINT DEFAULT 0;
         DECLARE debug TEXT DEFAULT '';
-        
+        DECLARE loop_counter INT DEFAULT 0;        
+
         SET orig = input_string;
         CASE
                 /* no string */
@@ -54,6 +55,7 @@ BEGIN
                       SET orig = CONCAT(orig, '&');
                   END IF;
                   orig_walk: while (  length(orig) > 0) do
+                        SET loop_counter = loop_counter + 1;
                         set seg_end = instr(orig, '&');
 
                         /* only one parameter - we are done*/
@@ -68,21 +70,31 @@ BEGIN
                            set orig = substr(orig, seg_end + 1);
                         end if;
 
+                        /* this is the first segment we have to sort */
                         if length(sorted) = 0 then
                             set sorted = current_seg; -- remember to chop trailing & later
-                            
+                            set current_seg = '';                            
                         else
                             set counter = 1;
                             set debug = concat(debug, '[[going into sorting loop with ', current_seg, ']]');
-                            sorting: while (counter <= length(sorted)) do
-                                set sorted_seg_end = locate('&', sorted, counter + 1); -- alwas ends with ampersand
-                                set next_sorted_seg = substr(sorted, counter, sorted_seg_end - counter);
-                                set debug = concat(debug, '[[starting sorting loop iteration, next_sorted_seg is ', next_sorted_seg, 'sorted is ', sorted,  ']]');
-                                case 
 
+                            sorting: while (counter <= length(sorted)) do
+
+                                -- a segment always ends with ampersand, so we start looking on the next char (counter + 1)
+                                -- sorted_seg_end is the position of the end of the next segment
+                                -- next_sorted_seg is the string of the next (ie. after counter) segment already in 'sorted'
+                                set sorted_seg_end = locate('&', sorted, counter + 1); 
+                                set next_sorted_seg = substr(sorted, 
+                                                             counter, 
+                                                             sorted_seg_end - counter);
+                                set debug = concat(debug, 
+                                            '[[starting sorting loop iteration, next_sorted_seg is ', 
+                                            next_sorted_seg, 'sorted is ', sorted,  ']]');
+
+                                case 
                                        -- current_seg goes before other seg (and we are at beginning of sorted)
                                       when ((strcmp(current_seg, next_sorted_seg) = -1) and
-                                            (counter < 2)) then
+                                            (counter < 2)) then          -- means: = 1, since counter starts at 1
                                            set sorted = concat( current_seg, sorted);
                                            set debug = concat(debug, '[[putting ', current_seg, ' at very front ', next_sorted_seg, ']]');
                                            set current_seg = '';
@@ -90,7 +102,11 @@ BEGIN
                                            set counter = 0;
                                            leave sorting;
                                       
-                                      -- current_seg goes before next_sorted_seg but after others
+                                      -- current_seg goes before
+                                      -- next_sorted_seg but after
+                                      -- others (meaning we are not at
+                                      -- the beginning of sorted
+                                      -- anymore)
                                       when ((strcmp(current_seg, next_sorted_seg) = -1) and
                                             (counter > 2)) then
                                             set sorted = concat(
@@ -112,12 +128,13 @@ BEGIN
                                            set counter = 0;
                                            leave sorting;
 
+                                      -- current_seg goes after next_sorted_seg and before the following segment.
                                       when ((strcmp(current_seg, next_sorted_seg) = 1) and
                                             (strcmp(current_seg, 
                                                     substring(sorted,
                                                               sorted_seg_end + 1,
                                                               locate('&', sorted, sorted_seg_end + 1) 
-                                                                   - sorted_seg_end + 1)) = 0)) then
+                                                                   - sorted_seg_end + 1)) = -1)) then  -- this might have been the bug! (was "= 0")
                                             set sorted = concat(
                                                            substr(sorted, 1, sorted_seg_end),
                                                            current_seg,
@@ -133,6 +150,9 @@ BEGIN
                                       end case;
                                   end while;
                                   end if;
+
+                                  
+
                                 end while;
                               end case;
 --                          return concat(sorted, '/////', debug);
@@ -140,8 +160,8 @@ BEGIN
                                set sorted = substr(sorted, 1, length(sorted) -1);
                             end if;
                             return sorted;
-end$$
-delimiter ;
+END$$
+DELIMITER ;
                                            
                                                   
 
