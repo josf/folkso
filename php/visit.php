@@ -38,7 +38,20 @@ function visit_resource ($page_titre) {
 
 
 function curPageURL() {
- $pageURL = 'http';
+  $pageURL = 'http';
+  $server_name = trim($_SERVER["SERVER_NAME"]);
+
+  /* for some reason, we have been getting urls like :
+      
+     http://xn--   example.com. 
+
+      Until I find out why, we are going to stupidly check for this. */
+
+  if (strpos($server_name, ' ') > 0) {
+    $server_name = substr($server_name, 
+                          (strpos($server_name, ' ')));
+  }
+
  if ($_SERVER["HTTPS"] == "on") {$pageURL .= "s";}
  $pageURL .= "://";
  if ($_SERVER["SERVER_PORT"] != "80") {
