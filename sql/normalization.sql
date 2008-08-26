@@ -37,7 +37,8 @@ BEGIN
         DECLARE next_sorted_seg VARCHAR(255) DEFAULT '';
         DECLARE sorted_seg_end SMALLINT DEFAULT 0;
         DECLARE debug TEXT DEFAULT '';
-        DECLARE loop_counter INT DEFAULT 0;        
+        DECLARE orig_loop_counter INT DEFAULT 0;        
+        DECLARE sorting_loop_counter INT DEFAULT 0;        
 
         SET orig = input_string;
         CASE
@@ -55,7 +56,12 @@ BEGIN
                       SET orig = CONCAT(orig, '&');
                   END IF;
                   orig_walk: while (  length(orig) > 0) do
-                        SET loop_counter = loop_counter + 1;
+                        SET orig_loop_counter = orig_loop_counter + 1;
+                        if orig_loop_counter > 100 then
+                           set orig_loop_counter = 0;
+                           leave orig_walk;
+                        end if;
+
                         set seg_end = instr(orig, '&');
 
                         /* only one parameter - we are done*/
@@ -80,6 +86,13 @@ BEGIN
 
                             sorting: while (counter <= length(sorted)) do
 
+                                /* infinite loop check */                            
+                                set sorting_loop_counter = sorting_loop_counter + 1;
+                                if sorting_loop_counter > 100 then
+                                   set sorting_loop_counter = 0;
+                                   leave sorting;
+                                end if;
+
                                 -- a segment always ends with ampersand, so we start looking on the next char (counter + 1)
                                 -- sorted_seg_end is the position of the end of the next segment
                                 -- next_sorted_seg is the string of the next (ie. after counter) segment already in 'sorted'
@@ -92,7 +105,6 @@ BEGIN
                                             next_sorted_seg, 'sorted is ', sorted,  ']]');
 
                                 case 
-
                                       -- current_seg already present in sorted (duplicate parameters)
                                       -- some acrobatics to avoid the case where a parameter is a substring 
                                       -- of another.
@@ -117,10 +129,8 @@ BEGIN
                                            set counter = 0;
                                            leave sorting;
                                       
-                                      -- current_seg goes before
-                                      -- next_sorted_seg but after
-                                      -- others (meaning we are not at
-                                      -- the beginning of sorted
+                                      -- current_seg goes before  next_sorted_seg but after
+                                      -- others (meaning we are not at the beginning of sorted
                                       -- anymore)
                                       when ((strcmp(current_seg, next_sorted_seg) = -1) and
                                             (counter > 2)) then
