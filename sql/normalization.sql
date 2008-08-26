@@ -195,7 +195,7 @@ BEGIN
                             set next_sorted_seg = '';
                             set sorted_seg_end = 0;
                             set debug = '';
-                            set loop_counter = 0;
+                            set orig_loop_counter = 0;
                             
                             -- and finally...
 --                            return sorted;
