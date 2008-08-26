@@ -8,7 +8,7 @@ $(document).ready(
         event.preventDefault();
         $("#sql").show();
       });
-
+/**
     $("a.seedetails").click(
       function(event) {
         event.preventDefault();
@@ -24,7 +24,7 @@ $(document).ready(
         $(this).siblings("a.seedetails").show();
         $(this).hide();
       });
-
+**/
     $("ul.editresources li").each(iframePrepare);
     $("ul.editresources li").each(tagboxPrepare);
     $("ul.editresources li").each(taglistHidePrepare);
