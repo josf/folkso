@@ -282,8 +282,10 @@ print '> ';
   print 
     '<p class="principal">'.
     '<a class="restitle" href="' . $row->url . '" target="fk" >' . $row->title . "</a>\n".
-    '<a class="resurl" href="' . $row->url . '" target="fk" >' . $row->url . "</a>\n".
     '<span class="tagev_count">Taggé ' . $row->total_tagevs . " fois</span>\n".
+    '<br/>'.
+    '<a class="resurl" href="' . $row->url . '" target="fk" >' . $row->url . "</a>\n".
+
     "</p>\n" .
     '<p><span class="currenttags">Tags : ';
 
@@ -299,17 +301,18 @@ print '> ';
 
   print 
     "</span> <span class='lasttaggage'>Date du dernier tag: " . $row->last_tagged . "</span></p>\n".
-    '<p><input type="checkbox" class="groupmod"></input> '. 
-    '<span class="explanation">Taggage groupé</span></p> '.
     "<p><a class='closeiframe' href='#'>Fermer</a></p>".
     '<div class="iframeholder"></div> '.
     "<p><a class='openiframe' href='#'>Voir la page</a> <a class='closeiframe' href='#'>Fermer</a> ".
-    '<a href="#" class="seedetails">Voir détails</a> '.
-    '<a href="#" class="hidedetails">Cacher les détails</a></p> '.
+    '<input type="checkbox" class="groupmod"></input> '. 
+    '<span class="explanation">Taggage groupé</span> '.
+    '<a href="#" class="resdeletebutton">Supprimer cette resource</a>'.
+    "</p>".
+//    '<a href="#" class="seedetails">Voir détails</a> '.
+//    '<a href="#" class="hidedetails">Cacher les détails</a></p> '.
     '<div class="details">'.
     '<p>'.
     '<span class="infohead">Ajouté le </span><span class="added">' . datesToFrench($row->display_date) ."</span>\n".
-    '<a href="#" class="resdeletebutton">Supprimer cette resource</a>'.
     '<div class="tagger">'. 
     '<span class="infohead">Ajouter un tag</span> '.
     '<input type="text" size="25" class="tagbox" maxlength="100"></input>'.
