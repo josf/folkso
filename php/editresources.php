@@ -301,18 +301,21 @@ print '> ';
 
   print 
     "</span> <span class='lasttaggage'>Date du dernier tag: " . $row->last_tagged . "</span></p>\n".
-    "<p><a class='closeiframe' href='#'>Fermer</a></p>".
-    '<div class="iframeholder"></div> '.
-    "<p><a class='openiframe' href='#'>Voir la page</a> <a class='closeiframe' href='#'>Fermer</a> ".
+    '<p>'.
+    '<span class="infohead">Ajouté le </span><span class="added">' . datesToFrench($row->display_date) ."</span></p>\n".
+    '<p>'.
     '<input type="checkbox" class="groupmod"></input> '. 
     '<span class="explanation">Taggage groupé</span> '.
+    "<a class='closeiframe' href='#'>Fermer</a>".
+    '<div class="iframeholder"></div> '.
+    "<a class='openiframe' href='#'>Voir la page</a> <a class='closeiframe' href='#'>Fermer</a> ".
+
     '<a href="#" class="resdeletebutton">Supprimer cette resource</a>'.
     "</p>".
 //    '<a href="#" class="seedetails">Voir détails</a> '.
 //    '<a href="#" class="hidedetails">Cacher les détails</a></p> '.
     '<div class="details">'.
-    '<p>'.
-    '<span class="infohead">Ajouté le </span><span class="added">' . datesToFrench($row->display_date) ."</span>\n".
+
     '<div class="tagger">'. 
     '<span class="infohead">Ajouter un tag</span> '.
     '<input type="text" size="25" class="tagbox" maxlength="100"></input>'.
