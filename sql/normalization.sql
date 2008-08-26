@@ -92,6 +92,21 @@ BEGIN
                                             next_sorted_seg, 'sorted is ', sorted,  ']]');
 
                                 case 
+
+                                      -- current_seg already present in sorted (duplicate parameters)
+                                      -- some acrobatics to avoid the case where a parameter is a substring 
+                                      -- of another.
+                                      when (
+                                      -- current_seg is there but is not first segment (no preceding &)
+                                           (locate(concat('&', current_seg), sorted) > 0) or  
+                                       -- current_seg is first segment
+                                          (locate(current_seg, sorted) = 1)) then
+                                          set debug = concat(debug, '[[ignoring repetition of ', current_seg, ' found in sorted: ', sorted, ']]');
+                                          set current_seg = '';
+                                          set sorted_seg_end = 0;
+                                          set counter = 0;
+                                          leave sorting;
+
                                        -- current_seg goes before other seg (and we are at beginning of sorted)
                                       when ((strcmp(current_seg, next_sorted_seg) = -1) and
                                             (counter < 2)) then          -- means: = 1, since counter starts at 1
@@ -146,19 +161,6 @@ BEGIN
                                             set counter = 0;
                                             leave sorting;
 
-                                      -- current_seg already present in sorted (duplicate parameters)
-                                      -- some acrobatics to avoid the case where a parameter is a substring 
-                                      -- of another.
-                                      when (
-                                      -- current_seg is there but is not first segment (no preceding &)
-                                           (locate(concat('&', current_seg), sorted) > 0) or  
-                                       -- current_seg is first segment
-                                          (locate(current_seg, sorted) = 1)) then
-                                          set debug = concat(debug, '[[ignoring repetition of ', current_seg, ' found in sorted: ', sorted, ']]');
-                                          set current_seg = '';
-                                          set sorted_seg_end = 0;
-                                          set counter = 0;
-                                          leave sorting;
                                       else
                                       -- default: nowhere to insert, so we keep going.
                                             set counter = sorted_seg_end + 1;
@@ -186,8 +188,8 @@ BEGIN
                             set loop_counter = 0;
                             
                             -- and finally...
-                            return sorted;
---                            return concat(sorted, debug);
+--                            return sorted;
+                            return concat(sorted, debug);
 
 END$$
 DELIMITER ;
