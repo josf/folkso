@@ -113,6 +113,7 @@ BEGIN
                                                                 substr(sorted, 1, counter -1),
                                                                 current_seg,
                                                                 substr(sorted, counter));
+                                            set debug = concat(debug, '[[putting ', current_seg, ' between ', next_sorted_seg, ' and others ]]');
                                             set current_seg = '';
                                             set sorted_seg_end = 0;
                                             set counter = 0;
@@ -144,22 +145,50 @@ BEGIN
                                             set sorted_seg_end = 0;
                                             set counter = 0;
                                             leave sorting;
+
+                                      -- current_seg already present in sorted (duplicate parameters)
+                                      -- some acrobatics to avoid the case where a parameter is a substring 
+                                      -- of another.
+                                      when (
+                                      -- current_seg is there but is not first segment (no preceding &)
+                                           (locate(concat('&', current_seg), sorted) > 0) or  
+                                       -- current_seg is first segment
+                                          (locate(current_seg, sorted) = 1)) then
+                                          set debug = concat(debug, '[[ignoring repetition of ', current_seg, ' found in sorted: ', sorted, ']]');
+                                          set current_seg = '';
+                                          set sorted_seg_end = 0;
+                                          set counter = 0;
+                                          leave sorting;
                                       else
+                                      -- default: nowhere to insert, so we keep going.
                                             set counter = sorted_seg_end + 1;
-                                            set debug = concat(debug, '[[nothing yet for ', current_seg, ', counter is ', counter, ']]');
+                                            set debug = concat(debug, '[[nothing yet for ', current_seg, ', sorted is ', sorted , ']]');
                                       end case;
                                   end while;
                                   end if;
-
                                   
-
                                 end while;
                               end case;
 --                          return concat(sorted, '/////', debug);
                             if (substr(sorted, -1) = '&') then
                                set sorted = substr(sorted, 1, length(sorted) -1);
                             end if;
+
+                            -- cleaning up. no idea if this is necessary.
+                            set orig = '';
+                            set accum = '';
+                            set current_seg = '';
+                            set seg_end = 0;
+                            set counter = 0;
+                            set next_sorted_seg = '';
+                            set sorted_seg_end = 0;
+                            set debug = '';
+                            set loop_counter = 0;
+                            
+                            -- and finally...
                             return sorted;
+--                            return concat(sorted, debug);
+
 END$$
 DELIMITER ;
                                            
