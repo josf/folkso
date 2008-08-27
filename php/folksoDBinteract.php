@@ -36,6 +36,13 @@ class folksoDBinteract {
   private $first_val;
 
   /**
+   * The tagp and resourcep existence tests don't use the standard
+   * $result variable so that they do not interfer with the rest of
+   * the variables (error, result_status, etc.)
+   */
+  private $presult;
+
+  /**
    * On object creation, the caller should check error status to make
    * sure the connection succeeded.
    *
@@ -144,9 +151,9 @@ class folksoDBinteract {
         "') 
          LIMIT 1";
     }
-    $this->query($select);
-    if ($this->result_status == 'OK') {
-      $this->result->free();
+    $this->presult = $this->db->query($select);
+    if ($this->presult->num_rows > 0) {
+      $this->presult->free();
       return true;
     }
     else { 
@@ -178,9 +185,9 @@ class folksoDBinteract {
         "')
                  LIMIT 1";
     }
-    $this->query($select);
-    if ($this->result_status == 'OK') {
-    $this->result->free();
+    $this->presult = $this->db->query($select);
+    if ($this->presult->num_rows > 0) {
+      $this->presult->free();
       return true;
     }
     else {
