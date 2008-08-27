@@ -34,6 +34,7 @@ a.nores {color: blue;}
 a.closeeditbox, a.closeeditbox:link, a.closeeditbox:visited { margin-left: 300px;}
 #pagehead { border-bottom: 2px solid grey; margin: 1em; margin-top: 2em; padding-top: 3em; }
 #pagehead p { width: 80%}
+input.fusioncheck { margin-right: 1em}
 </style>
 
 </head>
