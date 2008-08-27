@@ -7,19 +7,43 @@ $.ajaxSetup({
 
 $(document).ready(function() {
                     $(".fusionbox").autocomplete(urlbase + "tagcomplete.php");
+                    $("input.fusioncheck").attr("disabled", "disabled");
                     $('li.tagentry').each(fkPrepare);
 
                     $('a.edit').click(
                       function(event) {
                         event.preventDefault();
                         // first parent is a <p>
-                        $(this).parent().parent("li").find(".tagcommands").show();
+                        $("div.tagcommands").hide();
+                        var lis = $(this).parent().parent("li");
+                        lis.find("div.tagcommands").show();
                         $(this).hide();
+                        $("input.fusioncheck").attr('disabled', '');
+                        $(this).siblings("input.fusioncheck")
+                          .attr('disabled', 'disabled');
+                        $(this).siblings("input.fusioncheck")
+                          .attr('checked', '');
+                        lis.find("a.multipreview").click(
+                          function(event){
+                            event.preventDefault();
+                            lis.find("span.multifusionvictims").text(getMVictims());
+                          }
+                        );
+
+                        var targtag = lis.attr("id").substring(5);
+                        var mfusionfunc = makeMfusionFunc(targtag);
+                        lis.find("a.multifusionbutton").click(
+                          function(event) {
+                            event.preventDefault();
+                            $("input.fusioncheck:checked").each(mfusionfunc);
+                          });
                       });
                     $('a.closeeditbox').click(
                       function(event){
                         event.preventDefault();
                         $(this).parent().parent(".tagcommands").hide();
+                        $("input.fusioncheck").attr('checked', '');
+                        $("input.fusioncheck").attr('disabled', 'disabled');
                         $(this).parent().parent().parent("li").find("a.edit").show();
                       });
 
@@ -175,3 +199,45 @@ function getPopularity(lis) {
   var matches = lis.find("span.tagpopularity").text().match(/\d+/);
   return matches[0];
 }
+
+function makeMfusionFunc(targ) {
+  return function() {
+  var lis = $(this).parent().parent("li");
+  var thistag = lis.attr("id").substring(5);
+  $.ajax({
+    type: 'post',
+    data: {
+      folksotag: thistag,
+      folksotarget: targ
+    },
+    success: function(data, str) {
+      lis.remove();
+    },
+    error: function(xhr, msg){
+      alert("Echec: la fusion du tag "
+            + lis.find("a.tagname").text()
+            + " a échoué. "
+            + xhr.status + " "
+            + xhr.statusText + " target " + targ + " source " + thistag);
+      }
+    });
+  };
+}
+
+/**
+ * Find any checked multifusion boxes and return a
+ * string with all the tagnames.
+ */
+
+function getMVictims() {
+  var str = ''; //return string
+
+  $("input.fusioncheck:checked").each(
+    function() {
+      var tagname =$(this).parent().parent("li").find("a.tagname").text();
+      str = str + ' "' + tagname + '" ';
+    }
+  );
+  return str;
+}
+
