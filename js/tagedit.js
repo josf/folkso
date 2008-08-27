@@ -40,12 +40,6 @@ $(document).ready(function() {
                           .attr('disabled', 'disabled');
                         $(this).siblings("input.fusioncheck")
                           .attr('checked', false);
-                        lis.find("a.multipreview").click(
-                          function(event){
-                            event.preventDefault();
-                            lis.find("p.multifusionvictims").text(getMVictims());
-                          }
-                        );
 
                         var targtag = lis.attr("id").substring(5);
                         var mfusionfunc = makeMfusionFunc(targtag);
@@ -55,7 +49,7 @@ $(document).ready(function() {
                             $("input.fusioncheck:checked").each(mfusionfunc);
                           });
                       });
-                    
+
                     $('a.closeeditbox').click(
                       function(event){
                         event.preventDefault();
