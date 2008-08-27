@@ -8,8 +8,11 @@ $.ajaxSetup({
 
 $(document).ready(function() {
                     $('li.tagentry').each(fkPrepare);
+
                     $(".fusionbox").autocomplete(urlbase + "tagcomplete.php");
                     $("input.fusioncheck").attr("disabled", "disabled");
+                    $("input.fusioncheck").attr("checked", false);
+
                     $("input.fusioncheck").change(
                       function(event){
                         var checkedTag =
@@ -36,11 +39,11 @@ $(document).ready(function() {
                         $(this).siblings("input.fusioncheck")
                           .attr('disabled', 'disabled');
                         $(this).siblings("input.fusioncheck")
-                          .attr('checked', '');
+                          .attr('checked', false);
                         lis.find("a.multipreview").click(
                           function(event){
                             event.preventDefault();
-                            lis.find("span.multifusionvictims").text(getMVictims());
+                            lis.find("p.multifusionvictims").text(getMVictims());
                           }
                         );
 
@@ -52,6 +55,7 @@ $(document).ready(function() {
                             $("input.fusioncheck:checked").each(mfusionfunc);
                           });
                       });
+                    
                     $('a.closeeditbox').click(
                       function(event){
                         event.preventDefault();
@@ -259,16 +263,16 @@ function getMVictims() {
 
 function addtoPreview(tag) {
   var preview =
-      Document.folksonomie.currentEdit.find("span.multifusionvictims");
+      Document.folksonomie.currentEdit.find("p.multifusionvictims");
   var text = preview.text();
   if (text.indexOf('"' + tag + '"') == -1) { // ie. not found
-    preview.text( text + '"' + tag + '"');
+    preview.text( text + ' "' + tag + '" ');
   }
 }
 
 function removefromPreview(tag) {
   var preview =
-    Document.folksonomie.currentEdit.find("span.multifusionvictims");
+    Document.folksonomie.currentEdit.find("p.multifusionvictims");
   var text = preview.text();
   var quotedTag = '"' + tag + '"';
   if (text.indexOf(quotedTag) > -1) {
