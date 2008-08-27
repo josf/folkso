@@ -31,12 +31,20 @@
       </xsl:attribute>
       <!-- Name of tag -->
       <xsl:element name="p">
+
+        <xsl:element name="input">
+          <xsl:attribute name="type">checkbox</xsl:attribute>
+          <xsl:attribute name="class">fusioncheck</xsl:attribute>
+          <xsl:attribute name="disabled">disabled</xsl:attribute>
+        </xsl:element>
+
         <xsl:element name="a">
           <xsl:attribute name="class">tagname</xsl:attribute>
         <xsl:attribute name="href">
         <xsl:value-of select="concat('resourceview.php?tag=',
                                      numid)"/>
         </xsl:attribute>
+
           <xsl:value-of select="display"/>
         </xsl:element>
 
@@ -125,9 +133,9 @@
           <xsl:attribute name="method">post</xsl:attribute>
       <xsl:element name="p">
         <xsl:text> 
-          Fusionner avec :
-        </xsl:text>
-
+          Fusionner avec (le tag "</xsl:text>
+        <xsl:value-of select="display"/>
+        <xsl:text>" sera supprimé) : </xsl:text>
         <xsl:element name="input">
           <xsl:attribute name="class">fusionbox</xsl:attribute>
           <xsl:attribute name="name">folksotarget</xsl:attribute>
@@ -146,6 +154,27 @@
         </xsl:element>
       </xsl:element>
       </xsl:element>
+
+<xsl:element name="div">
+  <xsl:attribute name="class">multifusion</xsl:attribute>
+      <xsl:element name="a">
+        <xsl:attribute name="class">multifusionbutton</xsl:attribute>
+        <xsl:attribute name="href">#</xsl:attribute>
+        <xsl:text>
+          Multi-fusion
+        </xsl:text>
+      </xsl:element>
+
+        <xsl:element name="a">
+          <xsl:attribute name="class">multipreview</xsl:attribute>
+          <xsl:attribute name="href">#</xsl:attribute>
+          <xsl:text>Aperçu</xsl:text>
+        </xsl:element>
+
+        <xsl:element name="span">
+          <xsl:attribute name="class">multifusionvictims</xsl:attribute>
+        </xsl:element>
+</xsl:element>
 
     <!-- close box -->
     <xsl:element name="p">
