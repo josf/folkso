@@ -32,9 +32,23 @@
 #container { background-color: white;}
 a.nores {color: blue;}
 a.closeeditbox, a.closeeditbox:link, a.closeeditbox:visited { margin-left: 300px;}
-#pagehead { border-bottom: 2px solid grey; margin: 1em; margin-top: 2em; padding-top: 3em; }
+#pagehead { border-bottom: 2px solid grey; 
+            margin: 1em; 
+            margin-top: 2em; 
+            padding-top: 3em; }
 #pagehead p { width: 80%}
 input.fusioncheck { margin-right: 1em}
+
+.multifusion { border: 1px solid grey; 
+               padding: 2px; 
+               margin: 2px; }
+a.multifusionbutton{ font-weight: bold;
+                     color: #e66322;}
+.multifusion p { color: grey; font-size: 9pt}
+.multifusion p.multifusionvictims { color: blue; 
+                                    background-color: yellow; 
+                                    font-size: 10pt;}
+
 </style>
 
 </head>
