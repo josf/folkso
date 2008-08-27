@@ -1,3 +1,6 @@
+/** the #super* parts are the popup div that covers the page for
+confirmations **/
+
 #superscreen {
     display: none; 
     z-index: 50;
@@ -29,11 +32,16 @@
     font-weight: bold;
     letter-spacing: 1px;
 }
+
+/** yes or no buttons in popup **/
 .yesno {
     margin-left: 0.3em; margin-right: 0.3em;
 }
+
+/** devel sql access **/
 #sql { display: none;}
 
+/** main list of resources **/
 ul.editresources {
     background-color: white;
 }
@@ -49,53 +57,66 @@ iframe.preview {
     width: 100%;
 }
 
+/** resource title **/
+a.restitle {padding-right: 2em; 
+            font-size: 12pt; 
+            font-weight: bold;}
 
+/** resource url **/
+a.resurl { padding-right: 2em; 
+           font-size: 10pt;}
 
-a.restitle {padding-right: 2em; font-size: 12pt; font-weight: bold;}
-a.resurl { padding-right: 2em; font-size: 10pt;}
-
+/** class of resources that have 0 tags  **/
 li.nottagged {
              background-color: #f8c5ac;
 }
-
 li.nottagged a.restitle {
     background-color: #e5966e;
 }
-
 li.nottagged span.tagev_count {
     color: #e66322;
 }
-
 li.nottagged span.lasttaggage, li.nottagged span.currenttags {
              display: none;
 }
 
+
 ul.taglist {display: none;}
+
+/**  ajax-created list of tags (with commands) **/
 ul.tagmenu li {border: none; margin-top: 0.3em; margin-bottom: 0.1em;}
 .tagid { padding-left: 0.5em; padding-right: 0.5em; }
 .explanation {
     font-size: 9pt;
     font-style: italic;
 }
+/** resource delete **/
 a.resdeletebutton { margin-left: 2.5cm; color: #e66322; font-weight: bold;}
+
+/** deprecated **/
 a.seedetails {display: none; margin-left: 0.2em; margin-right: 0.2em;}
+
+/** numeric tag id **/
 span.tagid {font-size: 8pt;
-            font-style: italic;}
-a.remtag, a.tagbutton, a.metatagbutton { font-weight: bold;
-                                         color: #e66322;
-                                         margin-left: 0.5em; margin-right: 0.5em;
-                                       }
+            font-style: italic;
+            display: none;
+}
+/** buttons that do real things **/
+#grouptagvalidate, a.remtag, a.tagbutton, a.metatagbutton, a.addnote { font-weight: bold;
+                                                                       color: #e66322;
+                                                                       margin-left: 0.5em; margin-right: 0.5em;
+                                                                     }
 a.tagdisplay {font-weight: bold}
 .infohead {margin-left: 0.5em;}
 
 a.currentpagination, a.currentpagination:visited  {
     color: #e66322; font-weight: bold;
 }
-
 a.pagination, a.currentpagination  {
     margin-left: 0.2em; margin-right: 0.2em;
 }
 
+/** div containing the grouptagging boxes and buttons**/
 #grouptagging {
     margin-top: 0.4em; margin-bottom: 0.5em;
 }
