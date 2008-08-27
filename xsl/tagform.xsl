@@ -157,6 +157,23 @@
 
 <xsl:element name="div">
   <xsl:attribute name="class">multifusion</xsl:attribute>
+  <xsl:element name="h4">
+    <xsl:text>Fusion Multiple</xsl:text>
+  </xsl:element>
+
+  <xsl:element name="p">
+    <xsl:text>Sélectionner sur la page les tags à fusionner avec </xsl:text>
+    <xsl:element name="em">
+      <xsl:value-of select="display"/>
+    </xsl:element>
+    <xsl:text>. Les autres tags seront supprimés au profit de celui-ci.</xsl:text>
+  </xsl:element>
+
+        <xsl:element name="p">
+          <xsl:attribute name="class">multifusionvictims</xsl:attribute>
+        </xsl:element>
+
+        <xsl:element name="p">
       <xsl:element name="a">
         <xsl:attribute name="class">multifusionbutton</xsl:attribute>
         <xsl:attribute name="href">#</xsl:attribute>
@@ -164,15 +181,6 @@
           Multi-fusion
         </xsl:text>
       </xsl:element>
-
-        <xsl:element name="a">
-          <xsl:attribute name="class">multipreview</xsl:attribute>
-          <xsl:attribute name="href">#</xsl:attribute>
-          <xsl:text>Aperçu</xsl:text>
-        </xsl:element>
-
-        <xsl:element name="span">
-          <xsl:attribute name="class">multifusionvictims</xsl:attribute>
         </xsl:element>
 </xsl:element>
 
