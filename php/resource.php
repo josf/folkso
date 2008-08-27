@@ -35,7 +35,7 @@ $srv->addResponseObj(new folksoResponse('get',
 
 $srv->addResponseObj(new folksoResponse('get',
                                         array('required' => array('res'),
-                                              'exclude' => array('clouduri', 'visit')),
+                                              'exclude' => array('clouduri', 'visit', 'note')),
                                         'getTagsIds'));
 
 
@@ -53,11 +53,12 @@ $srv->addResponseObj(new folksoResponse('post',
 $srv->addResponseObj(new folksoResponse('post',
                                         array('required_single' => array('res'),
                                               'required' => array('visit'),
-                                              'exclude' => array('tag')),
+                                              'exclude' => array('tag', 'note')),
                                         'visitPage'));
 
 $srv->addResponseObj(new folksoResponse('post',
-                                        array('required' => array('res', 'newresource')),
+                                        array('required' => array('res', 'newresource'),
+                                              'exclude' => array('note', 'delete')),
                                         'addResource'));
 
 $srv->addResponseObj(new folksoResponse('delete',
@@ -72,6 +73,15 @@ $srv->addResponseObj(new folksoResponse('post',
                                         array('required_single' => array('res', 'delete'),
                                               'exclude' => array('tag')),
                                         'rmRes'));
+$srv->addResponseObj(new folksoResponse('post',
+                                        array('required_single' => array('res', 'note'),
+                                              'exclude' => array('tag', 'delete')),
+                                        'addNote'));
+
+$srv->addResponseObj(new folksoResponse('get',
+                                       array('required_single' => array('res', 'note'),
+                                             'exclude' => array('tag', 'delete')),
+                                       'getNotes'));
 
 $srv->Respond();
 
@@ -107,7 +117,7 @@ function isHead (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
     header('HTTP/1.0 501 Database problem');
     die($i->error_info());
     break;
- case 'NOROWS':
+  case 'NOROWS':
     header('HTTP/1.0 404 Resource not found');
     die('Resource '. $q->res . ' not present in database');
     break;
@@ -506,11 +516,101 @@ function rmRes (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
    print "This resource will not be indexed in the future.";
    //   print $sql;
  }
+}
 
-  
+/**
+ * Add a note to a resource
+ *
+ * Web params: POST, note, res
+ */
+function addNote (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+  $i = new folksoDBinteract($dbc);
+  if ($i->db_error()) {
+    header('HTTP/1.0 501 Database connection error');
+    die($i->error_info());
+  }
 
+  $sql = 
+    "INSERT INTO note ".
+    "SET note = '". $i->dbescape($q->get_param("note")) . "', ".
+    "user_id = 9999, " .
+    "resource_id = ";
 
+  if (is_numeric($q->res)) {
+    $sql .= $q->res;
+  }
+  else {
+    $sql .= 
+      "(SELECT id FROM resource  ".
+      " WHERE uri_normal = url_whack('" . $q->res . "'))";
+  }
 
+  $i->query($sql);
+  if ($i->result_status == 'DBERR') {
+    header('HTTP/1.1 501 Database insert error');
+    die($i->error_info());
+  }
+  else {
+    header('HTTP/1.1 202 Note accepted');
+    print "This note will be added to the resource: " . $q->res;
+    print "\n\nText of the submitted note:\n". $q->get_param('note');
+  }
+}
+
+function getNotes (folksoquery $q, folksoWsseCreds $cred, folksoDBconnect $dbc){
+ $i = new folksoDBinteract($dbc);
+  if ($i->db_error()) {
+    header('HTTP/1.0 501 Database connection error');
+    die($i->error_info());
+  }
+
+  $sql = 
+    "SELECT note, user_id \n\t".
+    "FROM note n \n\t".
+    "WHERE n.resource_id = ";
+
+  if (is_numeric($q->res)){
+    $sql .= $q->res;
+  }
+  else {
+    $sql .= 
+      "(SELECT id FROM resource r \n\t".
+      " WHERE r.uri_normal = url_whack('" .$q->res . "'))";
+  }
+  $i->query($sql);
+  switch ($i->result_status) {
+  case 'DBERR':
+    header('HTTP/1.1 501 Database query error');
+    die($i->error_info());
+    break;
+  case 'NOROWS': 
+    if ($i->resourcep($q->res)) {
+      header('HTTP/1.1 404 No notes associated with this resource');
+      print $sql;
+    }
+    else {
+      header('HTTP/1.1 404 Resource not found');
+      print "Sorry. The resource for which you requested an annotation".
+        " is not present in the database";
+    }
+    return;
+    break;
+  case 'OK':
+    header('HTTP/1.1 200 Notes found');
+    break;
+}
+  // assuming 200 from here on
+
+  $df = new folksoDisplayFactory();
+  $dd = $df->NoteList();
+  $dd->activate_style('xml');
+
+  print $dd->startform();
+  print $dd->title($q->res);
+  while ($row = $i->result->fetch_object()) {
+    print $dd->line($row->user_id, $row->note);
+  }
+  print $dd->endform();
 }
 
 /**
