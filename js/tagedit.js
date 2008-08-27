@@ -53,6 +53,8 @@ $(document).ready(function() {
                     $('a.closeeditbox').click(
                       function(event){
                         event.preventDefault();
+                        Document.folksonomie.
+                          currentEdit.find("p.multifusionvictims").text("");
                         Document.folksonomie.currentEdit = '';
                         $(this).parent().parent(".tagcommands").hide();
                         $("input.fusioncheck").attr('checked', '');
