@@ -225,6 +225,8 @@ function makeMfusionFunc(targ) {
     },
     success: function(data, str) {
       lis.remove();
+      /* clear preview text */
+      Document.folksonomie.currentEdit.find("p.multifusionvictims").text("");
     },
     error: function(xhr, msg){
       alert("Echec: la fusion du tag "
