@@ -1,4 +1,5 @@
 var urlbase = '';
+Document.folksonomie = new Object();
 
 $.ajaxSetup({
               url: urlbase + 'tag.php',
@@ -6,9 +7,21 @@ $.ajaxSetup({
               });
 
 $(document).ready(function() {
+                    $('li.tagentry').each(fkPrepare);
                     $(".fusionbox").autocomplete(urlbase + "tagcomplete.php");
                     $("input.fusioncheck").attr("disabled", "disabled");
-                    $('li.tagentry').each(fkPrepare);
+                    $("input.fusioncheck").change(
+                      function(event){
+                        var checkedTag =
+                          $(this).parent().parent("li").find("a.tagname").text();
+                        if ($(this).attr('checked') == true){
+                          addtoPreview(checkedTag);
+                        }
+                          else {
+                            removefromPreview(checkedTag);
+                          }
+                      }
+                    );
 
                     $('a.edit').click(
                       function(event) {
@@ -16,6 +29,7 @@ $(document).ready(function() {
                         // first parent is a <p>
                         $("div.tagcommands").hide();
                         var lis = $(this).parent().parent("li");
+                        Document.folksonomie.currentEdit = lis;
                         lis.find("div.tagcommands").show();
                         $(this).hide();
                         $("input.fusioncheck").attr('disabled', '');
@@ -41,6 +55,7 @@ $(document).ready(function() {
                     $('a.closeeditbox').click(
                       function(event){
                         event.preventDefault();
+                        Document.folksonomie.currentEdit = '';
                         $(this).parent().parent(".tagcommands").hide();
                         $("input.fusioncheck").attr('checked', '');
                         $("input.fusioncheck").attr('disabled', 'disabled');
@@ -241,3 +256,22 @@ function getMVictims() {
   return str;
 }
 
+
+function addtoPreview(tag) {
+  var preview =
+      Document.folksonomie.currentEdit.find("span.multifusionvictims");
+  var text = preview.text();
+  if (text.indexOf('"' + tag + '"') == -1) { // ie. not found
+    preview.text( text + '"' + tag + '"');
+  }
+}
+
+function removefromPreview(tag) {
+  var preview =
+    Document.folksonomie.currentEdit.find("span.multifusionvictims");
+  var text = preview.text();
+  var quotedTag = '"' + tag + '"';
+  if (text.indexOf(quotedTag) > -1) {
+    preview.text(text.replace(quotedTag, ''));
+  }
+}
