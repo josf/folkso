@@ -188,5 +188,19 @@ class folksoDisplayFactory {
                                        'argsperline' => 4));
     return $obj;
   }
+
+
+
+  public function NoteList () {
+    $obj = 
+      new folksoDataDisplay(array('type' => 'xml',
+                                  'start' => '<?xml version="1.0"?>',
+                                  'titleformat' => '<noteList resource="XXX">',
+                                  'end' => '</noteList>',
+                                  'lineformat' => 
+                                  '<note userid="XXX">XXX</note>',
+                                  'argsperline' => 3));
+    return $obj;
+  }
 }
 ?>
