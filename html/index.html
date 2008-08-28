@@ -1,0 +1,92 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Fabula -> Folksonomie</title>
+    <link 
+        rel="stylesheet" type="text/css" 
+        href="http://www.fabula.org/commun3/template.css" 
+        media="screen">
+    </link>
+    <link rel="stylesheet" type="text/css" href="http://www.fabula.org/commun3/print.css" media="print">
+    </link>
+    <!-- <link rel="shortcut icon" type="image/x-icon" href="http://www.fabula.org/favicon.ico"></link> -->
+  </head>
+  <body>
+    <h1>Les tags sur Fabula</h1>
+    
+    <h2><a href="admin/editresources.php">Gestion des resources</a></h2>
+    
+    <p>
+      Cette interface permet d'ajouter des <em>tags</em> aux pages
+      déjà présentes dans la base de ressources, en en créant des
+      nouveaux, ou encore de supprimer certains tags d'une resource,
+      voire de supprimer une ressource.
+    </p>
+
+    <h2><a href="admin/tagedit.php">Edition des tags</a></h2>
+    <p>
+      Cette interface permet de :
+    </p>
+      <ul>
+        <li>
+        créer des nouveaux tags
+        </li>
+        <li>
+          modifier des tags existants (correction de fautes
+          d'orthographe, standardisation, etc.).
+        </li>
+        <li>
+          supprimer des tags (mais attention! cette action supprime en
+          même temps tous les <em>actes de taggage</em> (voir le
+          léxique ci-dessous) associés au tag en question.
+        </li>
+        <li>
+          fusionner un tag : un tag est effacé, et tous les <em>actes
+          de taggage</em> qui lui étaient associés sont transférés à
+          un autre tag. Ainsi, par exemple, les tags "Gérard Genette"
+          et "Genette, Gérard" peuvent être combinés sans perdre les
+          informations associées aux deux tags.
+        </li>
+        <li>
+          fusion multiple : en sélectionnant plusieurs tags en même
+          temps, ils peuvent être fusionnés simultanément vers un
+          seul.
+        </li>
+      </ul>
+
+      <h2>Lexique</h2>
+      <ul>
+        <li>
+          <em>Tag</em> Une "étiquette" qui peut être associé à une
+          ressource. Concrètement, un <em>tag</em> une brève chaîne de
+          caractères qui peut contenir des espaces, des points et des
+          virgules. Voir aussi <a
+          href="http://fr.wikipedia.org/wiki/Tag_(métadonnée)">Tag
+          (métadonnée)</a>.
+        </li>
+        <li>
+          <em>Ressource</em> Une chose pouvant recevoir un
+          <em>tag</em>. En pratique, une ressource correspond à un <a
+          href="http://fr.wikipedia.org/wiki/Uniform_Resource_Identifier">URI</a>,
+          c'est-à-dire une page sur un site, ou une image, un pdf, etc.
+        </li>
+        <li>
+          <em>Acte de taggage</em> L'unité minimale d'information dans
+          ce système de tags <em>l'acte de taggage</em>, le fait
+          d'associer un <em>tag</em> à une <em>ressource</em>, à un
+          moment donné, par un utilisateur donné. On pourrait parler
+          aussi d'<em>événement</em> de taggage.
+        </li>
+        <li>
+          <em>Métatag</em> Un <em>métatag</em> est un tag qui est
+          associé non pas à une ressource mais à un <em>acte de
+          taggage</em> afin de préciser le type de relation qui existe
+          entre le tag et la ressource. Pour dire que, par exemple,
+          Gérard Genette est <em>l'auteur</em> de la ressource en
+          question, on ajouterait au tag "Genette, Gérard" le métatag
+          "contributor", qui, dans la norme <a
+          href="http://dublincore.org/">Dublin Core</a>, désigne ce rôle.
+        </li>
+      </ul>
+  </body>
+</html>
+  
