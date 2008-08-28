@@ -8,23 +8,7 @@ $(document).ready(
         event.preventDefault();
         $("#sql").show();
       });
-/**
-    $("a.seedetails").click(
-      function(event) {
-        event.preventDefault();
-        $(this).parent().siblings("div.details").show();
-        $(this).siblings("a.hidedetails").show();
-        $(this).hide();
-      });
 
-    $("a.hidedetails").click(
-      function(event) {
-        event.preventDefault();
-        $(this).parent().siblings("div.details").hide();
-        $(this).siblings("a.seedetails").show();
-        $(this).hide();
-      });
-**/
     $("ul.editresources li").each(iframePrepare);
     $("ul.editresources li").each(tagboxPrepare);
     $("ul.editresources li").each(taglistHidePrepare);
@@ -54,6 +38,13 @@ $(document).ready(
       function(event) {
         event.preventDefault();
         $("input.groupmod").attr("checked", "checked");
+      });
+
+    $("a.addnote").click(
+      function(event){
+        event.preventDefault();
+        var lis = $(this).parent("li");
+        lis.append(noteEditBox());
       });
 
     // for debugging
@@ -567,7 +558,7 @@ function tagResourceFunc (url, tag, meta, lisarg) {
 
 function currentTagsUpdate (tag, lis) {
   if (lis.find("span.currenttags").html().indexOf('"' + tag + '"') == -1)  {
-    lis.find("span.currenttags").append('"' + tag + '"');
+    lis.find("span.currenttags").append(' "' + tag + '" ');
   }
 }
 
@@ -631,3 +622,16 @@ function deleteResourceMessage(resid, lis) {
   return thediv;
 }
 
+function noteEditBox() {
+  var edit = $("<div class='noteedit'>");
+  edit.append(
+    $("<textarea rows='10' cols='40' class='noteedit'>"));
+  edit.append($("<a href='#' class='editbutton'>Enregistrer</a>"));
+  edit.append($("<a href='#' class='editclose'>Annuler</a>"));
+  edit.find("a.editclose").click(
+    function(event){
+      event.preventDefault();
+      $(this).parent().remove();
+    });
+  return edit;
+}
