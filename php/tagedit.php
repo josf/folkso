@@ -24,6 +24,8 @@
 
 <style type="text/css">
 
+ul.taglist { list-style: none;}
+
 .tagname { font-weight: bold; font-size: 12pt}
 .tagcommands { display: none; 
                border: 2px solid grey; 
