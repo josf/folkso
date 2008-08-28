@@ -14,44 +14,15 @@
         href="jquery.autocomplete.css"
         media="screen">
     </link>
-
+<link rel="stylesheet" type="text/css" href="tagedit.css" media="screen">
+</link>
+  
 
 <script type="text/javascript" src="js/jquery.js"></script>
 <script type="text/javascript" src="js/jquery.autocomplete.js">
   </script>
 <!-- <script type="text/javascript" src="js/folkso.js"></script> -->
 <script type="text/javascript" src="js/tagedit.js"></script>
-
-<style type="text/css">
-
-ul.taglist { list-style: none;}
-
-.tagname { font-weight: bold; font-size: 12pt}
-.tagcommands { display: none; 
-               border: 2px solid grey; 
-               width: 400px; 
-               padding: 0.5em }
-#container { background-color: white;}
-a.nores {color: blue;}
-a.closeeditbox, a.closeeditbox:link, a.closeeditbox:visited { margin-left: 300px;}
-#pagehead { border-bottom: 2px solid grey; 
-            margin: 1em; 
-            margin-top: 2em; 
-            padding-top: 3em; }
-#pagehead p { width: 80%}
-input.fusioncheck { margin-right: 1em}
-
-.multifusion { border: 1px solid grey; 
-               padding: 2px; 
-               margin: 2px; }
-a.multifusionbutton{ font-weight: bold;
-                     color: #e66322;}
-.multifusion p { color: grey; font-size: 9pt}
-.multifusion p.multifusionvictims { color: blue; 
-                                    background-color: yellow; 
-                                    font-size: 10pt;}
-
-</style>
 
 </head>
 <body>
