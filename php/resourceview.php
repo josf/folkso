@@ -9,9 +9,17 @@
 <link rel="shortcut icon" type="image/x-icon" href="http://www.fabula.org/favicon.ico">
 <style type="text/css">
 h2.tagtitle {font-size: 16pt; text-align: center}
+.resourcelist a.resurl, 
+.resourcelist a.resurl:visited, 
+.resourcelist a.resurl:link {font-size: 10pt; font-weight: normal}
 
 .tagname { font-weight: bold; font-size: 18pt}
-#container { background-color: white;}
+#container { 
+    background-color: white; 
+    padding-top: 2em;
+    padding-bottom: 3em;
+    padding-left: 2em; padding-right: 2em;
+}
 ul.resourcelist li a, ul.resourcelist li a:link, ul.resourcelist li a:visited { 
     font-size: 14pt; 
     font-color: orange;}
@@ -20,6 +28,9 @@ ul.resourcelist li { margin-bottom: 1em}
 ul.resourcelist li a.tocloud, ul.resourcelist li a:visited.tocloud, ul.resourcelist li a:link.tocloud {
     font-size:10pt;}
 
+#pagebottom {
+    border-top: 2px solid grey;
+}
 </style>
 
 </head>
@@ -78,8 +89,16 @@ $loc = new folksoFabula();
                <input type="submit" value="Submit"/>
              </p>
            </form>
+           <p>
+             Retour à : <a href="editresources.php">interface de taggage</a>,
+             <a href="tagedit.php">édition des tags</a>
+           </p>
 </div>
 
 </div>
 </body>
 </html>
+
+
+
+
