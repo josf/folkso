@@ -8,23 +8,23 @@
 <link rel="stylesheet" type="text/css" href="http://www.fabula.org/commun3/print.css" media="print">
 <link rel="shortcut icon" type="image/x-icon" href="http://www.fabula.org/favicon.ico">
 <style type="text/css">
-.tagname { font-weight: bold; font-size: 14pt}
+h2.tagtitle {font-size: 16pt; text-align: center}
+
+.tagname { font-weight: bold; font-size: 18pt}
 #container { background-color: white;}
-ul.resourcelist li a, ul.resourcelist li a:link, ul.resourcelist li a:visited { font-size: 14pt; 
-font-color: orange;}
+ul.resourcelist li a, ul.resourcelist li a:link, ul.resourcelist li a:visited { 
+    font-size: 14pt; 
+    font-color: orange;}
 
 ul.resourcelist li { margin-bottom: 1em}
-ul.resourcelist li a.tocloud, ul.resourcelist li a:visited.tocloud, ul.resourcelist li a:link.tocloud {font-size:10pt;}
+ul.resourcelist li a.tocloud, ul.resourcelist li a:visited.tocloud, ul.resourcelist li a:link.tocloud {
+    font-size:10pt;}
+
 </style>
 
 </head>
 <body>
 <div id="container">
-<form action="/resourceview.php" method="get">
-            <p>Entrer un uri ou un identifiant de resource déjà  présente dans la base</p>
-             <input type="text" name="tagthing" maxlength="3" size="3"></input></p>
-             <input type="submit" value="Submit"/>
-           </form>
 
 
 
@@ -66,6 +66,19 @@ $loc = new folksoFabula();
      }
    }
 ?>
+<div id="pagebottom">
+<form action="/resourceview.php" method="get">
+            <p>
+              Entrer un uri ou un identifiant de resource déjà  présente dans la base
+            </p>
+            <p>
+              <input type="text" name="tagthing" maxlength="3" size="3"></input>
+             </p>
+             <p>
+               <input type="submit" value="Submit"/>
+             </p>
+           </form>
+</div>
 
 </div>
 </body>
