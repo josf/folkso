@@ -175,9 +175,12 @@ class folksoDisplayFactory {
                                        'argsperline' => 4),
                                  $this->standardTextList(4),
                                  array('type' => 'xml',
-                                       'start' => '<resourcelist>',
-                                       'titleformat' => '<tagtitle>XXX</tagtitle>',
-                                       'end' => '</resourcelist>',
+                                       'start' => 
+                                       "<?xml version=\"1.0\"?>\n".
+                                       "<tag>\n",
+                                       'titleformat' => 
+                                       "<tagtitle>XXX</tagtitle>\n<resourcelist>\n",
+                                       'end' => "</resourcelist>\n</tag>",
                                        'lineformat' =>
                                        "<resource>\n".
                                        "\t<numid>XXX</numid>\n" .
@@ -188,8 +191,6 @@ class folksoDisplayFactory {
                                        'argsperline' => 4));
     return $obj;
   }
-
-
 
   public function NoteList () {
     $obj = 
