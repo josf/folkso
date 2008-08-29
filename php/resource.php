@@ -83,6 +83,11 @@ $srv->addResponseObj(new folksoResponse('get',
                                              'exclude' => array('tag', 'delete')),
                                        'getNotes'));
 
+$srv->addResponseObj(new folksoResponse('post',
+                                        array('required_single' => array('note', 'delete'),
+                                              'exclude' => array('res', 'tag')),
+                                        'rmNote'));
+
 $srv->Respond();
 
 /**
@@ -565,7 +570,7 @@ function getNotes (folksoquery $q, folksoWsseCreds $cred, folksoDBconnect $dbc){
   }
 
   $sql = 
-    "SELECT note, user_id \n\t".
+    "SELECT note, user_id, id \n\t".
     "FROM note n \n\t".
     "WHERE n.resource_id = ";
 
@@ -608,11 +613,41 @@ function getNotes (folksoquery $q, folksoWsseCreds $cred, folksoDBconnect $dbc){
   print $dd->startform();
   print $dd->title($q->res);
   while ($row = $i->result->fetch_object()) {
-    print $dd->line($row->user_id, $row->note);
+    print $dd->line($row->user_id,
+                    $row->id, 
+                    $row->note);
   }
   print $dd->endform();
 }
 
+/**
+ * Web params: POST + note + delete
+ *
+ * "note" must be a numerical note id.
+ */
+function rmNote (folksoquery $q, folksoWsseCreds $cred, folksoDBconnect $dbc){
+ $i = new folksoDBinteract($dbc);
+  if ($i->db_error()) {
+    header('HTTP/1.0 501 Database connection error');
+    die($i->error_info());
+  }
+  if (! is_numeric($q->get_param('note'))){
+    header('HTTP/1.1 400 Bad note argument');
+    die($q->get_param('note') . ' is not a number');
+  }
+
+  $sql = "DELETE FROM note WHERE id = " . $q->get_param('note');
+  $i->query($sql);
+
+  if ($i->result_status == 'DBERR'){
+    header('HTTP/1.1 Database delete errors');
+    die($i->error_info());
+  }
+  else {
+    header('HTTP/1.1 200 Deleted');
+    print "The note " . $q->get_param('note'). " was deleted.";
+  }
+}
 /**
  * @param $res string (url) or integer 
  * @param $tag string (tagname) or integer
