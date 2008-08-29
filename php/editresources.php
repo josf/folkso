@@ -102,7 +102,8 @@ $i = new folksoDBinteract($dbc);
         >
         </input>
       </p>
-
+<div id="checklists">
+<div id="tagstatus">
         <h3>Afficher :</h3>
       <p>
         <input type="radio" name="tagged" value="notags" checked="checked">
@@ -112,6 +113,8 @@ $i = new folksoDBinteract($dbc);
         <input type="radio" name="tagged" value="all">
         </input>Ressources taggées et non-taggées
       </p>
+</div>
+<div id="sortselect">
       <h3>Trier par :</h3>
       <p>
         <input type="radio" name="orderby" value="whenindexeddesc" 
@@ -143,6 +146,8 @@ $i = new folksoDBinteract($dbc);
        ?>>
         </input><em>Date du dernier tag</em><br/>
       </p>
+</div>
+</div>
       <p>
         <input type="submit" name="submit">
         </input>
@@ -160,9 +165,10 @@ $i = new folksoDBinteract($dbc);
   print $metatagOptions;
 ?>
       </select>
+      <a href="#" id="grouptagvalidate" class="control">Valider</a> <span> </span> 
     </p>
     <p>
-      <a href="#" id="grouptagvalidate" class="control">Valider</a> <span> </span> 
+
       <a href="#" id="groupchecksall" class="control">Cocher tous</a>
       <a href="#" id="cleargroupchecks" class="control">Décocher tous</a>
     </p>
