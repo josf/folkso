@@ -40,11 +40,21 @@ $(document).ready(
         $("input.groupmod").attr("checked", "checked");
       });
 
+    $("a.existingnotes").click(
+      function(event){
+        event.preventDefault();
+        var lis = $(this).parent().parent("li");
+        var resid = lis.attr("id").substring(3);
+        lis.append(noteDisplayBox(resid));
+      });
+
+
     $("a.addnote").click(
       function(event){
         event.preventDefault();
         var lis = $(this).parent("li");
-        lis.append(noteEditBox());
+        var resid = lis.attr("id").substring(3);
+        lis.append(noteEditBox(resid));
       });
 
     // for debugging
@@ -622,16 +632,145 @@ function deleteResourceMessage(resid, lis) {
   return thediv;
 }
 
-function noteEditBox() {
+function noteEditBox(resid) {
   var edit = $("<div class='noteedit'>");
   edit.append(
     $("<textarea rows='10' cols='40' class='noteedit'>"));
   edit.append($("<a href='#' class='editbutton'>Enregistrer</a>"));
+  edit.append($("<span> </span>")); // a lame span as separator
   edit.append($("<a href='#' class='editclose'>Annuler</a>"));
+
+  edit.find("a.editbutton").click(
+  function(event) {
+    event.preventDefault();
+    var text = $(this).siblings("textarea.noteedit").val();
+    if (text.length > 0) {
+      $.ajax({ url: urlbase + 'resource.php',
+               type: 'post',
+               data: {
+                 folksores: resid,
+                 folksonote: text
+               },
+               error: function(xhr, msg){
+                 alert(xhr.status + " " + xhr.statusText);
+               },
+               success: function(data, msg) {
+                 var nc = edit.parent("li").find("span.notecount");
+                 if (nc.text().length == 0) {
+                   nc.append($("<a href='#' class=\"existingnotes\">1 note</a>"));
+                   nc.find("a.existingnotes").click(
+                     function(event){
+                       event.preventDefault();
+                       var lis = $(this).parent().parent("li");
+                       var resid = lis.attr("id").substring(3);
+                       lis.append(noteDisplayBox(resid));
+                     });
+                 }
+                 else {
+                   var nctext = nc.find("a").text();
+                   var current = nctext.match(/\d+/);
+                   var newtext = nctext.replace(current, Number(current) + 1);
+                   nc.find("a").text(newtext);
+                 }
+                 edit.remove();
+               }
+             });
+      }
+  });
+
   edit.find("a.editclose").click(
     function(event){
       event.preventDefault();
       $(this).parent().remove();
     });
   return edit;
+}
+
+function noteDisplayBox(resid){
+  var boxdiv = $("<div class='notedisplay'>");
+  $.ajax({
+           url: urlbase + 'resource.php',
+           type: 'get',
+           datatype: 'text/xml',
+           async: false,
+           data: {
+             folksores: resid,
+             folksonote: 1
+           },
+           error: function(xhr, msg){
+             alert(xhr.status + " " + xhr.statusText);
+             boxdiv.append("<p>Aucune note</p>");
+           },
+           success: function(data){
+             boxdiv.append(parseNotes(data));
+           }
+         });
+  boxdiv.append($("<p class=\"buttonholder\"> "
+                  + "<a href='#' class='closenotes'>"
+                  + "Fermer</a> </p>"));
+  boxdiv.find("a.closenotes").click(
+    function(event){
+      event.preventDefault();
+      $(this).parent().parent("div").remove();
+    });
+  return boxdiv;
+}
+
+function parseNotes(data){
+  var ul = $("<ul class='notelist'>");
+  var parseFunc = parseNotesFunc(ul);
+  $("note", data).each(parseFunc);
+  return ul;
+}
+
+function parseNotesFunc(ul) {
+  return function() {
+      var item = $('<li>');
+      item.attr("id", "note" + $(this).attr("noteid"));
+      item.text($(this).text());
+      item.append(deleteNoteButton($(this).attr("noteid")));
+      ul.append(item);
+  };
+}
+
+function deleteNoteButton(noteid) {
+  var par = $("<p><a href=\"#\" class=\"deletenotebutton\">Supprimer</a></p>");
+  par.find("a.deletenotebutton").click(
+    function(event){
+      event.preventDefault();
+      $.ajax({
+        url: urlbase + 'resource.php',
+        type: 'post',
+        datatype: 'text/text',
+        data: {
+          folksonote: noteid,
+          folksodelete: 1
+        },
+        error: function(xhr, msg){
+          alert(xhr.status + " " + xhr.statusText);
+        },
+        success: function(data) {
+          var existing =
+              par.parent("li").parent("ul").parent("div")
+                .parent("li").find("a.existingnotes");
+
+          var before = existing.text().match(/\d+/);
+          if (before == 1){
+            existing.remove();
+            }
+          else if (before == 2) {
+            existing.text('1 note');
+          }
+          else if (before > 2) {
+            var after = before - 1;
+            existing.text(after + ' notes');
+          }
+          else { // this should never happen...
+            existing.text("notes");
+          }
+          par.parent("li").remove();
+        }
+        });
+    });
+  return par;
 }
