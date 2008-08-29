@@ -198,7 +198,7 @@ class folksoDisplayFactory {
                                   'titleformat' => '<noteList resource="XXX">',
                                   'end' => '</noteList>',
                                   'lineformat' => 
-                                  '<note userid="XXX">XXX</note>',
+                                  '<note userid="XXX" noteid="XXX">XXX</note>',
                                   'argsperline' => 3));
     return $obj;
   }
