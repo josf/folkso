@@ -321,48 +321,48 @@ function fancyResource (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $
    * dummy columns should be added to the first part of the UNION.
    */
 $querytagtitle = 
-  "select tagdisplay as title, \n\t" .
-  "id as id, \n\t" .
-  "'dummy' as href, \n\t" .
-  "'dummy' as display, \n\t" .
-  "'dummy' as tags \n".
-  "from tag \n\t";
+  "SELECT tagdisplay AS title, \n\t" .
+  "id AS id, \n\t" .
+  "'dummy' AS href, \n\t" .
+  "'dummy' AS display, \n\t" .
+  "'dummy' AS tags \n".
+  "FROM tag \n\t";
   if (is_numeric($q->tag)) {
-    $querytagtitle .= ' where id = ' . $q->tag . ' ';
+    $querytagtitle .= ' WHERE id = ' . $q->tag . ' ';
   }
   else {
-    $querytagtitle = " where tagnorm = normalize_tag('" . 
+    $querytagtitle = " WHERE tagnorm = normalize_tag('" . 
       $i->dbescape($q->tag) . "') ";
   }
 
-  $querytagtitle .= ' limit 1 '; // just to be sure
+  $querytagtitle .= ' LIMIT 1 '; // just to be sure
 
 $querystart = 
-'  select 
-  r.title as title, 
-  r.id as id,
-  r.uri_raw as href,
+'  SELECT 
+  r.title AS title, 
+  r.id AS id,
+  r.uri_raw AS href,
   CASE 
     WHEN title IS NULL THEN uri_normal 
     ELSE title
   END AS display,
-  (select group_concat(distinct tagdisplay separator \' - \')
-               from tag t2
-               join tagevent te2 on t2.id = te2.tag_id
-               join resource r2 on r2.id = te2.resource_id
-               where r2.id = r.id
-               ) as tags
-  from resource r
-  join tagevent te on r.id = te.resource_id
-  join tag t on te.tag_id = t.id';
+  (SELECT GROUP_CONCAT(DISTINCT tagdisplay SEPARATOR \' - \')
+               FROM tag t2
+               JOIN tagevent te2 ON t2.id = te2.tag_id
+               JOIN resource r2 ON r2.id = te2.resource_id
+               WHERE r2.id = r.id
+               ) AS tags
+  FROM resource r
+  JOIN tagevent te ON r.id = te.resource_id
+  JOIN tag t ON te.tag_id = t.id';
 
 //  $queryend = " LIMIT 100";
   $querywhere = '';
   if (is_numeric($q->tag)) {
-    $querywhere = 'where t.id = ' . $q->tag . ' ';
+    $querywhere = 'WHERE t.id = ' . $q->tag . ' ';
   }
   else {
-    $querywhere = "where t.tagnorm = normalize_tag('" . 
+    $querywhere = "WHERE t.tagnorm = normalize_tag('" . 
       $i->dbescape($q->tag) . "') ";
   }
   $total_query = $querytagtitle . " UNION \n" .  $querystart . ' '  . $querywhere . ' ' . $queryend;
