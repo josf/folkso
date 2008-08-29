@@ -267,20 +267,32 @@ function tagCloudLocalPop (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnec
       return;
     }
   }
-  
-  $i->query("CALL cloudy('" . $i->dbescape($q->res) . "', 5, 5)");
+  $sql = "CALL cloudy(";
+
+  if (is_numeric($q->res)) {
+    $sql .= $q->res . ", '', 5, 5)";
+  }
+  else {
+    $sql .= "'', '" .$i->dbescape($q->res) . "', 5, 5)";
+}
+$i->query($sql);
 
   switch ($i->result_status) {
   case 'DBERR':
     header('HTTP/1.1 501 Database error');
     die($i->error_info());
     break;
-  case 'NOROWS':
+  case 'NOROWS': // probably impossible now
     header('HTTP/1.1 204 No tags associated with resource');
     return;
     break;
   case 'OK':
-    header('HTTP/1.1 200');
+    if ($i->result->num_rows == 1) {
+      header('HTTP/1.1 204 No tags associated with resource');
+    } 
+    else {
+      header('HTTP/1.1 200 Cloud OK');
+    }
     break;
   }
 
@@ -288,7 +300,15 @@ function tagCloudLocalPop (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnec
   $dd = $df->cloud();
   $dd->activate_style('xhtml'); // only style available right now.
   
-  print $dd->startform();
+  $row1 = $i->result->fetch_object(); // popping the title line
+  
+  /** in CLOUDY
+   * tagdisplay = r.title
+   * tagnorm = r.uri_raw
+   * tagid = r.id
+   */
+  print $dd->title($row1->tagdisplay);
+  print $dd->startform();  // <ul>
   while ($row = $i->result->fetch_object()) {
     print $dd->line($row->cloudweight, 
                     "/resourceview.php?tagthing=".
