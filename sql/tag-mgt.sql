@@ -177,13 +177,16 @@ DELIMITER ;
 
 DELIMITER $$
 DROP PROCEDURE IF EXISTS cloudy$$
-CREATE PROCEDURE cloudy(url varchar(255), 
+CREATE PROCEDURE cloudy(residarg int,
+                        urlarg varchar(255), 
                         localweight int,
                         globalweight int)
 
 BEGIN
 
+DECLARE url VARCHAR(255);
 DECLARE url_norm VARCHAR(255);
+DECLARE resid INT;
 
 -- v is to indicate that these are variables, since later we have
 -- identical column names
@@ -214,7 +217,7 @@ DECLARE ourdata CURSOR FOR
        FROM tag
             JOIN tagevent te ON te.tag_id = tag.id
             JOIN resource res ON res.id = te.resource_id
-       WHERE res.uri_normal = url_whack(url)
+       WHERE res.id = resid
        GROUP BY tag.id;
 
 DECLARE finaldata CURSOR FOR
@@ -267,6 +270,16 @@ CREATE TEMPORARY TABLE output_temp_table3
         tagdisplay VARCHAR(255) NOT NULL,
         globalpop INT UNSIGNED,
         localpop INT UNSIGNED);
+
+IF residarg > 0 THEN
+   SET resid = residarg;
+ELSE
+   SELECT id 
+   INTO resid
+   FROM resource
+   WHERE uri_normal = url_whack(urlarg);
+END IF;
+
 
 SET l_last_row_fetched = 0;
 OPEN ourdata;
@@ -339,6 +352,11 @@ select min(weight)
        into minweight
        from final_output;
 
+
+select r.title as tagdisplay, r.uri_raw as tagnorm, r.id as tagid, NULL as weight, NULL as cloudweight
+       from resource r
+       where r.id = resid
+union
 select tagdisplay, tagnorm, tagid, weight,
        case  
              when (weight - minweight) > 0.8 * (maxweight - minweight) then 5
