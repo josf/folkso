@@ -130,4 +130,24 @@ div.noteedit {
     z-axis: 50;
     position: absolute;
     background-color: #f1cd6c;
+    border: 1px solid brown;
+}
+
+ul.notelist {
+    list-style: none;
+}
+
+ul.notelist li {
+    border: none;
+    margin: 2px;
+    width: 300px; /* containing <ul> is 350 wide */
+}
+
+div.notedisplay {
+   width: 350px;
+    z-axis: 50;
+    position: absolute;
+    background-color: #f1cd6c;
+    border: 1px solid brown;
+    padding: 0.7em;
 }
