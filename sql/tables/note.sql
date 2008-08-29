@@ -4,6 +4,7 @@ CREATE TABLE note
        resource_id INT UNSIGNED NOT NULL,
        note TEXT NOT NULL,
        user_id INT UNSIGNED NOT NULL DEFAULT 9999,
+       created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
        INDEX resid (resource_id))
        ENGINE = InnoDB;
        
