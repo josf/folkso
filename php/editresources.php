@@ -242,8 +242,7 @@ $fksql .= " LIMIT 50\n";
 
 if ((is_numeric($begin)) &&
     ($begin >= 50)) {
-  $offset = $begin;
-  $fksql .= " OFFSET $offset";
+  $fksql .= " OFFSET $begin";
 }
 
 print 
@@ -458,14 +457,13 @@ function nextPrevious ($begin, $numrows, $totalresults) {
   for ($it = 0; $it <= 14; $it++) {
     $start = $it * 50 + $base;
 
-    if ($start >= $totalresults - 50) {
-      break;
-    }
-    $last_end = $start + 50;
     print paginationElement($thispage,
                             $start, 
                             $begin,
                             $totalresults);
+    if ($start >= $totalresults - 50) {
+      break;
+    }
     print " ";
   }
 
