@@ -67,7 +67,10 @@ class folksoQuery {
       $mults = array();
       foreach ($array as $param_key => $param_val) {
           if (substr($param_key, 0, 6) == 'folkso') {
-              
+            
+            # to avoid XSS -- no html allowed anywhere.
+            $param_val = strip_tags($param_val);
+
               # if fieldname end in 3 digits : folksothing123, we strip off
               # the digits and build up an array of the fields
             if (is_numeric(substr($param_key, -3))) {
