@@ -224,6 +224,9 @@ $fksql = "SELECT ".
   "    WHERE tee.resource_id = r.id \n".
   "    GROUP BY tee.resource_id) AS thesetags, \n".
 
+  "(SELECT COUNT(*) FROM note n \n\t".
+  " WHERE n.resource_id = r.id) AS notecount, \n".
+
   "(select \n".
   " max(tagtime) \n\t".
   " from tagevent te4 \n\t".
@@ -311,7 +314,20 @@ print '> ';
     "<a class='openiframe' href='#'>Voir la page</a> <a class='closeiframe' href='#'>Fermer</a> ".
 
     '<a href="#" class="resdeletebutton">Supprimer cette resource</a>'.
-    "</p>".
+    '<span class="notecount">';
+
+  /** notecount  stuff **/
+  if ($row->notecount == 1) {
+    print "<a href='#' class='existingnotes'>1 note</a>";
+  }
+  elseif ($row->notecount > 1) {
+    print "<a href='#' class='existingnotes'>";
+    print $row->notecount . " notes</a>";
+  }
+  print '</span>';
+  print '<a href="#" class="addnote">Ajouter une note</a>';
+
+  print "</p>".
 //    '<a href="#" class="seedetails">Voir détails</a> '.
 //    '<a href="#" class="hidedetails">Cacher les détails</a></p> '.
     '<div class="details">'.
