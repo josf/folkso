@@ -184,17 +184,11 @@ if ($i->db_error()) {
 
 $i->query('SET group_concat_max_len = 3072');
 
-if ($i->db_error()) {
-  print "connection problem";
-  die($i->error_info());
-}
-
 $initial = substr($_GET['initial'], 0, 15);
 $sequence = substr($_GET['sequence'], 0, 50);
 $tagged = $_GET['tagged'];
 $begin = $_GET['begin'];
 $orderby = $_GET['orderby'];
-
 
 /* tagdate makes no sense if 'tags' is not selected */
 if ($orderby == 'tagdate') {
@@ -248,7 +242,7 @@ $fksql .= " LIMIT 50\n";
 
 if ((is_numeric($begin)) &&
     ($begin >= 50)) {
-  $offset = $begin + 50;
+  $offset = $begin;
   $fksql .= " OFFSET $offset";
 }
 
@@ -256,6 +250,7 @@ print
   '<p><a href="#" id="showsql">Voir requête</a> (pour devel seulement)</p>' .
   '<div id="sql">' .
   '<p>'. str_replace("\n", '<br/>', $fksql).'</p>' . 
+'<p>' . str_replace("\n", '<br/>', $rescount_sql) . '</p>'.
   '</div>';
 
 $i->query($fksql);
@@ -269,9 +264,9 @@ nextPrevious($begin, $i->result->num_rows, $total_results);
 $begin_with_current_results = $begin + $i->result->num_rows;
 $begin_display =  $begin ? $begin : 1;
 
-print '<p>Reponses '. $begin_display . ' a ' . 
-    $begin_with_current_results. " sur  $total_results. </p>";
-//print '<p>'. $rescount_sql . '</p>';
+print "<p>Reponses  $begin_display  à
+    $begin_with_current_results  sur  $total_results. </p>";
+
 
 print '<ul class="editresources">';
 while ($row = $i->result->fetch_object()) {
@@ -462,10 +457,11 @@ function nextPrevious ($begin, $numrows, $totalresults) {
   $last_end = 0;
   for ($it = 0; $it <= 14; $it++) {
     $start = $it * 50 + $base;
-    $last_end = $start + 50;
-    if ($start >= $totalresults) {
+
+    if ($start >= $totalresults - 50) {
       break;
     }
+    $last_end = $start + 50;
     print paginationElement($thispage,
                             $start, 
                             $begin,
@@ -473,7 +469,7 @@ function nextPrevious ($begin, $numrows, $totalresults) {
     print " ";
   }
 
-  if (($totalresults - $last_end) > 50) {
+  if (($totalresults - $start) > 50) {
     print " ... ";
     print paginationElement($thispage,
                             floor($totalresults / 50) * 50,
