@@ -27,12 +27,23 @@
 
   <xsl:template match="resource">
     <xsl:element name="li">
+      <xsl:element name="h4">
       <xsl:element name="a">
         <xsl:attribute name="href">
           <xsl:value-of select="url"/>
         </xsl:attribute>
         <xsl:value-of select="title"/>
       </xsl:element>
+      </xsl:element>
+
+      <xsl:element name="a">
+        <xsl:attribute name="href">
+          <xsl:value-of select="url"/>
+        </xsl:attribute>
+        <xsl:attribute name="class">resurl</xsl:attribute>
+        <xsl:value-of select="url"/>
+      </xsl:element>
+
 
       <xsl:if test="tags">
         <xsl:element name="p">
@@ -45,8 +56,8 @@
         <xsl:element name="a">
                 <xsl:attribute name="class">tocloud</xsl:attribute>
         <xsl:attribute name="href">
-        <xsl:value-of select="concat('/commun3/folksonomie/clouddemo.php?demouri=',
-                     url)"/>
+        <xsl:value-of select="concat('clouddemo.php?demouri=',
+                              numid)"/>
         </xsl:attribute>
         <xsl:text> Voir cloud </xsl:text>
         </xsl:element>
