@@ -41,6 +41,17 @@ confirmations **/
 /** devel sql access **/
 #sql { display: none;}
 
+#tagstatus {
+    width: 45%;
+    float: left;
+}
+
+#sortselect {
+    margin-left: 50%;
+
+}
+
+
 /** main list of resources **/
 ul.editresources {
     background-color: white;
