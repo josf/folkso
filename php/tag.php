@@ -393,8 +393,8 @@ $querystart =
 
   //pop the first line of the results containing the tagtitle
   $row1 = $i->result->fetch_object();  
-  print $dd->title($row1->title);
   print $dd->startform();
+  print $dd->title($row1->title);
 
   print "\n";
   while ($row = $i->result->fetch_object()) {
