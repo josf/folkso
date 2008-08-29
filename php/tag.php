@@ -391,9 +391,6 @@ $querystart =
   
   $dd->activate_style('xml');
 
-  print '<?xml version="1.0"?>'."\n";
-  print "<tag>\n";
-
   //pop the first line of the results containing the tagtitle
   $row1 = $i->result->fetch_object();  
   print $dd->title($row1->title);
@@ -407,7 +404,6 @@ $querystart =
                      $row->tags);
   }
   print $dd->endform();
-  print "</tag>";
 }
 
 
