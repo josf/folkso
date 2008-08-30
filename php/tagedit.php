@@ -23,13 +23,19 @@
   </script>
 
 <?php 
-   /** if basic authentication info is present, we send it back to the
-       browser for use in ajax requests **/
+
+require_once('folksoClient.php');
+require_once('folksoFabula.php');
 require_once('folksoAdmin.php');
 
+$loc = new folksoFabula();
 $fk = new folksoAdmin();
+print "<script type='text/javascript'>\n\n";
+/** if basic authentication info is present, we send it back to the
+    browser for use in ajax requests **/
 print $fk->BasicAuthJSScript();
-
+print $loc->WebPathJS();
+print "</script>\n";
 ?>
 <!-- <script type="text/javascript" src="js/folkso.js"></script> -->
 <script type="text/javascript" src="js/tagedit.js"></script>
@@ -73,10 +79,8 @@ print $fk->BasicAuthJSScript();
 </ul>
 </div>
 <?php
-require_once('folksoClient.php');
-require_once('folksoFabula.php');
 
-$loc = new folksoFabula();
+
 
 $fc = new folksoClient('localhost', 
                        $loc->get_server_web_path(). 'tag.php', 
