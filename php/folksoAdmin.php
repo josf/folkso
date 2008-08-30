@@ -9,19 +9,28 @@
    * @copyright 2008 Gnu Public Licence (GPL)
    */
 
-
 class folksoAdmin {
 
-  function  __construct(){
+  /**
+   * JS snippet: create Document.folksonomie object if not already
+   * present.
+   */
+  private $folksoCheck;
 
+  function  __construct(){
+    $this->folksoCheck = 
+       'if (! "folksonomie" in Document) {' . "\n"
+    . "\tDocument.folksonomie = new Object();\n"
+    . "}\n";
   }
 
 
   /**
    * Takes $_SERVER['PHP_AUTH_USER'] and $_SERVER['PHP_AUTH_PW'] and,
-   * if present, formats a <script> element containing javascript that
-   * assigns these variables to Document.folksonomie.basicAuthUser and
-   * Document.folksonomie.basicAuthPasswd.
+   * if present, formats javascript that assigns these variables to
+   * Document.folksonomie.basicAuthUser and
+   * Document.folksonomie.basicAuthPasswd. This should be included in
+   * a <script> element.
    *
    * This means sending username/password back and forth a few extra
    * times but doesn't seem much less secure than vanilla Basic Auth.
@@ -31,8 +40,7 @@ class folksoAdmin {
   public function BasicAuthJS(){
    if ((isset($_SERVER['PHP_AUTH_USER'])) &&
        (isset($_SERVER['PHP_AUTH_PW']))) {
-     $return = "<script type='text/javascript'>\n";
-     $return .=  
+     $return =  
      "if ('folksonomie' in Document) {\n".
      "\tDocument.folksonomie.basicAuthUser = " 
      . $_SERVER['PHP_AUTH_USER'] . ";\n"
@@ -47,8 +55,26 @@ class folksoAdmin {
      ."\tDocuemnt.folksonomie.basicAuthPasswd = "
      .$_SERVER['PHP_AUTH_PW'].";\n}\n";
      
-     $return .=  "</script>\n";
      return $return;
    }
   }
+
+  /**
+   * Wrapper that conditionally adds <script> element. 
+   *
+   * Convenience function to avoid empty <script> elements when
+   * BasicAuthJS() is the only JS in such an element.
+   */
+  public function BasicAuthJSScript() {
+    $auth = $this->BasicAuthJS();
+    if (length($auth) > 1){
+      return 
+        "<script type='text/javascript'>\n".
+        $auth.
+        "</script>\n";
+
+    }
+  }
+
+}
 ?>
