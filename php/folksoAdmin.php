@@ -67,7 +67,7 @@ class folksoAdmin {
    */
   public function BasicAuthJSScript() {
     $auth = $this->BasicAuthJS();
-    if (length($auth) > 1){
+    if (strlen($auth) > 1){
       return 
         "<script type='text/javascript'>\n".
         $auth.
