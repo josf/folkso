@@ -1,15 +1,19 @@
-var urlbase = '';
-Document.folksonomie = new Object();
 
+
+
+if (! Document.hasOwnProperty("folksonomie")) {
+  Document.folksonomie = new Object();
+}
+var posttagphp = Document.folksonomie.postbase + 'tag.php';
 $.ajaxSetup({
-              url: urlbase + 'tag.php',
               datatype: 'text/text'
               });
 
 $(document).ready(function() {
                     $('li.tagentry').each(fkPrepare);
 
-                    $(".fusionbox").autocomplete(urlbase + "tagcomplete.php");
+                    $(".fusionbox").autocomplete(Document.folksonomie.getbase 
+                                                 + "tagcomplete.php");
                     $("input.fusioncheck").attr("disabled", "disabled");
                     $("input.fusioncheck").attr("checked", false);
 
@@ -87,7 +91,7 @@ $(document).ready(function() {
                         if( $("#tagcreatebox").val()) {
                           var newtag = $("#tagcreatebox").val();
                           $.ajax({
-                                   url: urlbase + 'tag.php',
+                                   url: posttagphp,
                                    type: 'post',
                                    datatype: 'text/text',
                                    data: {
@@ -134,7 +138,7 @@ function fkPrepare() {
   lis.find("button.delete").click(
     function(event) {
       event.preventDefault();
-      $.post(urlbase + 'tag.php',
+      $.post(posttagphp,
              {folksotag: tagid,
               folksodelete: '1'},
              function() {
@@ -150,6 +154,7 @@ function fkPrepare() {
         if (newname &&
             (newname != lis.find("a.tagname").text())) {
           $.ajax({
+                   url: posttagphp,
                    type: 'post',
                    data: {
                      folksotag: tagid,
