@@ -57,7 +57,7 @@ $loc = new folksoFabula();
      $fc->set_getfields(array('folksotag' => $tagthing, 'folksofancy' => '1'));
      $reslist = $fc->execute();
 
-     //     print $reslist;
+     //          print $reslist;
 
      if ($fc->query_resultcode() == 200) {
 

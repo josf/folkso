@@ -180,14 +180,14 @@ class folksoDisplayFactory {
                                        "<tag>\n",
                                        'titleformat' => 
                                        "<tagtitle>XXX</tagtitle>\n<resourcelist>\n",
-                                       'end' => "</resourcelist>\n</tag>",
+                                       'end' => "\t</resourcelist>\n</tag>",
                                        'lineformat' =>
-                                       "<resource>\n".
-                                       "\t<numid>XXX</numid>\n" .
-                                       "\t<url>XXX</url>\n" .
-                                       "\t<title><![CDATA[XXX]]></title>\n" .
-                                       "\t<tags>XXX</tags>\n" .
-                                       '</resource>',
+                                       "\t<resource>\n".
+                                       "\t\t<numid>XXX</numid>\n" .
+                                       "\t\t<url>XXX</url>\n" .
+                                       "\t\t<title><![CDATA[XXX]]></title>\n" .
+                                       "\t\t<tags>XXX</tags>\n" .
+                                       "\t</resource>\n",
                                        'argsperline' => 4));
     return $obj;
   }
