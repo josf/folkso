@@ -221,7 +221,7 @@ function tagMenuFunkMaker(place, resid) {
       function() {
         var item = $('<li>');
         var taglink = $('<a>');
-        taglink.attr("href", tagUrl(tagid));
+        taglink.attr("href", tagUrl($(this).find("numid")));
         taglink.attr("class", "tagdisplay");
         taglink.append($(this).find('display').text() + ' ');
         item.append(taglink);
