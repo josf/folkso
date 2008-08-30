@@ -52,11 +52,12 @@ print $loc->WebPathJS();
 
 ?>
 </script>
+<script type="text/javascript" src="js/folkso.js">
+</script>
+<script type="text/javascript" src="js/resedit.js">
+</script>
 
-    <script type="text/javascript" src="js/resedit.js">
-    </script>
-
-    <link 
+<link 
         rel="stylesheet" type="text/css" 
         href="http://www.fabula.org/commun3/template.css" 
         media="screen">
