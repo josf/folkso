@@ -1,12 +1,38 @@
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title>Resources par tag</title>
+
+
+<script type="text/javascript" src="js/jquery.js"></script>
+<script type="text/javascript" src="js/jquery.autocomplete.js">
+
+<?php 
+
+require_once('folksoClient.php');
+require_once('folksoFabula.php');
+require_once('folksoAdmin.php');
+
+$loc = new folksoFabula();
+$fk = new folksoAdmin();
+
+print "<script type='text/javascript'>\n\n";
+/** If basic authentication info is present, we send it back to the
+    browser for use in ajax requests **/
+print $fk->BasicAuthJSScript();
+print $loc->WebPathJS();
+print "</script>\n";
+?>
+
+<script type="text/javascript" src="js/resview.js">
+</script>
+
 <link 
    rel="stylesheet" type="text/css" 
    href="http://www.fabula.org/commun3/template.css" 
    media="screen">
-<link rel="stylesheet" type="text/css" href="http://www.fabula.org/commun3/print.css" media="print">
-<link rel="shortcut icon" type="image/x-icon" href="http://www.fabula.org/favicon.ico">
+</link>
+<link rel="stylesheet" type="text/css" href="http://www.fabula.org/commun3/print.css" media="print"></link>
+<link rel="shortcut icon" type="image/x-icon" href="http://www.fabula.org/favicon.ico"></link>
 <style type="text/css">
 h2.tagtitle {font-size: 16pt; text-align: center}
 .resourcelist a.resurl, 
@@ -28,9 +54,26 @@ ul.resourcelist li { margin-bottom: 1em}
 ul.resourcelist li a.tocloud, ul.resourcelist li a:visited.tocloud, ul.resourcelist li a:link.tocloud {
     font-size:10pt;}
 
+ul.resourcelist a:link.openiframe, 
+ul.resourcelist a:visited.openiframe, 
+ul.resourcelist a:link.editresource, 
+ul.resourcelist a:visited.editresource {
+    font-size: 10pt; 
+    margin-left: 2em;
+ }
+
+a.closeiframe, a:link.closeiframe, a:visited.closeiframe {
+    display: none;
+}
+
+div.iframeholder {
+    display: none;
+}
+
 #pagebottom {
     border-top: 2px solid grey;
 }
+
 </style>
 
 </head>
@@ -41,11 +84,6 @@ ul.resourcelist li a.tocloud, ul.resourcelist li a:visited.tocloud, ul.resourcel
 
 
 <?php
-
-require_once('folksoClient.php');
-require_once('folksoFabula.php');
-
-$loc = new folksoFabula();
 
    if ($_GET['tag']) {
      $tagthing = substr($_GET['tag'], 0, 255);
