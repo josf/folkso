@@ -1,164 +1,27 @@
-/** the #super* parts are the popup div that covers the page for
-confirmations **/
 
-#superscreen {
-    display: none; 
-    z-index: 50;
-    background-color: grey;
-    opacity: 0.7;
-}
+ul.taglist { list-style: none;}
 
-#superinfobox {
-    background-color: white;
-    height: 300px;
-    width: 500px;
-    position: fixed;
-    top: 15%; left: 20%;
-    border: 10px solid red;
-    padding-top: 1em; padding-bottom: 1.2em;
-    padding-left: 2em; padding-right: 2em;
-}
-#superinfobox h3 {
-    color: red;
-    font-size: 16pt;
-    text-align: center;
-    margin: 0.5em;
-}
-#superinfobox p {
-    margin-top: 0.3em;
-}
-#superinfobox em {
-    color: red;
-    font-weight: bold;
-    letter-spacing: 1px;
-}
+.tagname { font-weight: bold; font-size: 12pt}
+.tagcommands { display: none; 
+               border: 2px solid grey; 
+               width: 400px; 
+               padding: 0.5em }
+#container { background-color: white;}
+a.nores {color: blue;}
+a.closeeditbox, a.closeeditbox:link, a.closeeditbox:visited { margin-left: 300px;}
+#pagehead { border-bottom: 2px solid grey; 
+            margin: 1em; 
+            margin-top: 2em; 
+            padding-top: 3em; }
+#pagehead p { width: 80%}
+input.fusioncheck { margin-right: 1em}
 
-/** yes or no buttons in popup **/
-.yesno {
-    margin-left: 0.3em; margin-right: 0.3em;
-}
-
-/** devel sql access **/
-#sql { display: none;}
-
-#tagstatus {
-    width: 45%;
-    float: left;
-}
-
-#sortselect {
-    margin-left: 50%;
-
-}
-
-
-/** main list of resources **/
-ul.editresources {
-    background-color: white;
-}
-ul.editresources li {
-    margin-top: 2em; margin-bottom: 1em;
-    border-top: 2px solid grey;
-    padding-left: 4em;
-    width: 90%;
-}
-
-iframe.preview {
-    height: 400px;
-    width: 100%;
-}
-
-/** resource title **/
-a.restitle {padding-right: 2em; 
-            font-size: 12pt; 
-            font-weight: bold;}
-
-/** resource url **/
-a.resurl { padding-right: 2em; 
-           font-size: 10pt;}
-
-/** class of resources that have 0 tags  **/
-li.nottagged {
-             background-color: #f8c5ac;
-}
-li.nottagged a.restitle {
-    background-color: #e5966e;
-}
-li.nottagged span.tagev_count {
-    color: #e66322;
-}
-li.nottagged span.lasttaggage, li.nottagged span.currenttags {
-             display: none;
-}
-
-
-ul.taglist {display: none;}
-
-/**  ajax-created list of tags (with commands) **/
-ul.tagmenu li {border: none; margin-top: 0.3em; margin-bottom: 0.1em;}
-.tagid { padding-left: 0.5em; padding-right: 0.5em; }
-.explanation {
-    font-size: 9pt;
-    font-style: italic;
-}
-/** resource delete **/
-a.resdeletebutton { margin-left: 2.5cm; color: #e66322; font-weight: bold;}
-
-/** deprecated **/
-a.seedetails {display: none; margin-left: 0.2em; margin-right: 0.2em;}
-
-/** numeric tag id **/
-span.tagid {font-size: 8pt;
-            font-style: italic;
-            display: none;
-}
-/** buttons that do real things **/
-#grouptagvalidate, a.remtag, a.tagbutton, a.metatagbutton, a.addnote { font-weight: bold;
-                                                                       color: #e66322;
-                                                                       margin-left: 0.5em; margin-right: 0.5em;
-                                                                     }
-span.notecount {padding-left: 1em; padding-right: 1em;}
-a.tagdisplay {font-weight: bold}
-.infohead {margin-left: 0.5em;}
-
-a.currentpagination, a.currentpagination:visited  {
-    color: #e66322; font-weight: bold;
-}
-a.pagination, a.currentpagination  {
-    margin-left: 0.2em; margin-right: 0.2em;
-}
-
-/** div containing the grouptagging boxes and buttons**/
-#grouptagging {
-    margin-top: 0.4em; margin-bottom: 0.5em;
-}
-
-div.noteedit {
-    width: 350px;
-    height: 220px;
-    padding: 0.7em;
-/*    display: none; wait until we know we want it to appear */
-    z-axis: 50;
-    position: absolute;
-    background-color: #f1cd6c;
-    border: 1px solid brown;
-}
-
-ul.notelist {
-    list-style: none;
-}
-
-ul.notelist li {
-    border: none;
-    margin: 2px;
-    width: 300px; /* containing <ul> is 350 wide */
-}
-
-div.notedisplay {
-   width: 350px;
-    z-axis: 50;
-    position: absolute;
-    background-color: #f1cd6c;
-    border: 1px solid brown;
-    padding: 0.7em;
-}
+.multifusion { border: 1px solid grey; 
+               padding: 2px; 
+               margin: 2px; }
+a.multifusionbutton{ font-weight: bold;
+                     color: #e66322;}
+.multifusion p { color: grey; font-size: 9pt}
+.multifusion p.multifusionvictims { color: blue; 
+                                    background-color: yellow; 
+                                    font-size: 10pt;}
