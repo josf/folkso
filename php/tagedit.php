@@ -25,28 +25,10 @@
 <?php 
    /** if basic authentication info is present, we send it back to the
        browser for use in ajax requests **/
+require_once('folksoAdmin.php');
 
-   if ((isset($_SERVER['PHP_AUTH_USER'])) &&
-       (isset($_SERVER['PHP_AUTH_PW']))) {
-     print "<script type='text/javascript'>\n";
-     print 
-     "if ('folksonomie' in Document) {\n".
-     "\tDocument.folksonomie.basicAuthUser = " 
-     . $_SERVER['PHP_AUTH_USER'] . ";\n"
-     ."\tDocuemnt.folksonomie.basicAuthPasswd = "
-     .$_SERVER['PHP_AUTH_PW'].";\n}\n";
-
-     print 
-     "else {\n"
-     . "\tDocument.folksonomie = new Object();\n"
-     ."\tDocument.folksonomie.basicAuthUser = " 
-     . $_SERVER['PHP_AUTH_USER'] . ";\n"
-     ."\tDocuemnt.folksonomie.basicAuthPasswd = "
-     .$_SERVER['PHP_AUTH_PW'].";\n}\n";
-     
-     print "</script>\n";
-   }
-
+$fk = new folksoAdmin();
+print $fk->BasicAuthJSScript();
 
 ?>
 <!-- <script type="text/javascript" src="js/folkso.js"></script> -->
