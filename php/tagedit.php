@@ -21,6 +21,34 @@
 <script type="text/javascript" src="js/jquery.js"></script>
 <script type="text/javascript" src="js/jquery.autocomplete.js">
   </script>
+
+<?php 
+   /** if basic authentication info is present, we send it back to the
+       browser for use in ajax requests **/
+
+   if ((isset($_SERVER['PHP_AUTH_USER'])) &&
+       (isset($_SERVER['PHP_AUTH_PW']))) {
+     print "<script type='text/javascript'>\n";
+     print 
+     "if ('folksonomie' in Document) {\n".
+     "\tDocument.folksonomie.basicAuthUser = " 
+     . $_SERVER['PHP_AUTH_USER'] . ";\n"
+     ."\tDocuemnt.folksonomie.basicAuthPasswd = "
+     .$_SERVER['PHP_AUTH_PW'].";\n}\n";
+
+     print 
+     "else {\n"
+     . "\tDocument.folksonomie = new Object();\n"
+     ."\tDocument.folksonomie.basicAuthUser = " 
+     . $_SERVER['PHP_AUTH_USER'] . ";\n"
+     ."\tDocuemnt.folksonomie.basicAuthPasswd = "
+     .$_SERVER['PHP_AUTH_PW'].";\n}\n";
+     
+     print "</script>\n";
+   }
+
+
+?>
 <!-- <script type="text/javascript" src="js/folkso.js"></script> -->
 <script type="text/javascript" src="js/tagedit.js"></script>
 
@@ -82,9 +110,7 @@ else { //if no letter specified, get all tags
 
     $taglist = $fc->execute();
 
-//    print $taglist;
-
-    if ($fc->query_resultcode() == 200) {
+     if ($fc->query_resultcode() == 200) {
       if (strlen($taglist) == 0) {
         trigger_error("No taglist data", E_USER_ERROR);
       }
