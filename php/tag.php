@@ -331,7 +331,7 @@ $querytagtitle =
     $querytagtitle .= ' WHERE id = ' . $q->tag . ' ';
   }
   else {
-    $querytagtitle = " WHERE tagnorm = normalize_tag('" . 
+    $querytagtitle .= " WHERE tagnorm = normalize_tag('" . 
       $i->dbescape($q->tag) . "') ";
   }
 
