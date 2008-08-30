@@ -29,6 +29,17 @@ abstract class folksoLocal {
    */
   public $server_web_path;
 
+  /**
+   * Path for access to publicly available tag.php & resource.php (GET
+   * functions)
+   */
+  public $get_path;
+
+  /**
+   * Path for access to POST functions (tag.php, resource.php),
+   * requiring authentication.
+   */
+  public $post_path;
 
   /**
    * For use when indexing new resources.
@@ -71,5 +82,18 @@ abstract class folksoLocal {
     return $this->server_web_path;
   }
 
+  public function WebPathJS() { 
+    $return = $this->folksoCheck;
+    $return .= 
+      'Document.folksonomie.getbase = "' . $this->get_path . '"';
+
+    $return .= 
+      'Document.folksonomie.postbase = "' . $this->post_path . '"';
+
+    $return .= 
+      'Document.folksonomie.webbase = "' . $this->server_web_path . '"';
+
+    return $return;
+  }
   }
 ?>
