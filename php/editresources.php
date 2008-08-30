@@ -12,6 +12,7 @@
 require_once('folksoDBconnect.php');
 require_once('folksoDBinteract.php');
 require_once('folksoFabula.php');
+require_once('folksoAdmin.php');
 
 $loc = new folksoFabula();
 
@@ -24,7 +25,7 @@ $dbc = new folksoDBconnect($loc->db_server,
  * connect through our standard connection system.
  */
 $i = new folksoDBinteract($dbc);
-
+$fk = new folksoAdmin();
 ?>
 
 
@@ -38,10 +39,18 @@ $i = new folksoDBinteract($dbc);
     </script>
 
    <script type="text/javascript">
-   var metatag_autocomplete_list = 
-  <?php
-  print fk_metatag_simple_list($i);
-   ?>;
+
+<?php
+print "var metatag_autocomplete_list = ";
+print fk_metatag_simple_list($i);
+print ';';
+// basic auth info as js variables
+print $fk->BasicAuthJS();
+
+// paths to Document.folksonomie
+print $loc->WebPathJS();
+
+?>
 </script>
 
     <script type="text/javascript" src="js/resedit.js">
