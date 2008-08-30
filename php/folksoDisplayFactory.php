@@ -97,7 +97,8 @@ class folksoDisplayFactory {
                                        'start' => '<ul>',
                                        'end' => '</ul>',
                                        'argsperline' => 3,
-                                       'lineformat' => '<li class="cloudXXX"><a href="XXX">XXX</a></li>',
+                                       'lineformat' => 
+                                        '<li class="cloudXXX"><a href="XXX">XXX</a></li>',
                                         'titleformat' => '<h3>XXX</h3>'));
     return $obj;
 
