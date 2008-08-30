@@ -44,16 +44,16 @@ class folksoAdmin {
      "if ('folksonomie' in Document) {\n".
      "\tDocument.folksonomie.basicAuthUser = " 
      . $_SERVER['PHP_AUTH_USER'] . ";\n"
-     ."\tDocuemnt.folksonomie.basicAuthPasswd = "
-     .$_SERVER['PHP_AUTH_PW'].";\n}\n";
+     ."\tDocuemnt.folksonomie.basicAuthPasswd = '"
+     .$_SERVER['PHP_AUTH_PW']."';\n}\n";
 
      $return .=  
      "else {\n"
      . "\tDocument.folksonomie = new Object();\n"
-     ."\tDocument.folksonomie.basicAuthUser = " 
-     . $_SERVER['PHP_AUTH_USER'] . ";\n"
-     ."\tDocuemnt.folksonomie.basicAuthPasswd = "
-     .$_SERVER['PHP_AUTH_PW'].";\n}\n";
+     ."\tDocument.folksonomie.basicAuthUser = '" 
+     . $_SERVER['PHP_AUTH_USER'] . "';\n"
+     ."\tDocument.folksonomie.basicAuthPasswd = '"
+     .$_SERVER['PHP_AUTH_PW']."';\n}\n";
      
      return $return;
    }
