@@ -27,6 +27,9 @@
 
   <xsl:template match="resource">
     <xsl:element name="li">
+      <xsl:attribute name="id">
+        <xsl:value-of select="concat('res', numid)"/>
+      </xsl:attribute>
       <xsl:element name="h4">
       <xsl:element name="a">
         <xsl:attribute name="href">
@@ -45,13 +48,13 @@
       </xsl:element>
 
 
-      <xsl:if test="tags">
         <xsl:element name="p">
           <xsl:attribute name="class">smalltaglist</xsl:attribute>
           <xsl:text>(</xsl:text>
           <xsl:value-of select="tags"/>
           <xsl:text>)</xsl:text>
         </xsl:element>
+
         <xsl:element name="p">
         <xsl:element name="a">
                 <xsl:attribute name="class">tocloud</xsl:attribute>
@@ -61,8 +64,38 @@
         </xsl:attribute>
         <xsl:text> Voir cloud </xsl:text>
         </xsl:element>
+        <xsl:text>  
+        </xsl:text>
+
+        <xsl:element name="a">
+          <xsl:attribute name="class">openiframe</xsl:attribute>
+          <xsl:attribute name="href">#</xsl:attribute>
+          <xsl:text>Voir page</xsl:text>
         </xsl:element>
-      </xsl:if>
+
+        <xsl:element name="a">
+          <xsl:attribute name="class">closeiframe</xsl:attribute>
+          <xsl:attribute name="href">#</xsl:attribute>
+          <xsl:text>Fermer</xsl:text>
+        </xsl:element>
+
+        <xsl:element name="a">
+          <xsl:attribute name="class">editresource</xsl:attribute>
+          <xsl:attribute name="href">#</xsl:attribute>
+          <xsl:text>Editer</xsl:text>
+        </xsl:element>
+
+        </xsl:element>
+        <xsl:element name="div">
+          <xsl:attribute name="class">iframeholder</xsl:attribute>
+        </xsl:element>
+
+        <xsl:element name="a">
+          <xsl:attribute name="class">closeiframe</xsl:attribute>
+          <xsl:attribute name="href">#</xsl:attribute>
+          <xsl:text>Fermer</xsl:text>
+        </xsl:element>
+
 
     </xsl:element>
   </xsl:template>
