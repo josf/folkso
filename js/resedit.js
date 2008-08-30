@@ -1,5 +1,17 @@
-//var urlbase = "/commun3/folksonomie/";
-var urlbase = "";
+/**
+ * Document.folksonomie.postbase
+ *
+ * Relatve URI for all POST requests that, naturally, require
+ * authentication.
+ *
+ * relative URI for GET requests that do not require authentication
+ *
+ * Document.folksonomie.getbase = '';
+ *
+ * relative URI for building links towards various pages (display,
+ * interface, etc.)
+ */
+var webbase = '';
 
 $(document).ready(
   function() {
@@ -25,7 +37,7 @@ $(document).ready(
           groupTag();
         }
       });
-    $("#grouptagbox").autocomplete(urlbase + "tagcomplete.php");
+    $("#grouptagbox").autocomplete(Document.folksonomie.getbase + "tagcomplete.php");
     //  $("ul.taglist li").each(tagremovePrepare);
 
     $("#cleargroupchecks").click(
@@ -76,7 +88,7 @@ $(document).ready(
   * "tag" can be either a tagnorm or an id. Returns a correct tag url.
   */
  function tagUrl(tag) {
-   return  urlbase + "tagview.php?tag=" + tag; // this is probably wrong!
+   return  webbase + "resourceview.php?tag=" + tag; // this is probably wrong!
  }
 
  /**
@@ -136,7 +148,7 @@ function tagMenuCleanupFunc(lis, tag) {
          event.preventDefault();
          var tagid = $(this).siblings(".tagid").text();
          $.ajax({
-             url: urlbase + 'resource.php',
+             url: Document.folksonomie.postbase + 'resource.php',
              type: 'post',
              data: {
                folksores: resourceid,
@@ -184,7 +196,7 @@ function tagMenuCleanupFunc(lis, tag) {
  function getTagMenu(place, resid) {
 //     place.find("ul.tagmenu li").hide();
      var tagMenuFromXmlFunction = tagMenuFunkMaker(place, resid);
-    $.ajax({ url: urlbase + 'resource.php',
+    $.ajax({ url: Document.folksonomie.getbase + 'resource.php',
            type: 'get',
            datatype: 'text/xml',
            data: {
@@ -209,7 +221,7 @@ function tagMenuFunkMaker(place, resid) {
       function() {
         var item = $('<li>');
         var taglink = $('<a>');
-        taglink.attr("href", "beebop");
+        taglink.attr("href", tagUrl(tagid));
         taglink.attr("class", "tagdisplay");
         taglink.append($(this).find('display').text() + ' ');
         item.append(taglink);
@@ -279,7 +291,7 @@ function makeMetatagBox (resource, tag, lis) {
         event.preventDefault();
         var newmeta = $(this).siblings("select").val();
         $.ajax({
-                 url: urlbase + 'resource.php',
+                 url: Document.folksonomie.postbase + 'resource.php',
                  type: 'post',
                  data: {
                    folksores: resource,
@@ -304,7 +316,7 @@ function makeMetatagBox (resource, tag, lis) {
  */
 function groupTagPostFunc(res, tag, meta, clean) {
   $.ajax({
-           url: urlbase + 'resource.php',
+           url: Document.folksonomie.postbase + 'resource.php',
            type: 'post',
            datatype: 'text/text',
            data: {
@@ -324,7 +336,7 @@ function groupTag() {
   var meta = $("#groupmetatagbox").val();
 
   $.ajax({
-           url: urlbase + 'resource.php',
+           url: Document.folksonomie.postbase + 'resource.php',
            type: 'post',
            datatype: 'text/text',
            data: {
@@ -369,7 +381,7 @@ function groupTagRest(tag, meta) {
       var lis = $(this).parent().parent("li");
       var resid = lis.attr("id").substring(3);
       $.ajax({
-               url: urlbase + 'resource.php',
+               url: Document.folksonomie.postbase + 'resource.php',
                type: 'post',
                datatype: 'text/text',
                data: {
@@ -413,7 +425,7 @@ function infoMessage(elem) {
  function tagboxPrepare() {
      var lis = $(this);
      var tgbx = lis.find("input.tagbox");
-     tgbx.autocomplete(urlbase + "tagcomplete.php");
+     tgbx.autocomplete(Document.folksonomie.getbase + "tagcomplete.php");
 
      var url = lis.find("a.resurl").attr("href");
 
@@ -425,7 +437,7 @@ function infoMessage(elem) {
            if (tgbx.val()) {
              var cleanup = tagMenuCleanupFunc(lis, tgbx.val());
              $.ajax({
-                      url: urlbase + 'resource.php',
+                      url: Document.folksonomie.postbase + 'resource.php',
                       type: 'post',
                       datatype: 'text/text',
                       data: {
@@ -508,7 +520,7 @@ function createTagMessage(tag, url, meta, lis, successfunc) {
     function(event){
       event.preventDefault();
       $.ajax({
-               url: urlbase + 'tag.php',
+               url: Document.folksonomie.postbase + 'tag.php',
                type: 'post',
                datatype: 'text/text',
                data: {
@@ -546,7 +558,7 @@ function tagResourceFunc (url, tag, meta, lisarg) {
 
   return function() {
     $.ajax({
-           url: urlbase + 'resource.php',
+           url: Document.folksonomie.postbase + 'resource.php',
            type: 'post',
            datatype: 'text/text',
            data: {
@@ -600,7 +612,7 @@ function deleteResourceMessage(resid, lis) {
   yesbutton.click(
     function(event) {
       event.preventDefault();
-      $.ajax({url: urlbase + 'resource.php',
+      $.ajax({url: postase + 'resource.php',
               type: 'post',
               datatype: 'text/text',
               data: {
@@ -645,7 +657,7 @@ function noteEditBox(resid) {
     event.preventDefault();
     var text = $(this).siblings("textarea.noteedit").val();
     if (text.length > 0) {
-      $.ajax({ url: urlbase + 'resource.php',
+      $.ajax({ url: Document.folksonomie.postbase + 'resource.php',
                type: 'post',
                data: {
                  folksores: resid,
@@ -689,7 +701,7 @@ function noteEditBox(resid) {
 function noteDisplayBox(resid){
   var boxdiv = $("<div class='notedisplay'>");
   $.ajax({
-           url: urlbase + 'resource.php',
+           url: Document.folksonomie.getbase + 'resource.php',
            type: 'get',
            datatype: 'text/xml',
            async: false,
@@ -739,7 +751,7 @@ function deleteNoteButton(noteid) {
     function(event){
       event.preventDefault();
       $.ajax({
-        url: urlbase + 'resource.php',
+        url: Document.folksonomie.postbase + 'resource.php',
         type: 'post',
         datatype: 'text/text',
         data: {
