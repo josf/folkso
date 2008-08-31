@@ -18,18 +18,8 @@ $(document).ready(
         lis.append(editBox(resid, lis));
       });
 
-  });
+    $("ul.resourcelist li").each(iframePrepare);
 
-function editBox(resid, lis){
-  var box = $("<div class='editbox'>");
-  box.append($("<div class=\"tagger\">"
-               + "<input type='text' class='tagbox' length='20'>"
-               + "</input>"
-               + " <span class=\"infohead\">"
-               + "Meta</span>"
-               + "<select class=\"metatagbox\" size=\"1\">"
-               + "</select>"
-               + "<a class=\"tagbutton\" href=\"#\">Valider</a>"
-               + "</div>"));
-  return box;
-}
+
+
+  });
