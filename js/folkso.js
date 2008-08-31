@@ -90,17 +90,17 @@ function tagMenuCleanupFunc(lis, tag) {
   * To be called on a list element. Does not just hide, shows as well!
   */
  function taglistHidePrepare() {
-   var resourceid = $(this).attr("id").substring(3);
    var lis = $(this);
+   var resourceid = lis.attr("id").substring(3);
 
-   $(this).find("a.seetags").click(
+   lis.find("a.seetags").click(
      function(event) {
        event.preventDefault();
        getTagMenu(lis.find("div.emptytags"), resourceid);
      }
    );
 
-   $(this).find("a.hidetags").click(
+   lis.find("a.hidetags").click(
      function(event) {
        event.preventDefault();
        lis.find("ul.tagmenu").remove();
@@ -159,20 +159,16 @@ function tagMenuFunkMaker(place, resid) {
         item.append(makeMetatagBox(resid, //closure
                                    $(this).find('numid').text(),
                                    place));
-        alert("appending");
         ul.append(item);
       });
 
     /** Now that we have our new list, put it back into the DOM **/
     if (dest.find("ul.tagmenu").length) {
-      alert("we could not be here");
       dest.find("ul.tagmenu").replaceWith(ul);
     }
     else {
-      alert("but we should be here");
       dest.append(ul);
     }
-    alert("and we are certainly here");
     dest.find("ul.tagmenu").each(tagremovePrepare);
   };
 }
@@ -208,10 +204,17 @@ function makeMetatagBox (resource, tag, lis) {
   var container = $("<span class='metatagbox'></span>")
     .append("<span class='infohead'>Modifier le metatag </span>");
 //  box.autocomplete(metatag_autocomplete_list); //array defined in <script> on page.
-
-  var box = metatagDropdown(
+  var box;
+  if (document.folksonomie.metatag_autocomplete_list){
+      box = metatagDropdown(
               document.folksonomie.metatag_autocomplete_list,
               "metatagbox");
+  }
+    else{
+      box = $("<select class=\"metatagbox\"><option/></select>");
+      box.each(metaSelectOptions);
+    }
+
 
   var button = $("<a href='#' class='metatagbutton'>Ajouter métatag</a>")
     .click(
