@@ -56,46 +56,44 @@
         </xsl:element>
 
         <xsl:element name="p">
-        <xsl:element name="a">
-                <xsl:attribute name="class">tocloud</xsl:attribute>
-        <xsl:attribute name="href">
-        <xsl:value-of select="concat('clouddemo.php?demouri=',
-                              numid)"/>
-        </xsl:attribute>
-        <xsl:text> Voir cloud </xsl:text>
-        </xsl:element>
-        <xsl:text>  
-        </xsl:text>
 
-        <xsl:element name="a">
-          <xsl:attribute name="class">openiframe</xsl:attribute>
-          <xsl:attribute name="href">#</xsl:attribute>
-          <xsl:text>Voir page</xsl:text>
+          <xsl:element name="a">
+            <xsl:attribute name="class">tocloud</xsl:attribute>
+            <xsl:attribute name="href">
+              <xsl:value-of select="concat('clouddemo.php?demouri=',
+                                    numid)"/>
+            </xsl:attribute>
+            <xsl:text> Voir cloud </xsl:text>
+          </xsl:element>
+          <xsl:text>  
+          </xsl:text>
+
+          <xsl:element name="a">
+            <xsl:attribute name="class">openiframe</xsl:attribute>
+            <xsl:attribute name="href">#</xsl:attribute>
+            <xsl:text>Voir page</xsl:text>
+          </xsl:element>
+
+          <xsl:element name="a">
+            <xsl:attribute name="class">closeiframe</xsl:attribute>
+            <xsl:attribute name="href">#</xsl:attribute>
+            <xsl:text>Fermer</xsl:text>
+          </xsl:element>
+
+          <xsl:element name="a">
+            <xsl:attribute name="class">editresource</xsl:attribute>
+            <xsl:attribute name="href">#</xsl:attribute>
+            <xsl:text>Editer</xsl:text>
+          </xsl:element>
+
         </xsl:element>
 
-        <xsl:element name="a">
-          <xsl:attribute name="class">closeiframe</xsl:attribute>
-          <xsl:attribute name="href">#</xsl:attribute>
-          <xsl:text>Fermer</xsl:text>
-        </xsl:element>
-
-        <xsl:element name="a">
-          <xsl:attribute name="class">editresource</xsl:attribute>
-          <xsl:attribute name="href">#</xsl:attribute>
-          <xsl:text>Editer</xsl:text>
-        </xsl:element>
-
-        </xsl:element>
         <xsl:element name="div">
           <xsl:attribute name="class">iframeholder</xsl:attribute>
         </xsl:element>
-
-        <xsl:element name="a">
-          <xsl:attribute name="class">closeiframe</xsl:attribute>
-          <xsl:attribute name="href">#</xsl:attribute>
-          <xsl:text>Fermer</xsl:text>
+        <xsl:element name="p">
+          <xsl:text>&#160;</xsl:text>
         </xsl:element>
-
 
     </xsl:element>
   </xsl:template>
