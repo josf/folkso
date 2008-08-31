@@ -9,17 +9,28 @@
    lis.find("a.openiframe").click(
      function(event) {
        event.preventDefault();
-       var ifr = document.createElement("iframe");
-       ifr.src = url;
-       ifr.className = "preview";
 
-       if (holder.children().is("iframe")) {
+       if (holder.find("iframe").length) {
          holder.show();
        }
        else {
+         var ifr = document.createElement("iframe");
+         ifr.src = url;
+         ifr.className = "preview";
          holder.append(ifr);
+         holder.show();
        }
        $(this).hide();
+       if (lis.find("a.closeiframe").length < 2) {
+         holder.append(lis.find("a.closeiframe").clone());
+         holder.find("a.closeiframe").click(
+           function(event) {
+             event.preventDefault();
+             holder.hide();
+             holder.parent("li").find("a.closeiframe").hide();
+             holder.parent("li").find("a.openiframe").show();
+           });
+       }
        lis.find("a.closeiframe").show();
      }
    );
@@ -696,4 +707,18 @@ function deleteNoteButton(noteid) {
 }
 
 
+/** FOR RESOURCEVIEW **/
 
+function editBox(resid, lis){
+  var box = $("<div class='editbox'>");
+  box.append($("<div class=\"tagger\">"
+               + "<input type='text' class='tagbox' length='20'>"
+               + "</input>"
+               + " <span class=\"infohead\">"
+               + "Meta</span>"
+               + "<select class=\"metatagbox\" size=\"1\">"
+               + "</select>"
+               + "<a class=\"tagbutton\" href=\"#\">Valider</a>"
+               + "</div>"));
+  return box;
+}
