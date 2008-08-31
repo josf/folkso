@@ -210,8 +210,9 @@ function makeMetatagBox (resource, tag, lis) {
 //  box.autocomplete(metatag_autocomplete_list); //array defined in <script> on page.
 
   var box = metatagDropdown(
-              document.folksonomie.metatag_autocomplete_list, "metatagbox");
-  
+              document.folksonomie.metatag_autocomplete_list,
+              "metatagbox");
+
   var button = $("<a href='#' class='metatagbutton'>Ajouter métatag</a>")
     .click(
       function(event){
@@ -745,13 +746,12 @@ function editBox(resid, lis){
  *  will be appended.
  */
 function metaSelectOptions() {
-  var select = $(this);
+  var selecto = $(this);
   if (document.folksonomie.hasOwnProperty("metaoptions")){
     for (var cnt = 0;
          cnt < document.folksonomie.metaoptions.length;
          cnt++){
-
-      select.append(document.folksonomie.metaoptions[cnt]);
+      selecto.append(document.folksonomie.metaoptions[cnt].clone());
     }
   }
    else {
@@ -763,8 +763,7 @@ function metaSelectOptions() {
          var fake = $("<option>fake</option>");
          opt.text($(this).text());
          document.folksonomie.metaoptions.push(opt);
-         select.append(opt);
-         select.append(fake);
+         selecto.append(opt);
        };
 
      $.ajax({
