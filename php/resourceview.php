@@ -22,7 +22,7 @@ print $fk->BasicAuthJSScript();
 print $loc->WebPathJS();
 print "</script>\n";
 ?>
-
+<script type="text/javascript" src="js/folkso.js"></script>
 <script type="text/javascript" src="js/resview.js">
 </script>
 
@@ -31,8 +31,11 @@ print "</script>\n";
    href="http://www.fabula.org/commun3/template.css" 
    media="screen">
 </link>
+
 <link rel="stylesheet" type="text/css" href="http://www.fabula.org/commun3/print.css" media="print"></link>
 <link rel="shortcut icon" type="image/x-icon" href="http://www.fabula.org/favicon.ico"></link>
+<link rel="stylesheet" type="text/css" href="editres.css" media="screen"></link>
+
 <style type="text/css">
 h2.tagtitle {font-size: 16pt; text-align: center}
 .resourcelist a.resurl, 
