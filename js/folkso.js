@@ -190,8 +190,10 @@ function metatagDropdown (list, boxclass) {
 
   var box = $("<select class='" + theclass + "'>");
   box.append("<option></option>"); // empty first choice
-  for (var i = 0; i < metatag_autocomplete_list.length; i++) {
-    box.append("<option>" + metatag_autocomplete_list[i] + "</option>");
+  for (var i = 0; i <
+       document.folksonomie.metatag_autocomplete_list.length; i++) {
+    box.append("<option>" +
+      document.folksonomie.metatag_autocomplete_list[i] + "</option>");
   }
   return box;
 }
@@ -207,7 +209,9 @@ function makeMetatagBox (resource, tag, lis) {
     .append("<span class='infohead'>Modifier le metatag </span>");
 //  box.autocomplete(metatag_autocomplete_list); //array defined in <script> on page.
 
-  var box = metatagDropdown(metatag_autocomplete_list, "metatagbox");
+  var box = metatagDropdown(
+              document.folksonomie.metatag_autocomplete_list, "metatagbox");
+  
   var button = $("<a href='#' class='metatagbutton'>Ajouter métatag</a>")
     .click(
       function(event){
@@ -756,9 +760,11 @@ function metaSelectOptions() {
      var buildingFunc =
        function(){
          var opt = $("<option>");
+         var fake = $("<option>fake</option>");
          opt.text($(this).text());
          document.folksonomie.metaoptions.push(opt);
          select.append(opt);
+         select.append(fake);
        };
 
      $.ajax({
