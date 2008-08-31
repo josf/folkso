@@ -67,7 +67,7 @@ function tagMenuCleanupFunc(lis, tag) {
          event.preventDefault();
          var tagid = $(this).siblings(".tagid").text();
          $.ajax({
-             url: Document.folksonomie.postbase + 'resource.php',
+             url: document.folksonomie.postbase + 'resource.php',
              type: 'post',
              data: {
                folksores: resourceid,
@@ -87,8 +87,8 @@ function tagMenuCleanupFunc(lis, tag) {
          });
  }
  /**
- * To be called on a list element.
- */
+  * To be called on a list element. Does not just hide, shows as well!
+  */
  function taglistHidePrepare() {
    var resourceid = $(this).attr("id").substring(3);
    var lis = $(this);
@@ -115,7 +115,7 @@ function tagMenuCleanupFunc(lis, tag) {
  function getTagMenu(place, resid) {
 //     place.find("ul.tagmenu li").hide();
      var tagMenuFromXmlFunction = tagMenuFunkMaker(place, resid);
-    $.ajax({ url: Document.folksonomie.getbase + 'resource.php',
+    $.ajax({ url: document.folksonomie.getbase + 'resource.php',
            type: 'get',
            datatype: 'text/xml',
            data: {
@@ -159,16 +159,20 @@ function tagMenuFunkMaker(place, resid) {
         item.append(makeMetatagBox(resid, //closure
                                    $(this).find('numid').text(),
                                    place));
+        alert("appending");
         ul.append(item);
       });
 
     /** Now that we have our new list, put it back into the DOM **/
     if (dest.find("ul.tagmenu").length) {
+      alert("we could not be here");
       dest.find("ul.tagmenu").replaceWith(ul);
     }
     else {
+      alert("but we should be here");
       dest.append(ul);
     }
+    alert("and we are certainly here");
     dest.find("ul.tagmenu").each(tagremovePrepare);
   };
 }
@@ -210,7 +214,7 @@ function makeMetatagBox (resource, tag, lis) {
         event.preventDefault();
         var newmeta = $(this).siblings("select").val();
         $.ajax({
-                 url: Document.folksonomie.postbase + 'resource.php',
+                 url: document.folksonomie.postbase + 'resource.php',
                  type: 'post',
                  data: {
                    folksores: resource,
@@ -235,7 +239,7 @@ function makeMetatagBox (resource, tag, lis) {
  */
 function groupTagPostFunc(res, tag, meta, clean) {
   $.ajax({
-           url: Document.folksonomie.postbase + 'resource.php',
+           url: document.folksonomie.postbase + 'resource.php',
            type: 'post',
            datatype: 'text/text',
            data: {
@@ -255,7 +259,7 @@ function groupTag() {
   var meta = $("#groupmetatagbox").val();
 
   $.ajax({
-           url: Document.folksonomie.postbase + 'resource.php',
+           url: document.folksonomie.postbase + 'resource.php',
            type: 'post',
            datatype: 'text/text',
            data: {
@@ -300,7 +304,7 @@ function groupTagRest(tag, meta) {
       var lis = $(this).parent().parent("li");
       var resid = lis.attr("id").substring(3);
       $.ajax({
-               url: Document.folksonomie.postbase + 'resource.php',
+               url: document.folksonomie.postbase + 'resource.php',
                type: 'post',
                datatype: 'text/text',
                data: {
@@ -344,7 +348,7 @@ function infoMessage(elem) {
  function tagboxPrepare() {
      var lis = $(this);
      var tgbx = lis.find("input.tagbox");
-     tgbx.autocomplete(Document.folksonomie.getbase + "tagcomplete.php");
+     tgbx.autocomplete(document.folksonomie.getbase + "tagcomplete.php");
 
      var url = lis.find("a.resurl").attr("href");
 
@@ -356,7 +360,7 @@ function infoMessage(elem) {
            if (tgbx.val()) {
              var cleanup = tagMenuCleanupFunc(lis, tgbx.val());
              $.ajax({
-                      url: Document.folksonomie.postbase + 'resource.php',
+                      url: document.folksonomie.postbase + 'resource.php',
                       type: 'post',
                       datatype: 'text/text',
                       data: {
@@ -439,7 +443,7 @@ function createTagMessage(tag, url, meta, lis, successfunc) {
     function(event){
       event.preventDefault();
       $.ajax({
-               url: Document.folksonomie.postbase + 'tag.php',
+               url: document.folksonomie.postbase + 'tag.php',
                type: 'post',
                datatype: 'text/text',
                data: {
@@ -477,7 +481,7 @@ function tagResourceFunc (url, tag, meta, lisarg) {
 
   return function() {
     $.ajax({
-           url: Document.folksonomie.postbase + 'resource.php',
+           url: document.folksonomie.postbase + 'resource.php',
            type: 'post',
            datatype: 'text/text',
            data: {
@@ -576,7 +580,7 @@ function noteEditBox(resid) {
     event.preventDefault();
     var text = $(this).siblings("textarea.noteedit").val();
     if (text.length > 0) {
-      $.ajax({ url: Document.folksonomie.postbase + 'resource.php',
+      $.ajax({ url: document.folksonomie.postbase + 'resource.php',
                type: 'post',
                data: {
                  folksores: resid,
@@ -620,7 +624,7 @@ function noteEditBox(resid) {
 function noteDisplayBox(resid){
   var boxdiv = $("<div class='notedisplay'>");
   $.ajax({
-           url: Document.folksonomie.getbase + 'resource.php',
+           url: document.folksonomie.getbase + 'resource.php',
            type: 'get',
            datatype: 'text/xml',
            async: false,
@@ -670,7 +674,7 @@ function deleteNoteButton(noteid) {
     function(event){
       event.preventDefault();
       $.ajax({
-        url: Document.folksonomie.postbase + 'resource.php',
+        url: document.folksonomie.postbase + 'resource.php',
         type: 'post',
         datatype: 'text/text',
         data: {
@@ -707,6 +711,15 @@ function deleteNoteButton(noteid) {
 }
 
 
+
+ /**
+  * "tag" can be either a tagnorm or an id. Returns a correct tag url.
+  */
+ function tagUrl(tag) {
+   return  webbase + "resourceview.php?tag=" + tag; // this is probably wrong!
+ }
+
+
 /** FOR RESOURCEVIEW **/
 
 function editBox(resid, lis){
@@ -722,3 +735,47 @@ function editBox(resid, lis){
                + "</div>"));
   return box;
 }
+
+/**
+ * argument should be the actual select element where the options
+ *  will be appended.
+ */
+function metaSelectOptions() {
+  var select = $(this);
+  if (document.folksonomie.hasOwnProperty("metaoptions")){
+    for (var cnt = 0;
+         cnt < document.folksonomie.metaoptions.length;
+         cnt++){
+
+      select.append(document.folksonomie.metaoptions[cnt]);
+    }
+  }
+   else {
+     document.folksonomie.metaoptions = new Array();
+
+     var buildingFunc =
+       function(){
+         var opt = $("<option>");
+         opt.text($(this).text());
+         document.folksonomie.metaoptions.push(opt);
+         select.append(opt);
+       };
+
+     $.ajax({
+              type: 'get',
+              async: false,
+              url: document.folksonomie.getbase + 'metatag.php',
+              datatype: 'text/xml',
+              data: {
+                folksoall: 1
+              },
+              error: function(xhr, msg){
+                alert("Metaglist " + xhr.status + " " + xhr.statusText);
+              },
+              success: function(xml, msg){
+                $("metataglist meta", xml).each(buildingFunc);
+              }
+            });
+   }
+}
+
