@@ -1,25 +1,26 @@
-if (! Document.hasOwnProperty("folksonomie")) {
-  Document.folksonomie = new Object();
+if (! document.hasOwnProperty("folksonomie")) {
+  document.folksonomie = new Object();
 }
 
-var getresphp = Document.folksonomie.getbase + 'resource.php';
-var postresphp = Document.folksonomie.postbase + 'resource.php';
-
+var getresphp = document.folksonomie.getbase + 'resource.php';
+var postresphp = document.folksonomie.postbase + 'resource.php';
+var webbase = '';
 
 $(document).ready(
   function(){
-    alert("ready");
     $("a.editresource").click(
       function(event) {
         event.preventDefault();
         alert("soemthing");
         var lis = $(this).parent().parent("li");
         var resid = lis.attr("id").substring(3);
-        lis.append(editBox(resid, lis));
+
       });
 
     $("ul.resourcelist li").each(iframePrepare);
-
-
+    $("ul.resourcelist li").each(tagboxPrepare);
+    $("ul.resourcelist li").each(taglistHidePrepare);
+    $("ul.resourcelist li").each(deleteButtonPrepare);
+    $("select.metatagbox").each(metaSelectOptions);
 
   });
