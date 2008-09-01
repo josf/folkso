@@ -1,12 +1,12 @@
 /**
- * Document.folksonomie.postbase
+ * document.folksonomie.postbase
  *
  * Relatve URI for all POST requests that, naturally, require
  * authentication.
  *
  * relative URI for GET requests that do not require authentication
  *
- * Document.folksonomie.getbase = '';
+ * document.folksonomie.getbase = '';
  *
  * relative URI for building links towards various pages (display,
  * interface, etc.)
@@ -37,7 +37,7 @@ $(document).ready(
           groupTag();
         }
       });
-    $("#grouptagbox").autocomplete(Document.folksonomie.getbase + "tagcomplete.php");
+    $("#grouptagbox").autocomplete(document.folksonomie.getbase + "tagcomplete.php");
     //  $("ul.taglist li").each(tagremovePrepare);
 
     $("#cleargroupchecks").click(
@@ -83,10 +83,3 @@ $(document).ready(
         $("#superscreen").hide();
       });
   });
-
- /**
-  * "tag" can be either a tagnorm or an id. Returns a correct tag url.
-  */
- function tagUrl(tag) {
-   return  webbase + "resourceview.php?tag=" + tag; // this is probably wrong!
- }
