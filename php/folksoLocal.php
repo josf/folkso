@@ -85,17 +85,17 @@ abstract class folksoLocal {
   public function WebPathJS() { 
     $return = 
       "\n/** defined in folksoLocal.php **/\n"
-    .   'if (!  Document.hasOwnProperty("folksonomie")) {' . "\n"
-    . "\tDocument.folksonomie = new Object();\n"
+    .   'if (!  document.hasOwnProperty("folksonomie")) {' . "\n"
+    . "\tdocument.folksonomie = new Object();\n"
     . "}\n";
     $return .= 
-      'Document.folksonomie.getbase = "' . $this->get_path . '";' . "\n";
+      'document.folksonomie.getbase = "' . $this->get_path . '";' . "\n";
 
     $return .= 
-      'Document.folksonomie.postbase = "' . $this->post_path . '";'. "\n";
+      'document.folksonomie.postbase = "' . $this->post_path . '";'. "\n";
 
     $return .= 
-      'Document.folksonomie.webbase = "' . $this->server_web_path . '";'. "\n";
+      'document.folksonomie.webbase = "' . $this->server_web_path . '";'. "\n";
 
     return $return;
   }
