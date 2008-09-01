@@ -11,10 +11,17 @@ $(document).ready(
     $("a.editresource").click(
       function(event) {
         event.preventDefault();
-        alert("soemthing");
-        var lis = $(this).parent().parent("li");
-        var resid = lis.attr("id").substring(3);
+        $(this).parent().siblings("div.details").show();
+        $(this).hide();
+        $(this).siblings("a.closeedit").show();
+      });
 
+    $("a.closeedit").click(
+      function(event){
+        event.preventDefault();
+        $(this).parent().siblings("div.details").hide();
+        $(this).hide();
+        $(this).siblings("a.closeedit").show();
       });
 
     $("ul.resourcelist li").each(iframePrepare);
