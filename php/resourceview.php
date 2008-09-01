@@ -91,9 +91,14 @@ div.iframeholder {
 
 </head>
 <body>
+
+  <div id="superscreen"> <!-- screen that appears with dialogue boxes -->
+  <div id="superinfobox">
+     <a id="closess" href="#">Fermer</a>
+  </div>
+  </div> <!-- end of superscreen -->
+
 <div id="container">
-
-
 
 
 <?php
