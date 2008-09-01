@@ -1,10 +1,10 @@
 
 
 
-if (! Document.hasOwnProperty("folksonomie")) {
-  Document.folksonomie = new Object();
+if (! document.hasOwnProperty("folksonomie")) {
+  document.folksonomie = new Object();
 }
-var posttagphp = Document.folksonomie.postbase + 'tag.php';
+var posttagphp = document.folksonomie.postbase + 'tag.php';
 $.ajaxSetup({
               datatype: 'text/text'
               });
@@ -12,7 +12,7 @@ $.ajaxSetup({
 $(document).ready(function() {
                     $('li.tagentry').each(fkPrepare);
 
-                    $(".fusionbox").autocomplete(Document.folksonomie.getbase 
+                    $(".fusionbox").autocomplete(document.folksonomie.getbase
                                                  + "tagcomplete.php");
                     $("input.fusioncheck").attr("disabled", "disabled");
                     $("input.fusioncheck").attr("checked", false);
@@ -36,7 +36,7 @@ $(document).ready(function() {
                         // first parent is a <p>
                         $("div.tagcommands").hide();
                         var lis = $(this).parent().parent("li");
-                        Document.folksonomie.currentEdit = lis;
+                        document.folksonomie.currentEdit = lis;
                         lis.find("div.tagcommands").show();
                         $(this).hide();
                         $("input.fusioncheck").attr('disabled', '');
@@ -57,9 +57,9 @@ $(document).ready(function() {
                     $('a.closeeditbox').click(
                       function(event){
                         event.preventDefault();
-                        Document.folksonomie.
+                        document.folksonomie.
                           currentEdit.find("p.multifusionvictims").text("");
-                        Document.folksonomie.currentEdit = '';
+                        document.folksonomie.currentEdit = '';
                         $(this).parent().parent(".tagcommands").hide();
                         $("input.fusioncheck").attr('checked', '');
                         $("input.fusioncheck").attr('disabled', 'disabled');
@@ -233,7 +233,7 @@ function makeMfusionFunc(targ) {
     success: function(data, str) {
       lis.remove();
       /* clear preview text */
-      Document.folksonomie.currentEdit.find("p.multifusionvictims").text("");
+      document.folksonomie.currentEdit.find("p.multifusionvictims").text("");
     },
     error: function(xhr, msg){
       alert("Echec: la fusion du tag "
@@ -266,7 +266,7 @@ function getMVictims() {
 
 function addtoPreview(tag) {
   var preview =
-      Document.folksonomie.currentEdit.find("p.multifusionvictims");
+      document.folksonomie.currentEdit.find("p.multifusionvictims");
   var text = preview.text();
   if (text.indexOf('"' + tag + '"') == -1) { // ie. not found
     preview.text( text + ' "' + tag + '" ');
@@ -275,7 +275,7 @@ function addtoPreview(tag) {
 
 function removefromPreview(tag) {
   var preview =
-    Document.folksonomie.currentEdit.find("p.multifusionvictims");
+    document.folksonomie.currentEdit.find("p.multifusionvictims");
   var text = preview.text();
   var quotedTag = '"' + tag + '"';
   if (text.indexOf(quotedTag) > -1) {
