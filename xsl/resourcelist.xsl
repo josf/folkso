@@ -32,6 +32,7 @@
       </xsl:attribute>
       <xsl:element name="h4">
       <xsl:element name="a">
+        <xsl:attribute name="class">restitle</xsl:attribute>
         <xsl:attribute name="href">
           <xsl:value-of select="url"/>
         </xsl:attribute>
@@ -49,10 +50,14 @@
 
 
         <xsl:element name="p">
-          <xsl:attribute name="class">smalltaglist</xsl:attribute>
-          <xsl:text>(</xsl:text>
+          <xsl:element name="span">
+          <xsl:attribute name="class">currenttags</xsl:attribute>
+          <xsl:text> 
+          </xsl:text>
           <xsl:value-of select="tags"/>
-          <xsl:text>)</xsl:text>
+          <xsl:text> 
+          </xsl:text>
+          </xsl:element>
         </xsl:element>
 
         <xsl:element name="p">
@@ -90,9 +95,70 @@
 
         <xsl:element name="div">
           <xsl:attribute name="class">iframeholder</xsl:attribute>
+          <xsl:element name="p">
+          <!-- without this worthless paragraph, everything ends up
+               inside of the iframeholder div for some reason -->
+            <xsl:text>&#160;</xsl:text>
+          </xsl:element>
+
         </xsl:element>
-        <xsl:element name="p">
-          <xsl:text>&#160;</xsl:text>
+
+        <xsl:element name="div">
+          <xsl:attribute name="class">details</xsl:attribute>
+
+          <xsl:element name="div">
+            <xsl:attribute name="class">tagger</xsl:attribute>
+            <xsl:element name="span">
+              <xsl:attribute name="class">infohead</xsl:attribute>
+              <xsl:text>Ajouter un tag</xsl:text>
+            </xsl:element>
+
+            <xsl:element name="input">
+              <xsl:attribute name="class">tagbox</xsl:attribute>
+              <xsl:attribute name="type">text</xsl:attribute>
+              <xsl:attribute name="maxlength">100</xsl:attribute>
+              <xsl:attribute name="size">25</xsl:attribute>
+            </xsl:element>
+            
+            <xsl:element name="span">
+              <xsl:attribute name="class">infohead</xsl:attribute>
+              <xsl:text> Metatag (facultatif) </xsl:text>
+            </xsl:element>
+
+            <xsl:element name="select">
+              <xsl:attribute name="class">metatagbox</xsl:attribute>
+              <xsl:attribute name="size">1</xsl:attribute>
+              <!-- empty option to start with -->
+              <xsl:element name="option">
+              </xsl:element>
+            </xsl:element>
+
+            <xsl:element name="a">
+              <xsl:attribute name="class">tagbutton</xsl:attribute>
+              <xsl:attribute name="href">#</xsl:attribute>
+              <xsl:text>Valider</xsl:text>
+            </xsl:element>
+
+          </xsl:element> <!-- end of div -->
+
+          <xsl:element name="p">
+            <xsl:text>Détails des tags déjà associés à cette ressource</xsl:text>
+            <xsl:element name="a">
+              <xsl:attribute  name="class">seetags</xsl:attribute>
+              <xsl:attribute name="href">#</xsl:attribute>
+              <xsl:text> Voir </xsl:text>
+            </xsl:element>
+            
+            <xsl:element name="a">
+              <xsl:attribute name="class">hidetags</xsl:attribute>
+              <xsl:attribute name="href">#</xsl:attribute>
+              <xsl:text> Cacher </xsl:text>
+            </xsl:element>
+          </xsl:element>
+
+          <xsl:element name="div">
+            <xsl:attribute name="class">emptytags</xsl:attribute>
+          </xsl:element>
         </xsl:element>
 
     </xsl:element>
