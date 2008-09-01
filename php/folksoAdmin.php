@@ -12,7 +12,7 @@
 class folksoAdmin {
 
   /**
-   * JS snippet: create Document.folksonomie object if not already
+   * JS snippet: create document.folksonomie object if not already
    * present.
    */
   private $folksoCheck;
@@ -20,7 +20,7 @@ class folksoAdmin {
   function  __construct(){
     $this->folksoCheck = 
        'if (! "folksonomie" in Document) {' . "\n"
-    . "\tDocument.folksonomie = new Object();\n"
+    . "\tdocument.folksonomie = new Object();\n"
     . "}\n";
   }
 
@@ -28,8 +28,8 @@ class folksoAdmin {
   /**
    * Takes $_SERVER['PHP_AUTH_USER'] and $_SERVER['PHP_AUTH_PW'] and,
    * if present, formats javascript that assigns these variables to
-   * Document.folksonomie.basicAuthUser and
-   * Document.folksonomie.basicAuthPasswd. This should be included in
+   * document.folksonomie.basicAuthUser and
+   * document.folksonomie.basicAuthPasswd. This should be included in
    * a <script> element.
    *
    * This means sending username/password back and forth a few extra
@@ -42,17 +42,17 @@ class folksoAdmin {
        (isset($_SERVER['PHP_AUTH_PW']))) {
      $return =  
      "if ('folksonomie' in Document) {\n".
-     "\tDocument.folksonomie.basicAuthUser = " 
+     "\tdocument.folksonomie.basicAuthUser = " 
      . $_SERVER['PHP_AUTH_USER'] . ";\n"
      ."\tDocuemnt.folksonomie.basicAuthPasswd = '"
      .$_SERVER['PHP_AUTH_PW']."';\n}\n";
 
      $return .=  
      "else {\n"
-     . "\tDocument.folksonomie = new Object();\n"
-     ."\tDocument.folksonomie.basicAuthUser = '" 
+     . "\tdocument.folksonomie = new Object();\n"
+     ."\tdocument.folksonomie.basicAuthUser = '" 
      . $_SERVER['PHP_AUTH_USER'] . "';\n"
-     ."\tDocument.folksonomie.basicAuthPasswd = '"
+     ."\tdocument.folksonomie.basicAuthPasswd = '"
      .$_SERVER['PHP_AUTH_PW']."';\n}\n";
      
      return $return;
