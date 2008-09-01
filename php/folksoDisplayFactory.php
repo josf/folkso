@@ -50,9 +50,9 @@ class folksoDisplayFactory {
       $argsperline = 1;
     }
     
-    
     $xml =  array('type' => 'xml',
-                 'start' => "<$listtype name=\"$listname\">",
+                 'start' => 
+                  "<?xml version=\"1.0\"?>\n<$listtype name=\"$listname\">",
                  'end' => "</$listtype>",
                   'lineformat' => $lineformat,
                  'argsperline' => 2);
@@ -204,5 +204,21 @@ class folksoDisplayFactory {
                                   'argsperline' => 3));
     return $obj;
   }
+  public function MetatagList () {
+    $obj = new folksoDataDisplay(array('type' => 'text',
+                                       'start' => 'Metatags',
+                                       'titleformat' => "XXX\n",
+                                       'end' => "\n\n",
+                                       'lineformat' => "XXX : XXX\n",
+                                       'argsperline' => 2));
+    $this->addXmlPart($obj, 
+                      'metataglist',
+                      'metatags',
+                      'meta',
+                      'numid');
+    return $obj;
+    /** $lineformat = "<meta numid=\"XXX\">XXX</meta>"; **/
+  }
+
 }
 ?>
