@@ -42,8 +42,8 @@ class folksoAdmin {
        (isset($_SERVER['PHP_AUTH_PW']))) {
      $return =  
      "if ('folksonomie' in Document) {\n".
-     "\tdocument.folksonomie.basicAuthUser = " 
-     . $_SERVER['PHP_AUTH_USER'] . ";\n"
+     "\tdocument.folksonomie.basicAuthUser = '" 
+     . $_SERVER['PHP_AUTH_USER'] . "';\n"
      ."\tDocuemnt.folksonomie.basicAuthPasswd = '"
      .$_SERVER['PHP_AUTH_PW']."';\n}\n";
 
