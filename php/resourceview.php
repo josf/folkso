@@ -68,6 +68,16 @@ ul.resourcelist a:visited.editresource {
 a.closeiframe, a:link.closeiframe, a:visited.closeiframe {
     display: none;
 }
+a.closeedit, a:link.closeedit, a:visited.closeedit {
+display:none;
+  margin-left: 2em;
+}
+  
+
+
+div.details {
+display:none;
+}
 
 div.iframeholder {
     display: none;
