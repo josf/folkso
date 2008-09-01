@@ -4,7 +4,7 @@
 
 
 <script type="text/javascript" src="js/jquery.js"></script>
-<script type="text/javascript" src="js/jquery.autocomplete.js">
+<script type="text/javascript" src="js/jquery.autocomplete.js"></script>
 
 <?php 
 
@@ -49,7 +49,7 @@ h2.tagtitle {font-size: 16pt; text-align: center}
     padding-bottom: 3em;
     padding-left: 2em; padding-right: 2em;
 }
-ul.resourcelist li a, ul.resourcelist li a:link, ul.resourcelist li a:visited { 
+a.restitle,  a:link.restitle,  a:visited.restitle { 
     font-size: 14pt; 
     font-color: orange;}
 
