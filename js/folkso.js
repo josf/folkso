@@ -215,7 +215,6 @@ function makeMetatagBox (resource, tag, lis) {
       box.each(metaSelectOptions);
     }
 
-
   var button = $("<a href='#' class='metatagbutton'>Ajouter métatag</a>")
     .click(
       function(event){
