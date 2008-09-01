@@ -76,19 +76,25 @@
           <xsl:element name="a">
             <xsl:attribute name="class">openiframe</xsl:attribute>
             <xsl:attribute name="href">#</xsl:attribute>
-            <xsl:text>Voir page</xsl:text>
+            <xsl:text> Voir page </xsl:text>
           </xsl:element>
 
           <xsl:element name="a">
             <xsl:attribute name="class">closeiframe</xsl:attribute>
             <xsl:attribute name="href">#</xsl:attribute>
-            <xsl:text>Fermer</xsl:text>
+            <xsl:text> Fermer </xsl:text>
           </xsl:element>
 
           <xsl:element name="a">
             <xsl:attribute name="class">editresource</xsl:attribute>
             <xsl:attribute name="href">#</xsl:attribute>
-            <xsl:text>Editer</xsl:text>
+            <xsl:text> Editer </xsl:text>
+          </xsl:element>
+
+          <xsl:element name="a">
+            <xsl:attribute name="class">closeedit</xsl:attribute>
+            <xsl:attribute name="href">#</xsl:attribute>
+            <xsl:text> Cacher </xsl:text>
           </xsl:element>
 
         </xsl:element>
