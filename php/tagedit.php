@@ -30,10 +30,12 @@ require_once('folksoAdmin.php');
 
 $loc = new folksoFabula();
 $fk = new folksoAdmin();
-print "<script type='text/javascript'>\n\n";
+
 /** if basic authentication info is present, we send it back to the
     browser for use in ajax requests **/
 print $fk->BasicAuthJSScript();
+
+print "<script type='text/javascript'>\n\n";
 print $loc->WebPathJS();
 print "</script>\n";
 ?>
