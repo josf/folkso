@@ -39,17 +39,22 @@ $fk = new folksoAdmin();
     </script>
 
    <script type="text/javascript">
-
 <?php
-print "var metatag_autocomplete_list = ";
-print fk_metatag_simple_list($i);
-print ';';
+
+
 // basic auth info as js variables
 print $fk->BasicAuthJS();
 
 // paths to Document.folksonomie
 print $loc->WebPathJS();
+print 
+  "\n if (! document.hasOwnProperty(\"folksonomie\")) { \n"
+  . "\t document.folksonomie = new Object();\n"
+  . "}\n\n";
 
+print "document.folksonomie.metatag_autocomplete_list = ";
+print fk_metatag_simple_list($i);
+print ';';
 ?>
 </script>
 <script type="text/javascript" src="js/folkso.js">
