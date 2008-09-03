@@ -235,7 +235,7 @@ SELECT tagdisplay,
        (select count(distinct output_temp_table3.tagid)
                from
                output_temp_table3
-               where output_temp_table3.globalpop >= ottglobalpop)) as weight
+               where output_temp_table3.globalpop <= ottglobalpop)) as weight
        from output_temp_table;
        
 
@@ -247,7 +247,7 @@ DECLARE CONTINUE HANDLER FOR NOT FOUND SET l_last_row_fetched=1;
 -- create two, no three! identical tables...
 
 DROP TABLE IF EXISTS output_temp_table;
-CREATE TABLE output_temp_table
+CREATE TEMPORARY TABLE output_temp_table
        (tagid INT UNSIGNED PRIMARY KEY,
         tagnorm VARCHAR(255) NOT NULL,
         tagdisplay VARCHAR(255) NOT NULL,
