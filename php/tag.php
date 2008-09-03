@@ -355,7 +355,7 @@ $querystart =
     WHEN title IS NULL THEN uri_normal 
     ELSE title
   END AS display,
-  (SELECT GROUP_CONCAT(DISTINCT tagdisplay SEPARATOR \'" "\')
+  (SELECT GROUP_CONCAT(DISTINCT tagdisplay SEPARATOR \' - \')
                FROM tag t2
                JOIN tagevent te2 ON t2.id = te2.tag_id
                JOIN resource r2 ON r2.id = te2.resource_id
