@@ -21,7 +21,7 @@ $(document).ready(
         event.preventDefault();
         $(this).parent().siblings("div.details").hide();
         $(this).hide();
-        $(this).siblings("a.closeedit").show();
+        $(this).siblings("a.editresource").show();
       });
 
     $("ul.resourcelist li").each(iframePrepare);

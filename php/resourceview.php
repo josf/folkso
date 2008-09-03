@@ -34,6 +34,12 @@ print "</script>\n";
    media="screen">
 </link>
 
+    <link 
+        rel="stylesheet" type="text/css"
+        href="jquery.autocomplete.css"
+        media="screen">
+    </link>
+
 <link rel="stylesheet" type="text/css" href="http://www.fabula.org/commun3/print.css" media="print"></link>
 <link rel="shortcut icon" type="image/x-icon" href="http://www.fabula.org/favicon.ico"></link>
 <link rel="stylesheet" type="text/css" href="editres.css" media="screen"></link>
