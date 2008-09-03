@@ -142,7 +142,7 @@ div.iframeholder {
    }
 ?>
 <div id="pagebottom">
-<form action="/resourceview.php" method="get">
+<form action="resourceview.php" method="get">
             <p>
               Entrer un uri ou un identifiant de resource déjà  présente dans la base
             </p>

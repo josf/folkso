@@ -355,7 +355,7 @@ $querystart =
     WHEN title IS NULL THEN uri_normal 
     ELSE title
   END AS display,
-  (SELECT GROUP_CONCAT(DISTINCT tagdisplay SEPARATOR \'" "\')
+  (SELECT GROUP_CONCAT(DISTINCT tagdisplay SEPARATOR \' - \')
                FROM tag t2
                JOIN tagevent te2 ON t2.id = te2.tag_id
                JOIN resource r2 ON r2.id = te2.resource_id
@@ -410,7 +410,7 @@ $querystart =
     print $dd->line( $row->id,
                      $row->href,
                      html_entity_decode(strip_tags($row->display), ENT_NOQUOTES, 'UTF-8'),
-                     '"' . $row->tags . '"'); // inner quotes supplied by sql
+                      $row->tags); // inner quotes supplied by sql
   }
   print $dd->endform();
 }
