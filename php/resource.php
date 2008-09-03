@@ -270,7 +270,7 @@ function tagCloudLocalPop (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnec
   $sql = "CALL cloudy(";
 
   if (is_numeric($q->res)) {
-    $sql .= $q->res . ", '', 5, 5)";
+    $sql .= $q->res . ", '', 1, 5)";
   }
   else {
     $sql .= "'', '" .$i->dbescape($q->res) . "', 5, 5)";
@@ -311,7 +311,7 @@ $i->query($sql);
   print $dd->startform();  // <ul>
   while ($row = $i->result->fetch_object()) {
     print $dd->line($row->cloudweight, 
-                    "/resourceview.php?tagthing=".
+                    "resourceview.php?tagthing=".
                     $row->tagid, $row->tagdisplay)."\n";
   }
   print $dd->endform();
