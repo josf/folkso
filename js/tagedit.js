@@ -1,4 +1,8 @@
-
+/**
+ * Part of "Folkso"
+ *  author: Joseph Fahey
+ *  copyright 2008 Gnu Public Licence
+ */
 
 
 if (! document.hasOwnProperty("folksonomie")) {
@@ -10,25 +14,23 @@ $.ajaxSetup({
               });
 
 $(document).ready(function() {
-                    $('li.tagentry').each(fkPrepare);
 
-                    $(".fusionbox").autocomplete(document.folksonomie.getbase
-                                                 + "tagcomplete.php");
-                    $("input.fusioncheck").attr("disabled", "disabled");
-                    $("input.fusioncheck").attr("checked", false);
-
-                    $("input.fusioncheck").change(
-                      function(event){
-                        var checkedTag =
-                          $(this).parent().parent("li").find("a.tagname").text();
-                        if ($(this).attr('checked') == true){
-                          addtoPreview(checkedTag);
-                        }
-                          else {
-                            removefromPreview(checkedTag);
-                          }
-                      }
-                    );
+                    $("input.fusioncheck").each(
+                      function() {
+                        $(this).attr("disabled", "disabled");
+                        $(this).attr("checked", false);
+                        $(this).change(
+                          function(event){
+                            var checkedTag =
+                              $(this).parent().parent("li").find("a.tagname").text();
+                            if ($(this).attr('checked') == true){
+                              addtoPreview(checkedTag);
+                            }
+                            else {
+                              removefromPreview(checkedTag);
+                            }
+                          });
+                        });
 
                     $('a.edit').click(
                       function(event) {
@@ -36,6 +38,10 @@ $(document).ready(function() {
                         // first parent is a <p>
                         $("div.tagcommands").hide();
                         var lis = $(this).parent().parent("li");
+                        lis.each(fkPrepare);
+                        $(".fusionbox").autocomplete(document.folksonomie.getbase
+                                                     + "tagcomplete.php");
+
                         document.folksonomie.currentEdit = lis;
                         lis.find("div.tagcommands").show();
                         $(this).hide();
@@ -52,19 +58,21 @@ $(document).ready(function() {
                             event.preventDefault();
                             $("input.fusioncheck:checked").each(mfusionfunc);
                           });
+
+                        lis.find('a.closeeditbox').click(
+                          function(event){
+                            event.preventDefault();
+                            document.folksonomie.
+                              currentEdit.find("p.multifusionvictims").text("");
+                            document.folksonomie.currentEdit = '';
+                            $(this).parent().parent(".tagcommands").hide();
+                            $("input.fusioncheck").attr('checked', '');
+                            $("input.fusioncheck").attr('disabled', 'disabled');
+                            $(this).parent().parent().parent("li").find("a.edit").show();
+                          });
+
                       });
 
-                    $('a.closeeditbox').click(
-                      function(event){
-                        event.preventDefault();
-                        document.folksonomie.
-                          currentEdit.find("p.multifusionvictims").text("");
-                        document.folksonomie.currentEdit = '';
-                        $(this).parent().parent(".tagcommands").hide();
-                        $("input.fusioncheck").attr('checked', '');
-                        $("input.fusioncheck").attr('disabled', 'disabled');
-                        $(this).parent().parent().parent("li").find("a.edit").show();
-                      });
 
                     $("a.restags").click(
                       function(event){
