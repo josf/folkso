@@ -1,6 +1,10 @@
 /** the #super* parts are the popup div that covers the page for
 confirmations **/
 
+body {
+     background: white;
+}
+
 #superscreen {
     display: none; 
     z-index: 50;
