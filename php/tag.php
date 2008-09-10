@@ -10,6 +10,7 @@
 
 
 require_once('folksoTags.php');
+require_once('folksoAlpha.php');
 
 /** 
  * When the tag's name or id is known, the field name "tag"
@@ -604,6 +605,12 @@ function byalpha (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
   }
   
   $alpha = substr($q->get_param('byalpha'), 0, 1);
+  
+  $al = new folksoAlpha();
+
+  // we are not going to escape anything because only one-character
+  // strings are allowed.
+  $ors = $al->SQLgroup($al->lettergroup($alpha)); 
 
   $query = 
     "SELECT id, tagdisplay, tagnorm, \n".
@@ -611,7 +618,7 @@ function byalpha (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
     "FROM tagevent te  \n".
     "WHERE te.tag_id = tag.id) AS popularity
             FROM tag
-            WHERE tagnorm LIKE '" . $i->dbescape($alpha) . "%'";
+            WHERE " . $ors;
 
   $i->query($query);
   switch ($i->result_status) {
