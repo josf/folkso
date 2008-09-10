@@ -36,7 +36,7 @@ class folksoAlpha {
       return array($let);
     }
     else {
-      return array($this->alphabet[$let]);
+      return $this->alphabet[$let];
     }
   }
 
