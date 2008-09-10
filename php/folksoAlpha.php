@@ -25,20 +25,44 @@ class folksoAlpha {
    *
    * Returns 'false' on bad input (not a string).
    */
-  public function lettergroup (letter) {
+  public function lettergroup ($letter) {
     $let = substring($letter, 0, 1);
     if (! is_string($let)) {
       return false;
     }
 
     /**   **/
-    if (! isset($alphabet[$let])) {
+    if (! array_key_exists($let, $this->alphabet)) {
       return array($let);
     }
     else {
-      return array($alphabet[$let]);
+      return array($this->alphabet[$let]);
     }
   }
 
+
+  /**
+   * Returns a string like "(column like 'a%') or (column like 'b%')
+   * or ..."
+   *
+   * @param letters Array 
+   * @param column string. The name of the SQL column we are comparing with.
+   * @returns string.
+   */
+  public function SQLgroup ($letters, $column) {
+    if (count($letters) == 1) {
+      return "$column LIKE '" . $letters[0] . "%'";
+    }
+    elseif (count($letters) > 1) {
+      return 
+        "($column LIKE '"
+        . implode("%') OR ($column LIKE '", $letters)
+        . "%')";
+    }
+    else {
+      trigger_error("Invalid arguments in SQLgroup(). Need an array with at least one letter",
+                    E_USER_WARNING);
+    }
+  }
 
   } 
