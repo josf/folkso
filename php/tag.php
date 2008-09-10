@@ -603,7 +603,7 @@ function byalpha (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
     die($i->error_info());
   }
   
-  $alpha = substr($q->get_param('byalpha'), 0, 3);
+  $alpha = substr($q->get_param('byalpha'), 0, 1);
 
   $query = 
     "SELECT id, tagdisplay, tagnorm, \n".
