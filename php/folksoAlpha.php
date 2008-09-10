@@ -26,7 +26,7 @@ class folksoAlpha {
    * Returns 'false' on bad input (not a string).
    */
   public function lettergroup ($letter) {
-    $let = substring($letter, 0, 1);
+    $let = substr($letter, 0, 1);
     if (! is_string($let)) {
       return false;
     }
@@ -36,7 +36,7 @@ class folksoAlpha {
       return array($let);
     }
     else {
-      return array($this->alphabet[$let]);
+      return $this->alphabet[$let];
     }
   }
 

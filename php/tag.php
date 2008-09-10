@@ -610,7 +610,7 @@ function byalpha (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
 
   // we are not going to escape anything because only one-character
   // strings are allowed.
-  $ors = $al->SQLgroup($al->lettergroup($alpha)); 
+  $ors = $al->SQLgroup($al->lettergroup($alpha), "tagnorm"); 
 
   $query = 
     "SELECT id, tagdisplay, tagnorm, \n".
