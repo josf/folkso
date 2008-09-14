@@ -639,6 +639,7 @@ function byalpha (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
   $df = new folksoDisplayFactory();
   $dd = $df->TagList();
   $dd->activate_style('xml');
+    header('Content-Type: text/xml');
   print $dd->startform();
   while ($row = $i->result->fetch_object()) {
     print $dd->line($row->id, 
