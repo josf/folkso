@@ -56,15 +56,6 @@ print "</script>\n";
 </p>
 
 <h3>Sélection des tags</h3>
-<form action="tagedit.php" method="get">
-   <p>Pour mieux cibler les tags à éditer, saisir une, deux ou trois
-   lettres du début des tags recherchés: <input type="text"
-   name="letters" maxlength="3" size="3"></input>
-    </p>
-   <p>
-        <input type="submit" value="Submit"/>
-   </p>
-</form>
 
 <form action="tag.php" method="post">
    <h3>Créer un nouveau tag :</h3>
@@ -79,45 +70,27 @@ print "</script>\n";
   <li><a href="#" class="restags">Afficher seulement les tags <em>déjà utilisés</em></a> (Associés à des ressources)</li>
   <li><a href="#" class="norestags">Afficher seulement les tags <em>non utilisés</em></a> (Associés à aucune ressource)</li>
 </ul>
+
+<ul id="letterlist">
+  <?php
+  foreach (array('a', 'b', 'c', 'd', 'e', 'f', 
+                'g', 'h', 'i', 'j', 'k', 'l', 
+                'm', 'n', 'o', 'p', 'q', 'r', 
+                 's', 't', 'u', 'v', 'w', 'x', 'y', 'z') as $letter) {
+
+  print 
+  "<li><a href=\"#\" id=\"letter$letter\" class=\"selectletter\">". strtoupper($letter)
+  . "</a></li>\n";
+
+}
+
+  ?>
+</ul>
 </div>
 <?php
 
 
 
-$fc = new folksoClient('localhost', 
-                       $loc->get_server_web_path(). 'tag.php', 
-                       'get');
-
-if (isset($_GET['letters'])) {
-    $alpha = substr($_GET['letters'], 0, 3);
-    $fc->set_getfields(array('folksobyalpha' => $alpha));
-}
-else { //if no letter specified, get all tags 
-  $fc->set_getfields(array('folksoalltags' => 1));
-}
-
-    $taglist = $fc->execute();
-
-     if ($fc->query_resultcode() == 200) {
-      if (strlen($taglist) == 0) {
-        trigger_error("No taglist data", E_USER_ERROR);
-      }
-
-      $tags = new DomDocument();
-
-      $tags->loadXML($taglist);
-      $xsl = new DomDocument();
-      $xsl->load($loc->xsl_dir . "tagform.xsl");
-
-      $proc = new XsltProcessor();
-      $xsl = $proc->importStylesheet($xsl);
-      $form = $proc->transformToDoc($tags);
-      print $form->saveXML();
-    }
-    else {
-      print $fc->query_resultcode();
-      print $taglist;
-    }
 ?>
 
 
