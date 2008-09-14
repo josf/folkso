@@ -37,10 +37,14 @@ $(document).ready(function() {
                                    };
                                    $("taglist tag", xml).each(
                                      function() {
-                                       var item = $("<li>");
-                                       item.text($(this).find("display").text());
-                                       lisfunc(item);
+                                       var it = makeTageditListitem(
+                                         $(this).find("numid").text(),
+                                         $(this).find("display").text(),
+                                         $(this).find("popularity").text()
+                                       );
+                                       lisfunc(it);
                                      });
+                                     lis.each(fkPrepare);
                                      lis.append(ul);
                                  }
                                });
@@ -322,4 +326,86 @@ function removefromPreview(tag) {
   if (text.indexOf(quotedTag) > -1) {
     preview.text(text.replace(quotedTag, ''));
   }
+}
+
+
+function makeTageditListitem (id, display, popularity) {
+  var item = $("<li class=\"tagentry nores\">");
+  item.attr("id", "tagid" + id);
+
+  /* paragraph 1: name and checkbox */
+  var p1 = $("<p>");
+  p1.append($("<input type=\"checkbox\" "
+              + "class=\"fusioncheck\" "
+              + "disabled=\"disabled\"/>"));
+
+  var taglink = $("<a> class=\"tagname\"");
+  taglink.attr("href", "resourceview.php?tag=" + id);
+  taglink.text(display);
+  p1.append(taglink);
+
+  var spanpop = $("<span class=\"tagpopularity\">");
+  spanpop.text(" (" + popularity + " ressources)");
+  p1.append(spanpop);
+
+  p1.append($("<a href='#' class='edit'> Editer </a>"));
+  item.append(p1);
+
+  /** div tagcommands **/
+  var divtc = $("<div class=\"tagcommands\"");
+  var renameform =
+    $('<form class="rename" action="tag.php" method="post">');
+  var renamep =
+    $("<p>Modifier : </p>");
+  renamep.append($("<input"
+                   + "class=\"renamebox\" type=\"text\" maxlength=\"255\" "
+                   + "size=\"20\" name=\"folksonewname\" value="
+                   + id));
+  renamep.append($("<input type=\"submit\" value=\"Modifier\" "
+                   + "class=\"renamebutton\""));
+  renameform.append(renamep);
+  divtc.append(renameform);
+
+  var deleteform =
+    $("<form class=\"delete\" action=\"tag.php\" method=\"post\"");
+  deleteform.append(
+    $("<p>Supprimer : "
+      + "<button class=\"delete\" type=\"submit\" "
+      + "name=\"folksotag\" value=\"" + id + "\">"
+      + "Suppression"
+      + "</button>"
+      + "</p>"));
+
+  var mergeform =
+    $("<form class=\"merge\" action=\"tag.php\" method=\"post\">");
+  var mergep =
+    $("<p>Fusionner avec (le tag " + display + " sera supprimé) :");
+  mergep.append("<input class=\"fusionbox\" name=\"folksotarget\""
+                + "type= \"text\" maxlength=\"255\" size=\"20\">");
+  mergep.append("<button type=\"submit\" value=\"" + id
+                +  " class=\"fusionbox\" name=\"folksotag\">"
+                + "Fusionner"
+                + "</button> ");
+  mergeform.append(mergep);
+  divtc.append(mergeform);
+
+  var divmf
+    = $("<div class=\"multifusion\"><h4>Fusion Multiple</h4></div>");
+  divmf.append(
+    $("<p>Sélectionner sur la page les tags à fusionner avec"
+      + " <em>" + display + "</em>. Les autres tags seront supprim&#xE9;s "
+      + "au profit de celui-ci.")
+    );
+  divmf.append(
+    $("<p> class=\"multifusionvictims\">")
+  );
+  divmf.append(
+    $("<p><a class=\"multifusionbutton href=\"#\">Multi-fusion</a></p>")
+  );
+  divtc.append(divmf);
+  divtc.append($("<p><a href=\"#\" class=\"closeditbox\">Fermer</a>"));
+  item.append(divtc);
+
+  return item;
+
 }
