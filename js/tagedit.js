@@ -15,6 +15,39 @@ $.ajaxSetup({
 
 $(document).ready(function() {
 
+                    $("a.selectletter").click(
+                      function(event){
+                        event.preventDefault();
+                        var letter = $(this).attr("id").substr(6, 1);
+                        var lis = $(this).parent();
+                        $.ajax({
+                                 url: document.folksonomie.getbase + 'tag.php',
+                                 type: 'get',
+                                 data: {
+                                   folksobyalpha: letter
+                                 },
+                                 datatype: 'text/xml',
+                                 error: function(xhr, msg) {
+                                   alert(msg);
+                                 },
+                                 success: function(xml){
+                                   var ul = $("<ul class=\"taglist\">");
+                                   var lisfunc = function(li) {
+                                     ul.append(li);
+                                   };
+                                   $("taglist tag", xml).each(
+                                     function() {
+                                       var item = $("<li>");
+                                       item.text($(this).find("display").text());
+                                       lisfunc(item);
+                                     });
+                                     lis.append(ul);
+                                 }
+                               });
+                      });
+
+
+
                     $("input.fusioncheck").each(
                       function() {
                         $(this).attr("disabled", "disabled");
