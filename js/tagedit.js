@@ -44,72 +44,13 @@ $(document).ready(function() {
                                        );
                                        lisfunc(it);
                                      });
+                                     lis.each(activateEdit);
+                                     lis.each(activateFusionCheck);
                                      lis.each(fkPrepare);
                                      lis.append(ul);
                                  }
                                });
                       });
-
-
-
-                    $("input.fusioncheck").each(
-                      function() {
-                        $(this).attr("disabled", "disabled");
-                        $(this).attr("checked", false);
-                        $(this).change(
-                          function(event){
-                            var checkedTag =
-                              $(this).parent().parent("li").find("a.tagname").text();
-                            if ($(this).attr('checked') == true){
-                              addtoPreview(checkedTag);
-                            }
-                            else {
-                              removefromPreview(checkedTag);
-                            }
-                          });
-                        });
-
-                    $('a.edit').click(
-                      function(event) {
-                        event.preventDefault();
-                        // first parent is a <p>
-                        $("div.tagcommands").hide();
-                        var lis = $(this).parent().parent("li");
-                        lis.each(fkPrepare);
-                        $(".fusionbox").autocomplete(document.folksonomie.getbase
-                                                     + "tagcomplete.php");
-
-                        document.folksonomie.currentEdit = lis;
-                        lis.find("div.tagcommands").show();
-                        $(this).hide();
-                        $("input.fusioncheck").attr('disabled', '');
-                        $(this).siblings("input.fusioncheck")
-                          .attr('disabled', 'disabled');
-                        $(this).siblings("input.fusioncheck")
-                          .attr('checked', false);
-
-                        var targtag = lis.attr("id").substring(5);
-                        var mfusionfunc = makeMfusionFunc(targtag);
-                        lis.find("a.multifusionbutton").click(
-                          function(event) {
-                            event.preventDefault();
-                            $("input.fusioncheck:checked").each(mfusionfunc);
-                          });
-
-                        lis.find('a.closeeditbox').click(
-                          function(event){
-                            event.preventDefault();
-                            document.folksonomie.
-                              currentEdit.find("p.multifusionvictims").text("");
-                            document.folksonomie.currentEdit = '';
-                            $(this).parent().parent(".tagcommands").hide();
-                            $("input.fusioncheck").attr('checked', '');
-                            $("input.fusioncheck").attr('disabled', 'disabled');
-                            $(this).parent().parent().parent("li").find("a.edit").show();
-                          });
-
-                      });
-
 
                     $("a.restags").click(
                       function(event){
@@ -328,6 +269,64 @@ function removefromPreview(tag) {
   }
 }
 
+function activateFusionCheck() {
+  $(this).attr("disabled", "disabled");
+  $(this).attr("checked", false);
+  $(this).change(
+    function(event){
+      var checkedTag =
+        $(this).parent().parent("li").find("a.tagname").text();
+      if ($(this).attr('checked') == true){
+        addtoPreview(checkedTag);
+      }
+      else {
+        removefromPreview(checkedTag);
+      }
+    });
+}
+
+function activateEdit() {
+  $(this).find("a.edit").click(
+    function(event) {
+      event.preventDefault();
+      // first parent is a <p>
+      $("div.tagcommands").hide();
+      var lis = $(this).parent().parent("li");
+      lis.each(fkPrepare);
+      $(".fusionbox").autocomplete(document.folksonomie.getbase
+                                   + "tagcomplete.php");
+
+      document.folksonomie.currentEdit = lis;
+      lis.find("div.tagcommands").show();
+      $(this).hide();
+      $("input.fusioncheck").attr('disabled', '');
+      $(this).siblings("input.fusioncheck")
+        .attr('disabled', 'disabled');
+      $(this).siblings("input.fusioncheck")
+        .attr('checked', false);
+
+      var targtag = lis.attr("id").substring(5);
+      var mfusionfunc = makeMfusionFunc(targtag);
+      lis.find("a.multifusionbutton").click(
+        function(event) {
+          event.preventDefault();
+          $("input.fusioncheck:checked").each(mfusionfunc);
+        });
+
+      lis.find('a.closeeditbox').click(
+        function(event){
+          event.preventDefault();
+          document.folksonomie.
+            currentEdit.find("p.multifusionvictims").text("");
+          document.folksonomie.currentEdit = '';
+          $(this).parent().parent(".tagcommands").hide();
+          $("input.fusioncheck").attr('checked', '');
+          $("input.fusioncheck").attr('disabled', 'disabled');
+          $(this).parent().parent().parent("li").find("a.edit").show();
+        });
+    });
+}
+
 
 function makeTageditListitem (id, display, popularity) {
   var item = $("<li class=\"tagentry nores\">");
@@ -407,5 +406,4 @@ function makeTageditListitem (id, display, popularity) {
   item.append(divtc);
 
   return item;
-
 }
