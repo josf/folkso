@@ -351,7 +351,7 @@ function makeTageditListitem (id, display, popularity) {
   item.append(p1);
 
   /** div tagcommands **/
-  var divtc = $("<div class=\"tagcommands\"");
+  var divtc = $("<div class=\"tagcommands\">");
   var renameform =
     $('<form class="rename" action="tag.php" method="post">');
   var renamep =
@@ -374,7 +374,9 @@ function makeTageditListitem (id, display, popularity) {
       + "Suppression"
       + "</button>"
       + "</p>"));
+  divtc.append(deleteform);
 
+  /** merge **/
   var mergeform =
     $("<form class=\"merge\" action=\"tag.php\" method=\"post\">");
   var mergep =
@@ -388,6 +390,7 @@ function makeTageditListitem (id, display, popularity) {
   mergeform.append(mergep);
   divtc.append(mergeform);
 
+  /** multifusion **/
   var divmf
     = $("<div class=\"multifusion\"><h4>Fusion Multiple</h4></div>");
   divmf.append(
