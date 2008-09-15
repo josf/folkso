@@ -46,7 +46,7 @@ $(document).ready(function() {
                                      });
                                      lis.each(activateEdit);
                                      lis.each(activateFusionCheck);
-                                     lis.each(fkPrepare);
+//                                     lis.each(fkPrepare); // already done in activeEdit()
                                      lis.append(ul);
                                  }
                                });
@@ -290,10 +290,10 @@ function activateEdit() {
     function(event) {
       event.preventDefault();
       // first parent is a <p>
-      $("div.tagcommands").hide();
       var lis = $(this).parent().parent("li");
+      $("div.tagcommands").hide(); // hide all others first
       lis.each(fkPrepare);
-      $(".fusionbox").autocomplete(document.folksonomie.getbase
+      lis.find(".fusionbox").autocomplete(document.folksonomie.getbase
                                    + "tagcomplete.php");
 
       document.folksonomie.currentEdit = lis;
