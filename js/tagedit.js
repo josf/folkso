@@ -23,7 +23,13 @@ $(document).ready(function() {
 
                         /** list already present but hidden? **/
                         if (lis.find("ul.taglist").length > 0) {
-                          lis.find("ul.taglist").show();
+                          var ultl = lis.find("ul.taglist");
+                          if (ultl.css("display") == "block"){
+                            ultl.hide();
+                          }
+                          else {
+                            ultl.show();
+                          }
                         }
                         else { /** get list **/
                           $.ajax({
