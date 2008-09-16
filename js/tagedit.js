@@ -44,10 +44,13 @@ $(document).ready(function() {
                                        );
                                        lisfunc(it);
                                      });
-                                     lis.each(activateEdit);
-                                     lis.each(activateFusionCheck);
 //                                     lis.each(fkPrepare); // already done in activeEdit()
                                      lis.append(ul);
+                                     lis.find("ul.taglist li").each(
+                                       function(){
+                                         $(this).each(activateEdit);
+                                         $(this).each(activateFusionCheck);
+                                     });
                                  }
                                });
                       });
@@ -136,9 +139,14 @@ function fkPrepare() {
     lis.find("input.renamebutton").click(
       function(event) {
         event.preventDefault();
-         var newname = lis.find("input.renamebox").val();
+        alert("rename");
+        var newname = lis.find("input.renamebox").val();
         if (newname &&
             (newname != lis.find("a.tagname").text())) {
+          var updatefunc =
+            function() {
+              lis.find("a.tagname").text(newname);
+            };
           $.ajax({
                    url: posttagphp,
                    type: 'post',
@@ -298,6 +306,7 @@ function activateEdit() {
 
       document.folksonomie.currentEdit = lis;
       lis.find("div.tagcommands").show();
+      lis.find("input").show();
       $(this).hide();
       $("input.fusioncheck").attr('disabled', '');
       $(this).siblings("input.fusioncheck")
@@ -338,7 +347,7 @@ function makeTageditListitem (id, display, popularity) {
               + "class=\"fusioncheck\" "
               + "disabled=\"disabled\"/>"));
 
-  var taglink = $("<a> class=\"tagname\"");
+  var taglink = $("<a class=\"tagname\">");
   taglink.attr("href", "resourceview.php?tag=" + id);
   taglink.text(display);
   p1.append(taglink);
@@ -356,17 +365,18 @@ function makeTageditListitem (id, display, popularity) {
     $('<form class="rename" action="tag.php" method="post">');
   var renamep =
     $("<p>Modifier : </p>");
-  renamep.append($("<input"
+  renamep.append($("<input "
                    + "class=\"renamebox\" type=\"text\" maxlength=\"255\" "
-                   + "size=\"20\" name=\"folksonewname\" value="
-                   + id));
+                   + "size=\"20\" name=\"folksonewname\" value=\""
+                   + display + "\">"));
   renamep.append($("<input type=\"submit\" value=\"Modifier\" "
-                   + "class=\"renamebutton\""));
+                   + "class=\"renamebutton\">"));
   renameform.append(renamep);
   divtc.append(renameform);
 
+  /** delete **/
   var deleteform =
-    $("<form class=\"delete\" action=\"tag.php\" method=\"post\"");
+    $("<form class=\"delete\" action=\"tag.php\" method=\"post\">");
   deleteform.append(
     $("<p>Supprimer : "
       + "<button class=\"delete\" type=\"submit\" "
@@ -399,13 +409,13 @@ function makeTageditListitem (id, display, popularity) {
       + "au profit de celui-ci.")
     );
   divmf.append(
-    $("<p> class=\"multifusionvictims\">")
+    $("<p class=\"multifusionvictims\">")
   );
   divmf.append(
-    $("<p><a class=\"multifusionbutton href=\"#\">Multi-fusion</a></p>")
+    $("<p><a class=\"multifusionbutton\" href=\"#\">Multi-fusion</a></p>")
   );
   divtc.append(divmf);
-  divtc.append($("<p><a href=\"#\" class=\"closeditbox\">Fermer</a>"));
+  divtc.append($("<p><a href=\"#\" class=\"closeeditbox\">Fermer</a>"));
   item.append(divtc);
 
   return item;
