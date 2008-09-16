@@ -318,6 +318,7 @@ function activateEdit() {
       // first parent is a <p>
       var lis = $(this).parent().parent("li");
       $("div.tagcommands").hide(); // hide all others first
+      $("a.edit").show();
       lis.each(fkPrepare);
       lis.find(".fusionbox").autocomplete(document.folksonomie.getbase
                                    + "tagcomplete.php");
