@@ -20,7 +20,13 @@ $(document).ready(function() {
                         event.preventDefault();
                         var letter = $(this).attr("id").substr(6, 1);
                         var lis = $(this).parent();
-                        $.ajax({
+
+                        /** list already present but hidden? **/
+                        if (lis.find("ul.taglist").length > 0) {
+                          lis.find("ul.taglist").show();
+                        }
+                        else { /** get list **/
+                          $.ajax({
                                  url: document.folksonomie.getbase + 'tag.php',
                                  type: 'get',
                                  data: {
@@ -53,6 +59,7 @@ $(document).ready(function() {
                                      });
                                  }
                                });
+                          }
                       });
 
                     $("a.restags").click(
@@ -222,6 +229,7 @@ function makeMfusionFunc(targ) {
   var thistag = lis.attr("id").substring(5);
   $.ajax({
     type: 'post',
+    url: posttagphp,
     data: {
       folksotag: thistag,
       folksotarget: targ
@@ -246,7 +254,6 @@ function makeMfusionFunc(targ) {
  * Find any checked multifusion boxes and return a
  * string with all the tagnames.
  */
-
 function getMVictims() {
   var str = ''; //return string
 
@@ -279,10 +286,13 @@ function removefromPreview(tag) {
   }
 }
 
+/** now to be  called on a <li> **/
 function activateFusionCheck() {
-  $(this).attr("disabled", "disabled");
-  $(this).attr("checked", false);
-  $(this).change(
+  var cbox = $(this).find("input.fusioncheck");
+
+  cbox.attr("disabled", "disabled");
+  cbox.attr("checked", false);
+  cbox.change(
     function(event){
       var checkedTag =
         $(this).parent().parent("li").find("a.tagname").text();
