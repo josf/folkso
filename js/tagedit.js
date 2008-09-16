@@ -139,7 +139,6 @@ function fkPrepare() {
     lis.find("input.renamebutton").click(
       function(event) {
         event.preventDefault();
-        alert("rename");
         var newname = lis.find("input.renamebox").val();
         if (newname &&
             (newname != lis.find("a.tagname").text())) {
@@ -172,31 +171,34 @@ function fkPrepare() {
       if (fusiontarget){
         if (fusiontarget == lis.find("a.tagname").text()) {
           alert("On ne peut pas fusionner un tag avec le même tag");
-          }
+        }
         else {
-        $.ajax({
-             type: 'post',
-             data: {
-               folksotag: tagid,
-               folksotarget: fusiontarget
-             },
-             success: function(data, str){
-               lis.remove();
-             },
-             error: function(xhr, msg){
-               alert("Echec: " + xhr.statusText);
-             },
-             complete: function(xhr){
-               if (xhr.status == '204'){
-                 var targetid = xhr.getResponseHeader('X-Folksonomie-TargetId');
-                 var targetpop = getPopularity($("#tagid" + targetid));
-                 var newpop = Number(oldpopularity) + Number(targetpop);
-                 $("#tagid" + targetid).find("span.tagpopularity")
-                   .text(" (" + newpop + " ressources) ");
-               }
-             }
-           });
-          }
+                alert("fusion");
+
+          $.ajax({
+                   url: posttagphp,
+                   type: 'post',
+                   data: {
+                     folksotag: tagid,
+                     folksotarget: fusiontarget
+                   },
+                   success: function(data, str){
+                     lis.remove();
+                   },
+                   error: function(xhr, msg){
+                     alert("Echec: " + xhr.statusText);
+                   },
+                   complete: function(xhr){
+                     if (xhr.status == '204'){
+                       var targetid = xhr.getResponseHeader('X-Folksonomie-TargetId');
+                       var targetpop = getPopularity($("#tagid" + targetid));
+                       var newpop = Number(oldpopularity) + Number(targetpop);
+                       $("#tagid" + targetid).find("span.tagpopularity")
+                         .text(" (" + newpop + " ressources) ");
+                     }
+                   }
+                 });
+        }
       }
     });
 }
@@ -390,11 +392,11 @@ function makeTageditListitem (id, display, popularity) {
   var mergeform =
     $("<form class=\"merge\" action=\"tag.php\" method=\"post\">");
   var mergep =
-    $("<p>Fusionner avec (le tag " + display + " sera supprimé) :");
-  mergep.append("<input class=\"fusionbox\" name=\"folksotarget\""
+    $("<p>Fusionner avec (le tag " + display + " sera supprimé) :</p>");
+  mergep.append("<input class=\"fusionbox\" name=\"folksotarget\" "
                 + "type= \"text\" maxlength=\"255\" size=\"20\">");
-  mergep.append("<button type=\"submit\" value=\"" + id
-                +  " class=\"fusionbox\" name=\"folksotag\">"
+  mergep.append("<button type=\"submit\" value=\"" + id + "\""
+                +  " class=\"fusionbutton\" name=\"folksotag\">"
                 + "Fusionner"
                 + "</button> ");
   mergeform.append(mergep);
