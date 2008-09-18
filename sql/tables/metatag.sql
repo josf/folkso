@@ -1,41 +1,31 @@
-DROP TABLE IF EXISTS metatag;
-CREATE TABLE metatag
-       (id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-       tagnorm VARCHAR(120) NOT NULL UNIQUE,
-       tagdisplay VARCHAR(150) NOT NULL UNIQUE,
-       INDEX tagids (id),
-       INDEX tagnorms (tagnorm))
-    ENGINE=InnoDB;
+-- DROP TABLE IF EXISTS metatag;
+-- CREATE TABLE metatag
+--        (id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+--        tagnorm VARCHAR(120) NOT NULL UNIQUE,
+--        tagdisplay VARCHAR(150) NOT NULL UNIQUE,
+--        INDEX tagids (id),
+--        INDEX tagnorms (tagnorm))
+--     ENGINE=InnoDB;
 
 INSERT INTO metatag SET tagnorm = 'normal',
                         tagdisplay = 'normal';
-INSERT INTO metatag SET tagnorm = 'contributor',
-                        tagdisplay = 'contributor';
-INSERT INTO metatag SET tagnorm = 'creator',
-                        tagdisplay = 'creator';
-INSERT INTO metatag SET tagnorm = 'coverage',
-                        tagdisplay = 'coverage';
-INSERT INTO metatag SET tagnorm = 'date',
-                        tagdisplay = 'date';
-INSERT INTO metatag SET tagnorm = 'description',
-                        tagdisplay = 'description';
-INSERT INTO metatag SET tagnorm = 'format',
-                        tagdisplay = 'format';
-INSERT INTO metatag SET tagnorm = 'identifier',
-                        tagdisplay = 'identifier';
-INSERT INTO metatag SET tagnorm = 'language',
-                        tagdisplay = 'language';
-INSERT INTO metatag SET tagnorm = 'publisher',
-                        tagdisplay = 'publisher';
-INSERT INTO metatag SET tagnorm = 'relation',
-                        tagdisplay = 'relation';
-INSERT INTO metatag SET tagnorm = 'rights',
-                        tagdisplay = 'rights';
-INSERT INTO metatag SET tagnorm = 'source',
-                        tagdisplay = 'source';
-INSERT INTO metatag SET tagnorm = 'subject',
-                        tagdisplay = 'subject';
-INSERT INTO metatag SET tagnorm = 'title',
-                        tagdisplay = 'title';
-INSERT INTO metatag SET tagnorm = 'type',
-                        tagdisplay = 'type';
+insert into metatag set tagnorm = 'auteur1',
+                        tagdisplay = 'Auteur 1';
+insert into metatag set tagnorm = 'auteur2',
+                        tagdisplay = 'Auteur 2';
+insert into metatag set tagnorm = 'auteur3',
+                        tagdisplay = 'Auteur 3';
+insert into metatag set tagnorm = 'auteur4',
+                        tagdisplay = 'Auteur 4';
+insert into metatag set tagnorm = 'auteur5',
+                        tagdisplay = 'Auteur 5';
+insert into metatag set tagnorm = 'éditeur',
+                        tagdisplay = 'Éditeur';
+insert into metatag set tagnorm = 'ean13',
+                        tagdisplay = 'EAN13';
+insert into metatag set tagnorm = 'langue',
+                        tagdisplay = 'Langue';
+insert into metatag set tagnorm = 'contributeur1',
+                        tagdisplay = 'Contributeur 1';
+insert into metatag set tagnorm = 'contributeur2',
+                        tagdisplay = 'Contributeur 2';
