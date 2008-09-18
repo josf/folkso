@@ -1,9 +1,6 @@
 -- TAG MANAGEMENT
-
 -- Create new tag
-
 -- Normalize tag
-
 -- (local-set-key [(control c) (b)] 'sql-snip) 
 -- (defun sql-snip () (interactive) (snippet-insert "set final_tag = replace(final_tag, '$${1}', '$${2}');
 -- "))
@@ -55,21 +52,19 @@ BEGIN
         DECLARE normed VARCHAR(255) DEFAULT '';
         SET normed = normalize_tag(input_tag); 
 
-        select id 
-               into existing_id 
-               from tag 
-               where tagnorm = normed;
+        SELECT id 
+               INTO existing_id 
+               FROM tag 
+               WHERE tagnorm = normed;
 
-        if (existing_id = 0) then 
-           insert into tag
-                  set tagnorm = normed,
+        IF (existing_id = 0) THEN 
+           INSERT INTO tag
+                  SET tagnorm = normed,
                       tagdisplay = input_tag;
-           set existing_id = last_insert_id();
-        end if;
+           SET existing_id = LAST_INSERT_ID();
+        END IF;
 
         SELECT id FROM tag WHERE id = existing_id;
-
-
 END$$
 DELIMITER ;
 
@@ -80,11 +75,12 @@ DELIMITER ;
 DELIMITER $$
 DROP PROCEDURE IF EXISTS tag_resource$$
 CREATE PROCEDURE tag_resource(resource_uri      VARCHAR(255),
-                              resource_id       INTEGER,
+                              resource_id       INT,
                               tag_name          VARCHAR(255),
-                              tag_id            INTEGER,
+                              tag_id            INT,
                               meta_name         VARCHAR(255),
-                              meta_id           INTEGER)
+                              meta_id           INT)
+
 BEGIN
         DECLARE existing_tag_id INT UNSIGNED;
         DECLARE existing_uri VARCHAR(255);
@@ -121,11 +117,13 @@ IF (meta_id) THEN
    INTO existing_meta_id
    FROM metatag
    WHERE id = meta_id;
-ELSE
+ELSEIF (length(meta_name) > 1) THEN
    SELECT id
    INTO existing_meta_id
    FROM metatag
    WHERE tagnorm = normalize_tag(meta_name);
+ELSE
+   SET existing_meta_id = 1;
 END IF;        
 
 -- manually setting default value for meta_id 
