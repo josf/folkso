@@ -542,7 +542,7 @@ function deleteResourceMessage(resid, lis) {
   yesbutton.click(
     function(event) {
       event.preventDefault();
-      $.ajax({url: postbase + 'resource.php',
+      $.ajax({url: document.folksonomie.postbase + 'resource.php',
               type: 'post',
               datatype: 'text/text',
               data: {
