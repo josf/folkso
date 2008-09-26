@@ -362,7 +362,7 @@ function infoMessage(elem) {
      lis.find("a.tagbutton").click(
          function(event) {
            event.preventDefault();
-         var meta = lis.find(".tagger select.metatagbox").val();
+           var meta = lis.find(".tagger select.metatagbox").val();
 
            if (tgbx.val()) {
              var cleanup = tagMenuCleanupFunc(lis, tgbx.val());
@@ -457,7 +457,7 @@ function createTagMessage(tag, url, meta, lis, successfunc) {
                  folksonewtag: tag
                },
                error: function(xhr, msg){
-                 alert(xhr.statusText);
+                 alert(xhr.statusText + " " + msg);
                },
                success: onSuccessFunc
              });
