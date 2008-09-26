@@ -5,15 +5,16 @@
 -- (defun sql-snip () (interactive) (snippet-insert "set final_tag = replace(final_tag, '$${1}', '$${2}');
 -- "))
 
-delimiter $$
-drop function if exists normalize_tag$$
-create function normalize_tag(input_tag varchar(255))
-       returns varchar(120)
-       deterministic
-begin
+DELIMITER $$
+DROP FUNCTION IF EXISTS normalize_tag$$
+CREATE FUNCTION normalize_tag(input_tag VARCHAR(255))
+       RETURNS VARCHAR(120)
+       DETERMINISTIC
+BEGIN
         DECLARE final_tag VARCHAR(255) DEFAULT '';
 
         SET final_tag = lower(input_tag);
+
         set final_tag = replace(final_tag, ' ', '');
         set final_tag = replace(final_tag, '.', '');
         set final_tag = replace(final_tag, ':', '');
@@ -94,6 +95,14 @@ IF (tag_id) THEN
                FROM tag
                WHERE id = tag_id;
 ELSE
+        IF (SUBSTR(tag_name, 1, 1) = '"') THEN
+            SET tag_name = SUBSTR(tag_name, 2);
+        END IF;
+
+        IF (SUBSTR(tag_name, -1, 1) = '"') THEN
+           SET tag_name = SUBSTR(tag_name, 1, (CHAR_LENGTH(tag_name) - 1));
+        END IF;
+        
         SELECT id 
                INTO existing_tag_id
                FROM tag
