@@ -1,11 +1,11 @@
--- DROP TABLE IF EXISTS metatag;
--- CREATE TABLE metatag
---        (id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
---        tagnorm VARCHAR(120) NOT NULL UNIQUE,
---        tagdisplay VARCHAR(150) NOT NULL UNIQUE,
---        INDEX tagids (id),
---        INDEX tagnorms (tagnorm))
---     ENGINE=InnoDB;
+DROP TABLE IF EXISTS metatag;
+CREATE TABLE metatag
+       (id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+       tagnorm VARCHAR(120) NOT NULL UNIQUE,
+       tagdisplay VARCHAR(150) NOT NULL UNIQUE,
+       INDEX tagids (id),
+       INDEX tagnorms (tagnorm))
+    ENGINE=InnoDB;
 
 INSERT INTO metatag SET tagnorm = 'normal',
                         tagdisplay = 'normal';

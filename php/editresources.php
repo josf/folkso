@@ -559,7 +559,7 @@ function datesToFrench ($date) {
 
 }
 function fk_metatag_simple_list (folksoDBinteract $i) {
-  $i->query('SELECT tagdisplay FROM metatag');
+  $i->query('SELECT tagdisplay FROM metatag WHERE id <> 1');
   if ($i->result_status == 'DBERR') {
     alert('Problem with metatag autocomplete');
     print "''";
@@ -574,7 +574,7 @@ function fk_metatag_simple_list (folksoDBinteract $i) {
 }
 
 function metatagSelectBoxOptions (folksoDBinteract $i) {
-  $i->query('SELECT tagdisplay FROM metatag');
+  $i->query('SELECT tagdisplay FROM metatag WHERE id <> 1');
   $return = '';
   if ($i->result_status == 'DBERR') {
     alert('Problem with metatag autocomplete');

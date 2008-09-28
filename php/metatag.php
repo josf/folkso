@@ -29,7 +29,7 @@ function getAllMetas (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $db
   }
 
   $sql = 
-    'SELECT id, tagdisplay FROM metatag';
+    'SELECT id, tagdisplay FROM metatag WHERE id <> 1';
   $i->query($sql);
 
   switch ($i->result_status) {
