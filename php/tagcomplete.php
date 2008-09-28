@@ -27,9 +27,9 @@ function autocomplete (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $d
     die($i->error_info());
   }
 
-  $sql = "select tagdisplay ".
-            "from tag ".
-            "where tagnorm like '". 
+  $sql = "SELECT tagdisplay ".
+            "FROM tag ".
+            "WHERE tagnorm like '". 
     $i->dbescape(strtolower($q->get_param('q'))) . "%'";
 
   $i->query($sql);
@@ -45,7 +45,15 @@ function autocomplete (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $d
   case 'OK':
     header('HTTP/1.1 200 OK I guess');
     while ($row = $i->result->fetch_object()) {
-      print $row->tagdisplay . "\n";
+
+      /** For entirely numeric tags, we enclose them in quotes so that
+          they can be treated as text instead of as ids. **/
+      if (is_numeric($row->tagdisplay)) {
+        print '"' . $row->tagdisplay . '"' . "\n";
+      }
+      else {
+        print $row->tagdisplay . "\n";
+      }
     }
     break;
   }
