@@ -301,7 +301,7 @@ function singlePostTagDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect
     printf("Connect failed: %s\n", mysqli_connect_error());
     die("Database problem. Something is wrong.");
   }
-  $result = $db->query("call new_tag('" . 
+  $result = $db->query("CALL new_tag('" . 
                        $db->real_escape_string($q->get_param('folksonewtag')) . "')");
   if ($db->errno <> 0) {
     header('HTTP/1.1 501');
