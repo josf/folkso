@@ -43,15 +43,30 @@ BEGIN
 end$$
 delimiter ;
 
-
 -- new_tag()
 DELIMITER $$
-DROP PROCEDURE if exists new_tag$$
+DROP PROCEDURE IF EXISTS new_tag$$
 CREATE PROCEDURE new_tag(input_tag varchar(255))
 BEGIN
         DECLARE existing_id INTEGER DEFAULT 0;
         DECLARE normed VARCHAR(255) DEFAULT '';
-        SET normed = normalize_tag(input_tag); 
+        DECLARE orig_tag VARCHAR(255) DEFAULT '';
+
+        SET orig_tag = input_tag;
+
+        IF  (SUBSTR(orig_tag, 1, 2) = '\\"') THEN
+             SET orig_tag = SUBSTR(orig_tag, 3);
+        ELSEIF  (SUBSTR(orig_tag, 1, 1) = '"') THEN
+           SET orig_tag = SUBSTR(orig_tag, 2);
+        END IF;
+
+        IF (substr(orig_tag, -2, 2)  = '\\"') THEN
+             SET orig_tag = SUBSTR(orig_tag, 1, CHAR_LENGTH(orig_tag) - 2);
+        ELSEIF  (SUBSTR(orig_tag, -1, 1) = '"')  THEN
+           SET orig_tag = SUBSTR(orig_tag, 1, CHAR_LENGTH(orig_tag));
+        END IF;
+
+        SET normed = normalize_tag(orig_tag); 
 
         SELECT id 
                INTO existing_id 
@@ -61,7 +76,7 @@ BEGIN
         IF (existing_id = 0) THEN 
            INSERT INTO tag
                   SET tagnorm = normed,
-                      tagdisplay = input_tag;
+                      tagdisplay = orig_tag;
            SET existing_id = LAST_INSERT_ID();
         END IF;
 
