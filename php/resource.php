@@ -678,7 +678,7 @@ function rmNote (folksoquery $q, folksoWsseCreds $cred, folksoDBconnect $dbc){
  *
  * Return format (example, not including the double quotes): 
  *
- *  "'', 'http://example.com', 55, '', '', 'author'"
+ *  "'http://example.com', '', '', 55, 'author', ''"
  */
 function argSort ($res, $tag, $meta, folksoDBinteract $i) {
   $result = array();
