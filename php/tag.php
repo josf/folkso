@@ -294,25 +294,29 @@ function getTagResourcesDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconne
  *
  */
 function singlePostTagDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
-  $db = $dbc->db_obj();
-  $db->set_charset('UTF8');
-  if ( mysqli_connect_errno()) {
-    header('HTTP/1.1 501');
-    printf("Connect failed: %s\n", mysqli_connect_error());
-    die("Database problem. Something is wrong.");
+  $i = new folksoDBinteract($dbc);
+  if ( $i->db_error() ) {
+    header('HTTP/1.1 501 Database problem');
+    die( $i->error_info());
   }
-  $result = $db->query("CALL new_tag('" . 
-                       $db->real_escape_string($q->get_param('folksonewtag')) . "')");
-  if ($db->errno <> 0) {
-    header('HTTP/1.1 501');
-    printf("Statement failed %d: (%s) %s\n", 
-           $db->errno, $db->sqlstate, $db->error);
+
+$sql = 
+  "CALL new_tag('" . 
+  $i->dbescape($q->get_param('folksonewtag')) . "')";
+
+  $i->query($sql);
+
+switch ($i->result_status) {
+case 'DBERR':
+    header('HTTP/1.1 501 Database query error');
+    die($i->error_info());
+    break;
+case 'OK':
+  header('HTTP/1.1 201 Tag created'); // should add a "location" header
+  while($row = $i->result->fetch_object()) {
+    header('X-Folksonomie-Newtag: ' . $row->id);
+    print "Tag created (or already existed), id is ".$row->id . ' : ' . $q->get_param('newtag') ;
   }
-  else {
-    header('HTTP/1.1 201'); // should add a "location" header
-    while($row = $result->fetch_object()) {
-      print "Tag created (or already existed), id is ".$row->id  ;
-    }
   }
 }
 
