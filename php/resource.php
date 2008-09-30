@@ -377,7 +377,7 @@ function visitPage (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc)
       $i->done();
     } 
   else {
-    header("HTTP/1.1 304 Caching visit");
+    header("HTTP/1.1 202 Caching visit");
     print "caching visit";
   }
 }
