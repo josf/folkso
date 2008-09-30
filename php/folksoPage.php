@@ -179,7 +179,10 @@ private function get_cloud() {
 public function cloud() {
   $r = $this->get_cloud();
   if ($r['status'] = 200) {
-    return $r['result'];
+    return 
+      "<div class=\"tagcloud\">\n"
+      . $r['result']
+      . "</div>\n";
   }
   else {
     return;
