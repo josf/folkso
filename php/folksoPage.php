@@ -14,19 +14,25 @@
 include_once('folksoClient.php');
 include_once('folksoFabula.php');
 
+
 class folksoPage {
 
   /**
    * Site specific information. Leaving this private since there can
    * be sensitive stuff here.
    */
-  private $loc = new folksoFabula();
+  private $loc;
 
   /**
    * The url of the current page. Set whenever $this->curPageURL() is
    * called.
    */
   public $url;
+
+  public function __construct() {
+    $this->loc = new folksoFabula();
+  }
+
 
   /**
    * Report this page to the tag system. A new resource is created if
