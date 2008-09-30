@@ -153,6 +153,39 @@ private function ignore_check($str, $ignore) {
   return false;
 }
 
+/**
+ * Backend function to the cloud() function. This gets the information
+ * which is already formatted (html). Returns an assoc. array with the
+ * result code (404 in case the resource is not found, 204 if no tags)
+ * and the tag cloud itself.
+ *
+ * @returns array array('status' => 204, 'result' => CLOUD)
+ */
+private function get_cloud() {
+  $url = $this->curPageURL();  /* we use our own variable to retreive
+                                  a cached version if possible */
+
+  $fc = new folksoClient('localhost', 
+                         $this->loc->server_web_path . 'resource.php',
+                         'GET');
+  $fc->set_getfields(array('folksoclouduri' => 1,
+                           'folksores' => $url));
+
+  $result = $fc->execute();
+  return array('status' => $fc->query_resultcode(),
+               'result' => $result);
+}
+
+public function cloud() {
+  $r = $this->get_cloud();
+  if ($r['status'] = 200) {
+    return $r['result'];
+  }
+  else {
+    return;
+  }
+}
+
 
   }
 
