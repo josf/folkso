@@ -64,6 +64,7 @@ class folksoClient {
 
     curl_setopt($this->ch, CURLOPT_USERAGENT, 'folksoClient');
     curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($this->ch, CURLOPT_USERPWD, 'taggeur:quelbeautag');
     if (strtolower($this->method) == 'post'){
       $headers = array( "Content-Type: application/x-www-form-urlencoded",
                         "Content-length: " . $this->content_length());
