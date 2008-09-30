@@ -5,6 +5,5 @@ $page = new folksoPage();
 
 $page->visit_resource($page_titre);
 
-/* print $page->cloud(); */
 
 ?>
