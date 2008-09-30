@@ -63,7 +63,7 @@ class folksoPage {
     }
 
     $fc = new folksoClient('localhost', 
-                           $this->loc->server_web_path . 'resource.php',
+                           $this->loc->server_web_path . 'admin/resource.php',
                            'POST');
     $fc->set_postfields(array('folksovisit' => 1,
                               'folksores' => $our_current_url,
