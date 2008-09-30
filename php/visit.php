@@ -35,8 +35,6 @@ function visit_resource ($page_titre) {
 
 }
 
-
-
 function curPageURL() {
   $pageURL = 'http';
   $server_name = trim($_SERVER["SERVER_NAME"]);
