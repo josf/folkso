@@ -56,25 +56,37 @@ BEGIN
                       SET orig = CONCAT(orig, '&');
                   END IF;
                   orig_walk: while (  length(orig) > 0) do
+
+                             /** infinite loop check/hack **/
                         SET orig_loop_counter = orig_loop_counter + 1;
-                        if orig_loop_counter > 100 then
-                           set orig_loop_counter = 0;
-                           leave orig_walk;
-                        end if;
+                        IF orig_loop_counter > 100 THEN
+                           SET orig_loop_counter = 0;
+                           LEAVE orig_walk;
+                        END IF;
 
                         set seg_end = instr(orig, '&');
 
                         /* only one parameter - we are done*/
-                        if (seg_end = 0) then
-                           set seg_end = length(orig);
-                           set sorted = orig;
-                           leave orig_walk;
+                        IF (seg_end = 0) THEN
+                           SET seg_end = LENGTH(orig);
+                           IF invalid_check(orig) = 1 THEN
+                              SET sorted = orig;     
+                           ELSE 
+                                SET sorted = '';
+                           END IF;
+                           LEAVE orig_walk;
                            
                         /* cut first segment off of orig */
-                        else
-                           set current_seg = substr(orig, 1, seg_end);
-                           set orig = substr(orig, seg_end + 1);
-                        end if;
+                        ELSE
+                           SET current_seg = substr(orig, 1, seg_end);
+                           SET orig = substr(orig, seg_end + 1);
+                        END IF;
+
+                        IF (invalid_check(current_seg) = 0) THEN
+                           SET current_seg = '';
+                           ITERATE orig_walk;
+                        END IF;
+
 
                         /* this is the first segment we have to sort */
                         if length(sorted) = 0 then
@@ -102,7 +114,7 @@ BEGIN
                                                              sorted_seg_end - counter);
                                 set debug = concat(debug, 
                                             '[[starting sorting loop iteration, next_sorted_seg is ', 
-                                            next_sorted_seg, 'sorted is ', sorted,  ']]');
+                                            next_sorted_seg, ' sorted is ', sorted,  ']]');
 
                                 case 
                                       -- current_seg already present in sorted (duplicate parameters)
@@ -203,13 +215,30 @@ BEGIN
 
 END$$
 DELIMITER ;
-                                           
+
+-- checks to see if a parameter segment (ie. sess=123abc123) is
+-- allowed or not.
+DELIMITER $$
+DROP FUNCTION IF EXISTS invalid_check$$
+CREATE FUNCTION invalid_check(paramseg VARCHAR(255))
+     RETURNS TINYINT(1)
+     DETERMINISTIC
+BEGIN
+
+IF (INSTR(paramseg, 'sess=') = 1) THEN
+      RETURN 0;
+ELSE
+      RETURN 1;
+END IF;     
+
+END$$
+DELIMITER ;
                                                   
 
-delimiter $$
-drop procedure if exists tmp_test$$
-create procedure tmp_test(inpu VARCHAR(255))
-begin
+DELIMITER $$
+DROP PROCEDURE IF EXISTS tmp_test$$
+CREATE PROCEDURE tmp_test(inpu VARCHAR(255))
+BEGIN
         declare a_number int default 0;
        create temporary table tmpStuff(
               id int primary key auto_increment,
@@ -224,12 +253,12 @@ delimiter ;
 
 
                           
-delimiter $$
-drop function if exists url_whack$$
-create function url_whack(input_url VARCHAR(255))
+DELIMITER $$
+DROP FUNCTION IF EXISTS url_whack$$
+CREATE FUNCTION url_whack(input_url VARCHAR(255))
        RETURNS VARCHAR(255)
        DETERMINISTIC
-begin
+BEGIN
         DECLARE my_url VARCHAR(255) DEFAULT '' ;
         DECLARE query_part VARCHAR(255) DEFAULT '';
         DECLARE query_start INT DEFAULT 0;
