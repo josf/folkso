@@ -143,15 +143,21 @@ class folksoQuery {
   }     
 
   /**
-   * Simple getter function right now.
+   * Returns the internal content type ($this->fk_content_type). If
+   * this variable is undefined, it is calculated from the server
+   * variable and then cached.
    *
    */
   public function content_type () {
+
     if (is_string($this->fk_content_type)) {
       return $this->fk_content_type;
     }
     else {
-      return $this->parse_content_type($this->req_content_type);
+      $this->fk_content_type 
+        = $this->parse_content_type($this->req_content_type);
+
+      return $this->fk_content_type;
     }
   }
 
