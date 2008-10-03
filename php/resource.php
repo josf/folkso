@@ -298,8 +298,6 @@ $i->query($sql);
 
   $df = new folksoDisplayFactory();
   $dd = $df->cloud();
-  $dd->activate_style('xhtml'); // only style available right now.
-  
   $row1 = $i->result->fetch_object(); // popping the title line
   
   /** in CLOUDY
@@ -307,14 +305,32 @@ $i->query($sql);
    * tagnorm = r.uri_raw
    * tagid = r.id
    */
-  print $dd->title($row1->tagdisplay);
-  print $dd->startform();  // <ul>
-  while ($row = $i->result->fetch_object()) {
-    print $dd->line($row->cloudweight, 
-                    "resourceview.php?tagthing=".
-                    $row->tagid, $row->tagdisplay)."\n";
+
+  switch ($q->content_type()) {
+  case 'html':
+    $dd->activate_style('xhtml'); 
+    print $dd->title($row1->tagdisplay);
+    print $dd->startform();  // <ul>
+    while ($row = $i->result->fetch_object()) {
+      print $dd->line($row->cloudweight, 
+                      "resourceview.php?tagthing=".
+                      $row->tagid, $row->tagdisplay)."\n";
+    }
+    print $dd->endform();
+
+  case 'xml':
+    $dd->activate_style('xml');
+    header('Content-Type: text/xml');
+
+    print $dd->startform();
+    print $dd->title($q->res);
+    while ($row = $i->result->fetch_object()) {
+      print $dd->line($row->tagid,
+                      $row->tagdisplay,
+                      $row->cloudweight) . "\n";
+    }
+    print $dd->endform();
   }
-  print $dd->endform();
 }
 
 
