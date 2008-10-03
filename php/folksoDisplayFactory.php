@@ -104,11 +104,11 @@ class folksoDisplayFactory {
                                         'start' => 
                                         '<?xml version="1.0"?>',
                                         'titleformat' =>
-                                        "\n<tagcloud resource=XXX>\n",
+                                        "\n<tagcloud resource=\"XXX\">\n",
                                         'lineformat' =>
                                         "<tag>\n"
                                         . "<numid>XXX</numid>\n"
-                                        . "<display>XXX</dispay>\n"
+                                        . "<display>XXX</display>\n"
                                         . "<weight>XXX</weight>\n"
                                         . "</tag>", 
                                         'end' => '</tagcloud>',
