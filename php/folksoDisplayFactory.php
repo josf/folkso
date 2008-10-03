@@ -99,7 +99,20 @@ class folksoDisplayFactory {
                                        'argsperline' => 3,
                                        'lineformat' => 
                                         '<li class="cloudXXX"><a href="XXX">XXX</a></li>',
-                                        'titleformat' => '<h3>XXX</h3>'));
+                                        'titleformat' => '<h3>XXX</h3>'),
+                                  array('type' => 'xml',
+                                        'start' => 
+                                        '<?xml version="1.0"?>',
+                                        'titleformat' =>
+                                        "\n<tagcloud resource=XXX>\n",
+                                        'lineformat' =>
+                                        "<tag>\n"
+                                        . "<numid>XXX</numid>\n"
+                                        . "<display>XXX</dispay>\n"
+                                        . "<weight>XXX</weight>\n"
+                                        . "</tag>", 
+                                        'argsperline' => 3
+                                        ));
     return $obj;
 
 
