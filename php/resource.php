@@ -317,11 +317,10 @@ $i->query($sql);
                       $row->tagid, $row->tagdisplay)."\n";
     }
     print $dd->endform();
-
+    break;
   case 'xml':
     $dd->activate_style('xml');
     header('Content-Type: text/xml');
-
     print $dd->startform();
     print $dd->title($q->res);
     while ($row = $i->result->fetch_object()) {
@@ -330,6 +329,7 @@ $i->query($sql);
                       $row->cloudweight) . "\n";
     }
     print $dd->endform();
+    break;
   }
 }
 
