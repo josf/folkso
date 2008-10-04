@@ -166,25 +166,39 @@ private function get_cloud() {
                                   a cached version if possible */
 
   $fc = new folksoClient('localhost', 
-                         $this->loc->server_web_path . 'resource.php',
+                          'resource.php',
                          'GET');
   $fc->set_getfields(array('folksoclouduri' => 1,
-                           'folksores' => $url));
+                           'folksores' => $url,
+                           'folksodatatype' => 'xml'));
 
   $result = $fc->execute();
+
   return array('status' => $fc->query_resultcode(),
                'result' => $result);
 }
 
+/**
+ * Retreives and formats a tag cloud for the current page.
+ */
 public function cloud() {
   $r = $this->get_cloud();
-  if ($r['status'] = 200) {
-    return 
-      "<div class=\"tagcloud\">\n"
-      . $r['result']
-      . "</div>\n";
+
+  if ($r['status'] == 200) {
+    $cloud_xml = new DOMDocument;
+    $cloud_xml->loadXML($r['result']);
+
+    $xsl = new DOMDocument();
+    $xsl->load($this->loc->xsl_dir . "publiccloud.xsl");
+
+    $proc = new XsltProcessor();
+    $xsl = $proc->importStylesheet($xsl);
+    $cloud = $proc->transformToDoc($cloud_xml);
+
+    print $cloud->saveXML();
   }
   else {
+    print $r['status'];
     return;
   }
 }
