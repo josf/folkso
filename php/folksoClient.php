@@ -15,6 +15,7 @@ class folksoClient {
   var $getfields = array();
   var $datastyle;
   var $ch;
+  var $query_code;
 
   /**
    * Arguments: HOST, URI, METHOD. URI means the local part of the
@@ -65,6 +66,7 @@ class folksoClient {
     curl_setopt($this->ch, CURLOPT_USERAGENT, 'folksoClient');
     curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($this->ch, CURLOPT_USERPWD, 'taggeur:quelbeautag');
+
     if (strtolower($this->method) == 'post'){
       $headers = array( "Content-Type: application/x-www-form-urlencoded",
                         "Content-length: " . $this->content_length());
@@ -72,7 +74,11 @@ class folksoClient {
       curl_setopt($this->ch, CURLOPT_POST, true);
       curl_setopt($this->ch, CURLOPT_POSTFIELDS, $this->postfields);
     }
-    return curl_exec($this->ch);
+
+    $result = curl_exec($this->ch);
+    $this->query_code = curl_getinfo($this->ch, CURLINFO_HTTP_CODE);
+    curl_close($this->ch);
+    return  $result;
   }
 
   /**
@@ -82,7 +88,8 @@ class folksoClient {
    *
    */
   function build_req () {
-    $uri = $this->host . $this->path;
+    $uri = $this->host . '/'. $this->path;
+    $get = '';
     if (strtolower($this->method) == 'get') {
       /* add '?' */
       if ($this->datastyle || $this->getfields) {
@@ -108,8 +115,8 @@ class folksoClient {
 
   /**
    * Calculates content length for POSTs. 
-   *
-   */
+   * 
+  */
   function content_length () {
     if (strtolower($this->method) == 'get') {
       return 0;
@@ -132,7 +139,7 @@ class folksoClient {
    */
 
   function query_resultcode () {
-    return curl_getinfo($this->ch, CURLINFO_HTTP_CODE);
+    return $this->query_code;
   }
 
   function parse_arg_array ($arr) {
