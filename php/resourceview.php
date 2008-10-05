@@ -144,7 +144,7 @@ div.iframeholder {
 <div id="pagebottom">
 <form action="resourceview.php" method="get">
             <p>
-              Entrer un uri ou un identifiant de resource déjà  présente dans la base
+              Entrer un uri ou un identifiant de resource déjà présente dans la base
             </p>
             <p>
               <input type="text" name="tagthing" maxlength="3" size="3"></input>
