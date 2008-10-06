@@ -185,7 +185,7 @@ public function cloud() {
   $r = $this->get_cloud();
 
   if ($r['status'] == 200) {
-    $cloud_xml = new DOMDocument;
+    $cloud_xml = new DOMDocument();
     $cloud_xml->loadXML($r['result']);
 
     $xsl = new DOMDocument();
@@ -203,7 +203,50 @@ public function cloud() {
   }
 }
 
+/**
+ * Prints a list of resources associated with a given tag.
+ *
+ * @param $tag Either a tag name or a tag id.
+ */
+public function public_tag_resource_list($tag) {
+
+  $r = $this->resource_list($tag);
+  
+  if ($r['status'] == 200) {
+    
+    $taglist_xml = new DOMDocument();
+    $taglist_xml->loadXML($r['result']);
+
+    $xsl = new DOMDocument();
+    $xsl->load($this->loc->xsl_dir . "public_resourcelist.xsl");
+    
+    $proc = new XsltProcessor();
+    $xsl = $proc->importStylesheet($xsl);
+    $taglist = $proc->transformToDoc($taglist_xml);
+
+    print $taglist->saveXML();
 
   }
+}
+
+
+private function resource_list($tag) {
+
+  $fc = new folksoClient('localhost',
+                         'tag.php',
+                         'GET');
+  $fc->set_getfields(array('folksotag' => $tag,
+                           'folksodatatype' => 'xml'));
+
+  $result = $fc->execute();
+  return array('status' => $fc->query_resultcode(),
+               'result' => $result);
+
+}
+
+
+
+
+}
 
 ?>
