@@ -38,7 +38,6 @@ $srv->addResponseObj(new folksoResponse('get',
                                                     'resources')),
                                         'getTagResourcesDo'));
 
-/* Is this useful? */
 $srv->addResponseObj(new folksoResponse('get', 
                                         array('required' => array('tag')),
                                         'getTagDo'));
@@ -413,7 +412,7 @@ $querystart =
   print "\n";
   while ($row = $i->result->fetch_object()) {
     print $dd->line( $row->id,
-                     $row->href,
+                     htmlspecialchars($row->href, ENT_COMPAT, 'UTF-8'),
                      html_entity_decode(strip_tags($row->display), ENT_NOQUOTES, 'UTF-8'),
                       $row->tags); // inner quotes supplied by sql
   }
