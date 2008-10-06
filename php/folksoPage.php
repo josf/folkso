@@ -204,7 +204,9 @@ public function cloud() {
 }
 
 /**
- * Prints a list of resources associated with a given tag.
+ * Returns an assoc array containing ['html'] :an html list of
+ * resources associated with a given tag, and ['status'] the http
+ * status.
  *
  * @param $tag Either a tag name or a tag id.
  */
@@ -212,7 +214,8 @@ public function public_tag_resource_list($tag) {
 
   $r = $this->resource_list($tag);
   
-  if ($r['status'] == 200) {
+  if (($r['status'] == 200) ||
+      ($r['status'] == 304)){
     
     $taglist_xml = new DOMDocument();
     $taglist_xml->loadXML($r['result']);
@@ -224,7 +227,8 @@ public function public_tag_resource_list($tag) {
     $xsl = $proc->importStylesheet($xsl);
     $taglist = $proc->transformToDoc($taglist_xml);
 
-    print $taglist->saveXML();
+    return array('html' => $taglist->saveXML(),
+                 'status' => $r['status']);
 
   }
 }
