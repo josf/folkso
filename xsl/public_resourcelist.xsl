@@ -31,20 +31,26 @@
         <xsl:value-of select="concat('res', numid)"/>
       </xsl:attribute>
 
-      <xsl:element name="a">
-        <xsl:attribute name="class">restitle</xsl:attribute>
-        <xsl:attribute name="href">
-          <xsl:value-of select="url"/>
-        </xsl:attribute>
-        <xsl:value-of select="title"/>
+      <xsl:element name="p">
+        <xsl:attribute name="class">restitle_par</xsl:attribute>
+        <xsl:element name="a">
+          <xsl:attribute name="class">restitle</xsl:attribute>
+          <xsl:attribute name="href">
+            <xsl:value-of select="url"/>
+          </xsl:attribute>
+          <xsl:value-of select="title"/>
+        </xsl:element>
       </xsl:element>
 
-      <xsl:element name="a">
-        <xsl:attribute name="href">
-          <xsl:value-of select="url"/>
-        </xsl:attribute>
+      <xsl:element name="p">
         <xsl:attribute name="class">resurl</xsl:attribute>
-        <xsl:value-of select="url"/>
+        <xsl:element name="a">
+          <xsl:attribute name="href">
+            <xsl:value-of select="url"/>
+          </xsl:attribute>
+          <xsl:attribute name="class">resurl</xsl:attribute>
+          <xsl:value-of select="url"/>
+        </xsl:element>
       </xsl:element>
 
         <xsl:element name="p">
