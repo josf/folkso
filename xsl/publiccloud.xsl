@@ -21,7 +21,7 @@
     
     <xsl:element name="a">
       <xsl:attribute name="href">
-        <xsl:value-of select="concat('/tags/tag', ./numid)"/>
+        <xsl:value-of select="concat('/tagview.php?tag=', ./numid)"/>
       </xsl:attribute>
       <xsl:attribute name="class">
         <xsl:value-of select="concat('cloudclass', ./weight)"/>
