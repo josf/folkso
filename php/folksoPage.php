@@ -236,6 +236,7 @@ private function resource_list($tag) {
                          'tag.php',
                          'GET');
   $fc->set_getfields(array('folksotag' => $tag,
+                           'folksofancy' => 1,
                            'folksodatatype' => 'xml'));
 
   $result = $fc->execute();
