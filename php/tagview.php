@@ -20,7 +20,7 @@ $page = new folksoPage();
 
 $tagreq = $_GET['tag'];
 
-if ((strlen($tagreq == 0)) ||
+if ((strlen($tagreq) == 0) ||
     (strlen($tagreq) > 300)) {
   die("Requête malformée, tag impossible");
 }
