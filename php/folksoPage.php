@@ -4,7 +4,7 @@
    * A class that regroups the functions that might be called from a
    * page: presentation, certain database interaction, tag clouds etc.
    * Ideally, a page should be able to include this library alone in
-   * order to access all the tag functionalities.
+   * order to access all the tag and resource functionalities.
    *
    * @package Folkso
    * @author Joseph Fahey
@@ -74,7 +74,9 @@ class folksoPage {
     // print $fc->query_resultcode();
   }
 
-
+  /**
+   * Returns what should be the real URL of the current page.
+   */
 public function curPageURL() {
   if (strlen($this->url) > 8) {
     return $this->url;
@@ -195,18 +197,17 @@ public function cloud() {
     $xsl = $proc->importStylesheet($xsl);
     $cloud = $proc->transformToDoc($cloud_xml);
 
-    print $cloud->saveXML();
+    return $cloud->saveXML();
   }
   else {
-    print $r['status'];
-    return;
+    return $r['status'];
   }
 }
 
 /**
  * Returns an assoc array containing ['html'] :an html list of
  * resources associated with a given tag, and ['status'] the http
- * status.
+ * status. Printing is left to the calling page.
  *
  * @param $tag Either a tag name or a tag id.
  */
@@ -233,7 +234,9 @@ public function public_tag_resource_list($tag) {
   }
 }
 
-
+/**
+ * Backend to public_tag_resource_list()
+ */
 private function resource_list($tag) {
 
   $fc = new folksoClient('localhost',
