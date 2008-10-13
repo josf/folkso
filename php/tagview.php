@@ -27,16 +27,16 @@ if ((strlen($tagreq) == 0) ||
 
 $taglist = $page->public_tag_resource_list($tagreq);
 
-print "<title>Fabula - Tags - ";
+print "<title>Fabula - Tags - tag \"";
 if (($taglist['status'] == 200) ||
     ($taglist['status'] == 304)) {
-  print $tagreq;
+  print $taglist['title'];
 }
 else {
   print " Erreur ";
 }
 
-print "</title>\n</head>\n<body>\n<div id='container'>";
+print "\"</title>\n</head>\n<body>\n<div id='container'>";
 
 if (($taglist['status'] == 200) ||
     ($taglist['status'] == 304)) {

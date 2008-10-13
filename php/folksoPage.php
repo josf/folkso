@@ -221,6 +221,8 @@ public function public_tag_resource_list($tag) {
     $taglist_xml = new DOMDocument();
     $taglist_xml->loadXML($r['result']);
 
+    $title = $this->getTitle($taglist_xml);
+
     $xsl = new DOMDocument();
     $xsl->load($this->loc->xsl_dir . "public_resourcelist.xsl");
     
@@ -229,7 +231,8 @@ public function public_tag_resource_list($tag) {
     $taglist = $proc->transformToDoc($taglist_xml);
 
     return array('html' => $taglist->saveXML(),
-                 'status' => $r['status']);
+                 'status' => $r['status'],
+                 'title' => $title);
 
   }
 }
@@ -252,7 +255,22 @@ private function resource_list($tag) {
 
 }
 
-
+/**
+ * Given xml resource list as DOM document, returns the "tag" element
+ * as a string.
+ *
+ * @param $dom DOMDocument
+ * @returns string or empty string if no title is found.
+ */
+private function getTitle($dom) {
+  $elems = $dom->getElementsByTagName("tagtitle");
+  if ($elems->length > 0) {
+    return $elems->item(0)->textContent;
+  }
+  else {
+    return '';
+  }
+}
 
 
 }
