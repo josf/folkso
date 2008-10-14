@@ -181,7 +181,9 @@ private function get_cloud() {
 }
 
 /**
- * Retreives and formats a tag cloud for the current page.
+ * Retreives and formats a tag cloud for the current page. 
+ *
+ * @returns string An html tag cloud, ready to be outputted. 
  */
 public function cloud() {
   $r = $this->get_cloud();
@@ -234,6 +236,23 @@ public function public_tag_resource_list($tag) {
                  'status' => $r['status'],
                  'title' => $title);
 
+  }
+  elseif ($r['status'] == 204) {
+    return array('html' => '<p>Aucune ressource n\'est  associée à ce tag.</p>',
+                 'status' => $r['status'],
+                 'title' => "");
+
+  }
+  elseif ($r['status'] == 404) {
+    return array('html' => '<p>Tag non trouvé.</p>',
+                 'status' => $r['status'],
+                 'title' => "Tag non trouvé.");
+
+  }
+  else {
+    return array('html' => '<p>Erreur. Excusez-nous.</p>',
+                 'status' => $r['status'],
+                 'title' => 'Erreur de tag');
   }
 }
 
