@@ -181,11 +181,9 @@ private function get_cloud() {
 }
 
 /**
- * Retreives and formats a tag cloud for the current page. 
- *
- * @returns string An html tag cloud, ready to be outputted. 
+ * Retreives and formats a tag cloud for the current page.
  */
-public function format_cloud() {
+public function cloud() {
   $r = $this->get_cloud();
 
   if ($r['status'] == 200) {
@@ -199,30 +197,12 @@ public function format_cloud() {
     $xsl = $proc->importStylesheet($xsl);
     $cloud = $proc->transformToDoc($cloud_xml);
 
-    return array('html' =>  $cloud->saveXML(),
-                 'status' => $r['status']);
-
+    return $cloud->saveXML();
   }
   else {
-    return array('html' => '',
-                 'status' => $r['status']);
-
+    return $r['status'];
   }
 }
-
-/**
- * Print the current page's tag cloud.
- * 
- * Wrapper function for $p->format_cloud(). If no data is found, or
- * there is an error of some kind cloud() silently does nothing.
- */
- public function cloud() {
-   $cloud = $this->format_cloud();
-   if (($cloud['status'] == 200) ||
-       ($cloud['status'] == 304)) {
-     print $cloud['html'];
-   }
- }
 
 /**
  * Returns an assoc array containing ['html'] :an html list of
@@ -254,23 +234,6 @@ public function public_tag_resource_list($tag) {
                  'status' => $r['status'],
                  'title' => $title);
 
-  }
-  elseif ($r['status'] == 204) {
-    return array('html' => '<p>Aucune ressource n\'est  associée à ce tag.</p>',
-                 'status' => $r['status'],
-                 'title' => "");
-
-  }
-  elseif ($r['status'] == 404) {
-    return array('html' => '<p>Tag non trouvé.</p>',
-                 'status' => $r['status'],
-                 'title' => "Tag non trouvé.");
-
-  }
-  else {
-    return array('html' => '<p>Erreur. Excusez-nous.</p>',
-                 'status' => $r['status'],
-                 'title' => 'Erreur de tag');
   }
 }
 

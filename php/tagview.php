@@ -41,11 +41,16 @@ print "\"</title>\n</head>\n<body>\n<div id='container'>";
 if (($taglist['status'] == 200) ||
     ($taglist['status'] == 304)) {
 
-  print "<h1>Ressources associées au tag : </h1>\n";
+  print "<h1> \"". $taglist['title'] . "\" </h1>\n";
+
+  print 
+    "<p>Voici la liste des ressources qui ont été associées au tag \"" 
+    . $taglist['title']
+    . "\".</p>\n";
 
   print $taglist['html'];
 }
 
-print "</div>\n</body>\n";
+print "</div>\n</body>\n</html>\n";
 
 ?>
