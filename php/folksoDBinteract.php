@@ -117,6 +117,29 @@ class folksoDBinteract {
       $this->result_status = 'OK';
     }
   }
+
+  /**
+   * Query using a prepared statement to avoid base64 injection
+   * attacks. This should be used for all database queries that do not
+   * use stored procedures, instead of the standard $i->query() method.
+   *
+   * The number of parameters and the number of '?' in the SQL will be
+   * compared and a fatal error will be signaled if they do not match.
+   *
+   * @param $query string The SQL statement to execute, including the appropriate ?
+   * 
+   * @param $params array The parameters, in order, to be inserted
+   * into the prepared statement.
+   *
+   */
+  public function pquery ($query, $params) {
+    
+
+
+
+
+  }
+
   
   /**
    * 
@@ -245,6 +268,23 @@ class folksoDBinteract {
       }
     $this->db->close();
   }
+}
+
+/**
+ * Count the number of times the character $char occurs in $string.
+ * 
+ * Returns 0 even if the initial $string is ''.
+ */
+private function char_count ($string, $char) {
+  $count = 0;
+  $str = $string;
+
+  while ((strlen($str) > 0) &&
+         (strpos($str, $char))) {
+    ++$count;
+    $str = substr($str, strpos($str, $char) + 1);
+  }
+  return $count;
 }
 
 ?>
