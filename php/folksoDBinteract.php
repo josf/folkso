@@ -126,21 +126,41 @@ class folksoDBinteract {
    * The number of parameters and the number of '?' in the SQL will be
    * compared and a fatal error will be signaled if they do not match.
    *
-   * @param $query string The SQL statement to execute, including the appropriate ?
+   * @param $sql string The SQL statement to execute, including the appropriate ?
    * 
-   * @param $params array The parameters, in order, to be inserted
-   * into the prepared statement.
+   * @param $type_string string The mysqli datatype string indicating
+   * the datatypes to use, something like 'ssi', meaning "string"
+   * "string" "integer". See the mysqli documentation.
+   *
+   * @param $params Array Actually, an array of assoc arrays, each
+   * assoc array having the structure array('data' => $data, 'type' =>
+   * $type). The $type corresponds to the mysqli types for prepared
+   * statements: 's' for string and 'i' for integer. Those two should
+   * suffice, otherwise see the mysqli docs.
    *
    */
-  public function pquery ($query, $params) {
+  public function pquery ($sql, $params) {
+    $this->first_val = ''; // reset first_val for new query (just in case).
+    if (char_count($sql, '?') != count($params)) {
+      trigger_error("Pquery: Wrong number of arguments for database statement", E_USER_ERROR);
+    }
     
+    $stmt = $this->db->prepare($sql);
+    $datatypes = '';
+    $stmt_params = array();
 
+    foreach ($params as $par) {
+      if (! is_array($par)) {
+        trigger_error("Pquery: Each argument must be an assoc array", E_USER_ERROR);
+      }
+      $datatypes = $datatypes . $par['type'];
+      $stmt_params[] = $par['data'];
+    }
 
-
-
+    $stmt->bind_param($datatypes, $stmt_params);
+    call_user_func_array(array_merge(array($stmt, 'bind_param'), $stmt_params))
   }
 
-  
   /**
    * 
    * @returns the db result set. The caller can then use the classic
