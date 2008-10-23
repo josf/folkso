@@ -61,7 +61,7 @@ class folksoDBinteract {
 
   /**
    * Simple check to see if everything is ok. If this returns false,
-   * the caller should then
+   * the caller should then 
    *
    * @return boolean True on error, false on no error.
    */
@@ -158,7 +158,8 @@ class folksoDBinteract {
     }
 
     $stmt->bind_param($datatypes, $stmt_params);
-    call_user_func_array(array_merge(array($stmt, 'bind_param'), $stmt_params))
+    call_user_func_array(array_merge(array($stmt, 'bind_param'), 
+                                     $stmt_params));
   }
 
   /**
