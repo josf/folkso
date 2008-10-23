@@ -1,7 +1,7 @@
 <?php
-require_once('/usr/local/www/apache22/lib/simpletest/unit_tester.php');
-require_once('/usr/local/www/apache22/lib/simpletest/reporter.php');
-include('/usr/local/www/apache22/lib/jf/fk/folksoTags.php');
+require_once('unit_tester.php');
+require_once('reporter.php');
+include('folksoTags.php');
 //include('/usr/local/www/apache22/lib/jf/fk/folksoResponse.php');
 //include('/usr/local/www/apache22/lib/jf/fk/folksoQuery.php');
 

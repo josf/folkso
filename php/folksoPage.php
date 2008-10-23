@@ -272,6 +272,46 @@ private function getTitle($dom) {
   }
 }
 
+public function getTaglist($res) {
+  $fc = new folksoClient('localhost',
+                         'resource.php',
+                         'GET');
+  $fc->set_getfields(array('folksores' => $res,
+                           'folksodatatype' => 'xml'));
+
+  $result = $fc->execute();
+  return array('status' => $fc->query_resultcode(),
+               'result' => $result);
+
+}
+
+public function resourceMetas($url) {
+
+  $r = $this->getTaglist($url ? $url : $this->curPageUrl());
+  $ret = array('status' => $r['status']);
+
+  if (($r['status'] == 200) ||
+      ($r['status'] == 304)) {
+    
+    $metas_xml = new DOMDocument();
+    $metas_xml->loadXML($r['result']);
+
+    $xpath = new DOMXpath($metas_xml);
+
+    //$tag_princ is a DOMNodelist object
+    $tag_princ = $xpath->query('//taglist/tag[metatag="Sujet principal"]');
+
+    $principal_tags = array();
+    if ($tag_princ->length > 0) {
+      foreach ($tag_princ as $element) {
+        $tagname = $element->getElementsByTagName('display');
+        $principal_tags[] = '"'.$tagname->item(0)->textContent . '"';
+      }
+      $ret['result'] = implode(' ', $principal_tags);
+    }
+  }
+  return $ret;
+}
 
 }
 
