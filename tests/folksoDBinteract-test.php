@@ -14,7 +14,7 @@ class testOffolksoDBinteract extends  UnitTestCase {
   
   public function testDBobjCreation () {
     $this->connection = new folksoDBconnect('localhost','root','hellyes','folksonomie');
-    $this->i = new folksoDBinteract();
+    $this->i = new folksoDBinteract($this->connection);
 
     $this->assertIsA($this->connection, folksoDBconnect, 
                      "DBconnect object creation failed. Expect other problems. [%s]");
@@ -24,7 +24,7 @@ class testOffolksoDBinteract extends  UnitTestCase {
   public function testDBConnectError () {
     $baddb = new folksoDBconnect('localhost', 'bob', '123456', 'nonexistantdb');
     
-    $this->assertFalse(
+    //    $this->assertFalse(
 
   }
 
