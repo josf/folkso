@@ -20,11 +20,11 @@ ul.resourcelist li { margin-bottom: 1em}
       list-style-type: none;
       }
 div.cloud ul li {       display: inline; padding-right: 1em;}
-
-      div.cloud .cloud2 { font-size: 12pt}
-      div.cloud .cloud3 { font-size: 14pt}
-      div.cloud .cloud4 { font-size: 16pt}
-      div.cloud .cloud5 { font-size: 18pt}
+div.cloud .cloud1 {font-size: 10pt}
+div.cloud .cloud2 { font-size: 12pt}
+div.cloud .cloud3 { font-size: 14pt}
+div.cloud .cloud4 { font-size: 16pt}
+div.cloud .cloud5 { font-size: 18pt}
 
 </style>
 
