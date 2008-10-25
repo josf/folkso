@@ -242,6 +242,9 @@ DECLARE ourdata CURSOR FOR
        WHERE res.id = resid
        GROUP BY tag.id;
 
+
+-- this is where we will actually calculate the relative weights of
+-- the different tags
 DECLARE finaldata CURSOR FOR
 SELECT tagdisplay,
        tagnorm,
@@ -249,16 +252,16 @@ SELECT tagdisplay,
        globalpop AS ottglobalpop,
        localpop AS ottlocalpop,
        (localweight *
-       (select count(distinct output_temp_table2.tagid)
-               from
+       (SELECT COUNT(DISTINCT output_temp_table2.tagid)
+               FROM
                output_temp_table2 
-               where output_temp_table2.localpop <= ottlocalpop)) +
+               WHERE output_temp_table2.localpop <= ottlocalpop)) +
        (globalweight *
-       (select count(distinct output_temp_table3.tagid)
-               from
+       (SELECT COUNT(DISTINCT output_temp_table3.tagid)
+               FROM
                output_temp_table3
-               where output_temp_table3.globalpop <= ottglobalpop)) as weight
-       from output_temp_table;
+               WHERE output_temp_table3.globalpop <= ottglobalpop)) AS weight
+       FROM output_temp_table;
        
 
 DECLARE CONTINUE HANDLER FOR NOT FOUND SET l_last_row_fetched=1;
@@ -293,6 +296,8 @@ CREATE TEMPORARY TABLE output_temp_table3
         globalpop INT UNSIGNED,
         localpop INT UNSIGNED);
 
+
+-- get numeric id if we do not have it already.
 IF residarg > 0 THEN
    SET resid = residarg;
 ELSE
@@ -302,7 +307,7 @@ ELSE
    WHERE uri_normal = url_whack(urlarg);
 END IF;
 
-
+-- fill up our 3 identical temp tables
 SET l_last_row_fetched = 0;
 OPEN ourdata;
 cursing: LOOP
@@ -339,7 +344,7 @@ END LOOP cursing;
 CLOSE ourdata;      
 SET l_last_row_fetched=0;
 
-
+-- table for holding final results
 DROP TABLE IF EXISTS final_output;
 CREATE TEMPORARY TABLE final_output
        (tagdisplay VARCHAR(255) NOT NULL, 
@@ -347,6 +352,7 @@ CREATE TEMPORARY TABLE final_output
        tagid INT UNSIGNED NOT NULL, 
        weight INT UNSIGNED NOT NULL);
 
+-- calculate the respective weights of the tags (see cursor above)
 SET l_last_row_fetched = 0;
 OPEN finaldata;
 cussing: LOOP
@@ -366,28 +372,28 @@ END LOOP cussing;
 CLOSE finaldata;      
 SET l_last_row_fetched=0;
 
-select max(weight)
-       into maxweight
-       from final_output;
+SELECT MAX(weight)
+       INTO maxweight
+       FROM final_output;
 
-select min(weight)
-       into minweight
-       from final_output;
+SELECT MIN(weight)
+       INTO minweight
+       FROM final_output;
 
-
-select r.title as tagdisplay, r.uri_raw as tagnorm, r.id as tagid, NULL as weight, NULL as cloudweight
-       from resource r
-       where r.id = resid
-union
-select tagdisplay, tagnorm, tagid, weight,
-       case  
-             when (weight - minweight) > 0.8 * (maxweight - minweight) then 5
-             when (weight - minweight) > 0.6 * (maxweight - minweight) then 4
-             when (weight - minweight) > 0.4 * (maxweight - minweight) then 3
-             when (weight - minweight) > 0.2 * (maxweight - minweight) then 2
-       else 1
-       end as cloudweight
-       from final_output;
+-- and one last select against final_output to give the data back to the caller
+SELECT r.title AS tagdisplay, r.uri_raw AS tagnorm, r.id AS tagid, NULL AS weight, NULL AS cloudweight
+       FROM resource r
+       WHERE r.id = resid
+UNION
+SELECT tagdisplay, tagnorm, tagid, weight,
+       CASE  
+             WHEN (weight - minweight) > 0.8 * (maxweight - minweight) THEN 5
+             WHEN (weight - minweight) > 0.6 * (maxweight - minweight) THEN 4
+             WHEN (weight - minweight) > 0.4 * (maxweight - minweight) THEN 3
+             WHEN (weight - minweight) > 0.2 * (maxweight - minweight) THEN 2
+       ELSE 1
+       END AS cloudweight
+       FROM final_output;
 
 END$$
 DELIMITER ;
