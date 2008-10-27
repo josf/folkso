@@ -398,6 +398,84 @@ SELECT tagdisplay, tagnorm, tagid, weight,
 END$$
 DELIMITER ;
 
+DELIMITER $$
+DROP PROCEDURE IF EXISTS cloud2$$
+
+CREATE PROCEDURE cloud2(        resid INT,
+                                resurl VARCHAR(255))
+BEGIN
+
+DECLARE totaltags INT;
+DECLARE l_last_row_fetched INT default 0;
+DECLARE tagid_v INT;
+DECLARE tagnorm_v VARCHAR(255);
+DECLARE tagdisplay_v VARCHAR(255);
+DECLARE popularity_v INT;
+DECLARE rank_v INT;
+DECLARE weight INT;
+
+DECLARE  getdata CURSOR FOR
+SELECT ta.id, 
+       ta.tagdisplay,  
+       ta.tagnorm,
+       (SELECT COUNT(*) FROM tag tt WHERE tt.popularity >= ta.popularity) AS rnk, 
+       ta.popularity
+       FROM tag ta JOIN tagevent te ON ta.id = te.tag_id
+       JOIN resource r ON te.resource_id = r.id
+       WHERE (r.id = resid)
+       OR (r.uri_normal = url_whack(resurl));
+
+DECLARE CONTINUE HANDLER FOR NOT FOUND SET l_last_row_fetched=1;
+
+SELECT  COUNT(*) 
+        INTO totaltags  
+        FROM  tag;
+
+DROP TABLE IF EXISTS cloud2_temp_table;
+CREATE TEMPORARY TABLE cloud2_temp_table
+       (tagid INT UNSIGNED PRIMARY KEY,
+       tagdisplay VARCHAR(255) NOT NULL,
+       tagnorm VARCHAR(255) NOT NULL,
+       rank INT UNSIGNED NOT NULL,
+       popularity INT UNSIGNED NOT NULL DEFAULT 0,
+       weight INT UNSIGNED NOT NULL);
+       
+SET l_last_row_fetched = 0;
+OPEN getdata;
+cursing: LOOP
+         FETCH getdata INTO tagid_v, tagdisplay_v, tagnorm_v, rank_v, popularity_v;
+         IF l_last_row_fetched=1 THEN
+            LEAVE cursing;
+         END IF;
+
+         CASE
+         WHEN rank_v <= totaltags * 0.2 THEN
+              SET weight = 5;
+         WHEN rank_v <= totaltags * 0.4 THEN 
+              SET weight = 4;
+         WHEN rank_v <= totaltags * 0.6 THEN
+              SET weight = 3;
+         WHEN rank_v <= totaltags * 0.8 THEN
+              SET weight = 2;
+         ELSE 
+              SET weight = 1;
+         END CASE;
+
+         INSERT INTO cloud2_temp_table 
+                SET tagid = tagid_v,
+                    tagdisplay = tagdisplay_v,
+                    tagnorm = tagnorm_v,
+                    rank = rank_v,
+                    popularity = popularity_v,
+                    weight = weight;
+END LOOP cursing;
+CLOSE getdata;
+SET l_last_row_fetched=0;
+
+SELECT * FROM cloud2_temp_table;
+
+END$$
+DELIMITER ;
 
 -- 
 -- tagmerge
@@ -520,3 +598,39 @@ UPDATE tagevent
 END$$
 DELIMITER ; 
 
+DELIMITER $$
+DROP PROCEDURE IF EXISTS tagrank$$
+CREATE PROCEDURE tagrank()
+
+BEGIN
+
+DECLARE atag_id INT DEFAULT 0;
+DECLARE arank INT DEFAULT 0;
+DECLARE dummyvar INT;
+
+DECLARE l_last_row_fetched INT default 0;
+
+DECLARE reading CURSOR FOR
+SELECT t.id, t.popularity, COUNT(tt.popularity) AS rank
+FROM tag t JOIN tag tt ON         
+         t.popularity < tt.popularity 
+         OR (t.popularity=tt.popularity AND t.id = tt.id)
+GROUP BY t.id;
+
+DECLARE CONTINUE HANDLER FOR NOT FOUND SET l_last_row_fetched=1;
+
+SET l_last_row_fetched=0;
+OPEN reading;
+cursing: LOOP
+         FETCH reading INTO atag_id, dummyvar, arank;
+         IF l_last_row_fetched=1 THEN
+            LEAVE cursing;
+         END IF;
+
+         UPDATE tag SET rank = arank WHERE id = atag_id; 
+END LOOP cursing;
+CLOSE reading;
+SET l_last_row_fetched=0;
+
+END$$
+DELIMITER ;
