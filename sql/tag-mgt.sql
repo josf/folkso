@@ -410,6 +410,7 @@ DECLARE l_last_row_fetched INT default 0;
 DECLARE tagid_v INT;
 DECLARE tagnorm_v VARCHAR(255);
 DECLARE tagdisplay_v VARCHAR(255);
+DECLARE tagtime_v TIMESTAMP;
 DECLARE popularity_v INT;
 DECLARE rank_v INT;
 DECLARE weight INT;
@@ -419,7 +420,8 @@ SELECT ta.id,
        ta.tagdisplay,  
        ta.tagnorm,
        (SELECT COUNT(*) FROM tag tt WHERE tt.popularity >= ta.popularity) AS rnk, 
-       ta.popularity
+       ta.popularity,
+       te.tagtime
        FROM tag ta JOIN tagevent te ON ta.id = te.tag_id
        JOIN resource r ON te.resource_id = r.id
        WHERE (r.id = resid)
