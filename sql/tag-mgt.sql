@@ -397,11 +397,12 @@ SELECT tagdisplay, tagnorm, tagid, weight,
 END$$
 DELIMITER ;
 
+-- cloud by popularity
 DELIMITER $$
 DROP PROCEDURE IF EXISTS cloud_by_popularity$$
 
 CREATE PROCEDURE cloud_by_popularity(        resid INT,
-                                resurl VARCHAR(255))
+                                             resurl VARCHAR(255))
 BEGIN
 
 DECLARE totaltags INT;
