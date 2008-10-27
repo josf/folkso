@@ -156,7 +156,6 @@ IF ((existing_meta_id IS NULL) OR
    SET existing_meta_id = 1;
 END IF;   
 
-
 SELECT COUNT(*)
 INTO already_tagged
 FROM tagevent t
@@ -399,9 +398,9 @@ END$$
 DELIMITER ;
 
 DELIMITER $$
-DROP PROCEDURE IF EXISTS cloud2$$
+DROP PROCEDURE IF EXISTS cloud_by_popularity$$
 
-CREATE PROCEDURE cloud2(        resid INT,
+CREATE PROCEDURE cloud_by_popularity(        resid INT,
                                 resurl VARCHAR(255))
 BEGIN
 
