@@ -476,8 +476,46 @@ SET l_last_row_fetched=0;
 
 SELECT * FROM cloud2_temp_table;
 
+-- end cloud_by_popularity()
 END$$
 DELIMITER ;
+
+
+/**
+ *  With a resource (id or url) as argument, returns a
+ *  dataset weighted by the last time each tag was added to the 
+ *  resource. Higher numbers in the 'weight' field that is returned 
+ *  indicate that the tag was added more recently.
+ */
+
+DELIMITER $$
+DROP PROCEDURE IF EXISTS cloud_by_timestamp$$
+CREATE PROCEDURE cloud_by_timestamp(    resid INT,
+                                        resurl VARCHAR(255))
+BEGIN
+
+SELECT ta.id AS tagid,
+       ta.tagdisplay AS tagdisplay,
+       ta.tagnorm AS tagnorm,
+       ta.popularity AS popularity,
+       te.tagtime AS tagtime,
+       CASE
+              WHEN DATEDIFF(NOW(), te.tagtime) < 7 THEN 5
+              WHEN DATEDIFF(NOW(), te.tagtime) < 30 THEN 4
+              WHEN DATEDIFF(NOW(), te.tagtime) < 60 THEN 3
+              WHEN DATEDIFF(NOW(), te.tagtime) < 180 THEN 2
+              ELSE 1
+       END AS weight
+       FROM tag ta JOIN tagevent te ON ta.id = te.tag_id
+       JOIN resource r ON te.resource_id = r.id
+       WHERE (r.id = resid)
+       OR (r.uri_normal = url_whack(resurl));
+
+END $$
+DELIMITER ;
+
+
+
 
 -- 
 -- tagmerge
