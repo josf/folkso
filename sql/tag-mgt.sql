@@ -448,7 +448,7 @@ DECLARE tagdisplay_v VARCHAR(255);
 DECLARE tagtime_v TIMESTAMP;
 DECLARE popularity_v INT;
 DECLARE rank_v INT;
-DECLARE weight INT;
+DECLARE weight_v INT;
 
 DECLARE  getdata CURSOR FOR
 SELECT ta.id, 
@@ -475,27 +475,28 @@ CREATE TEMPORARY TABLE cloud2_temp_table
        tagnorm VARCHAR(255) NOT NULL,
        rank INT UNSIGNED NOT NULL,
        popularity INT UNSIGNED NOT NULL DEFAULT 0,
-       weight INT UNSIGNED NOT NULL);
+       weight INT UNSIGNED NOT NULL,
+       tagtime TIMESTAMP NOT NULL);
        
 SET l_last_row_fetched = 0;
 OPEN getdata;
 cursing: LOOP
-         FETCH getdata INTO tagid_v, tagdisplay_v, tagnorm_v, rank_v, popularity_v;
+         FETCH getdata INTO tagid_v, tagdisplay_v, tagnorm_v, rank_v, popularity_v, tagtime_v;
          IF l_last_row_fetched=1 THEN
             LEAVE cursing;
          END IF;
 
          CASE
-         WHEN rank_v <= totaltags * 0.2 THEN
-              SET weight = 5;
-         WHEN rank_v <= totaltags * 0.4 THEN 
-              SET weight = 4;
-         WHEN rank_v <= totaltags * 0.6 THEN
-              SET weight = 3;
-         WHEN rank_v <= totaltags * 0.8 THEN
-              SET weight = 2;
+         WHEN rank_v <= (totaltags * 0.1) THEN
+              SET weight_v = 5;
+         WHEN rank_v <= (totaltags * 0.3) THEN 
+              SET weight_v = 4;
+         WHEN rank_v <= (totaltags * 0.5) THEN
+              SET weight_v = 3;
+         WHEN rank_v <= (totaltags * 0.7) THEN
+              SET weight_v = 2;
          ELSE 
-              SET weight = 1;
+              SET weight_v = 1;
          END CASE;
 
          INSERT INTO cloud2_temp_table 
@@ -504,12 +505,14 @@ cursing: LOOP
                     tagnorm = tagnorm_v,
                     rank = rank_v,
                     popularity = popularity_v,
-                    weight = weight;
+                    weight = weight_v,
+                    tagtime = tagtime_v;
+                    
 END LOOP cursing;
 CLOSE getdata;
 SET l_last_row_fetched=0;
 
-SELECT * FROM cloud2_temp_table;
+SELECT tagid, tagdisplay, tagnorm, rank, tagtime, weight FROM cloud2_temp_table;
 
 -- end cloud_by_popularity()
 END$$
