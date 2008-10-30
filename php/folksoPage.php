@@ -280,7 +280,7 @@ public function public_tag_resource_list($tag) {
 private function resource_list($tag) {
 
   $fc = new folksoClient('localhost',
-                         'tag.php',
+                         $this->loc->server_web_path . 'tag.php',
                          'GET');
   $fc->set_getfields(array('folksotag' => $tag,
                            'folksofancy' => 1,
