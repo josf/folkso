@@ -163,9 +163,7 @@ private function ignore_check($str, $ignore) {
  *
  * @returns array array('status' => 204, 'result' => CLOUD)
  */
-private function get_cloud() {
-  $url = $this->curPageURL();  /* we use our own variable to retreive
-                                  a cached version if possible */
+private function get_cloud($url) {
 
   $fc = new folksoClient('localhost', 
                           'resource.php',
@@ -183,10 +181,21 @@ private function get_cloud() {
 /**
  * Retreives and formats a tag cloud for the current page. 
  *
+ * @param $a_url string (Optional) The url for which a cloud should be
+ * made. Default is to use the current page.
+ *
  * @returns string An html tag cloud, ready to be outputted. 
  */
-public function format_cloud() {
-  $r = $this->get_cloud();
+public function format_cloud($a_url = NULL) {
+  $url = '';
+  if ($a_url) {
+    $url = $a_url;
+  } 
+  else {
+    $url = $this->curPageURL(); 
+  }
+
+  $r = $this->get_cloud($url);
 
   if ($r['status'] == 200) {
     $cloud_xml = new DOMDocument();
@@ -197,6 +206,9 @@ public function format_cloud() {
 
     $proc = new XsltProcessor();
     $xsl = $proc->importStylesheet($xsl);
+    $proc->setParameter('', 
+                        'tagviewbase', 
+                        $this->loc->server_web_path . 'tagview.php?tag=');
     $cloud = $proc->transformToDoc($cloud_xml);
 
     return array('html' =>  $cloud->saveXML(),
