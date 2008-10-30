@@ -166,7 +166,7 @@ private function ignore_check($str, $ignore) {
 private function get_cloud($url) {
 
   $fc = new folksoClient('localhost', 
-                          'resource.php',
+                          $this->loc->server_web_path . 'resource.php',
                          'GET');
   $fc->set_getfields(array('folksoclouduri' => 1,
                            'folksores' => $url,

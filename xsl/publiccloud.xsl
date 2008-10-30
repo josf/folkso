@@ -8,8 +8,6 @@
      that will be plugged in later.
 -->
 <xsl:param name="tagviewbase"/>
-  <xsl:text>'/tagview.php?tag=</xsl:text>
-</xsl:param>
 
 <xsl:template match="/">
   <xsl:element name="div">
