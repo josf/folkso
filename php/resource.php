@@ -139,7 +139,7 @@ function isHead (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
  * id. 
  * 
  * Web parameters : GET + folksores 
- *
+ * Optional : metas only
  */
 function getTagsIds (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
   $i = new folksoDBinteract($dbc);
@@ -169,20 +169,28 @@ function getTagsIds (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc
                 t.tagnorm as tagnorm, t.popularity as popularity, 
                 meta.tagdisplay as meta
              FROM tag t
-             JOIN tagevent ON t.id = tagevent.tag_id
-             JOIN metatag meta ON tagevent.meta_id = meta.id
-             JOIN resource ON resource.id = tagevent.resource_id ";
+             JOIN tagevent te ON t.id = te.tag_id
+             JOIN metatag meta ON te.meta_id = meta.id
+             JOIN resource r ON r.id = te.resource_id ";
 
   if (is_numeric($q->res)) {
     $select .= 
-      " WHERE resource.id = " . 
-      $q->res;
+      " WHERE (r.id = " 
+      . $q->res
+      . ")";
   }
   else {
     $select .= 
-      " WHERE uri_normal = url_whack('". 
-      $i->dbescape($q->res) ."') ";
+      " WHERE (r.uri_normal = url_whack('"
+      . $i->dbescape($q->res) ."')) ";
   }
+  
+  /** optional exclusion of tags with "normal" relation metatag **/
+  if ($q->is_param('metaonly')) {
+    $select .= ' AND (te.meta_id <> 1) ';
+  }
+  
+  $select .= ' ORDER BY t.popularity DESC ';
 
   $i->query($select);
 
