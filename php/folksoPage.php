@@ -333,7 +333,7 @@ public function getTaglist($res) {
 
 }
 
-public function resourceMetas($url) {
+public function resourceMetas($url = NULL) {
 
   $r = $this->getTaglist($url ? $url : $this->curPageUrl());
   $ret = array('status' => $r['status']);
@@ -353,9 +353,14 @@ public function resourceMetas($url) {
     if ($tag_princ->length > 0) {
       foreach ($tag_princ as $element) {
         $tagname = $element->getElementsByTagName('display');
-        $principal_tags[] = '"'.$tagname->item(0)->textContent . '"';
+        $principal_tags[] = $tagname->item(0)->textContent;
       }
       $ret['result'] = implode(' ', $principal_tags);
+      $ret['array'] = $principal_tags;
+      $ret['meta_keywords'] = 
+        '<meta name="keywords" content="'
+        . $ret['result']
+        . '"/>';
     }
   }
   return $ret;
