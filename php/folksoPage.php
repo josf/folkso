@@ -218,7 +218,6 @@ public function format_cloud($a_url = NULL) {
   else {
     return array('html' => '',
                  'status' => $r['status']);
-
   }
 }
 
@@ -228,7 +227,7 @@ public function format_cloud($a_url = NULL) {
  * Wrapper function for $p->format_cloud(). If no data is found, or
  * there is an error of some kind cloud() silently does nothing.
  */
- public function cloud() {
+ public function basic_cloud() {
    $cloud = $this->format_cloud();
    if (($cloud['status'] == 200) ||
        ($cloud['status'] == 304)) {
