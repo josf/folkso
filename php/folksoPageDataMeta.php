@@ -8,16 +8,15 @@ class folksoPageDataMeta extends folksoPageData {
    */
   public $array;
 
+  /**
+   * Returns a formatted <meta name="keywords".../> tag.
+   */
   public function meta_keywords() {
-    return ""
-
+    return '<meta name="keywords" content="'
+      . implode(' ', $this->array)
+      . '"/>';
   }
 
   }
-
-
-
-
-
 
 ?>
