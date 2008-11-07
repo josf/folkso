@@ -178,6 +178,8 @@ public function getTaglist($res) {
                            'folksodatatype' => 'xml'));
 
   $result = $fc->execute();
+
+  $r = new folksoPageData()
   return array('status' => $fc->query_resultcode(),
                'result' => $result);
 
