@@ -13,7 +13,7 @@
 
 include_once('folksoClient.php');
 include_once('folksoFabula.php');
-include_once('folksoPageData.php');
+
 
 class folksoPage {
 
