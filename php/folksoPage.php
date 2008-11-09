@@ -330,12 +330,20 @@ class folksoPage {
 
   /**
    * Retreives a list of tags for a given resource that are marked
-   * "Sujet principal".
+   * "Sujet principal". 
+   * 
+   * With the "non_principal_fallback" option set to TRUE, in the
+   * event that there are no "sujet principal" tags, all the tags will
+   * be used instead.
+   *
+   * (There should probably be a parameter for the string "Sujet
+   * principal".)
    *
    * @param $url Optional. Defaults to current page.
+   * @param $non_principal_fallback boolean Get all tags if there are NO "sujet principal".
    * @returns folksoPageDataMeta
    */
-  public function resourceMetas($url = NULL) {
+  public function resourceMetas($url = NULL, $non_principal_fallback = NULL) {
     $rm = $this->getTaglist($url ? $url : $this->curPageUrl());
 
     if ($rm->is_valid()) {
@@ -350,6 +358,16 @@ class folksoPage {
         foreach ($tag_princ as $element) {
           $tagname = $element->getElementsByTagName('display');
           $rm->array[] = $tagname->item(0)->textContent;
+        }
+      }
+      elseif ($non_principal_fallback) {
+        $all_tags = $xpath->query('//taglist/tag');
+        
+        if ($all_tags->length > 0) {
+          foreach ($all_tags as $element) {
+            $tagname = $element->getElementsByTagName('display');
+            $rm->array[] = $tagname->item(0)->textContent;
+          }
         }
       }
     }
