@@ -10,14 +10,19 @@ class folksoPageDataMeta extends folksoPageData {
   public $array;
 
   /**
-   * Returns a formatted <meta name="keywords".../> tag.
+   * Returns a formatted <meta name="keywords".../> tag. If no tags
+   * are in $rm->array, returns an empty string.
    */
   public function meta_keywords() {
-    return '<meta name="keywords" content="'
-      . implode(' ', $this->array)
-      . '"/>';
-  }
 
+    if (count($this->array) > 1) {
+      return '<meta name="keywords" content="'
+        . implode(' ', $this->array)
+        . '"/>';
+    }
+    else {
+      return '';
+    }
   }
 
 ?>

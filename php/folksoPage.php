@@ -374,6 +374,23 @@ class folksoPage {
     return $rm;
   }
 
+  /**
+   * Returns a pre-formatted string: <meta name="keywords"
+   * content="..."/> based on the tags associated with the current
+   * page.
+   *
+   * @param $fallback boolean Default is FALSE. If TRUE, include all
+   * tags if there are no tags "sujet principal" associated with the
+   * current URL.
+   * @returns string.
+   */
+  public function meta_keywords($fallback = FALSE) {
+    $url = $this->curPageUrl();
+
+    $rm = $this->resourceMetas($url, $fallback);
+    return $rm->meta_keywords();
+  }
+
 }
 
 ?>
