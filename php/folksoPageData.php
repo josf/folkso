@@ -28,6 +28,13 @@ class folksoPageData {
   public $xml; 
 
 
+  /**
+   * All arguments are optional. 
+   *
+   * @param $status HTTP status 
+   * @param $html string
+   * @param $title string
+   */
   public function _construct($status = '', $html = '', $title = '') {
     $this->status = $status;
     $this->html = $html;
@@ -54,5 +61,4 @@ class folksoPageData {
       return false;
     }
   }
-
 }

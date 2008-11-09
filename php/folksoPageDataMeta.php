@@ -1,7 +1,8 @@
 <?php
 
-class folksoPageDataMeta extends folksoPageData {
+require_once('folksoPageData.php');
 
+class folksoPageDataMeta extends folksoPageData {
 
   /**
    * An array of the meta data tags.
