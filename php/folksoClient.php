@@ -42,10 +42,30 @@ class folksoClient {
    * Takes as argument an associative array of GET fieldnames and
    * values. Keys must begin with 'folkso'. datastyle is added later,
    * do not put it here.
+   *
+   * If fields already present, adds new fields.
    */
   function set_getfields ($arr) {
-    $this->getfields = $this->parse_arg_array($arr);
-    return $this->getfields;
+      $this->getfields = $this->parse_arg_array($arr);
+      return $this->getfields;
+  }
+
+  /**
+   * 
+   *
+   * @param $key string 
+   * @param $val string
+   */
+  function add_getfield( $key, $val) {
+    if (substr($key, 0, 5) != 'folkso') {
+      $key = 'folkso' . $key;
+    }
+    if (is_array($this->getfields)) {
+        $this->getfields[$key] = $val;
+    }
+    else {
+      $this->getfields = array($key => $val);
+    }
   }
 
   /**
