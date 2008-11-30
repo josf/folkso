@@ -24,5 +24,6 @@ class folksoPageDataMeta extends folksoPageData {
       return '';
     }
   }
+}
 
 ?>
