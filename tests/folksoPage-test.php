@@ -12,8 +12,8 @@ class testOffolksoPage extends  UnitTestCase {
     $this->assertTrue($page instanceof folksoPage);
 
     $r = $page->resourceMetas(7525);
-    $this->assertEqual($r['status'], 200);
-    $this->assertTrue(is_string($r['result']));
+    $this->assertEqual($r->status, 200);
+    $this->assertTrue(is_string($r->result));
   }
 }//end class
 
