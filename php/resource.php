@@ -253,7 +253,7 @@ function getTagsIds (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc
 /**
  * Tag cloud local.
  *
- * Parameters: GET, folksoclouduri
+ * Parameters: GET, folksoclouduri, res
  */
 function tagCloudLocalPop (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
   $i = new folksoDBinteract($dbc);
@@ -282,8 +282,8 @@ function tagCloudLocalPop (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnec
   }
   else {
     $sql .= "'', '" .$i->dbescape($q->res) . "', 5, 5)";
-}
-$i->query($sql);
+  }
+  $i->query($sql);
 
   switch ($i->result_status) {
   case 'DBERR':

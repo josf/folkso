@@ -29,13 +29,14 @@ class folksoPageData {
 
 
   /**
-   * All arguments are optional. 
+   * All arguments are optional but must be in the proper order or
+   * course.
    *
    * @param $status HTTP status 
    * @param $html string
    * @param $title string
    */
-  public function _construct($status = '', $html = '', $title = '') {
+  public function __construct($status = '', $html = '', $title = '') {
     $this->status = $status;
     $this->html = $html;
     $this->title = $title;

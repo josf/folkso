@@ -171,12 +171,20 @@ class folksoPage {
     $fc->set_getfields(array('folksoclouduri' => 1,
                              'folksores' => $url,
                              'folksodatatype' => 'xml')); 
-    $fc->add_getfield('folksolimit', $max_tags));
+    $fc->add_getfield('folksolimit', $max_tags);
 
     $result = $fc->execute();
+    $status = $fc->query_resultcode();
+    print $result;
+    print $status;
+    $p = new folksoPageData($status);
+    $p->xml = $result;
+                    
+    if (! $p->status) {
+      trigger_error('no valid status here.', E_USER_ERROR);
+    }
+      
 
-    $p = new folksoPageData($fc->query_resultcode(),
-                            $result);
     return $p;
   }
 
@@ -200,7 +208,7 @@ class folksoPage {
     // $r is a folksoPageData object
     $r = $this->get_cloud($url, $max_tags);
 
-    if ($r->status == 200) {
+    if ($r->is_valid()) {
       $cloud_xml = new DOMDocument();
       $cloud_xml->loadXML($r->xml);
 
@@ -349,7 +357,7 @@ class folksoPage {
 
     if ($rm->is_valid()) {
       $metas_xml = new DOMDocument();
-      $metas_xml->loadXML($r->xml);
+      $metas_xml->loadXML($rm->xml);
       $xpath = new DOMXpath($metas_xml);
 
       //$tag_princ is a DOMNodelist object
@@ -371,6 +379,9 @@ class folksoPage {
           }
         }
       }
+    }
+    else {
+      print "Query error : " . $rm->status;
     }
     return $rm;
   }
