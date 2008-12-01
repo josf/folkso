@@ -13,7 +13,7 @@
 
 include_once('folksoClient.php');
 include_once('folksoFabula.php');
-
+include_once('folksoPageDataMeta.php');
 
 class folksoPage {
 
@@ -317,7 +317,7 @@ class folksoPage {
    * @returns folksoPageDataMeta with only the xml part ($rm->xml).
    */
   public function getTaglist($res) {
-    $rm = new folksoPageDataMeta();
+    $rm = new folksoPageData();
     $fc = new folksoClient('localhost',
                            'resource.php',
                            'GET');
