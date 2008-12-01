@@ -60,12 +60,7 @@ class folksoClient {
     if (substr($key, 0, 5) != 'folkso') {
       $key = 'folkso' . $key;
     }
-    if (is_array($this->getfields)) {
-        $this->getfields[$key] = $val;
-    }
-    else {
-      $this->getfields = array($key => $val);
-    }
+    $this->getfields = $this->getfields . "?$key=$val";
   }
 
   /**
@@ -167,9 +162,6 @@ class folksoClient {
     foreach ($arr as $pkey => $pval) {
       if (substr($pkey, 0, 6) == 'folkso') {
         array_push($arg_a, $pkey . "=" . urlencode(trim($pval)));
-      }
-      else {
-        // TODO : error of some kind
       }
     }
     return implode($arg_a, '&');
