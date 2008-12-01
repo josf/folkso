@@ -163,14 +163,15 @@ class folksoPage {
    *
    * @returns array array('status' => 204, 'result' => CLOUD)
    */
-  private function get_cloud($url) {
+  private function get_cloud($url, $max_tags = 0) {
 
     $fc = new folksoClient('localhost', 
                            $this->loc->server_web_path . 'resource.php',
                            'GET');
     $fc->set_getfields(array('folksoclouduri' => 1,
                              'folksores' => $url,
-                             'folksodatatype' => 'xml'));
+                             'folksodatatype' => 'xml')); 
+    $fc->add_getfield('folksolimit', $max_tags));
 
     $result = $fc->execute();
 
@@ -187,7 +188,7 @@ class folksoPage {
    *
    * @returns folksoPageData 
    */
-  public function format_cloud($a_url = NULL) {
+  public function format_cloud($max_tags, $a_url = NULL) {
     $url = '';
     if ($a_url) {
       $url = $a_url;
@@ -197,7 +198,7 @@ class folksoPage {
     }
 
     // $r is a folksoPageData object
-    $r = $this->get_cloud($url);
+    $r = $this->get_cloud($url, $max_tags);
 
     if ($r->status == 200) {
       $cloud_xml = new DOMDocument();
@@ -224,8 +225,8 @@ class folksoPage {
    * Wrapper function for $p->format_cloud(). If no data is found, or
    * there is an error of some kind cloud() silently does nothing.
    */
-  public function basic_cloud() {
-    $cloud = $this->format_cloud();
+  public function basic_cloud($max_tags = 0) {
+    $cloud = $this->format_cloud($max_tags);
     if (($cloud->status == 200) ||
         ($cloud->status  == 304)) {
       return $cloud->html;
