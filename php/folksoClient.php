@@ -75,7 +75,11 @@ class folksoClient {
     $this->datastyle = $str;
   }
 
+  /**
+   * @return string On success, returns the body of the requested document.
+   */
   function execute () {
+    /** build_require() creates the url **/
     $this->ch = curl_init($this->build_req());
 
     curl_setopt($this->ch, CURLOPT_USERAGENT, 'folksoClient');
