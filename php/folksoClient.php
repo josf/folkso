@@ -60,9 +60,14 @@ class folksoClient {
     if (substr($key, 0, 5) != 'folkso') {
       $key = 'folkso' . $key;
     }
-    $this->getfields = $this->getfields . "?$key=$val";
+    if (strlen($this->getfields) > 0) {
+      $this->getfields .= '&';
+    }
+    else {
+      $this->getfields .= '?';
+    }
+    $this->getfields .=  "$key=$val";
   }
-
   /**
    * Datastyle indicators (html, xml, etc.) should be very short,
    * probably one character (h = html, x = xml, etc.)
