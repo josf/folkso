@@ -164,21 +164,18 @@ class folksoPage {
    * @returns array array('status' => 204, 'result' => CLOUD)
    */
   private function get_cloud($url, $max_tags = 0) {
-
     $fc = new folksoClient('localhost', 
                            $this->loc->server_web_path . 'resource.php',
                            'GET');
     $fc->set_getfields(array('folksoclouduri' => 1,
                              'folksores' => $url,
-                             'folksodatatype' => 'xml')); 
-    $fc->add_getfield('folksolimit', $max_tags);
-
+                             'folksodatatype' => 'xml', 
+                             'folksolimit' => $max_tags)); 
     $result = $fc->execute();
     $status = $fc->query_resultcode();
 
     $p = new folksoPageData($status);
     $p->xml = $result;
-                    
     if (! $p->status) {
       trigger_error('no valid status here.', E_USER_ERROR);
     }
