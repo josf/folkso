@@ -191,7 +191,7 @@ class folksoPage {
    *
    * @returns folksoPageData 
    */
-  public function format_cloud($max_tags, $url = '') {
+  public function format_cloud($max_tags = 0, $url = '') {
 
     // $r is a folksoPageData object
     $r = $this->get_cloud($url ? $url : $this->curPageURL(), 
