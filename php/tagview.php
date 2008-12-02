@@ -15,6 +15,7 @@
 <?php
 
 require_once('folksoPage.php');
+require_once('folksoPageData.php');
 
 $page = new folksoPage();
 
@@ -28,9 +29,8 @@ if ((strlen($tagreq) == 0) ||
 $taglist = $page->public_tag_resource_list($tagreq);
 
 print "<title>Fabula - Tags - tag \"";
-if (($taglist['status'] == 200) ||
-    ($taglist['status'] == 304)) {
-  print $taglist['title'];
+if ($taglist->is_valid()) {
+  print $taglist->title;
 }
 else {
   print " Erreur ";
@@ -38,12 +38,9 @@ else {
 
 print "\"</title>\n</head>\n<body>\n<div id='container'>";
 
-if (($taglist['status'] == 200) ||
-    ($taglist['status'] == 304)) {
-
+if ($taglist->is_valid()) {
   print "<h1>Ressources associées au tag : </h1>\n";
-
-  print $taglist['html'];
+  print $taglist->html;
 }
 
 print "</div>\n</body>\n";

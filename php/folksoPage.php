@@ -246,7 +246,7 @@ class folksoPage {
     if ($r->is_valid()) {
     
       $taglist_xml = new DOMDocument();
-      $taglist_xml->loadXML($r['result']);
+      $taglist_xml->loadXML($r->xml);
 
       $r->title = $this->getTitle($taglist_xml);
 
@@ -286,8 +286,8 @@ class folksoPage {
                              'folksodatatype' => 'xml'));
 
     $result = $fc->execute();
-    $r = new folksoPageData($fc->query_resultcode(),
-                            $result);
+    $r = new folksoPageData($fc->query_resultcode());
+    $r->xml = $result;
     return $r;
   }
 
