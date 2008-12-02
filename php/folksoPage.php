@@ -175,15 +175,13 @@ class folksoPage {
 
     $result = $fc->execute();
     $status = $fc->query_resultcode();
-    print $result;
-    print $status;
+
     $p = new folksoPageData($status);
     $p->xml = $result;
                     
     if (! $p->status) {
       trigger_error('no valid status here.', E_USER_ERROR);
     }
-      
 
     return $p;
   }
@@ -196,17 +194,11 @@ class folksoPage {
    *
    * @returns folksoPageData 
    */
-  public function format_cloud($max_tags, $a_url = NULL) {
-    $url = '';
-    if ($a_url) {
-      $url = $a_url;
-    } 
-    else {
-      $url = $this->curPageURL(); 
-    }
+  public function format_cloud($max_tags, $url = '') {
 
     // $r is a folksoPageData object
-    $r = $this->get_cloud($url, $max_tags);
+    $r = $this->get_cloud($url ? $url : $this->curPageURL(), 
+                          $max_tags);
 
     if ($r->is_valid()) {
       $cloud_xml = new DOMDocument();
