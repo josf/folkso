@@ -43,7 +43,7 @@ class folksoPage {
    * database connections.
    */
   public function visit_resource ($page_title = '') {
-    $title = stripslashes(stripslashes(stripslashes($page_titre)));
+    $title = stripslashes(stripslashes(stripslashes($page_title)));
     $our_current_url = $this->curPageURL(); //ridiculous var name to avoid namespace problems
 
     if ($this->ua_ignore($_SERVER['HTTP_USER_AGENT'], 
