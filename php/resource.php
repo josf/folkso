@@ -281,7 +281,7 @@ function tagCloudLocalPop (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnec
     $sql .= $q->res . ", '', 1, 5)";
   }
   else {
-    $sql .= "'', '" .$i->dbescape($q->res) . "', 5, 5)";
+    $sql .= "'', '" .$i->dbescape($q->res) . "', 1, 5)";
   }
   $i->query($sql);
 
