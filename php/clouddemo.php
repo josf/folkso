@@ -19,12 +19,12 @@ ul.resourcelist li { margin-bottom: 1em}
       div.cloud ul {
       list-style-type: none;
       }
-div.cloud ul li {       display: inline; padding-right: 1em;}
-div.cloud .cloud1 {font-size: 10pt}
-div.cloud .cloud2 { font-size: 12pt}
-div.cloud .cloud3 { font-size: 14pt}
-div.cloud .cloud4 { font-size: 16pt}
-div.cloud .cloud5 { font-size: 18pt}
+ul.cloudlist li {       display: inline; padding-right: 1em;}
+.cloudclass1 {font-size: 10pt}
+.cloudclass2 { font-size: 12pt}
+.cloudclass3 { font-size: 14pt}
+.cloudclass4 { font-size: 16pt}
+.cloudclass5 { font-size: 18pt}
 
 </style>
 
@@ -35,40 +35,18 @@ div.cloud .cloud5 { font-size: 18pt}
 
 <?php
 
-require_once('folksoClient.php');
-require_once('folksoFabula.php');
-
-$loc = new folksoFabula();
+require_once('folksoPage.php');
 
 if ($_GET['demouri']) {
 
-$cl = new folksoClient('localhost', 
-                       $loc->server_web_path . 'resource.php',
-                       'GET');
-
-$cl->set_getfields( array('folksores' => $_GET['demouri'],
-                          'folksoclouduri' => '1'));
-
-print '<div class="cloud">';
-print $result =  $cl->execute();
-print "</div>";
-print "<p>HTTP code: " . $cl->query_resultcode()."<br/>" ;
-switch ($cl->query_resultcode()) {
-case '200':
-  print "Ressource trouvée";
-  break;
-case '204':
-  print "Aucun tag n'est associé à cette resource";
-  break;
-case '404':
-  print "Cette ressource n'existe pas dans la base de données";
-  break;
-case '501':
-  print "Erreur base de données - c'est inadmissible";
-  break;
-}
-print "</p>"; 
-
+  $p = new folksoPage();
+  $pg = $p->format_cloud(0, $_GET['demouri']);
+  if ($pg->is_valid()) {
+    print $pg->html;
+  }
+  else {
+    print $pg->status;
+  }
 }
 ?>
   </div>
