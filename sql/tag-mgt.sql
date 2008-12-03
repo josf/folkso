@@ -196,18 +196,22 @@ DELIMITER ;
 
 
 
+
 DELIMITER $$
 DROP PROCEDURE IF EXISTS cloudy$$
-CREATE PROCEDURE cloudy(residarg int,
-                        urlarg varchar(255), 
-                        localweight int,
-                        globalweight int)
+CREATE PROCEDURE cloudy(residarg INT,
+                        urlarg VARCHAR(255), 
+                        localweight INT,
+                        globalweight INT,
+                        taglimit INT) 
+-- limit number of tags
 
 BEGIN
 
 DECLARE url VARCHAR(255);
 DECLARE url_norm VARCHAR(255);
 DECLARE resid INT;
+DECLARE tagbis INT;
 
 -- v is to indicate that these are variables, since later we have
 -- identical column names
@@ -269,6 +273,8 @@ DECLARE CONTINUE HANDLER FOR NOT FOUND SET l_last_row_fetched=1;
 -- (http://dev.mysql.com/doc/refman/5.1/en/temporary-table-problems.html),
 -- you cannot refer to a temporary table with an alias. Therefore, we
 -- create two, no three! identical tables...
+
+SET tagbis = taglimit;
 
 DROP TABLE IF EXISTS output_temp_table;
 CREATE TEMPORARY TABLE output_temp_table
@@ -333,11 +339,11 @@ cursing: LOOP
 
          INSERT INTO output_temp_table3
                 SET 
-                    tagdisplay   = displayv,
-                    tagnorm      = normv,
-                    tagid     = tagidv,
-                    localpop  = localpopv,
-                    globalpop = globalpopv;
+                    tagdisplay   =      displayv,
+                    tagnorm      =      normv,
+                    tagid        =      tagidv,
+                    localpop     =      localpopv,
+                    globalpop    =      globalpopv;
          
 END LOOP cursing;
 CLOSE ourdata;      
@@ -379,20 +385,51 @@ SELECT MIN(weight)
        INTO minweight
        FROM final_output;
 
+
+
 -- and one last select against final_output to give the data back to the caller
-SELECT r.title AS tagdisplay, r.uri_raw AS tagnorm, r.id AS tagid, NULL AS weight, NULL AS cloudweight
+
+-- the following is an ugly hack necessary because of mysql bug 11918
+-- (http://bugs.mysql.com/bug.php?id=11918) which does not allow
+-- variables in the LIMIT clause of a select. The bug was opened in
+-- 2005...
+
+IF (taglimit>0) THEN
+-- SET @minw=minweight;  
+-- SET @maxw=maxweight;
+ SET @sql=concat('SELECT r.title AS tagdisplay, r.uri_raw AS tagnorm, r.id AS tagid, NULL AS weight, NULL AS cloudweight
        FROM resource r
-       WHERE r.id = resid
-UNION
-SELECT tagdisplay, tagnorm, tagid, weight,
+       WHERE r.id =', resid,
+  ' UNION
+  SELECT tagdisplay, tagnorm, tagid, weight,
        CASE  
-             WHEN (weight - minweight) > 0.8 * (maxweight - minweight) THEN 5
-             WHEN (weight - minweight) > 0.6 * (maxweight - minweight) THEN 4
-             WHEN (weight - minweight) > 0.4 * (maxweight - minweight) THEN 3
-             WHEN (weight - minweight) > 0.2 * (maxweight - minweight) THEN 2
+             WHEN (weight - ', @minw, ') > 0.8 * (', @maxw, ' -  ', @minw, ') THEN 5
+             WHEN (weight -  ', @minw, ') > 0.6 * (', @maxw, ' -  ', @minw, ') THEN 4
+             WHEN (weight -  ', @minw, ') > 0.4 * (', @maxw, ' -  ', @minw, ') THEN 3
+             WHEN (weight -  ', @minw, ') > 0.2 * (', @maxw, ' -  ', @minw, ') THEN 2
+       ELSE 1
+       END AS cloudweight
+  FROM final_output
+  ORDER BY cloudweight DESC
+  LIMIT ',  tagbis);
+  PREPARE STMT FROM @sql; 
+  EXECUTE STMT;
+
+ELSE
+        SELECT r.title AS tagdisplay, r.uri_raw AS tagnorm, r.id AS tagid, NULL AS weight, NULL AS cloudweight
+               FROM resource r
+               WHERE r.id = resid
+        UNION
+        SELECT tagdisplay, tagnorm, tagid, weight,
+               CASE  
+               WHEN (weight - minweight) > 0.8 * (maxweight - minweight) THEN 5
+               WHEN (weight - minweight) > 0.6 * (maxweight - minweight) THEN 4
+               WHEN (weight - minweight) > 0.4 * (maxweight - minweight) THEN 3
+               WHEN (weight - minweight) > 0.2 * (maxweight - minweight) THEN 2
        ELSE 1
        END AS cloudweight
        FROM final_output;
+END IF;
 
 END$$
 DELIMITER ;
