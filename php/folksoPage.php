@@ -317,9 +317,9 @@ class folksoPage {
   /**
    * 
    * @param A resource, either an id or a URL.
-   * @returns folksoPageDataMeta with only the xml part ($rm->xml).
+   * @returns folksoPageData with only the xml part ($rm->xml).
    */
-  public function getTaglist($res) {
+  public function getTaglist($res, $max = 0) {
     $rm = new folksoPageData();
     $fc = new folksoClient('localhost',
                            'resource.php',
@@ -345,7 +345,7 @@ class folksoPage {
    *
    * @param $url Optional. Defaults to current page.
    * @param $non_principal_fallback boolean Get all tags if there are NO "sujet principal".
-   * @returns folksoPageDataMeta
+   * @returns folksoPageData
    */
   public function resourceMetas($url = NULL, $non_principal_fallback = NULL) {
     $rm = $this->getTaglist($url ? $url : $this->curPageUrl());
