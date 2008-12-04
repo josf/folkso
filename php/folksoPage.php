@@ -19,6 +19,12 @@ require_once('folksoPageDataMeta.php');
 class folksoPage {
 
   /**
+   * folksoPageData object. All of the available information about the
+   * current resource.
+   */
+  public $pdata;
+
+  /**
    * Site specific information. Leaving this private since there can
    * be sensitive stuff here.
    */
@@ -30,14 +36,9 @@ class folksoPage {
    */
   public $url;
 
-  /**
-   * A folksoPageDataMeta object for building meta data. Right now the
-   * mt object must be created, does not exist by default.
-   */
-  public $mt;
-
-  public function __construct() {
+  public function __construct($url = '') {
     $this->loc = new folksoFabula();
+    $this->pdata = new folksoPageData($url ? $url : $this->curPageURL());
   }
 
   /**
@@ -50,10 +51,10 @@ class folksoPage {
    * @param $url string This is really for testing only and is not meant to be used.
    */
   public function keyword_list($url = '') {
-    $data = $this->resourceMetas($url ? $url : $this->curPageURL(),
-                                 true);
-    if ($data->is_valid()) {
-      return $data->mt->meta_textlist();
+    $this->pdata->resourceMetas($url ? $url : $this->curPageURL(),
+                                        true);
+    if ($this->pdata->ptags->is_valid()) {
+      return $this->pdata->mt->meta_textlist();
     }
     else {
       return false; // no tags or no resource.
@@ -182,66 +183,6 @@ class folksoPage {
     return false;
   }
 
-  /**
-   * Backend function to the cloud() function. This gets the information
-   * which is already formatted (html). Returns an assoc. array with the
-   * result code (404 in case the resource is not found, 204 if no tags)
-   * and the tag cloud itself.
-   *
-   * @returns array array('status' => 204, 'result' => CLOUD)
-   */
-  private function get_cloud($url, $max_tags = 0) {
-    $fc = new folksoClient('localhost', 
-                           $this->loc->server_web_path . 'resource.php',
-                           'GET');
-    $fc->set_getfields(array('folksoclouduri' => 1,
-                             'folksores' => $url,
-                             'folksodatatype' => 'xml', 
-                             'folksolimit' => $max_tags)); 
-    $result = $fc->execute();
-    $status = $fc->query_resultcode();
-
-    $p = new folksoPageData($status);
-    $p->xml = $result;
-    if (! $p->status) {
-      trigger_error('no valid status here.', E_USER_ERROR);
-    }
-
-    return $p;
-  }
-
-  /**
-   * Retreives and formats a tag cloud for the current page. 
-   *
-   * @param $a_url string (Optional) The url for which a cloud should be
-   * made. Default is to use the current page.
-   *
-   * @returns folksoPageData 
-   */
-  public function format_cloud($url = '', $max_tags = 0) {
-
-    // $r is a folksoPageData object
-    $r = $this->get_cloud($url ? $url : $this->curPageURL(), 
-                          $max_tags);
-
-    if ($r->is_valid()) {
-      $cloud_xml = new DOMDocument();
-      $cloud_xml->loadXML($r->xml);
-
-      $xsl = new DOMDocument();
-      $xsl->load($this->loc->xsl_dir . "publiccloud.xsl");
-
-      $proc = new XsltProcessor();
-      $xsl = $proc->importStylesheet($xsl);
-      $proc->setParameter('', 
-                          'tagviewbase', 
-                          $this->loc->server_web_path . 'tagview.php?tag=');
-      $cloud = $proc->transformToDoc($cloud_xml);
-
-      $r->html = $cloud->saveXML();
-    }
-    return $r;
-  }
 
   /**
    * Print the current page's tag cloud.
@@ -333,78 +274,6 @@ class folksoPage {
     else {
       return '';
     }
-  }
-
-  /**
-   * 
-   * @param A resource, either an id or a URL.
-   * @returns folksoPageData with only the xml part ($rm->xml).
-   */
-  public function getTaglist($res, $max = 0) {
-    $rm = new folksoPageData();
-    $fc = new folksoClient($this->loc->db_server,
-                           $this->loc->get_path . 'resource.php',
-                           'GET');
-    $fc->set_getfields(array('folksores' => $res,
-                             'folksodatatype' => 'xml'));
-
-    if (is_numeric($max) &&
-        ($max > 0)) {
-      $fc->add_getfield('limit', $max);
-    }
-
-    $rm->xml = $fc->execute();
-    $rm->status = $fc->query_resultcode();
-    return $rm;
-  }
-
-  /**
-   * Retreives a list of tags for a given resource that are marked
-   * "Sujet principal". 
-   * 
-   * With the "non_principal_fallback" option set to TRUE, in the
-   * event that there are no "sujet principal" tags, all the tags will
-   * be used instead.
-   *
-   * (There should probably be a parameter for the string "Sujet
-   * principal".)
-   *
-   * @param $url Optional. Defaults to current page.
-   * @param $non_principal_fallback boolean Get all tags if there are NO "sujet principal".
-   * @returns folksoPageData
-   */
-  public function resourceMetas($url = NULL, $non_principal_fallback = NULL) {
-    $rm = $this->getTaglist($url ? $url : $this->curPageUrl());
-    $rm->mt = new folksoPageDataMeta();
-
-    if ($rm->is_valid()) {
-      $metas_xml = new DOMDocument();
-      $metas_xml->loadXML($rm->xml);
-      $xpath = new DOMXpath($metas_xml);
-
-      //$tag_princ is a DOMNodelist object
-      $tag_princ = $xpath->query('//taglist/tag[metatag="Sujet principal"]');
-
-      // 'Sujet principal' only
-      if ($tag_princ->length > 0) {
-        foreach ($tag_princ as $element) {
-          $tagname = $element->getElementsByTagName('display');
-          $rm->mt->add_keyword($tagname->item(0)->textContent);
-        }
-      }
-      // All tags, when no 'sujet principal' is found.
-      elseif ($non_principal_fallback) {
-        $all_tags = $xpath->query('//taglist/tag');
-        
-        if ($all_tags->length > 0) {
-          foreach ($all_tags as $element) {
-            $tagname = $element->getElementsByTagName('display');
-            $rm->mt->add_keyword($tagname->item(0)->textContent);
-          }
-        }
-      }
-    }
-    return $rm;
   }
 
   /**
