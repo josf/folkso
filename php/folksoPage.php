@@ -49,7 +49,7 @@ class folksoPage {
    * @return string or boolean
    * @param $url string This is really for testing only and is not meant to be used.
    */
-  public function keyword_list($url) {
+  public function keyword_list($url = '') {
     $data = $this->resourceMetas($url ? $url : $this->curPageURL(),
                                  true);
     if ($data->is_valid()) {
