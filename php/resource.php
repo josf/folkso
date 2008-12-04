@@ -139,7 +139,8 @@ function isHead (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
  * id. 
  * 
  * Web parameters : GET + folksores 
- * Optional : metas only
+ * Optional: metas only
+ * Optional: limit
  */
 function getTagsIds (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
   $i = new folksoDBinteract($dbc);
@@ -191,6 +192,11 @@ function getTagsIds (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc
   }
   
   $select .= ' ORDER BY t.popularity DESC ';
+
+  if ($q->is_param('limit') &&
+      is_numeric($q->get_param('limit'))) {
+    $select .= ' LIMIT ' . $q->get_param('limit');
+  }
 
   $i->query($select);
 
