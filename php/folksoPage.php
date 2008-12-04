@@ -191,7 +191,7 @@ class folksoPage {
    *
    * @returns folksoPageData 
    */
-  public function format_cloud($max_tags = 0, $url = '') {
+  public function format_cloud($url = '', $max_tags = 0) {
 
     // $r is a folksoPageData object
     $r = $this->get_cloud($url ? $url : $this->curPageURL(), 
@@ -223,7 +223,7 @@ class folksoPage {
    * there is an error of some kind cloud() silently does nothing.
    */
   public function basic_cloud($max_tags = 0) {
-    $cloud = $this->format_cloud($max_tags);
+    $cloud = $this->format_cloud(); //using both defaults : '' & 0
     if (($cloud->status == 200) ||
         ($cloud->status  == 304)) {
       return $cloud->html;
