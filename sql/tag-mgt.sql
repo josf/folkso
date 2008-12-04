@@ -274,7 +274,7 @@ DECLARE CONTINUE HANDLER FOR NOT FOUND SET l_last_row_fetched=1;
 -- you cannot refer to a temporary table with an alias. Therefore, we
 -- create two, no three! identical tables...
 
-SET tagbis = taglimit;
+SET tagbis = taglimit + 1;
 
 DROP TABLE IF EXISTS output_temp_table;
 CREATE TEMPORARY TABLE output_temp_table
