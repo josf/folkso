@@ -385,8 +385,6 @@ SELECT MIN(weight)
        INTO minweight
        FROM final_output;
 
-
-
 -- and one last select against final_output to give the data back to the caller
 
 -- the following is an ugly hack necessary because of mysql bug 11918
@@ -395,9 +393,9 @@ SELECT MIN(weight)
 -- 2005...
 
 IF (taglimit>0) THEN
--- SET @minw=minweight;  
--- SET @maxw=maxweight;
- SET @sql=concat('SELECT r.title AS tagdisplay, r.uri_raw AS tagnorm, r.id AS tagid, NULL AS weight, NULL AS cloudweight
+ SET @minw=minweight;  
+ SET @maxw=maxweight;
+ SET @sql=concat('SELECT r.title AS tagdisplay, r.uri_raw AS tagnorm, r.id AS tagid, 5 AS weight, 5 AS cloudweight
        FROM resource r
        WHERE r.id =', resid,
   ' UNION
