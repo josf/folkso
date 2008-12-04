@@ -40,6 +40,26 @@ class folksoPage {
     $this->loc = new folksoFabula();
   }
 
+  /**
+   * Wrapper function for producing the contents of a <meta> keyword
+   * tag. If no tags are associated with the current page (or it is
+   * not indexed), this function returns false. Otherwise, it provides
+   * a string containing a comma separated list of keywords.
+   *
+   * @return string or boolean
+   * @param $url string This is really for testing only and is not meant to be used.
+   */
+  public function keyword_list($url) {
+    $data = $this->resourceMetas($url ? $url : $this->curPageURL(),
+                                 true);
+    if ($data->is_valid()) {
+      return $data->mt->meta_textlist();
+    }
+    else {
+      return false; // no tags or no resource.
+    }
+  }
+
 
   /**
    * Report this page to the tag system. A new resource is created if
