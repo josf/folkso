@@ -342,8 +342,8 @@ class folksoPage {
    */
   public function getTaglist($res, $max = 0) {
     $rm = new folksoPageData();
-    $fc = new folksoClient('localhost',
-                           'resource.php',
+    $fc = new folksoClient($this->loc->db_server,
+                           $this->loc->get_path . 'resource.php',
                            'GET');
     $fc->set_getfields(array('folksores' => $res,
                              'folksodatatype' => 'xml'));
