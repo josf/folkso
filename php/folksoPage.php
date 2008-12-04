@@ -352,12 +352,14 @@ class folksoPage {
       //$tag_princ is a DOMNodelist object
       $tag_princ = $xpath->query('//taglist/tag[metatag="Sujet principal"]');
 
+      // 'Sujet principal' only
       if ($tag_princ->length > 0) {
         foreach ($tag_princ as $element) {
           $tagname = $element->getElementsByTagName('display');
           $rm->array[] = $tagname->item(0)->textContent;
         }
       }
+      // All tags, when no 'sujet principal' is found.
       elseif ($non_principal_fallback) {
         $all_tags = $xpath->query('//taglist/tag');
         
@@ -370,7 +372,7 @@ class folksoPage {
       }
     }
     else {
-      print "Query error : " . $rm->status;
+      print "Query error: " . $rm->status;
     }
     return $rm;
   }
@@ -385,7 +387,7 @@ class folksoPage {
    * current URL.
    * @returns string.
    */
-  public function meta_keywords($fallback = FALSE) {
+  public function meta_keywords($fallback = FALSE,) {
     $url = $this->curPageUrl();
 
     $rm = $this->resourceMetas($url, $fallback);
