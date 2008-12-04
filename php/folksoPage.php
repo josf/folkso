@@ -328,6 +328,11 @@ class folksoPage {
     $fc->set_getfields(array('folksores' => $res,
                              'folksodatatype' => 'xml'));
 
+    if (is_numeric($max) &&
+        ($max > 0)) {
+      $fc->add_getfield('limit', $max);
+    }
+
     $rm->xml = $fc->execute();
     $rm->status = $fc->query_resultcode();
     return $rm;
@@ -390,12 +395,14 @@ class folksoPage {
    * @param $fallback boolean Default is FALSE. If TRUE, include all
    * tags if there are no tags "sujet principal" associated with the
    * current URL.
+   * @param $max integer Maximum number of tags to include. Defaults to 20. 0 means no limit.
+   *
    * @returns string.
    */
-  public function meta_keywords($fallback = FALSE,) {
+  public function meta_keywords($fallback = FALSE, $max = 20) {
     $url = $this->curPageUrl();
 
-    $rm = $this->resourceMetas($url, $fallback);
+    $rm = $this->resourceMetas($url, $fallback, $max);
     return $rm->meta_keywords();
   }
 
