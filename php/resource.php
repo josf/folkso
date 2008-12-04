@@ -253,7 +253,8 @@ function getTagsIds (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc
 /**
  * Tag cloud local.
  *
- * Parameters: GET, folksoclouduri, res
+ * Parameters: GET, folksoclouduri, res.
+ * Optional: folksolimit (limit number of tags returned).
  */
 function tagCloudLocalPop (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
   $i = new folksoDBinteract($dbc);
@@ -275,13 +276,21 @@ function tagCloudLocalPop (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnec
       return;
     }
   }
+
+  // using the "limit" parameter
+  $taglimit = 0;
+  if ($q->is_param('limit') &&
+      (is_numeric($q->get_param('limit')))) {
+    $taglimit = $q->get_param('limit');
+  }
+
   $sql = "CALL cloudy(";
 
   if (is_numeric($q->res)) {
-    $sql .= $q->res . ", '', 1, 5)";
+    $sql .= $q->res . ", '', 1, 5, $taglimit)";
   }
   else {
-    $sql .= "'', '" .$i->dbescape($q->res) . "', 1, 5)";
+    $sql .= "'', '" .$i->dbescape($q->res) . "', 1, 5, $taglimit)";
   }
   $i->query($sql);
 
