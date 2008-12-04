@@ -56,7 +56,7 @@ class folksoPageData {
       return true;
     }
     else {
-      if (! $this->status) {
+      if (! is_numeric($this->status)) {
         trigger_error('is_valid: no result status yet.', E_USER_WARNING);
       }
       return false;

@@ -11,9 +11,10 @@
    * @copyright 2008 Gnu Public Licence (GPL)
    */
 
-include_once('folksoClient.php');
-include_once('folksoFabula.php');
-include_once('folksoPageDataMeta.php');
+require_once('folksoClient.php');
+require_once('folksoFabula.php');
+require_once('folksoPageData.php');
+require_once('folksoPageDataMeta.php');
 
 class folksoPage {
 
@@ -349,7 +350,7 @@ class folksoPage {
    */
   public function resourceMetas($url = NULL, $non_principal_fallback = NULL) {
     $rm = $this->getTaglist($url ? $url : $this->curPageUrl());
-    $this->mt = new folksoPageDataMeta();
+    $rm->mt = new folksoPageDataMeta();
 
     if ($rm->is_valid()) {
       $metas_xml = new DOMDocument();
@@ -363,7 +364,7 @@ class folksoPage {
       if ($tag_princ->length > 0) {
         foreach ($tag_princ as $element) {
           $tagname = $element->getElementsByTagName('display');
-          $this->mt->add_keyword($tagname->item(0)->textContent);
+          $rm->mt->add_keyword($tagname->item(0)->textContent);
         }
       }
       // All tags, when no 'sujet principal' is found.
@@ -373,7 +374,7 @@ class folksoPage {
         if ($all_tags->length > 0) {
           foreach ($all_tags as $element) {
             $tagname = $element->getElementsByTagName('display');
-            $this->mt->add_keyword($tagname->item(0)->textContent);
+            $rm->mt->add_keyword($tagname->item(0)->textContent);
           }
         }
       }

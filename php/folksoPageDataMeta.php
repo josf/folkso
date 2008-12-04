@@ -8,7 +8,7 @@ class folksoPageDataMeta  {
    */
   public $array;
 
-  public __construct() {
+  public function __construct() {
     $this->array = array();
   }
 
@@ -17,7 +17,7 @@ class folksoPageDataMeta  {
    *
    * @param $word string
    */
-  public add_keyword($word) {
+  public function add_keyword($word) {
     if (is_string($word)) {
       $this->array[] = $word;
     }
