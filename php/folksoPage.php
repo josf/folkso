@@ -29,6 +29,12 @@ class folksoPage {
    */
   public $url;
 
+  /**
+   * A folksoPageDataMeta object for building meta data. Right now the
+   * mt object must be created, does not exist by default.
+   */
+  public $mt;
+
   public function __construct() {
     $this->loc = new folksoFabula();
   }
@@ -343,6 +349,7 @@ class folksoPage {
    */
   public function resourceMetas($url = NULL, $non_principal_fallback = NULL) {
     $rm = $this->getTaglist($url ? $url : $this->curPageUrl());
+    $this->mt = new folksoPageDataMeta();
 
     if ($rm->is_valid()) {
       $metas_xml = new DOMDocument();
@@ -356,7 +363,7 @@ class folksoPage {
       if ($tag_princ->length > 0) {
         foreach ($tag_princ as $element) {
           $tagname = $element->getElementsByTagName('display');
-          $rm->array[] = $tagname->item(0)->textContent;
+          $this->mt->add_keyword($tagname->item(0)->textContent);
         }
       }
       // All tags, when no 'sujet principal' is found.
@@ -366,13 +373,10 @@ class folksoPage {
         if ($all_tags->length > 0) {
           foreach ($all_tags as $element) {
             $tagname = $element->getElementsByTagName('display');
-            $rm->array[] = $tagname->item(0)->textContent;
+            $this->mt->add_keyword($tagname->item(0)->textContent);
           }
         }
       }
-    }
-    else {
-      print "Query error: " . $rm->status;
     }
     return $rm;
   }
