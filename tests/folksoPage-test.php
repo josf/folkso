@@ -31,7 +31,7 @@ class testOffolksoPage extends  UnitTestCase {
     $this->assertPattern('/<meta/', $page->pdata->mt->meta_keywords());
     $this->assertTrue((is_string($page->pdata->mt->meta_textlist()) &&
                        (strlen($page->pdata->mt->meta_textlist()) > 10)));
-
+    $this->assertTrue(is_string($page->DC_description_list()));
   }
 }//end class
 

@@ -67,6 +67,16 @@ class folksoPage {
     }
   }
 
+  /**
+   * Returns a string consting of a comma separated list of all the
+   * tags associated with the given resource.
+   */
+  public function DC_description_list($url = ''){
+    $this->pdata->resourceMetas( $url ? $url : $this->url);
+    if ($this->pdata->ptags->is_valid()) {
+      return $this->pdata->mt->meta_description_textlist();
+    }
+  }
 
   /**
    * Report this page to the tag system. A new resource is created if

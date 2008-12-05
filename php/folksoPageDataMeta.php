@@ -4,9 +4,15 @@
 class folksoPageDataMeta  {
 
   /**
-   * An array of the meta data tags.
+   * An array of the meta keyword tags. Usually this means only the
+   * 'Sujet principal' tags.
    */
-  public $array;
+  public $keywords;
+
+  /**
+   * An array of all the tags associated with a given resource.
+   */
+  public $alltags;
 
   public function __construct() {
     $this->array = array();
@@ -17,9 +23,20 @@ class folksoPageDataMeta  {
    *
    * @param $word string
    */
-  public function add_keyword($word) {
+  public function add_principal_keyword($word) {
     if (is_string($word)) {
-      $this->array[] = $word;
+      $this->keywords[] = $word;
+    }
+  }
+
+  /**
+   * Utility method for adding new tags to $mt->alltags.
+   *
+   * @param $word string.
+   */
+  public function add_all_tags($word) {
+    if (is_string($word)) {
+      $this->alltags[] = $word;
     }
   }
 
@@ -29,9 +46,9 @@ class folksoPageDataMeta  {
    */
   public function meta_keywords() {
 
-    if (count($this->array) > 1) {
+    if (count($this->keywords) > 1) {
       return '<meta name="keywords" content="'
-        . implode(' ', $this->array)
+        . implode(' ', $this->keywords)
         . '"/>';
     }
     else {
@@ -40,11 +57,20 @@ class folksoPageDataMeta  {
   }
 
   /**
-   * Returns a comma-separated list of tags.
+   * Returns a comma-separated list of keyword tags.
    */
   public function meta_textlist() {
-    if (count($this->array) > 1) {
-      return implode(', ', $this->array);
+    if (count($this->keywords) > 1) {
+      return implode(', ', $this->keywords);
+    }
+  }
+
+  /**
+   * @return string Comma separated list of tags.
+   */
+  public function meta_description_textlist ()  {
+    if (count($this->alltags) > 0) {
+      return implode(', ', $this->alltags);
     }
   }
 }

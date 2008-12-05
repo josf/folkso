@@ -169,6 +169,7 @@ class folksoPageData {
   }
 
 
+
   /**
    * Retreives a list of tags for a given resource that are marked
    * "Sujet principal". 
@@ -208,23 +209,19 @@ class folksoPageData {
       if ($tag_princ->length > 0) {
         foreach ($tag_princ as $element) {
           $tagname = $element->getElementsByTagName('display');
-          $this->mt->add_keyword($tagname->item(0)->textContent);
+          $this->mt->add_principal_keyword($tagname->item(0)->textContent);
         }
       }
       // All tags, when no 'sujet principal' is found.
-      elseif ($non_principal_fallback) {
-        $all_tags = $xpath->query('//taglist/tag');
-        
-        if ($all_tags->length > 0) {
-          foreach ($all_tags as $element) {
-            $tagname = $element->getElementsByTagName('display');
-            $this->mt->add_keyword($tagname->item(0)->textContent);
-          }
+      $all_tags = $xpath->query('//taglist/tag');
+      if ($all_tags->length > 0) {
+        foreach ($all_tags as $element) {
+          $tagname = $element->getElementsByTagName('display');
+          $this->mt->add_all_tags($tagname->item(0)->textContent);
         }
       }
     }
     return $this->mt;
   }
-
 
 } /* end of class */
