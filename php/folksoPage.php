@@ -38,7 +38,13 @@ class folksoPage {
 
   public function __construct($url = '') {
     $this->loc = new folksoFabula();
-    $this->pdata = new folksoPageData($url ? $url : $this->curPageURL());
+    if ($url) {
+      $this->url = $url;
+    }
+    else {
+      $this->url = $this->curPageURL();
+    }
+    $this->pdata = new folksoPageData($this->url);
   }
 
   /**
@@ -51,8 +57,8 @@ class folksoPage {
    * @param $url string This is really for testing only and is not meant to be used.
    */
   public function keyword_list($url = '') {
-    $this->pdata->resourceMetas($url ? $url : $this->curPageURL(),
-                                        true);
+    $this->pdata->resourceMetas($url ? $url : $this->url,
+                                true);
     if ($this->pdata->ptags->is_valid()) {
       return $this->pdata->mt->meta_textlist();
     }
@@ -191,11 +197,7 @@ class folksoPage {
    * there is an error of some kind cloud() silently does nothing.
    */
   public function basic_cloud($max_tags = 0) {
-    $cloud = $this->format_cloud(); //using both defaults : '' & 0
-    if (($cloud->status == 200) ||
-        ($cloud->status  == 304)) {
-      return $cloud->html;
-    }
+    return $this->pdata->cloud($this->url, $max_tags);
   }
 
   /**

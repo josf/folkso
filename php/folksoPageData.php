@@ -52,6 +52,12 @@ class folksoPageData {
     $this->loc = new folksoFabula();
   }
 
+  public function cloud ($url = '', $max_tags = 0) {
+    $this->format_cloud($url ? $url : $this->url,
+                        $max_tags);
+    return $this->cloud->html;
+  }
+
 
   /**
    * Get the raw cloud information from the server. This data is
@@ -103,15 +109,16 @@ class folksoPageData {
    */
   public function format_cloud($url = '', $max_tags = 0) {
 
-    if (! $this->cloud instanceof folksoCloud) {
+    if (($this->cloud instanceof folksoCloud) &&
+        ($this->cloud->html)) {
+      return $this->cloud;
+    }
+    else {
       $this->get_cloud($url ? $url : $this->url,
                        $max_tags);
     }
 
     if ($this->cloud->is_valid()) {
-      $cloud_xml = new DOMDocument();
-      $cloud_xml->loadXML($this->cloud->xml);
-
       $xsl = new DOMDocument();
       $xsl->load($this->loc->xsl_dir . "publiccloud.xsl");
 
@@ -122,8 +129,9 @@ class folksoPageData {
       $proc->setParameter('', 
                           'tagviewbase', 
                           $this->loc->server_web_path . 'tagview.php?tag=');
-      $cloud = $proc->transformToDoc($cloud_xml);
 
+      //using cloud->xml_DOM() because this data might have been cached already.
+      $cloud = $proc->transformToDoc($this->cloud->xml_DOM());
       $this->cloud->html = $cloud->saveXML();
     }
     return $this->cloud;

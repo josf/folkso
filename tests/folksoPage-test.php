@@ -6,14 +6,21 @@ require_once('folksoPage.php');
 
 class testOffolksoPage extends  UnitTestCase {
 
-  function testResourceMetas () {
-    
+  function testBasicTests () {
     $page = new folksoPage();
     $this->assertTrue($page instanceof folksoPage);
+    $this->assertPattern('/folksoPage-test.php/', $page->url);
+    $this->assertFalse($page->keyword_list());
 
-    $r = $page->resourceMetas(7525);
-    $this->assertEqual($r->status, 200);
-    $this->assertTrue(is_string($r->result));
+  }
+
+
+  function testKeyword_list () {
+    $page = new folksoPage(26663);
+    $this->assertIsA($page, folksoPage);
+    $this->assertEqual($page->url, 26663);
+    $this->assertTrue(is_string($page->keyword_list()));
+    $this->assertTrue(is_string($page->basic_cloud()));
   }
 }//end class
 
