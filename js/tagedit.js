@@ -42,6 +42,7 @@ $(document).ready(function() {
                                  error: function(xhr, msg) {
                                    alert(msg);
                                  },
+                                 /** process list **/
                                  success: function(xml){
                                    var ul = $("<ul class=\"taglist\">");
                                    var lisfunc = function(li) {
@@ -49,7 +50,7 @@ $(document).ready(function() {
                                    };
                                    $("taglist tag", xml).each(
                                      function() {
-                                       var it = makeTageditListitem(
+                                       var it = makeInitial(
                                          $(this).find("numid").text(),
                                          $(this).find("display").text(),
                                          $(this).find("popularity").text()
@@ -62,6 +63,11 @@ $(document).ready(function() {
                                        function(){
                                          $(this).each(activateEdit);
                                          $(this).each(activateFusionCheck);
+                                         // if an edit box is already open, we have to prepare
+                                         // for multifusion by exposing checkboxes
+                                         if (document.folksonomie.currentEdit) {
+                                           lis.find("input.fusioncheck").attr("disabled", false);
+                                         }
                                      });
                                  }
                                });
@@ -231,28 +237,28 @@ function getPopularity(lis) {
 
 function makeMfusionFunc(targ) {
   return function() {
-  var lis = $(this).parent().parent("li");
-  var thistag = lis.attr("id").substring(5);
-  $.ajax({
-    type: 'post',
-    url: posttagphp,
-    data: {
-      folksotag: thistag,
-      folksotarget: targ
-    },
-    success: function(data, str) {
-      lis.remove();
-      /* clear preview text */
-      document.folksonomie.currentEdit.find("p.multifusionvictims").text("");
-    },
-    error: function(xhr, msg){
-      alert("Echec: la fusion du tag "
-            + lis.find("a.tagname").text()
-            + " a échoué. "
-            + xhr.status + " "
-            + xhr.statusText + " target " + targ + " source " + thistag);
-      }
-    });
+    var lis = $(this).parent().parent("li");
+    var thistag = lis.attr("id").substring(5);
+    $.ajax({
+             type: 'post',
+             url: posttagphp,
+             data: {
+               folksotag: thistag,
+               folksotarget: targ
+             },
+             success: function(data, str) {
+               lis.remove();
+               /* clear preview text */
+               document.folksonomie.currentEdit.find("p.multifusionvictims").text("");
+             },
+             error: function(xhr, msg){
+               alert("Echec: la fusion du tag "
+                     + lis.find("a.tagname").text()
+                     + " a échoué. "
+                     + xhr.status + " "
+                     + xhr.statusText + " target " + targ + " source " + thistag);
+             }
+           });
   };
 }
 
@@ -272,7 +278,10 @@ function getMVictims() {
   return str;
 }
 
-
+/**
+ * For multi-fusion. Added the text in tag to the current "multifusion
+ * victims" display.
+ */
 function addtoPreview(tag) {
   var preview =
       document.folksonomie.currentEdit.find("p.multifusionvictims");
@@ -317,6 +326,11 @@ function activateEdit() {
       event.preventDefault();
       // first parent is a <p>
       var lis = $(this).parent().parent("li");
+
+      if (lis.find("div.tagcommands").length ==  0) {
+        lis.each(activateTageditCommands);
+      }
+
       $("div.tagcommands").hide(); // hide all others first
       $("a.edit").show();
       lis.each(fkPrepare);
@@ -326,7 +340,8 @@ function activateEdit() {
       document.folksonomie.currentEdit = lis;
       lis.find("div.tagcommands").show();
       lis.find("input").show();
-      $(this).hide();
+
+      $(this).hide(); // hide the Edit button
       $("input.fusioncheck").attr('disabled', '');
       $(this).siblings("input.fusioncheck")
         .attr('disabled', 'disabled');
@@ -334,6 +349,9 @@ function activateEdit() {
         .attr('checked', false);
 
       var targtag = lis.attr("id").substring(5);
+
+      /* make a function referencing this tag that will be applied to
+       * each checked item when the multi-fusion button is clicked */
       var mfusionfunc = makeMfusionFunc(targtag);
       lis.find("a.multifusionbutton").click(
         function(event) {
@@ -355,8 +373,7 @@ function activateEdit() {
     });
 }
 
-
-function makeTageditListitem (id, display, popularity) {
+function makeInitial (id, display, popularity) {
   var item = $("<li class=\"tagentry nores\">");
   item.attr("id", "tagid" + id);
 
@@ -377,6 +394,15 @@ function makeTageditListitem (id, display, popularity) {
 
   p1.append($("<a href='#' class='edit'> Editer </a>"));
   item.append(p1);
+  return item;
+}
+
+
+function activateTageditCommands () {
+  var item = $(this);
+  var display = item.find(".tagname").text();
+  var id = item.attr("id").substring(5);
+  alert("display: " + display + "  id: " + id);
 
   /** div tagcommands **/
   var divtc = $("<div class=\"tagcommands\">");
