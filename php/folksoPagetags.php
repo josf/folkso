@@ -13,6 +13,7 @@
 
 class folksoPagetags extends folksoTagdata {
   public $xml;
+  public $xml_dom;
   public $html;
   public $status;
   /**

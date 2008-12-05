@@ -185,17 +185,21 @@ class folksoPageData {
    * @returns folksoPageData
    */
   public function resourceMetas($url = NULL, $non_principal_fallback = NULL) {
+
+    // we assume that if $this->mt is already an object, then the information is correct.
+    if ($this->mt instanceof folksoPageDataMeta) {
+      return $this->mt;
+    }
+    else {
+      $this->mt = new folksoPageDataMeta();
+    }
+
     if (! $this->ptags instanceof folksoPagetags) {
       $this->getTaglist(); // could set a maximum here
     }
-    if (! $this->mt instanceof folksoPageDataMeta) {
-      $this->mt = new folksoPageDataMeta();
-    }
     
     if ($this->ptags->is_valid()) {
-      $metas_xml = new DOMDocument();
-      $metas_xml->loadXML($this->ptags->xml);
-      $xpath = new DOMXpath($metas_xml);
+      $xpath = new DOMXpath($this->ptags->xml_DOM()); // reusing existing DOM, maybe
 
       //$tag_princ is a DOMNodelist object
       $tag_princ = $xpath->query('//taglist/tag[metatag="Sujet principal"]');

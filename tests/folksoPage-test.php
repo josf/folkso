@@ -22,6 +22,17 @@ class testOffolksoPage extends  UnitTestCase {
     $this->assertTrue(is_string($page->keyword_list()));
     $this->assertTrue(is_string($page->basic_cloud()));
   }
+
+  function testMetas () {
+    $page = new folksoPage(26663);
+    $this->assertIsA($page->pdata->resourceMetas(), folksoPageDataMeta);
+    $this->assertTrue((is_string($page->pdata->mt->meta_keywords()) &&
+                       (strlen($page->pdata->mt->meta_keywords()) > 10)));
+    $this->assertPattern('/<meta/', $page->pdata->mt->meta_keywords());
+    $this->assertTrue((is_string($page->pdata->mt->meta_textlist()) &&
+                       (strlen($page->pdata->mt->meta_textlist()) > 10)));
+
+  }
 }//end class
 
 
