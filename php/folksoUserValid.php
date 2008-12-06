@@ -5,11 +5,14 @@
    * folksoResponse by folksoServer.
    *
    * @package Folkso
+   * @subpackage Tagserv
    * @author Joseph Fahey
    * @copyright 2008 Gnu Public Licence (GPL)
    */
 
-
+  /**
+   * @package Folkso
+   */
 abstract class folksoUserValid {
   abstract public function parse_auth_header ($header = '');
   

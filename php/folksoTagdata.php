@@ -5,10 +5,13 @@
    * 
    *
    * @package Folkso
+   * @subpackage webinterface
    * @author Joseph Fahey
    * @copyright 2008 Gnu Public Licence (GPL)
    */
-
+  /**
+   * @package Folkso
+   */
 abstract class folksoTagdata {
 
   public $xml;

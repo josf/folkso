@@ -8,6 +8,7 @@
  * @package Folkso
  * @author Joseph Fahey
  * @copyright 2008 Gnu Public Licence (GPL)
+ * @subpackage Tagserv
  */
 
 require_once('folksoTags.php');

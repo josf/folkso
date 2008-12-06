@@ -6,6 +6,7 @@
  * @package Folkso
  * @author Joseph Fahey
  * @copyright 2008 Gnu Public Licence (GPL)
+ * @subpackage Tagserv
  */
 
 

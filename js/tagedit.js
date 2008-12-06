@@ -57,7 +57,7 @@ $(document).ready(function() {
                                        );
                                        lisfunc(it);
                                      });
-//                                     lis.each(fkPrepare); // already done in activeEdit()
+
                                      lis.append(ul);
                                      lis.find("ul.taglist li").each(
                                        function(){

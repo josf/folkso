@@ -6,11 +6,13 @@
    * 
    *
    * @package Folkso
+   * @subpackage webinterface
    * @author Joseph Fahey
    * @copyright 2008 Gnu Public Licence (GPL)
    */
-
-
+  /**
+   * @package Folkso
+   */
 class folksoPagetags extends folksoTagdata {
   public $xml;
   public $xml_dom;

@@ -9,8 +9,12 @@
    * @package Folkso
    * @author Joseph Fahey
    * @copyright 2008 Gnu Public Licence (GPL)
+   * @subpackage Tagserv
    */
 
+  /**
+   * @package Folkso
+   */
 class folksoIndexCache {
   public $cachedir;
   public  $cache_prefix = 'folksoindex-';

@@ -1,5 +1,4 @@
 <?php
-
   /**
    * Interact with the database. A thin layer of abstraction between
    * scripts and the DB with some helpful functions.
@@ -8,11 +7,15 @@
    * @package Folkso
    * @author Joseph Fahey
    * @copyright 2008 Gnu Public Licence (GPL)
+   * @subpackage Tagserv
    *
    */
 
 require_once('folksoDBconnect.php');
 
+/**
+ * @package Folkso
+ */
 class folksoDBinteract {
 
   /**

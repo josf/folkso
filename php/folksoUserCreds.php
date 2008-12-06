@@ -1,8 +1,16 @@
 <?php
-
+  /**
+   * @package Folkso
+   * @subpackage Tagserv
+   * @author Joseph Fahey
+   * @copyright 2008 Gnu Public Licence (GPL)
+   */
 
 require_once('folksoUserValid.php');
 
+  /**
+   * @package Folkso
+   */
 class folksoUserCreds extends folksoUserValid {
   public $userid;
   public $digest;

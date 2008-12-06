@@ -5,10 +5,14 @@
    * modification, deletion of tags; administration tagging interface.
    *
    * @package Folkso
+   * @subpackage webinterface
    * @author Joseph Fahey
    * @copyright 2008 Gnu Public Licence (GPL)
    */
 
+  /**
+   * @package Folkso
+   */
 class folksoAdmin {
 
   /**

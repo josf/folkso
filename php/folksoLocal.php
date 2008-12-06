@@ -4,6 +4,14 @@
    * All local, site-specific variables should be stored in a class
    * extending this one: database connection information, file
    * locations, including how links should be built.
+   *
+   * @package Folkso
+   * @author Joseph Fahey
+   * @copyright 2008 Gnu Public Licence (GPL)
+   * @subpackage Tagserv
+   */
+  /**
+   * @package Folkso
    */
 abstract class folksoLocal {
 

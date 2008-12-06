@@ -5,8 +5,16 @@
    * 
    * It requires the php libcurl functions but could be rewritten,
    * with the same interface, to use another http client.
+   *
+   * @package Folkso
+   * @subpackage webinterface
+   * @author Joseph Fahey
+   * @copyright 2008 Gnu Public Licence (GPL)
    */
 
+  /**
+   * @package Folkso
+   */
 class folksoClient {
   var $host;
   var $uri; // not including hostname ie. /thispage.php

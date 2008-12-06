@@ -8,8 +8,11 @@
    * @package Folkso
    * @author Joseph Fahey
    * @copyright 2008 Gnu Public Licence (GPL)
+   * @subpackage Tagserv
    */
-
+  /**
+   * @package Folkso
+   */
 class folksoUrl {
   /* very bare bones. just holds title and url */
   var $url;

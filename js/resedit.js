@@ -26,9 +26,6 @@ $(document).ready(
     $("ul.editresources li").each(taglistHidePrepare);
     $("ul.editresources li").each(deleteButtonPrepare);
 
-//    $(".tagger .metatagbox").autocomplete(metatag_autocomplete_list);
-//    $("#groupmetatagbox").autocomplete(metatag_autocomplete_list);
-
     $("a.closeiframe").hide();
     $("#grouptagvalidate").click(
       function(event) {
@@ -38,7 +35,6 @@ $(document).ready(
         }
       });
     $("#grouptagbox").autocomplete(document.folksonomie.getbase + "tagcomplete.php");
-    //  $("ul.taglist li").each(tagremovePrepare);
 
     $("#cleargroupchecks").click(
       function(event) {

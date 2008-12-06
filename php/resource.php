@@ -8,20 +8,13 @@
    * @package Folkso
    * @author Joseph Fahey
    * @copyright 2008 Gnu Public Licence (GPL)
+   * @subpackage Tagserv
    */
 
-  //include('/var/www/dom/fabula/commun3/folksonomie/folksoTags.php');
 
 require_once('folksoTags.php');
 require_once('folksoIndexCache.php');
 require_once('folksoUrl.php');
-
-/*include('/var/www/dom/fabula/commun3/folksonomie/folksoIndexCache.php');
-include('/var/www/dom/fabula/commun3/folksonomie/folksoUrl.php');
-include('/var/www/dom/fabula/commun3/folksonomie/folksoServer.php');
-include('/var/www/dom/fabula/commun3/folksonomie/folksoResponse.php');
-include('/var/www/dom/fabula/commun3/folksonomie/folksoQuery.php');
-*/
 
 $srv = new folksoServer(array( 'methods' => array('POST', 'GET', 'HEAD'),
                                'access_mode' => 'ALL'));

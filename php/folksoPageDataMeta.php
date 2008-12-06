@@ -1,6 +1,16 @@
 <?php
-
-
+  /**
+   * Metadata information pertaining to a given resource. These
+   * objects are to be part of a folksoPageData object.
+   *
+   * @author Joseph Fahey
+   * @copyright 2008 Gnu Public Licence (GPL)
+   * @package Folkso
+   * @subpackage webinterface
+   */
+  /**
+   * @package Folkso
+   */
 class folksoPageDataMeta  {
 
   /**

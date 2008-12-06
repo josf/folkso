@@ -23,6 +23,13 @@
   </script>
 
 <?php 
+   /**
+    *
+   * @package Folkso
+   * @author Joseph Fahey
+   * @copyright 2008 Gnu Public Licence (GPL)
+   * @subpackage webinterface
+   */
 
 require_once('folksoClient.php');
 require_once('folksoFabula.php');

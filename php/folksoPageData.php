@@ -1,4 +1,10 @@
 <?php
+/**
+ * @package Folkso
+ * @author Joseph Fahey
+ * @subpackage webinterface
+ * @copyright Joseph Fahey 2008
+ */
 
 
 require_once('folksoClient.php');
@@ -7,6 +13,10 @@ require_once('folksoPage.php');
 require_once('folksoCloud.php');
 require_once('folksoPagetags.php');
 
+
+/**
+ * @package Folkso
+ */
 class folksoPageData {
   
   /**

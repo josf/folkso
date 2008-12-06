@@ -6,8 +6,11 @@
    * @package Folkso
    * @author Joseph Fahey
    * @copyright 2008 Gnu Public Licence (GPL)
+   * @subpackage webinterface
    */
-
+  /**
+   * @package Folkso
+   */
 class folksoAlpha {
 
   public $alphabet = array(
