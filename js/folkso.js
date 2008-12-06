@@ -726,6 +726,64 @@ function deleteNoteButton(noteid) {
    return  webbase + "resourceview.php?tag=" + tag; // this is probably wrong!
  }
 
+/**
+ * Prepare the suggestion <div> which will try to get meta information
+ * about the page. This is what should happen when the user clicks on
+ * the "Suggérer" button.
+ *
+ * "this" must be a div.suggestions
+ */
+function setupSuggestionDiv() {
+  /* toggle find control */
+  var div = $(this);
+  div.find("a.getsuggestions").hide();
+  div.find("a.closesuggest").show();
+
+  var nodata_f = function() {
+    div.append("<p>Il n'y a pas de suggestion disponible.</p>");
+  };
+
+  var lis = div.parents("li.tagged")[0];
+  var url = $(lis).find("a.resurl").attr("href");
+
+  var success_f = function(data, status){
+    buildSuggestions(div, data, status);
+  };
+
+  $.ajax({
+           url: url,
+           type: 'get',
+           dataType: "html",
+           success: success_f,
+           error: nodata_f
+         });
+}
+
+/**
+ * to be called from setupSuggestionDiv() on success.
+ */
+function buildSuggestions(div, data, status) {
+  if (! data.length) {
+    return null;
+  }
+  var search_objs = [{ name: 'DC.Author',
+                       reg: /<meta\s+name="DC.Author"\s+content="([^"]+)"/,
+                       res: ''},
+                     { name: 'ISBN',
+                       reg: /<meta\s+scheme="ISBN"\s+content="([^"]+)"/,
+                       res: ''}];
+  var sul = $("<ul class='suggestions'>");
+  for (var it = 0; it < search_objs.length; it++){
+    var m = data.match(search_objs[it].reg);
+    if (m){ //on successful match
+      search_objs[it].res = m[1];
+      sul.append("<li>" + search_objs[it].name + ": " + m[1] + "</li>");
+    }
+  }
+
+  div.append(sul);
+  return div;
+}
 
 /** FOR RESOURCEVIEW **/
 

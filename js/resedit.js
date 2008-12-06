@@ -48,6 +48,12 @@ $(document).ready(
         $("input.groupmod").attr("checked", "checked");
       });
 
+    $("a.getsuggestions").click(
+      function(event) {
+        event.preventDefault();
+        $(this).parent().each(setupSuggestionDiv);
+      });
+
     $("a.existingnotes").click(
       function(event){
         event.preventDefault();
