@@ -121,6 +121,12 @@ span.tagid {font-size: 8pt;
                                                                        color: #e66322;
                                                                        margin-left: 0.5em; margin-right: 0.5em;
                                                                      }
+/** suggestion controls **/
+a.closesuggest {
+    display: none;
+}
+
+
 span.notecount {padding-left: 1em; padding-right: 1em;}
 a.tagdisplay {font-weight: bold}
 .infohead {margin-left: 0.5em;}
