@@ -600,8 +600,7 @@ function rmRes (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
 function assocEan13 (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
 
   /** check **/
-  if ((! is_numeric($q->get_param('ean13'))) ||
-      (strlen($q->get_param('ean13')) > 13)) {
+  if (ean13dataCheck($q->get_param('ean13'))) {
     header('HTTP/1.1 406 Bad data');
     print 
       "The folksoean13 field should consist of up to 13 digits. \n\nPlease check your "
@@ -811,7 +810,21 @@ function argSort ($res, $tag, $meta, folksoDBinteract $i) {
   }
 }
 
-
+/**
+ * Length must be 13 characters, all numbers.
+ * 
+ * @param $ean string or integer. A candidate for ean13 status.
+ * @return boolean
+ */
+private function ean13dataCheck ($ean) {
+  if ((is_numeric($q->get_param('ean13'))) ||
+      (strlen($q->get_param('ean13')) == 13)) {
+    return true;
+  }
+  else {
+    return false;
+  }
+}
 
 
 ?>
