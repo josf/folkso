@@ -54,6 +54,11 @@ $srv->addResponseObj(new folksoResponse('post',
                                               'exclude' => array('note', 'delete')),
                                         'addResource'));
 
+$srv->addResponseObj(new folksoResponse('post',
+                                        array('required' => array('res', 'ean13'),
+                                              'exclude' => array('note', 'meta', 'tag', 'delete')),
+                                        'assocEan13'));
+
 $srv->addResponseObj(new folksoResponse('delete',
                                         array('required' => array('res', 'tag')),
                                         'unTag'));
@@ -546,6 +551,9 @@ function unTag (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
     }
 }
 
+/**
+ * Delete a resource and add its url to the list of excluded URL.
+ */
 function rmRes (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
   $i = new folksoDBinteract($dbc);
   if ($i->db_error()) {
@@ -574,6 +582,77 @@ function rmRes (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
    //   print $sql;
  }
 }
+
+/**
+ * Associate a resource and an EAN-13 (ISBN-13) code. 
+ *
+ * These codes are treated differently from ordinary tags, first of
+ * all because treating them as tags would expand the list of tags to
+ * equal potentially the list of resources, also because the
+ * relationships between EAN-13 and resources are fundamentally
+ * different from those between resources and tags.
+ *
+ * We check the ean13 data and return a 406 if it is non-numeric or
+ * too long.
+ *
+ * POST, res, ean13
+ */
+function assocEan13 (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+
+  /** check **/
+  if ((! is_numeric($q->get_param('ean13'))) ||
+      (strlen($q->get_param('ean13')) > 13)) {
+    header('HTTP/1.1 406 Bad data');
+    print 
+      "The folksoean13 field should consist of up to 13 digits. \n\nPlease check your "
+      ."data before trying again.";
+    return;
+  }
+
+  $i = new folksoDBinteract($dbc);
+
+  if ($i->db_error()) {
+    header('HTTP/1.0 501 Database connection error');
+    die($i->error_info());
+  }
+
+  if (is_numeric($q->res)) {
+    $sql = 
+      "INSERT INTO ean13 SET resource_id = " . $q->res
+      . ", ean13 = " . $q->get_param('ean13');
+  }
+  else {
+    $sql =
+      "INSERT INTO ean13 (ean13, resource_id) "
+      ." VALUES (" . $q->get_param('ean13') . ", "
+      ." (SELECT id FROM resource "
+      ."WHERE uri_normal = url_whack('". $q->res . "')))";
+  }
+
+  $i->query($sql);
+  if ($i->result_status == 'DBERR') {
+
+    if (($i->db->errno == 1048) || // resource_id cannot be null
+        ($i->db->errno == 1452)) { // cannot add or update a child row
+      header('HTTP/1.1 404 Resource not found');
+      print 
+        "The resource you tried to associate with a EAN13 was not" 
+        ." found in the database. \n\nPerhaps it has not yet been indexed,".
+        "  or your reference is incorrect.";
+    }
+    else {
+      header('HTTP/1.1 501 Database error');
+      die($i->error_info());
+    }
+  }
+  else {
+    header('HTTP/1.1 200 OK');
+    print "The EAN13 information was added to a resource.";
+    return;
+  }
+}
+
+
 
 /**
  * Add a note to a resource
