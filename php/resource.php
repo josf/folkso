@@ -56,8 +56,13 @@ $srv->addResponseObj(new folksoResponse('post',
 
 $srv->addResponseObj(new folksoResponse('post',
                                         array('required' => array('res', 'ean13'),
-                                              'exclude' => array('note', 'meta', 'tag', 'delete')),
+                                              'exclude' => array('newean13', 'oldean13', 'note', 'meta', 'tag', 'delete')),
                                         'assocEan13'));
+
+$srv->addResponseObj(new folksoResponse('post',
+                                        array('required' => array('res', 'newean13', 'oldean13'),
+                                              'exclude' => array('ean13', 'tag', 'delete')),
+                                        'modifyEan13'));
 
 $srv->addResponseObj(new folksoResponse('delete',
                                         array('required' => array('res', 'tag')),
@@ -592,6 +597,10 @@ function rmRes (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
  * relationships between EAN-13 and resources are fundamentally
  * different from those between resources and tags.
  *
+ * Since we are allowing multiple EAN13 per resource (article about 2
+ * or more books...), re-posting a 2nd ean13 to the same resource will
+ * just add a new ean13 and will not affect previous data.
+ *
  * We check the ean13 data and return a 406 if it is non-numeric or
  * too long.
  *
@@ -600,16 +609,18 @@ function rmRes (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
 function assocEan13 (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
 
   /** check **/
-  if (ean13dataCheck($q->get_param('ean13'))) {
-    header('HTTP/1.1 406 Bad data');
+  if (! ean13dataCheck($q->get_param('ean13'))) {
+    header('HTTP/1.1 406 Bad EAN13 data');
     print 
-      "The folksoean13 field should consist of up to 13 digits. \n\nPlease check your "
+      "The folksoean13 field should consist of exactly 13 digits. "
+      . $q->get_param('ean13') . " is " . strlen($q->get_param('ean13')) . " long "
+      . is_numeric($q->get_param('ean13')) ? " and it is numeric " : " but it is not numeric " 
+      ."\n\nPlease check your "
       ."data before trying again.";
     return;
   }
 
   $i = new folksoDBinteract($dbc);
-
   if ($i->db_error()) {
     header('HTTP/1.0 501 Database connection error');
     die($i->error_info());
@@ -618,14 +629,14 @@ function assocEan13 (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc
   if (is_numeric($q->res)) {
     $sql = 
       "INSERT INTO ean13 SET resource_id = " . $q->res
-      . ", ean13 = " . $q->get_param('ean13');
+      . ", ean13 = " . $q->get_param('ean13'); //not escaping because we know this is just numbers
   }
   else {
     $sql =
       "INSERT INTO ean13 (ean13, resource_id) "
       ." VALUES (" . $q->get_param('ean13') . ", "
       ." (SELECT id FROM resource "
-      ."WHERE uri_normal = url_whack('". $q->res . "')))";
+      ."WHERE uri_normal = url_whack('". $i->dbescape($q->res) . "'))) ";
   }
 
   $i->query($sql);
@@ -651,7 +662,60 @@ function assocEan13 (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc
   }
 }
 
+/**
+ * Web params: POST, res, oldean13, newean13
+ */
+function modifyEan13 (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
 
+  if (! ((ean13dataCheck($q->get_param('oldean13'))) &&
+         (ean13dataCheck($q->get_param('newean13'))))) {
+    header('HTTP/1.1 406 Bad EAN13 data');
+    print 
+      "The folksoean13 fields (old and new) should consist of up to 13 "
+      ."digits. "
+      . $q->get_param('oldean13') . " is " . strlen($get_param('oldean13')) . " long "
+      . "and " . $q->get_param('newean13') . " is " . strlen($get_param('newean13')) . " long "
+      ." \n\nPlease check your "
+      ."data before trying again.";
+    return;
+  }
+  
+  $i = new folksoDBinteract($dbc);
+  if ($i->db_error()) {
+    header('HTTP/1.1 501 Database connection error');
+    die($i->error_info());
+  }
+
+  $sql = 
+    "UPDATE ean13 " 
+    ."SET ean13 = " . $i->dbescape($q->get_param('newean13'));
+  if (is_numeric($q->res)) {
+    $sql .=
+      " WHERE (resource_id = " . $i->dbescape($q->res) . ") ";
+  }
+  else {
+    $sql .= 
+      " WHERE resource_id = "
+      ."(SELECT id FROM resource WHERE "
+      ." uri_normal = url_whack('". $i->dbescape($q->res) . "'))";
+  }
+  $sql .= "AND (ean13 = " . $q->get_param('oldean13') . ")";
+
+  $i->query($sql);
+  if ($i->result_status == 'DBERR') {
+    header('HTTP/1.1 501 Database query error');
+    die($i->error_info());
+  }
+  elseif ($i->affected_rows == 0) {
+    header('HTTP/1.1 404 Resource/EAN13  not found');
+    print "The combination resource + ean13 was not found.";
+    return;
+  }
+  else {
+    header('HTTP/1.1 200 Modified');
+    print "The EAN13 information was successfully modified.\n\nHave a nice day.";
+  }
+}
 
 /**
  * Add a note to a resource
@@ -816,9 +880,9 @@ function argSort ($res, $tag, $meta, folksoDBinteract $i) {
  * @param $ean string or integer. A candidate for ean13 status.
  * @return boolean
  */
-private function ean13dataCheck ($ean) {
-  if ((is_numeric($q->get_param('ean13'))) ||
-      (strlen($q->get_param('ean13')) == 13)) {
+function ean13dataCheck ($ean) {
+  if ((is_numeric($ean)) &&
+      (strlen($ean) == 13)) {
     return true;
   }
   else {
