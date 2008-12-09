@@ -35,7 +35,7 @@ $srv->addResponseObj(new folksoResponse('get',
 $srv->addResponseObj(new folksoResponse('post',
                                         array('required_single' => array('res', 'tag'),
                                               'required' => array('delete'),
-                                              'exclude' => array('meta', 'newresource')),
+                                              'exclude' => array('meta', 'newresource', 'ean13')),
                                         'unTag'));
 
 $srv->addResponseObj(new folksoResponse('post',
@@ -63,6 +63,11 @@ $srv->addResponseObj(new folksoResponse('post',
                                         array('required' => array('res', 'newean13', 'oldean13'),
                                               'exclude' => array('ean13', 'tag', 'delete')),
                                         'modifyEan13'));
+$srv->addResponseObj(new folksoResponse('post',
+                                        array('required' => array('delete', 'res', 'ean13'),
+                                              'exclude' => array('tag', 'note')),
+                                        'deleteEan13'));
+
 
 $srv->addResponseObj(new folksoResponse('delete',
                                         array('required' => array('res', 'tag')),
@@ -716,6 +721,61 @@ function modifyEan13 (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $db
     print "The EAN13 information was successfully modified.\n\nHave a nice day.";
   }
 }
+
+/**
+ * Delete EAN13 information from a resource.
+ */
+function deleteEan13 (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+  if (! ean13dataCheck($q->get_param('ean13'))) {
+    header('HTTP/1.1 406 Bad EAN13 data');
+    print 
+      "The folksoean13 field should consist of exactly 13 digits. "
+      ."\n\nPlease check your "
+      ."data before trying again.";
+    return;
+  }
+
+  $i = new folksoDBinteract($dbc);
+  if ($i->db_error()) {
+    header('HTTP/1.0 501 Database connection error');
+    die($i->error_info());
+  }
+
+  $sql = 
+    "DELETE FROM ean13  where (ean13 = " .  $q->get_param('ean13') . " "
+    . "AND resource_id = ";
+  if (is_numeric($q->res)) {
+    $sql .=  $q->res;
+  }
+  else {
+    $sql .= 
+      "(select id from resource where uri_normal = url_whack('"
+      . $q->res 
+      . "'))";
+  }
+  $sql .= ")";
+  $i->query($sql);
+
+  if ($i->result_status == 'DBERR') {
+    header('HTTP/1.1 501 Database insert error');
+    die($i->error_info());
+  }
+  else {
+    if ($i->affected_rows == 0) {
+      header('HTTP/1.1 404 Resource/EAN13 not found');
+      print 
+        "The combination resource + EAN13 could not be found. "
+        ."Nothing was deleted.";
+      return;
+    }
+    else {
+      header('HTTP/1.1 200 Deleted');
+      print "The EAN13 information was deleted";
+      return;
+    }
+  }
+}
+
 
 /**
  * Add a note to a resource
