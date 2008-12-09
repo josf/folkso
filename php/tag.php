@@ -302,7 +302,7 @@ function singlePostTagDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect
 
 $sql = 
   "CALL new_tag('" . 
-  $i->dbescape($q->get_param('folksonewtag')) . "')";
+  $i->dbescape(stripslashes($q->get_param('folksonewtag'))) . "')";
 
   $i->query($sql);
 
