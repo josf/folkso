@@ -175,7 +175,7 @@ class folksoDBinteract {
   public function resourcep ($url) {
     $select = '';
 
-    if (preg_match('/^\d+$/', $url)) {
+    if (is_numeric($url)) {
       $select = "SELECT id FROM resource
                  WHERE id = " .
         $this->db->real_escape_string($url) . 
