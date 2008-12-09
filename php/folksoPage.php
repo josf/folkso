@@ -114,10 +114,7 @@ class folksoPage {
     $fc->set_postfields(array('folksovisit' => 1,
                               'folksores' => $our_current_url,
                               'folksourititle' => $title ? $title : ''));
-    //print $fc->build_req();
-
     $fc->execute();
-    // print $fc->query_resultcode();
   }
 
   /**
@@ -203,20 +200,22 @@ class folksoPage {
 
 
   /**
-   * Print the current page's tag cloud.
+   * Return the current page's tag cloud.
    * 
    * Wrapper function for $p->format_cloud(). If no data is found, or
    * there is an error of some kind cloud() silently does nothing.
+   *
+   * @param $max_tags int The maximum number of tags to be included in
+   * the cloud. Default is 0, which means that no limit will be
+   * applied.
    */
   public function basic_cloud($max_tags = 0) {
     return $this->pdata->cloud($this->url, $max_tags);
   }
 
   /**
-   * Returns an assoc array containing ['html'] :an html list of
-   * resources associated with a given tag, and ['status'] the http
-   * status. Printing is left to the calling page.
-   *
+   * This looks deprecated...
+   * 
    * @param $tag Either a tag name or a tag id.
    * @returns folksPageData
    */
