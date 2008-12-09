@@ -31,7 +31,18 @@ class folksoDBinteract {
   public $connect_error= '';
   public $query_error = '';
   public $result_status;
-  
+
+  /**
+   * Convenience interface.
+   *
+   * The number of rows affected by the last INSERT, UPDATE, REPLACE
+   * or DELETE query. Shoud be identical to $mysqli->affected_rows.
+   *
+   * Note that on SELECTs, this is treated just like $db->num_rows so
+   * it cannot be used to determine if the last operation was a SELECT
+   * or not.
+   */
+  public $affected_rows;
   /**
    * When $this->first_val() is called, it stores the result here for
    * future calls.
@@ -98,13 +109,18 @@ class folksoDBinteract {
    * to 'DBERR' (error), 'NOROWS' (no error, but no result set
    * returned), 'OK' (results returned).
    *
+   * $i->affected_rows is reset to zero before each query.
+   *
    * @param string $query The complete query as it should be called,
    * with all the variables filled in.
    * @return 
    */
   public function query ($query) {
+    $this->affected_rows = 0;
     $this->first_val = ''; // reset first_val for new query (just in case).
     $this->result = $this->db->query($query);
+    $this->affected_rows = $this->db->affected_rows;
+
 
     if ($this->db->errno <> 0) {
       $this->query_error = sprintf("Query error: %s Error code: %d Query: %s", 
