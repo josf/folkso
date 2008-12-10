@@ -292,7 +292,7 @@ if ($row->total_tagevs > 0) {
   print 'class="tagged"';
 }
 else {
-  print 'class="nottagged"';
+  print 'class="resitem nottagged"';
 }
 
 
@@ -359,6 +359,8 @@ print '> ';
     '<p>Détails des tags déjà associés à cette ressource. <a class="seetags" href="#">Voir</a> '.
     '<a class="hidetags" href="#">Cacher</a> </p> '.
     '<div class="emptytags"></div>'.
+    '<div class="suggestions"><a href="#" class="getsuggestions">Suggérer</a>'.
+    '<a href="#" class="closesuggest">Fermer</a></div>'.
     '</div>'.
     '</li>';
 }
