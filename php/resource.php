@@ -198,14 +198,30 @@ function getTagsIds (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc
   if ($q->is_param('metaonly')) {
     $select .= ' AND (te.meta_id <> 1) ';
   }
-  
-  $select .= ' ORDER BY t.popularity DESC ';
+
+
 
   if ($q->is_param('limit') &&
       is_numeric($q->get_param('limit'))) {
     $select .= ' LIMIT ' . $q->get_param('limit');
   }
 
+  $select .=
+    " UNION "
+    ." SELECT DISTINCT "
+    ." ean13 AS id, ean13 AS tagdisplay, ean13 AS tagnorm, 1 AS popularity, 'EAN13' AS meta "
+    ." FROM ean13 "
+    ." WHERE resource_id = ";
+
+  if (is_numeric($q->res)) {
+    $select .= $q->res;
+  }
+  else {
+    $select .= 
+      "(select id from resource where uri_normal = url_whack('"
+      . $q->res . "'))";
+  }
+  $select .= ' ORDER BY popularity DESC ';
   $i->query($select);
 
   switch ($i->result_status) {
