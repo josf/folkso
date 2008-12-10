@@ -144,7 +144,7 @@ function isHead (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
 
 /**
  * Retrieve the tags associated with a given resource. Accepts uri or
- * id. 
+ * id. Also includes EAN13 information if available, tagged as 'EAN13'. 
  * 
  * Web parameters : GET + folksores 
  * Optional: metas only
@@ -173,7 +173,8 @@ function getTagsIds (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc
     }
   }
 
-  $select = "SELECT DISTINCT
+  $select = 
+    "SELECT DISTINCT
                 t.id as id, t.tagdisplay as tagdisplay, 
                 t.tagnorm as tagnorm, t.popularity as popularity, 
                 meta.tagdisplay as meta
