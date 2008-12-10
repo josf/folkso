@@ -343,26 +343,31 @@ print '> ';
   print '</span>';
   print '<a href="#" class="addnote">Ajouter une note</a>';
 
-  print "</p>".
+  print "</p>"
 //    '<a href="#" class="seedetails">Voir détails</a> '.
 //    '<a href="#" class="hidedetails">Cacher les détails</a></p> '.
-    '<div class="details">'.
-
-    '<div class="tagger">'. 
-    '<span class="infohead">Ajouter un tag</span> '.
-    '<input type="text" size="25" class="tagbox" maxlength="100"></input>'.
-    '<span class="infohead">Metatag (facultatif)</span>'.
-    '<select size="1" class="metatagbox">' . $metatagOptions . '</select>'.
-    '<a class="tagbutton" href="#">Valider</a>' .
-
-    '</div>' .
-    '<p>Détails des tags déjà associés à cette ressource. <a class="seetags" href="#">Voir</a> '.
-    '<a class="hidetags" href="#">Cacher</a> </p> '.
-    '<div class="emptytags"></div>'.
-    '<div class="suggestions"><a href="#" class="getsuggestions">Suggérer</a>'.
-    '<a href="#" class="closesuggest">Fermer</a></div>'.
-    '</div>'.
-    '</li>';
+    .'<div class="details">'
+    .'<div class="tagger">'
+    .'<span class="infohead">Ajouter un tag</span> '
+    .'<input type="text" size="25" class="tagbox" maxlength="100"></input>'
+    .'<span class="infohead">Metatag (facultatif)</span>'
+    .'<select size="1" class="metatagbox">' . $metatagOptions . '</select>'
+    .'<a class="tagbutton" href="#">Valider</a>' 
+    .'</div>' 
+    .'<p>Détails des tags déjà associés à cette ressource. <a class="seetags" href="#">Voir</a> '
+    .'<a class="hidetags" href="#">Cacher</a> </p> '
+    .'<div class="emptytags"></div>'
+    /** ean13 text box **/
+    .'<div class="ean13">'
+    .'<p>Saisir l\'EAN13 (ISBN) : '
+    .'<input type="text" size="13" class="ean13box" maxlength="13"></input>'
+    .'<a href="#" class="ean13button">Envoyer</a>'
+    .'</div>'
+    /** suggestions **/
+    .'<div class="suggestions"><a href="#" class="getsuggestions">Suggérer</a>'
+    .'<a href="#" class="closesuggest">Fermer</a></div>'
+    .'</div>'
+    .'</li>';
 }
 
 ?>
