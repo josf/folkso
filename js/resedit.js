@@ -48,6 +48,7 @@ $(document).ready(
         $("input.groupmod").attr("checked", "checked");
       });
 
+
     $("a.getsuggestions").click(
       function(event) {
         event.preventDefault();

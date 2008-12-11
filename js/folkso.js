@@ -139,26 +139,15 @@ function tagMenuFunkMaker(place, resid) {
     $("taglist tag", xml).each(
       function() {
         var item = $('<li>');
-        var taglink = $('<a>');
-        taglink.attr("href", tagUrl($(this).find("numid").text()));
-        taglink.attr("class", "tagdisplay");
-        taglink.append($(this).find('display').text() + ' ');
-        item.append(taglink);
-        /** add tag id **/
-        item.append($("<span class='tagid'>"
-                      + $(this).find('numid').text()
-                      + "</span>"));
-        item.append($('<a class="remtag" href="#">Désassocier</a>'));
-        /** meta tag (if not "normal") **/
-        if ($(this).find('metatag').text() != 'normal') {
-          item.append($("<span class='meta'> Relation: "
-                        + $(this).find('metatag').text()
-                        + "</span>"));
+        var metatype = $(this).find('metatag').text();
+
+        if (metatype == 'EAN13') {
+          makeEan13TagMenuItem($(this), item);
+        }
+        else {
+          makeStandardTagMenuItem($(this), item, metatype, resid, place);
         }
 
-        item.append(makeMetatagBox(resid, //closure
-                                   $(this).find('numid').text(),
-                                   place));
         ul.append(item);
       });
 
@@ -172,6 +161,103 @@ function tagMenuFunkMaker(place, resid) {
     dest.find("ul.tagmenu").each(tagremovePrepare);
   };
 }
+
+/**
+ * xml_tag is a jQuery object.
+ * tlis is a jQuery <li>.
+ * metatype is a string (we pass it as an arg to avoid getting it again
+ * from tlis.
+ *
+ * Returns the <li> built from tlis.
+ */
+function makeStandardTagMenuItem(xml_tag, tlis, metatype, resid, place) {
+  var taglink = $('<a>');
+  taglink.attr("href", tagUrl(xml_tag.find("numid").text()));
+  taglink.attr("class", "tagdisplay");
+  taglink.append(xml_tag.find('display').text() + ' ');
+  tlis.append(taglink);
+  /** add tag id **/
+  tlis.append($("<span class='tagid'>"
+                + $(this).find('numid').text()
+                + "</span>"));
+  tlis.append($('<a class="remtag" href="#">Désassocier</a>'));
+  /** meta tag (if not "normal") **/
+
+  if (metatype != 'normal') {
+    tlis.append($("<span class='meta'> Relation: "
+                  + metatype
+                  + "</span>"));
+  }
+
+  tlis.append(makeMetatagBox(resid, //closure
+                             $(this).find('numid').text(),
+                             place));
+  return tlis;
+}
+
+/**
+ *  xml_tag is a jQuery object.
+ *  tlis is a jQuery <li>
+ */
+function makeEan13TagMenuItem(xml_tag, tlis) {
+  var ean13number = xml_tag.find("numid").text();
+  tlis.append("<span class=\"ean13flag\">EAN13 / ISBN:  </span>");
+
+  /** eandisplay is clickable text that can be used to correct the number **/
+  var eandisplay = $('<span>' + ean13dashDisplay(ean13number) + '</span>');
+  eandisplay.attr("class", "ean13tagdisplay");
+  eandisplay.click(
+    function(event){
+      $(this).after($("<a href=\"#\" class=\"ean13modbutton\">Modifier</a>"));
+      $(this).replaceWith($("<input type=\"text\" "
+                   + "class=\"ean13correctbox\" size=\"16\" "
+                   + "maxlength=\"16\" value=\""
+                   + ean13dashDisplay(ean13number)
+                   + "\"><input>"));
+    });
+  tlis.append(eandisplay);
+
+  tlis.append($("<span class=\"blankspace\"> </span>"));
+
+    /** suppression **/
+  tlis.append($('<a class="remean13" href="#">Supprimer l\'EAN13</a>'));
+
+  tlis.append("<span class='infohead'>EAN13</span>");
+  return tlis;
+}
+
+  /**
+   * just a stub, so that we can format ean13 urls when it comes to
+   * that.
+   */
+
+function ean13url(ean) {
+  return ean;
+}
+
+function ean13dashDisplay(num) {
+  var ean;
+  if (num.length == 13) {
+    ean =
+      num.slice(0,3) + "-"
+    + num.slice(3,4) + "-"
+    + num.slice(4,9) + "-"
+    + num.slice(9,12) + "-"
+    + num.slice(12, 13);
+  }
+  else if (num.length == 10) {
+    ean =
+        num.slice(0,1) + "-"
+      + num.slice(1,6) + "-"
+      + num.slice(6,9) + "-"
+      + num.slice(9,10);
+    }
+   else { //error here but we just pass it on and prepend a '!'
+     ean = "!" + num;
+   }
+  return ean;
+}
+
 
 
 function metatagDropdown (list, boxclass) {
@@ -725,6 +811,13 @@ function deleteNoteButton(noteid) {
  function tagUrl(tag) {
    return  webbase + "resourceview.php?tag=" + tag; // this is probably wrong!
  }
+
+/** EAN13 stuff **/
+
+
+
+
+
 
 /**
  * Prepare the suggestion <div> which will try to get meta information

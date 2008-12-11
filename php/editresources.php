@@ -357,12 +357,6 @@ print '> ';
     .'<p>Détails des tags déjà associés à cette ressource. <a class="seetags" href="#">Voir</a> '
     .'<a class="hidetags" href="#">Cacher</a> </p> '
     .'<div class="emptytags"></div>'
-    /** ean13 text box **/
-    .'<div class="ean13">'
-    .'<p>Saisir l\'EAN13 (ISBN) : '
-    .'<input type="text" size="13" class="ean13box" maxlength="13"></input>'
-    .'<a href="#" class="ean13button">Envoyer</a>'
-    .'</div>'
     /** suggestions **/
     .'<div class="suggestions"><a href="#" class="getsuggestions">Suggérer</a>'
     .'<a href="#" class="closesuggest">Fermer</a></div>'
