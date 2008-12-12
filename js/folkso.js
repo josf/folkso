@@ -204,10 +204,10 @@ function makeEan13TagMenuItem(xml_tag, tlis, resid) {
   tlis.append("<span class=\"ean13flag\">EAN13 / ISBN:  </span>");
   var modEan13Func = makeEan13PostModFunc(ean13number,
                                           resid,
-                                          function () {
-                                            var inp = $(this).siblings("input.ean13correctbox")[0];
-                                            var newean = $(inp).val();
-                                            $(inp).replaceWith("<span>" + newean + "</span>");
+                                          function () { // what happens after the ajax post
+                                            var inp = tlis.find("input.ean13correctbox");
+                                            var newean = inp.val();
+                                            inp.replaceWith("<span>" + newean + "</span>");
                                           });
 
   /** eandisplay is clickable text that can be used to correct the number **/
@@ -219,6 +219,7 @@ function makeEan13TagMenuItem(xml_tag, tlis, resid) {
                     + "Modifier</a>").click(
                       function (event) {
                         event.preventDefault();
+                        /** argument here is the val() in the input box **/
                         modEan13Func($($(this).siblings("input.ean13correctbox")[0]).val());
                     }));
 
@@ -253,7 +254,7 @@ function makeEan13PostModFunc(ean13number, resid, onsuccess) {
                  alert("Error modifying ean13 data: " + msg + " status "
                       + xhr.statusText);
              },
-             succes: onsuccess
+             success: onsuccess
            });
   };
 }
