@@ -142,7 +142,7 @@ function tagMenuFunkMaker(place, resid) {
         var metatype = $(this).find('metatag').text();
 
         if (metatype == 'EAN13') {
-          makeEan13TagMenuItem($(this), item);
+          makeEan13TagMenuItem($(this), item, resid);
         }
         else {
           makeStandardTagMenuItem($(this), item, metatype, resid, place);
@@ -199,32 +199,65 @@ function makeStandardTagMenuItem(xml_tag, tlis, metatype, resid, place) {
  *  xml_tag is a jQuery object.
  *  tlis is a jQuery <li>
  */
-function makeEan13TagMenuItem(xml_tag, tlis) {
+function makeEan13TagMenuItem(xml_tag, tlis, resid) {
   var ean13number = xml_tag.find("numid").text();
   tlis.append("<span class=\"ean13flag\">EAN13 / ISBN:  </span>");
+  var modEan13Func = makeEan13PostModFunc(ean13number,
+                                          resid,
+                                          function () {
+                                            var inp = $(this).siblings("input.ean13correctbox")[0];
+                                            var newean = $(inp).val();
+                                            $(inp).replaceWith("<span>" + newean + "</span>");
+                                          });
 
   /** eandisplay is clickable text that can be used to correct the number **/
   var eandisplay = $('<span>' + ean13dashDisplay(ean13number) + '</span>');
   eandisplay.attr("class", "ean13tagdisplay");
   eandisplay.click(
     function(event){
-      $(this).after($("<a href=\"#\" class=\"ean13modbutton\">Modifier</a>"));
+      $(this).after($("<a href=\"#\" class=\"ean13modbutton\">"
+                    + "Modifier</a>").click(
+                      function (event) {
+                        event.preventDefault();
+                        modEan13Func($($(this).siblings("input.ean13correctbox")[0]).val());
+                    }));
+
       $(this).replaceWith($("<input type=\"text\" "
-                   + "class=\"ean13correctbox\" size=\"16\" "
-                   + "maxlength=\"16\" value=\""
+                   + "class=\"ean13correctbox\" size=\"17\" "
+                   + "maxlength=\"17\" value=\""
                    + ean13dashDisplay(ean13number)
-                   + "\"><input>"));
+                            + "\"/>"));
+
+
     });
   tlis.append(eandisplay);
 
   tlis.append($("<span class=\"blankspace\"> </span>"));
 
     /** suppression **/
-  tlis.append($('<a class="remean13" href="#">Supprimer l\'EAN13</a>'));
-
-  tlis.append("<span class='infohead'>EAN13</span>");
+  tlis.append($('<a class="remean13" href="#">Supprimer </a>'));
   return tlis;
 }
+
+function makeEan13PostModFunc(ean13number, resid, onsuccess) {
+  return function(newEan) {
+    $.ajax({
+             url: document.folksonomie.postbase + 'resource.php',
+             type: 'post',
+             data: {
+               folksores: resid,
+               folksooldean13: ean13clean(ean13number),
+               folksonewean13: ean13clean(newEan)
+             },
+             error: function(xhr, msg){
+                 alert("Error modifying ean13 data: " + msg + " status "
+                      + xhr.statusText);
+             },
+             succes: onsuccess
+           });
+  };
+}
+
 
   /**
    * just a stub, so that we can format ean13 urls when it comes to
@@ -233,6 +266,10 @@ function makeEan13TagMenuItem(xml_tag, tlis) {
 
 function ean13url(ean) {
   return ean;
+}
+
+function ean13clean(dirty) {
+  return dirty.replace(/-/g, '');
 }
 
 function ean13dashDisplay(num) {
@@ -883,8 +920,7 @@ function buildSuggestions(div, data, status) {
 function editBox(resid, lis){
   var box = $("<div class='editbox'>");
   box.append($("<div class=\"tagger\">"
-               + "<input type='text' class='tagbox' length='20'>"
-               + "</input>"
+               + "<input type='text' class='tagbox' length='20'/>"
                + " <span class=\"infohead\">"
                + "Meta</span>"
                + "<select class=\"metatagbox\" size=\"1\">"
