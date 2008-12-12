@@ -72,6 +72,12 @@ $(document).ready(
         lis.append(noteEditBox(resid));
       });
 
+    $("a.ean13addbutton").click(
+      function(event){
+        event.preventDefault();
+        postNewEan13($(this));
+      });
+
     // for debugging
     $("#ss").click(
       function(event){

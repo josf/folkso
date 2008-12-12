@@ -127,6 +127,9 @@ function tagMenuCleanupFunc(lis, tag) {
            }});
 }
 
+
+
+
 /**
  * Returns a function closed over "place", allowing us to get
  * to this variable when called without arguments in the $.ajax call.
@@ -257,6 +260,51 @@ function makeEan13PostModFunc(ean13number, resid, onsuccess) {
              success: onsuccess
            });
   };
+}
+
+/**        postNewEan13($(this)); **/
+
+/**
+ * button is the a.ean13addbutton as a $();
+ */
+
+function postNewEan13(button) {
+  var inp = $(button.siblings("input.ean13addbox")[0]);
+  var ean13 = inp.val();
+  if (! ean13validate(ean13)){
+    alert("Le code EAN13 proposé n\'est pas valable.");
+    return null;
+  }
+  var resid = $(button.parents("li.resitem")[0]).attr("id").substring(3);
+
+return  $.ajax({
+           url: document.folksonomie.postbase + 'resource.php',
+           type: 'post',
+           data: {
+             folksores: resid,
+             folksoean13: ean13clean(ean13)
+           },
+           success: function(data) {
+             alert("it worked");
+           },
+           error: function(xhr, msg) {
+             alert("Error posting new ean13 "
+                   + msg + " status " + xhr.statusText);
+           }
+         });
+}
+
+
+function ean13validate(ean){
+  var clean = ean13clean(ean);
+  if (((clean.length == 13) ||
+    (clean.length == 10)) &&
+      (clean.match(/^\d+$/))) {
+    return true;
+  }
+    else {
+      return false;
+    }
 }
 
 

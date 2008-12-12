@@ -289,7 +289,7 @@ while ($row = $i->result->fetch_object()) {
   '<li id="res' . $row->id .'"';
 
 if ($row->total_tagevs > 0) {
-  print 'class="tagged"';
+  print 'class="resitem tagged"';
 }
 else {
   print 'class="resitem nottagged"';
@@ -354,6 +354,13 @@ print '> ';
     .'<select size="1" class="metatagbox">' . $metatagOptions . '</select>'
     .'<a class="tagbutton" href="#">Valider</a>' 
     .'</div>' 
+    /** ajouter un ean13 **/
+    .'<div class="ean13add">'
+    .'<span class="infohead">Ajouter un EAN13</span>'
+    .'<input type="text" class="ean13addbox" size="17" maxlength="17"/>'
+    .'<a href="#" class="ean13addbutton">Ean13 valider</a>'
+    .'</div>'
+    /** taglist **/
     .'<p>Détails des tags déjà associés à cette ressource. <a class="seetags" href="#">Voir</a> '
     .'<a class="hidetags" href="#">Cacher</a> </p> '
     .'<div class="emptytags"></div>'
