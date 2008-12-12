@@ -99,6 +99,12 @@ li.nottagged span.lasttaggage, li.nottagged span.currenttags {
 ul.taglist {display: none;}
 
 /**  ajax-created list of tags (with commands) **/
+
+
+span.notecount {padding-left: 1em; padding-right: 1em;}
+span.ean13flag, a.tagdisplay {font-weight: bold}
+.infohead {margin-left: 0.5em;}
+
 ul.tagmenu li {border: none; margin-top: 0.3em; margin-bottom: 0.1em;}
 .tagid { padding-left: 0.5em; padding-right: 0.5em; }
 .explanation {
@@ -117,19 +123,19 @@ span.tagid {font-size: 8pt;
             display: none;
 }
 /** buttons that do real things **/
-#grouptagvalidate, a.remtag, a.tagbutton, a.metatagbutton, a.addnote { font-weight: bold;
-                                                                       color: #e66322;
-                                                                       margin-left: 0.5em; margin-right: 0.5em;
-                                                                     }
+#grouptagvalidate, a.remtag, a.tagbutton, 
+a.metatagbutton, a.addnote, a.ean13modbutton, 
+a.remean13 { 
+    font-weight: bold;
+    color: #e66322;
+    margin-left: 0.5em; margin-right: 0.5em;
+}
+
 /** suggestion controls **/
 a.closesuggest {
     display: none;
 }
 
-
-span.notecount {padding-left: 1em; padding-right: 1em;}
-a.tagdisplay {font-weight: bold}
-.infohead {margin-left: 0.5em;}
 
 a.currentpagination, a.currentpagination:visited  {
     color: #e66322; font-weight: bold;
