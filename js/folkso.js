@@ -231,11 +231,8 @@ function makeEan13TagMenuItem(xml_tag, tlis, resid) {
                    + "maxlength=\"17\" value=\""
                    + ean13dashDisplay(ean13number)
                             + "\"/>"));
-
-
     });
   tlis.append(eandisplay);
-
   tlis.append($("<span class=\"blankspace\"> </span>"));
 
     /** suppression **/
@@ -275,9 +272,10 @@ function postNewEan13(button) {
     alert("Le code EAN13 proposé n\'est pas valable.");
     return null;
   }
-  var resid = $(button.parents("li.resitem")[0]).attr("id").substring(3);
+  var lis = $(button.parents("li.resitem")[0]);
+  var resid = lis.attr("id").substring(3);
 
-return  $.ajax({
+  return  $.ajax({
            url: document.folksonomie.postbase + 'resource.php',
            type: 'post',
            data: {
@@ -285,7 +283,13 @@ return  $.ajax({
              folksoean13: ean13clean(ean13)
            },
            success: function(data) {
-             alert("it worked");
+             var cean = lis.find("span.currentean13");
+             if (cean.text().length > 0) {
+               cean.text(cean.text() + ", " + ean13);
+             }
+             else {
+               cean.text(ean13);
+             }
            },
            error: function(xhr, msg) {
              alert("Error posting new ean13 "
