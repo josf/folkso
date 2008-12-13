@@ -98,6 +98,14 @@ li.nottagged span.lasttaggage, li.nottagged span.currenttags {
 
 ul.taglist {display: none;}
 
+
+/**  inputs **/
+input.ean13addbox, input.tagbox, input.ean13correctbox {
+    margin-left: 0.6em;
+    margin-right: 0.6em;
+ }
+
+
 /**  ajax-created list of tags (with commands) **/
 
 

@@ -240,7 +240,13 @@ $fksql = "SELECT ".
   "    WHERE tee.resource_id = r.id \n".
   "    GROUP BY tee.resource_id) AS thesetags, \n".
 
-  "(SELECT COUNT(*) FROM note n \n\t".
+  "(select \n"
+  ."    group_concat(distinct e.ean13 \n"
+  ."                 separator ', ') \n"
+  ."    from ean13 e \n"
+  ."    where e.resource_id = r.id) as theseeans,  \n"
+
+  ."(SELECT COUNT(*) FROM note n \n\t".
   " WHERE n.resource_id = r.id) AS notecount, \n".
 
   "(select \n".
@@ -310,18 +316,23 @@ print '> ';
 
   if (strlen($row->thesetags) > 0) {
     print '"';
-  }
-
-  print $row->thesetags;
-
-  if (strlen($row->thesetags) > 0) {
+    print $row->thesetags;
     print '"';
   }
 
   print 
-    "</span> <span class='lasttaggage'>Date du dernier tag: " . $row->last_tagged . "</span></p>\n".
-    '<p>'.
-    '<span class="infohead">Ajouté le </span><span class="added">' . datesToFrench($row->display_date) ."</span></p>\n".
+    "</span> \n"
+    . "<span class='lasttaggage'>Date du dernier tag: " . $row->last_tagged . "</span></p>\n".
+
+      "<p class='currentean13'>EAN13/ISBN: "
+      . "<span class='currentean13'>". $row->theseeans . '</span>'
+      . "</p>";
+
+
+  print 
+    '<p>'
+    .'<span class="infohead">Ajouté le </span><span class="added">' . datesToFrench($row->display_date) ."</span>"
+    ."</p>\n".
     '<p>'.
     '<input type="checkbox" class="groupmod"></input> '. 
     '<span class="explanation">Taggage groupé</span> '.
