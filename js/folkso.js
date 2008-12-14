@@ -199,6 +199,8 @@ function makeStandardTagMenuItem(xml_tag, tlis, metatype, resid, place) {
 }
 
 /**
+ * Used when building the ajax tag menus.
+ *
  *  xml_tag is a jQuery object.
  *  tlis is a jQuery <li>
  */
@@ -236,7 +238,29 @@ function makeEan13TagMenuItem(xml_tag, tlis, resid) {
   tlis.append($("<span class=\"blankspace\"> </span>"));
 
     /** suppression **/
-  tlis.append($('<a class="remean13" href="#">Supprimer </a>'));
+  var eandelete = $('<a class="remean13" href="#">Supprimer </a>').click(
+    function(event) {
+      event.preventDefault();
+      $.ajax({
+               url: document.folksonomie.postbase + 'resource.php',
+               type: 'post',
+               data: {
+                 folksores: $($(this).parents("li.resitem")[0]).attr("id").substring(3),
+                 folksodelete: 1,
+                 folksoean13: ean13clean(
+                   $($(this).siblings("span.ean13tagdisplay")[0]).text()
+                   )
+               },
+               success: function(data) {
+                 alert("deleted");
+               },
+               error: function(xhr, msg) {
+                 alert("Problem removing ean-13 "
+                       + xhr.status + " " + xhr.statusText + " " + msg);
+               }
+             });
+    });
+  tlis.append(eandelete);
   return tlis;
 }
 
