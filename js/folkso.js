@@ -1,4 +1,41 @@
 
+jQuery.fn.extend({
+
+/**
+ * Get the parent resource id (resid) from any element contained
+ * inside a <li>, or from the <li> itself.
+ */
+                   resid : function() {
+                     if (this.is("li.resitem")) {
+                       return this.attr("id").substring(3);
+                     }
+
+                     var pars = this.parents("li.resitem");
+                     if (pars.length == 0 ) {
+                       return '';
+                     }
+                     else {
+                       var lis = $(pars[0]);
+                       return lis.attr("id").substring(3);
+                     }
+                   },
+
+
+                   tagitem: function() {
+                     if (this.is("li.tagitem")) {
+                       return this;
+                     }
+                     var pars = this.parents("li.tagitem");
+                     if (pars.length == 0){
+                       return null;
+                     }
+                     else {
+                       return $(pars[0]);
+                     }
+                   }
+}); /** end of jQuery extend
+
+
  /**
   *  "this" must be a list element from the main list of resources.
   */
@@ -61,7 +98,7 @@ function tagMenuCleanupFunc(lis, tag) {
    var remove = $(this).find("a.remtag");
 
    var taglistdiv = $(this).parent();
-   var resourceid = taglistdiv.parent().parent().attr("id").substring(3);
+   var resourceid = taglistdiv.resid();
 
    remove.click(function(event) {
          event.preventDefault();
@@ -91,7 +128,7 @@ function tagMenuCleanupFunc(lis, tag) {
   */
  function taglistHidePrepare() {
    var lis = $(this);
-   var resourceid = lis.attr("id").substring(3);
+   var resourceid = lis.resid();
 
    lis.find("a.seetags").click(
      function(event) {
@@ -127,9 +164,6 @@ function tagMenuCleanupFunc(lis, tag) {
            }});
 }
 
-
-
-
 /**
  * Returns a function closed over "place", allowing us to get
  * to this variable when called without arguments in the $.ajax call.
@@ -146,6 +180,7 @@ function tagMenuFunkMaker(place, resid) {
 
         if (metatype == 'EAN13') {
           makeEan13TagMenuItem($(this), item, resid);
+
         }
         else {
           makeStandardTagMenuItem($(this), item, metatype, resid, place);
@@ -215,7 +250,7 @@ function makeEan13TagMenuItem(xml_tag, tlis, resid) {
                                             inp.replaceWith("<span>" + newean + "</span>");
                                           });
 
-  /** eandisplay is clickable text that can be used to correct the number **/
+  /** eandisplay is clickable text that can be used to modify the data **/
   var eandisplay = $('<span>' + ean13dashDisplay(ean13number) + '</span>');
   eandisplay.attr("class", "ean13tagdisplay");
   eandisplay.click(
@@ -241,12 +276,12 @@ function makeEan13TagMenuItem(xml_tag, tlis, resid) {
   var eandelete = $('<a class="remean13" href="#">Supprimer </a>').click(
     function(event) {
       event.preventDefault();
-      var tagitem = $($(this).parents("li.tagitem")[0]);
+      var tagitem = $(this).tagitem();
       $.ajax({
                url: document.folksonomie.postbase + 'resource.php',
                type: 'post',
                data: {
-                 folksores: $($(this).parents("li.resitem")[0]).attr("id").substring(3),
+                 folksores: $(this).resid(),
                  folksodelete: 1,
                  folksoean13: ean13clean(
                    $($(this).siblings("span.ean13tagdisplay")[0]).text()
@@ -298,7 +333,7 @@ function postNewEan13(button) {
     return null;
   }
   var lis = $(button.parents("li.resitem")[0]);
-  var resid = lis.attr("id").substring(3);
+  var resid = button.resid();
 
   return  $.ajax({
            url: document.folksonomie.postbase + 'resource.php',
@@ -481,7 +516,7 @@ function groupTag() {
            },
            error: function(xhr, msg) {
              if (xhr.status == 404) {
-               if (xhr.statusText.indexOf('ag does not exist') != -1) {
+               if (xhr.statusText.indexOf('Tag does not exist') != -1) {
                  var meta2 = meta;
                  infoMessage(
                    createTagMessage(newtag,
