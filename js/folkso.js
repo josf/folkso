@@ -180,7 +180,6 @@ function tagMenuFunkMaker(place, resid) {
 
         if (metatype == 'EAN13') {
           makeEan13TagMenuItem($(this), item, resid);
-
         }
         else {
           makeStandardTagMenuItem($(this), item, metatype, resid, place);
@@ -329,7 +328,8 @@ function postNewEan13(button) {
   var inp = $(button.siblings("input.ean13addbox")[0]);
   var ean13 = inp.val();
   if (! ean13validate(ean13)){
-    alert("Le code EAN13 proposé n\'est pas valable.");
+    alert("Le code EAN13 proposé n\'est pas correcte. ["
+      + ean13clean(ean13) + "] " + ean13clean(ean13).length );
     return null;
   }
   var lis = $(button.parents("li.resitem")[0]);
@@ -369,8 +369,7 @@ function postNewEan13(button) {
 
 function ean13validate(ean){
   var clean = ean13clean(ean);
-  if (((clean.length == 13) ||
-    (clean.length == 10)) &&
+  if ((clean.length == 13) &&
       (clean.match(/^\d+$/))) {
     return true;
   }
@@ -390,7 +389,7 @@ function ean13url(ean) {
 }
 
 function ean13clean(dirty) {
-  return dirty.replace(/-/g, '');
+  return dirty.replace(/[^0-9]/g, '');
 }
 
 function ean13dashDisplay(num) {
