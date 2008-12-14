@@ -345,10 +345,10 @@ function postNewEan13(button) {
            success: function(data) {
              var cean = lis.find("span.currentean13");
              if (cean.text().length > 0) {
-               cean.text(cean.text() + ", " + ean13);
+               cean.text(cean.text() + ", " + ean13dashDisplay(ean13));
              }
              else {
-               cean.text(ean13);
+               cean.text(ean13dashDisplay(ean13));
              }
              lis.find("input.ean13addbox").val("");
            },
