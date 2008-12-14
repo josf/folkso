@@ -108,6 +108,9 @@ input.ean13addbox, input.tagbox, input.ean13correctbox {
 
 /**  ajax-created list of tags (with commands) **/
 
+a.hidetags { /** shown only after tagmenu creation **/
+    display: none;
+}
 
 span.notecount {padding-left: 1em; padding-right: 1em;}
 span.ean13flag, a.tagdisplay {font-weight: bold}
@@ -132,7 +135,7 @@ span.tagid {font-size: 8pt;
 }
 /** buttons that do real things **/
 #grouptagvalidate, a.remtag, a.tagbutton, 
-a.metatagbutton, a.addnote, a.ean13modbutton, 
+a.metatagbutton, a.addnote, a.ean13modbutton, a.ean13addbutton,
 a.remean13 { 
     font-weight: bold;
     color: #e66322;
