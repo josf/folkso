@@ -141,7 +141,7 @@ function tagMenuFunkMaker(place, resid) {
     var ul = $('<ul class="tagmenu">');
     $("taglist tag", xml).each(
       function() {
-        var item = $('<li>');
+        var item = $('<li class="tagitem">');
         var metatype = $(this).find('metatag').text();
 
         if (metatype == 'EAN13') {
@@ -241,6 +241,7 @@ function makeEan13TagMenuItem(xml_tag, tlis, resid) {
   var eandelete = $('<a class="remean13" href="#">Supprimer </a>').click(
     function(event) {
       event.preventDefault();
+      var tagitem = $($(this).parents("li.tagitem")[0]);
       $.ajax({
                url: document.folksonomie.postbase + 'resource.php',
                type: 'post',
@@ -252,7 +253,7 @@ function makeEan13TagMenuItem(xml_tag, tlis, resid) {
                    )
                },
                success: function(data) {
-                 alert("deleted");
+                 tagitem.remove();
                },
                error: function(xhr, msg) {
                  alert("Problem removing ean-13 "
