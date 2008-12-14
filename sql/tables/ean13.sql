@@ -6,4 +6,4 @@ CREATE TABLE ean13
        UNIQUE INDEX resean (resource_id, ean13),
        UNIQUE INDEX eanres (ean13, resource_id),
        FOREIGN KEY (resource_id) REFERENCES resource (id))
-ENGINE=InnoDB;
+ENGINE=InnoDB DEFAULT CHARACTER SET = 'utf8';
