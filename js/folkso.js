@@ -128,12 +128,14 @@ function tagMenuCleanupFunc(lis, tag) {
   */
  function taglistHidePrepare() {
    var lis = $(this);
-   var resourceid = lis.resid();
+   var resid = lis.resid();
 
    lis.find("a.seetags").click(
      function(event) {
        event.preventDefault();
-       getTagMenu(lis.find("div.emptytags"), resourceid);
+       getTagMenu(lis.find("div.emptytags"), resid);
+       $(this).text("Actualiser");
+       $($(this).siblings("a.hidetags")[0]).show();
      }
    );
 
