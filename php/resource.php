@@ -200,8 +200,6 @@ function getTagsIds (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc
     $select .= ' AND (te.meta_id <> 1) ';
   }
 
-
-
   if ($q->is_param('limit') &&
       is_numeric($q->get_param('limit'))) {
     $select .= ' LIMIT ' . $q->get_param('limit');
@@ -672,6 +670,14 @@ function assocEan13 (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc
         ." found in the database. \n\nPerhaps it has not yet been indexed,".
         "  or your reference is incorrect.";
     }
+    elseif ($i->db->errno == 1062) {
+      header('HTTP/1.1 409 Duplicate EAN13');
+      print 
+        "This resource/EAN13 combination is already present in the database.\n\n"
+        ."Duplicate EAN13 entries for the same resource are not allowed. This is "
+        ."slightly different from how tags work.";
+      return;
+    }
     else {
       header('HTTP/1.1 501 Database error');
       die($i->error_info());
@@ -689,8 +695,7 @@ function assocEan13 (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc
  */
 function modifyEan13 (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
 
-  if (! ((ean13dataCheck($q->get_param('oldean13'))) &&
-         (ean13dataCheck($q->get_param('newean13'))))) {
+  if (! ean13dataCheck($q->get_param('newean13'))) {
     header('HTTP/1.1 406 Bad EAN13 data');
     print 
       "The folksoean13 fields (old and new) should consist of up to 13 "

@@ -290,10 +290,18 @@ function postNewEan13(button) {
              else {
                cean.text(ean13);
              }
+             lis.find("input.ean13addbox").val("");
            },
            error: function(xhr, msg) {
-             alert("Error posting new ean13 "
-                   + msg + " status " + xhr.statusText);
+             if (xhr.status == 409) {
+               alert("Le numéro EAN13 " + ean13
+                     + " est déjà associé à cette ressource.");
+             }
+               else {
+                 alert("Error posting new ean13 "
+                 + msg + " status " + xhr.status
+                 + " " + xhr.statusText);
+               }
            }
          });
 }
@@ -330,16 +338,12 @@ function ean13dashDisplay(num) {
   if (num.length == 13) {
     ean =
       num.slice(0,3) + "-"
-    + num.slice(3,4) + "-"
-    + num.slice(4,9) + "-"
-    + num.slice(9,12) + "-"
+    + num.slice(3,12) + "-"
     + num.slice(12, 13);
   }
   else if (num.length == 10) {
     ean =
-        num.slice(0,1) + "-"
-      + num.slice(1,6) + "-"
-      + num.slice(6,9) + "-"
+        num.slice(0,9) + "-"
       + num.slice(9,10);
     }
    else { //error here but we just pass it on and prepend a '!'
