@@ -964,7 +964,10 @@ function argSort ($res, $tag, $meta, folksoDBinteract $i) {
  */
 function ean13dataCheck ($ean) {
   if ((is_numeric($ean)) &&
-      (strlen($ean) == 13)) {
+      (strlen($ean) == 13) &&
+      (substr($ean, 0,1) != '0')){ /** we could add more powerful
+                                 constraints here. if we were using
+                                 postgres, they could go in the DB **/
     return true;
   }
   else {
