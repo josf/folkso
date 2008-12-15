@@ -7,10 +7,23 @@
    * @copyright 2008 Gnu Public Licence (GPL)
    */
   /**
+   * Abstract class for data objects for use through folksoPage and
+   * more specifically folksoPageData.
+   * 
+   *
    * @package Folkso
    */
 abstract class folksoTagdata {
 
+  /**
+   * The uri of the resource being dealt with. Should be passed in on
+   * object construction.
+   */
+  public $url;
+
+  /**
+   * The actual xml document returned by the server.
+   */
   public $xml;
   /**
    * If a DOM object is made, we save it here for future use.
@@ -24,15 +37,28 @@ abstract class folksoTagdata {
   public $status;
 
   /**
-   * A folksoPageDataMeta object for building meta data. Right now the
-   * mt object must be created, does not exist by default.
+   * Local data (subclass of folksoLocal)
+   * @param folksoLocal object
    */
-  public $mt;
+public $loc;
+
+  public function __construct (folksoFabula $loc, $url) {
+    $this->loc = $loc;
+    $this->url = $url;
+  }
 
   public function store_new_xml ($xml, $status) {
     $this->xml = $xml;
     $this->status = $status;
   }
+
+  /**
+   * Retrieve raw data from the server.
+   */
+  abstract public function getData($max_tags = 0, $meta_only = false);
+
+  /*  abstract public function formatData(); */
+
 
   /**
    * @return DOMDocument containing the XML in $this->xml. If there is
