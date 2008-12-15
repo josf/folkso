@@ -208,7 +208,8 @@ function getTagsIds (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc
   $select .=
     " UNION "
     ." SELECT DISTINCT "
-    ." ean13 AS id, ean13 AS tagdisplay, ean13 AS tagnorm, 1 AS popularity, 'EAN13' AS meta "
+    ." ean13 AS id, convert(ean13, char) AS tagdisplay, "
+    ." convert(ean13, char) AS tagnorm, 1 AS popularity, 'EAN13' AS meta "
     ." FROM ean13 "
     ." WHERE resource_id = ";
 
