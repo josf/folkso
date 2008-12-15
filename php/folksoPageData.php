@@ -6,16 +6,22 @@
  * @copyright Joseph Fahey 2008
  */
 
-
-require_once('folksoClient.php');
 require_once('folksoFabula.php');
-require_once('folksoPage.php');
 require_once('folksoCloud.php');
 require_once('folksoPagetags.php');
-
+require_once('folksoPageDataMeta.php');
 
 /**
  * @package Folkso
+ *
+ * Class allowing access to the various kinds of objects pertaining to
+ * a given page:  tagclouds, metadata, tag lists.
+ * 
+ * The primary function of this page is to build these objects that
+ * can then be used in folksoPage. This class could probably be
+ * absorbed by folksoPage, but it does allow folksoPage, which is
+ * intended to be the primary, if not the sole, interface for
+ * webpages, to be a little bit cleaner.
  */
 class folksoPageData {
   

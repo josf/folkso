@@ -11,6 +11,7 @@ require_once('folksoClient.php');
 require_once('folksoFabula.php');
 require_once('folksoPageData.php');
 require_once('folksoPageDataMeta.php');
+
 /**
  * A class that regroups the functions that might be called from a
  * page: presentation, certain database interaction, tag clouds etc.
