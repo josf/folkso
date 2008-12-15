@@ -55,6 +55,15 @@ $(document).ready(
         $(this).parent().each(setupSuggestionDiv);
       });
 
+    $("a.closesuggest").click(
+      function(event){
+        event.preventDefault();
+        $(this).parent().find("ul").hide();
+        $(this).siblings("a.getsuggestions").show();
+        $(this).hide();
+      }
+    );
+
     $("a.existingnotes").click(
       function(event){
         event.preventDefault();

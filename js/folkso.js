@@ -32,7 +32,25 @@ jQuery.fn.extend({
                      else {
                        return $(pars[0]);
                      }
+                   },
+
+                   /**
+                    * Find the current <li class="resitem">
+                    */
+
+                   resitem: function() {
+                     if (this.is("li.resitem")) {
+                       return this;
+                     }
+                     var pars = this.parents("li.resitem");
+                     if (pars.length == 0){
+                       return null;
+                     }
+                     else {
+                       return $(pars[0]);
+                     }
                    }
+
 }); /** end of jQuery extend
 
 
@@ -991,11 +1009,11 @@ function setupSuggestionDiv() {
   div.find("a.closesuggest").show();
 
   var nodata_f = function() {
-    div.append("<p>Il n'y a pas de suggestion disponible.</p>");
+    div.append("<p>Erreur: l'url est incorrect ou indisponible.</p>");
   };
 
-  var lis = div.parents("li.tagged")[0];
-  var url = $(lis).find("a.resurl").attr("href");
+  var lis = div.resitem();
+  var url = lis.find("a.resurl").attr("href");
 
   var success_f = function(data, status){
     buildSuggestions(div, data, status);
@@ -1022,13 +1040,22 @@ function buildSuggestions(div, data, status) {
                        res: ''},
                      { name: 'ISBN',
                        reg: /<meta\s+scheme="ISBN"\s+content="([^"]+)"/,
-                       res: ''}];
+                       res: ''},
+                     { name: 'EAN13',
+                       reg: /<meta\s+name="DC.Identifier"\s+scheme="ISBN"\scontent="([^"]+)"/,
+                       res: ''}
+                         ];
   var sul = $("<ul class='suggestions'>");
   for (var it = 0; it < search_objs.length; it++){
     var m = data.match(search_objs[it].reg);
     if (m){ //on successful match
       search_objs[it].res = m[1];
       sul.append("<li>" + search_objs[it].name + ": " + m[1] + "</li>");
+        var lis = div.resitem();
+      if ((search_objs[it].name == 'EAN13') &&
+          (lis.find("input.ean13addbox").val() == '')) {
+            lis.find("input.ean13addbox").val(search_objs[it].res);
+            }
     }
   }
 

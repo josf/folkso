@@ -147,6 +147,11 @@ a.closesuggest {
     display: none;
 }
 
+ul.suggestions li {
+               border: none;
+               margin-bottom: 0em; 
+               margin-top: 0em;
+}
 
 a.currentpagination, a.currentpagination:visited  {
     color: #e66322; font-weight: bold;
