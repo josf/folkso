@@ -99,8 +99,8 @@ class folksoPage {
    * the cloud. Default is 0, which means that no limit will be
    * applied.
    */
-  public function basic_cloud($max_tags = 0) {
-    $cloud = $this->pdata->prepareCloud('', $max_tags);
+  public function basic_cloud($url = '', $max_tags = 0) {
+    $cloud = $this->pdata->prepareCloud($url, $max_tags);
     return $cloud->html;
   }
 
@@ -112,7 +112,7 @@ class folksoPage {
   public function DC_description_list($url = ''){
     $mt = $this->pdata->prepareMetaData($url ? $url : $this->url);
 
-    if ($this->pdata->is_valid()) {
+    if ($this->pdata->ptags->is_valid()) {
       return $mt->meta_description_textlist();
     }
   }
@@ -321,12 +321,6 @@ class folksoPage {
    *
    * @returns string.
    */
-  public function meta_keywords($fallback = FALSE, $max = 20) {
-    $url = $this->curPageUrl();
-
-    $rm = $this->resourceMetas($url, $fallback, $max);
-    return $rm->meta_keywords();
-  }
 
 }
 

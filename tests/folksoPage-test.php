@@ -25,12 +25,13 @@ class testOffolksoPage extends  UnitTestCase {
 
   function testMetas () {
     $page = new folksoPage(26663);
-    $this->assertIsA($page->pdata->resourceMetas(), folksoPageDataMeta);
-    $this->assertTrue((is_string($page->pdata->mt->meta_keywords()) &&
-                       (strlen($page->pdata->mt->meta_keywords()) > 10)));
-    $this->assertPattern('/<meta/', $page->pdata->mt->meta_keywords());
-    $this->assertTrue((is_string($page->pdata->mt->meta_textlist()) &&
-                       (strlen($page->pdata->mt->meta_textlist()) > 10)));
+    $page->pdata->prepareMetaData();
+    $this->assertIsA($page->pdata->mt, folksoPageDataMeta);
+    $this->assertTrue((is_string($page->keyword_list()) &&
+                       (strlen($page->keyword_list()) > 10)));
+    $this->assertPattern('/<meta/', $page->meta_keywords());
+    $this->assertTrue((is_string($page->meta_keywords()) &&
+                       (strlen($page->meta_keywords()) > 10)));
     $this->assertTrue(is_string($page->DC_description_list()));
   }
 }//end class
