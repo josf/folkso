@@ -251,6 +251,7 @@ function makeEan13TagMenuItem(xml_tag, tlis, resid) {
                                             var inp = tlis.find("input.ean13correctbox");
                                             var newean = inp.val();
                                             inp.replaceWith("<span>" + newean + "</span>");
+                                            tlis.find("a.ean13modbutton").remove();
                                           });
 
   /** eandisplay is clickable text that can be used to modify the data **/
