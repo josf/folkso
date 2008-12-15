@@ -72,6 +72,24 @@ class folksoPage {
   }
 
   /**
+   * Wrapper for $mt->meta_keywords(). 
+   * Returns a complete <meta
+   * name="keywords"...> element based on tags marked as "Sujet
+   * principal".
+   * 
+   * @param $url optional default '' The url or id of the resource in question.
+   */
+  public function meta_keywords($url = '') {
+    $mt = $this->pdata->prepareMetaData($url); /** this is probably
+                                                  cached, no need to
+                                                  worry **/
+
+    if ($this->pdata->ptags->is_valid()) {
+      return $mt->meta_keywords();
+    }
+  }
+
+  /**
    * Return the current page's tag cloud.
    * 
    * Wrapper function for $p->format_cloud(). If no data is found, or
