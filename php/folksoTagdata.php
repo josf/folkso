@@ -1,8 +1,5 @@
 <?php 
   /**
-   * Abstract class for data objects for use through folksoPage and
-   * more specifically folksoPageData.
-   * 
    *
    * @package Folkso
    * @subpackage webinterface
