@@ -1,9 +1,5 @@
 <?php
   /**
-   * A class that regroups the functions that might be called from a
-   * page: presentation, certain database interaction, tag clouds etc.
-   * Ideally, a page should be able to include this library alone in
-   * order to access all the tag and resource functionalities.
    *
    * @package Folkso
    * @author Joseph Fahey
@@ -16,6 +12,11 @@ require_once('folksoFabula.php');
 require_once('folksoPageData.php');
 require_once('folksoPageDataMeta.php');
 /**
+ * A class that regroups the functions that might be called from a
+ * page: presentation, certain database interaction, tag clouds etc.
+ * Ideally, a page should be able to include this library alone in
+ * order to access all the tag and resource functionalities.
+ *
  * @package Folkso
  */
 class folksoPage {

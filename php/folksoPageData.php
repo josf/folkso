@@ -158,8 +158,6 @@ class folksoPageData {
     if ($this->ptags instanceof folksoPagetags) {
       return $this->ptags;
     }
-
-
     $fc = new folksoClient($this->loc->db_server,
                            $this->loc->get_path . 'resource.php',
                            'GET');
