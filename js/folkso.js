@@ -142,7 +142,9 @@ function tagMenuCleanupFunc(lis, tag) {
    lis.find("a.hidetags").click(
      function(event) {
        event.preventDefault();
+       $($(this).siblings("a.seetags")[0]).text("Voir");
        lis.find("ul.tagmenu").remove();
+       $(this).hide();
        }
    );
  }
