@@ -1,11 +1,6 @@
 <?php
 
   /**
-   * A class for passing around database handles and connection information. 
-   *
-   * Essentially, this class wraps up database information and
-   * possibly a database connection so that the connection is not made
-   * until required.
    *
    * @package Folkso
    * @author Joseph Fahey
@@ -13,6 +8,12 @@
    * @subpackage Tagserv
    */
   /**
+   * A class for passing around database handles and connection information. 
+   *
+   * Essentially, this class wraps up database information and
+   * possibly a database connection so that the connection is not made
+   * until required.
+   *
    * @package Folkso
    */
 class folksoDBconnect {

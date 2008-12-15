@@ -1,7 +1,5 @@
 <?php
   /**
-   * Interact with the database. A thin layer of abstraction between
-   * scripts and the DB with some helpful functions.
    * 
    * 
    * @package Folkso
@@ -14,6 +12,8 @@
 require_once('folksoDBconnect.php');
 
 /**
+ * Interact with the database. A thin layer of abstraction between
+ * scripts and the DB with some helpful functions.
  * @package Folkso
  */
 class folksoDBinteract {
