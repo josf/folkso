@@ -1,8 +1,5 @@
 <?php 
   /**
-   * Cloud objects for use through folksoPage and more specifically
-   * folksoPageData.
-   * 
    *
    * @package Folkso
    * @author Joseph Fahey
@@ -10,10 +7,14 @@
    * @subpackage webinterface
    */
 
-
 require_once('folksoTagdata.php');
 
   /**
+   *
+   * Cloud objects for use through folksoPage and more specifically
+   * folksoPageData.
+   * 
+   *
    * @package Folkso
    */
 class folksoCloud extends folksoTagdata {
