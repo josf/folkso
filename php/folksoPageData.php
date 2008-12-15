@@ -149,7 +149,7 @@ class folksoPageData {
 
 
   /**
-   * Sets the $this->ptags object.
+   * Retrieves an xml list of  tags and sets the $this->ptags object.
    * 
    * @param A resource, either an id or a URL.
    * @returns folksoPagetags with only the xml part ($rm->xml).
