@@ -61,10 +61,10 @@ class folksoPage {
    * @param $url string This is really for testing only and is not meant to be used.
    */
   public function keyword_list($url = '') {
-    $this->pdata->resourceMetas($url ? $url : $this->url,
-                                true);
+    $mt = $this->pdata->prepareMetaData($url);
+
     if ($this->pdata->ptags->is_valid()) {
-      return $this->pdata->mt->meta_textlist();
+      return $mt->meta_textlist();
     }
     else {
       return false; // no tags or no resource.
@@ -72,13 +72,30 @@ class folksoPage {
   }
 
   /**
+   * Return the current page's tag cloud.
+   * 
+   * Wrapper function for $p->format_cloud(). If no data is found, or
+   * there is an error of some kind cloud() silently does nothing.
+   *
+   * @param $max_tags int The maximum number of tags to be included in
+   * the cloud. Default is 0, which means that no limit will be
+   * applied.
+   */
+  public function basic_cloud($max_tags = 0) {
+    $cloud = $this->pdata->prepareCloud('', $max_tags);
+    return $cloud->html;
+  }
+
+
+  /**
    * Returns a string consting of a comma separated list of all the
    * tags associated with the given resource.
    */
   public function DC_description_list($url = ''){
-    $this->pdata->resourceMetas( $url ? $url : $this->url);
-    if ($this->pdata->ptags->is_valid()) {
-      return $this->pdata->mt->meta_description_textlist();
+    $mt = $this->pdata->prepareMetaData($url ? $url : $this->url);
+
+    if ($this->pdata->is_valid()) {
+      return $mt->meta_description_textlist();
     }
   }
 
@@ -152,8 +169,6 @@ class folksoPage {
     return $pageURL;
   }
 
-
-
   /**
    * Check user agents against list of strings. Standard list is used
    * first, then optional site specific list.
@@ -198,21 +213,6 @@ class folksoPage {
       }
     }
     return false;
-  }
-
-
-  /**
-   * Return the current page's tag cloud.
-   * 
-   * Wrapper function for $p->format_cloud(). If no data is found, or
-   * there is an error of some kind cloud() silently does nothing.
-   *
-   * @param $max_tags int The maximum number of tags to be included in
-   * the cloud. Default is 0, which means that no limit will be
-   * applied.
-   */
-  public function basic_cloud($max_tags = 0) {
-    return $this->pdata->cloud($this->url, $max_tags);
   }
 
   /**
