@@ -278,12 +278,25 @@ function makeEan13TagMenuItem(xml_tag, tlis, resid) {
   eandisplay.click(
     function(event){
       $(this).after($("<a href=\"#\" class=\"ean13modbutton\">"
-                    + "Modifier</a>").click(
-                      function (event) {
-                        event.preventDefault();
-                        /** argument here is the val() in the input box **/
-                        modEan13Func($($(this).siblings("input.ean13correctbox")[0]).val());
-                    }));
+                      + "Modifier</a>").click(
+                        function (event) {
+                          event.preventDefault();
+                          /** argument here is the val() in the input box **/
+                          var eanbox = $($(this).siblings("input.ean13correctbox")[0]);
+                          var newean = eanbox.val();
+                          if (ean13validate(newean)){
+                            if (ean13clean(newean)  == ean13clean(ean13number)){
+                              alert("Les deux EAN-13 sont identiques");
+                            }
+                            else{
+                              modEan13Func(newean);
+                            }
+                          }
+                          else {
+                            alert("L'EAN-13 proposé semble incorrect.");
+                            eanbox.val(ean13number);
+                          }
+                        }));
 
       $(this).replaceWith($("<input type=\"text\" "
                    + "class=\"ean13correctbox\" size=\"17\" "
