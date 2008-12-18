@@ -71,6 +71,15 @@ abstract class folksoTagdata {
 
 
   /**
+   * Get the DOM document object from the current xml data.
+   *
+   * If $this->xml_dom is not yet a DOMDocument object, generates one
+   * from the current xml data (retreived from server). If a
+   * DOMDocument already exists, we just return that one.
+   *
+   * There does not appear to be a way to get anything but a php
+   * warning if there are problems building the DOM object.
+   *
    * @return DOMDocument containing the XML in $this->xml. If there is
    * no data, returns an empty DOMDocument.
    */
