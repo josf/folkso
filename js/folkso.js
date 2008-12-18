@@ -393,13 +393,58 @@ function postNewEan13(button) {
 function ean13validate(ean){
   var clean = ean13clean(ean);
   if ((clean.length == 13) &&
-      (clean.match(/^\d+$/))) {
-    return true;
-  }
+      (clean.match(/^\d+$/)) &&
+      (ean13ValidateChecksum(clean))) {
+      return true;
+    }
     else {
       return false;
     }
 }
+
+function ean13ValidateChecksum (num) {
+  var eanS = num.toString();
+  if (ean13Checksum(num) ==  parseInt(eanS.slice(12,13))){
+    return true;
+  }
+  else {
+    return false;
+  }
+}
+
+function ean13Checksum (ean) {
+  var eanS = ean.toString();
+  var douze = eanS.slice(0, 12);
+  var product = 0;
+  var pos = 0;
+
+  for (var it = 0; it < douze.length; ++it){
+    pos = it + 1;
+    if (oddp(pos)) {
+      product = parseInt(douze.charAt(it)) + product;
+    }
+    else {
+      product = (parseInt(douze.charAt(it)) * 3) + product;
+    }
+  }
+  if ((product % 10) == 0) {
+    return 0;
+  }
+  else {
+    return 10 - (product % 10);
+  }
+  return parse;
+}
+
+function oddp (num) {
+  if ((num % 2) == 1) {
+    return true;
+  }
+  else {
+    return false;
+  }
+}
+
 
 
   /**
