@@ -40,16 +40,26 @@ abstract class folksoTagdata {
    * Local data (subclass of folksoLocal)
    * @param folksoLocal object
    */
-public $loc;
+  public $loc;
 
   public function __construct (folksoFabula $loc, $url) {
     $this->loc = $loc;
     $this->url = $url;
   }
 
+  /**
+   * Stores away the results of a query. If the query is not valid
+   * (200 or 304), does not store the XML content, which might be the
+   * explanation of an error returned by the server.
+   *
+   * @param $xml string XML data from the server
+   * @param $status integer HTTP status from the request.
+   */
   public function store_new_xml ($xml, $status) {
-    $this->xml = $xml;
     $this->status = $status;
+    if ($this->is_valid()) {
+      $this->xml = $xml;
+    }
   }
 
   /**

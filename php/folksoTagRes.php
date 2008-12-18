@@ -49,11 +49,30 @@ class folksoTagRes extends folksoTagdata {
   }
 
   /**
+   *
    * @return string html for a list of resources referenced by the
    * given tag.
+   *
+   * 
    */
   public function resList() {
-       
+    if (! strlen($this->xml) > 0) {
+      $this->getData();  // args ?
+    }
+
+    if ($this->is_valid()) {
+      $xsl = new DOMDocument();
+      $xsl->load($this->loc->xsl_dir . "public_resourcelist.xsl");
+
+      $proc = new XsltProcessor();
+      $xsl = $proc->importStylesheet($xsl);
+      $taglist = $proc->transformToDoc($this->xml_DOM());
+
+
+
+
+    }
+    
 
 
   }

@@ -33,6 +33,7 @@ class testOffolksoPage extends  UnitTestCase {
     $this->assertTrue((is_string($page->meta_keywords()) &&
                        (strlen($page->meta_keywords()) > 10)));
     $this->assertTrue(is_string($page->DC_description_list()));
+    $this->assertIsA($page->pdata->ptags, folksoTagdata); // inheritance works!
   }
 }//end class
 
