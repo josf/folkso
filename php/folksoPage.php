@@ -356,7 +356,7 @@ class folksoPage {
     $this->tr->getData($url);
 
     if ($this->tr->is_valid()) {
-      $html .= '<h2 class="tagtitle">' . $this->tr->title() . "</h2>\n";
+//      $html .= '<h2 class="tagtitle">' . $this->tr->title() . "</h2>\n";
       $html .= $this->tr->resList();
     }
     elseif ($this->tr->status == 204) {
