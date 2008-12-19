@@ -3,6 +3,7 @@
    *
    * @package Folkso
    * @subpackage webinterface
+   * @subsubpackage Page
    * @author Joseph Fahey
    * @copyright 2008 Gnu Public Licence (GPL)
    */
