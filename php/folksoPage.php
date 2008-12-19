@@ -371,6 +371,7 @@ class folksoPage {
       $html .= '<h2 class="tagtitle">Erreur</h2>';
       $html .= '<p>Il y a eu une erreur quelque part.</p>';
     }
+    return $html;
   }
 
 
