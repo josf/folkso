@@ -11,6 +11,7 @@ require_once('folksoClient.php');
 require_once('folksoFabula.php');
 require_once('folksoPageData.php');
 require_once('folksoPageDataMeta.php');
+require_once('folksoTagRes.php');
 
 /**
  * A class that regroups the functions that might be called from a
@@ -39,6 +40,18 @@ class folksoPage {
    * called.
    */
   public $url;
+
+  /**
+   * Tag Resource object for displaying lists of resources.
+   *
+   * This goes beyond the typical resource oriented use of this class
+   * to allow us to build resource lists around a single tag while
+   * taking advantage of all our existing code. Sorry if this is too
+   * much of a hack, maybe someday it will move on to its own package,
+   * but for now I would like folksoPage be the only necessary interface. 
+   *
+   */
+  public $tr;
 
   public function __construct($url = '') {
     $this->loc = new folksoFabula();
@@ -321,6 +334,46 @@ class folksoPage {
    *
    * @returns string.
    */
+
+
+  /**
+   * Tag resource list.
+   * 
+   * Presentation function. Everything formatted and configured,
+   * including the title and error messages. Everything is returned as
+   * one big string.
+   */
+  public function TagResources ($tag = '') {
+    if (empty($tag)) {
+      $tag = $this->url;
+    }
+
+    if (! $this->tr instanceof folksoTagRes) {
+      $this->tr = new folksoTagRes($this->loc, $tag);
+    }
+
+    $html = '';
+    $this->tr->getData($url);
+
+    if ($this->tr->is_valid()) {
+      $html .= '<h2 class="tagtitle">' . $this->tr->title() . "</h2>\n";
+      $html .= $this->tr->resList();
+    }
+    elseif ($this->tr->status == 204) {
+      $html .= '<h2 class="tagtitle">' . $this->tr->title() . "</h2>\n";
+      $html .= '<p>Aucune ressource n\'est associée à ce tag.</p>';
+    }
+    elseif ($this->tr->status == 404) {
+      $html .= '<h2 class="tagtitle">Tag non trouvé</h2>';
+      $html .= '<p>Le tag demandé ne semble pas exister.</p>';
+    }
+    else {
+      $html .= '<h2 class="tagtitle">Erreur</h2>';
+      $html .= '<p>Il y a eu une erreur quelque part.</p>';
+    }
+  }
+
+
 
 }
 

@@ -13,6 +13,9 @@
    * @package Folkso
    */
 
+require_once('folksoTagdata.php');
+require_once('folksoClient.php');
+
 class folksoTagRes extends folksoTagdata {
   
   /**
@@ -29,9 +32,11 @@ class folksoTagRes extends folksoTagdata {
   public $loc;
 
   /**
-   * Beyond the interface. The display text of the tag.
+   * Beyond the interface. The display text of the tag. Use
+   * $tr->title() to access this.
    */
-  public $title;
+  private $title;
+
 
   /**
    * Ok, so $meta_only doesn't mean anything in this class. So sue
@@ -41,22 +46,31 @@ class folksoTagRes extends folksoTagdata {
     $fc = new folksoClient('localhost',
                            $this->loc->server_web_path . 'tag.php',
                            'GET');
-    $fc->set_getfields('folksotag' => $url,
-                       'folksodatatype' => 'xml');
+    $fc->set_getfields(array('folksotag' => $this->url,
+                             'folksofancy' => 1,
+                             'folksodatatype' => 'xml'));
     $result = $fc->execute();
     $status = $fc->query_resultcode();
     $this->store_new_xml($result, $status);
   }
 
   /**
+   * Return a formatted html list of resources associated with a given
+   * tag.
    *
+   * The caller should check the $tr->status variable to see if the
+   * query was successful. On anything but a 200 or 304, this method
+   * returns nothing, but it would generally be useful to have a
+   * warning for 204 (no resources yet for this tag) or 404 (tag not
+   * found).
+   * 
    * @return string html for a list of resources referenced by the
    * given tag.
    *
    * 
    */
   public function resList() {
-    if (! strlen($this->xml) > 0) {
+    if (strlen($this->xml) == 0) {
       $this->getData();  // args ?
     }
 
@@ -66,14 +80,33 @@ class folksoTagRes extends folksoTagdata {
 
       $proc = new XsltProcessor();
       $xsl = $proc->importStylesheet($xsl);
-      $taglist = $proc->transformToDoc($this->xml_DOM());
 
-
-
-
+      // possibly cached DOM
+      $taglist = $proc->transformToDoc($this->xml_DOM()); 
+      $this->html = $taglist->saveXML();
+      return $this->html;
     }
-    
+  }
+
+  /**
+   * Stores the current tag title in $tr->title.
+   *
+   * @returns string The title of the current tag.
+   */
+  public function title() {
+    if (! $this->status) {
+      $this->getData();
+    }
+    $dom = $this->xml_DOM();
+    $elems = $dom->getElementsByTagName("tagtitle");
+    if ($elems->length > 0) {
+      $this->title = $elems->item(0)->textContent;
+      return $this->title;
+    }
+    else {
+      return '';
+    }
+  }
 
 
-  }
-  }
+  } /* end of class */
