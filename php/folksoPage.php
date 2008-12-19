@@ -11,6 +11,8 @@ require_once('folksoClient.php');
 require_once('folksoFabula.php');
 require_once('folksoPageData.php');
 require_once('folksoPageDataMeta.php');
+require_once('folksoTagRes.php');
+
 /**
  * A class that regroups the functions that might be called from a
  * page: presentation, certain database interaction, tag clouds etc.
@@ -39,6 +41,18 @@ class folksoPage {
    */
   public $url;
 
+  /**
+   * Tag Resource object for displaying lists of resources.
+   *
+   * This goes beyond the typical resource oriented use of this class
+   * to allow us to build resource lists around a single tag while
+   * taking advantage of all our existing code. Sorry if this is too
+   * much of a hack, maybe someday it will move on to its own package,
+   * but for now I would like folksoPage be the only necessary interface. 
+   *
+   */
+  public $tr;
+
   public function __construct($url = '') {
     $this->loc = new folksoFabula();
     if ($url) {
@@ -60,10 +74,10 @@ class folksoPage {
    * @param $url string This is really for testing only and is not meant to be used.
    */
   public function keyword_list($url = '') {
-    $this->pdata->resourceMetas($url ? $url : $this->url,
-                                true);
+    $mt = $this->pdata->prepareMetaData($url);
+
     if ($this->pdata->ptags->is_valid()) {
-      return $this->pdata->mt->meta_textlist();
+      return $mt->meta_textlist();
     }
     else {
       return false; // no tags or no resource.
@@ -71,13 +85,48 @@ class folksoPage {
   }
 
   /**
+   * Wrapper for $mt->meta_keywords(). 
+   * Returns a complete <meta
+   * name="keywords"...> element based on tags marked as "Sujet
+   * principal".
+   * 
+   * @param $url optional default '' The url or id of the resource in question.
+   */
+  public function meta_keywords($url = '') {
+    $mt = $this->pdata->prepareMetaData($url); /** this is probably
+                                                  cached, no need to
+                                                  worry **/
+
+    if ($this->pdata->ptags->is_valid()) {
+      return $mt->meta_keywords();
+    }
+  }
+
+  /**
+   * Return the current page's tag cloud.
+   * 
+   * Wrapper function for $p->format_cloud(). If no data is found, or
+   * there is an error of some kind cloud() silently does nothing.
+   *
+   * @param $max_tags int The maximum number of tags to be included in
+   * the cloud. Default is 0, which means that no limit will be
+   * applied.
+   */
+  public function basic_cloud($url = '', $max_tags = 0) {
+    $cloud = $this->pdata->prepareCloud($url, $max_tags);
+    return $cloud->html;
+  }
+
+
+  /**
    * Returns a string consting of a comma separated list of all the
    * tags associated with the given resource.
    */
   public function DC_description_list($url = ''){
-    $this->pdata->resourceMetas( $url ? $url : $this->url);
+    $mt = $this->pdata->prepareMetaData($url ? $url : $this->url);
+
     if ($this->pdata->ptags->is_valid()) {
-      return $this->pdata->mt->meta_description_textlist();
+      return $mt->meta_description_textlist();
     }
   }
 
@@ -151,8 +200,6 @@ class folksoPage {
     return $pageURL;
   }
 
-
-
   /**
    * Check user agents against list of strings. Standard list is used
    * first, then optional site specific list.
@@ -197,21 +244,6 @@ class folksoPage {
       }
     }
     return false;
-  }
-
-
-  /**
-   * Return the current page's tag cloud.
-   * 
-   * Wrapper function for $p->format_cloud(). If no data is found, or
-   * there is an error of some kind cloud() silently does nothing.
-   *
-   * @param $max_tags int The maximum number of tags to be included in
-   * the cloud. Default is 0, which means that no limit will be
-   * applied.
-   */
-  public function basic_cloud($max_tags = 0) {
-    return $this->pdata->cloud($this->url, $max_tags);
   }
 
   /**
@@ -302,12 +334,47 @@ class folksoPage {
    *
    * @returns string.
    */
-  public function meta_keywords($fallback = FALSE, $max = 20) {
-    $url = $this->curPageUrl();
 
-    $rm = $this->resourceMetas($url, $fallback, $max);
-    return $rm->meta_keywords();
+
+  /**
+   * Tag resource list.
+   * 
+   * Presentation function. Everything formatted and configured,
+   * including the title and error messages. Everything is returned as
+   * one big string.
+   */
+  public function TagResources ($tag = '') {
+    if (empty($tag)) {
+      $tag = $this->url;
+    }
+
+    if (! $this->tr instanceof folksoTagRes) {
+      $this->tr = new folksoTagRes($this->loc, $tag);
+    }
+
+    $html = '';
+    $this->tr->getData($url);
+
+    if ($this->tr->is_valid()) {
+//      $html .= '<h2 class="tagtitle">' . $this->tr->title() . "</h2>\n";
+      $html .= $this->tr->resList();
+    }
+    elseif ($this->tr->status == 204) {
+      $html .= '<h2 class="tagtitle">' . $this->tr->title() . "</h2>\n";
+      $html .= '<p>Aucune ressource n\'est associée à ce tag.</p>';
+    }
+    elseif ($this->tr->status == 404) {
+      $html .= '<h2 class="tagtitle">Tag non trouvé</h2>';
+      $html .= '<p>Le tag demandé ne semble pas exister.</p>';
+    }
+    else {
+      $html .= '<h2 class="tagtitle">Erreur</h2>';
+      $html .= '<p>Il y a eu une erreur quelque part.</p>';
+    }
+    return $html;
   }
+
+
 
 }
 

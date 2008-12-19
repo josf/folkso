@@ -190,6 +190,7 @@ function getTagDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) 
  * We might have to think about adding a way to announce whether there
  * is a "next page" or not.
  * 
+ * Currently supports xhtml and xml dataformats.
  */
 function getTagResourcesDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
   $i = new folksoDBinteract($dbc);
@@ -200,7 +201,7 @@ function getTagResourcesDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconne
     return;
   }
 
-  // check to see if tag exists
+  // check to see if tag exists -- can this be done with the main query instead?
   if (!$i->tagp($q->tag)) {
     if ($i->db_error()) {
       header('HTTP/1.0 501 Database problem');

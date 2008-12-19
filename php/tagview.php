@@ -17,7 +17,7 @@
 require_once('folksoPage.php');
 require_once('folksoPageData.php');
 
-$page = new folksoPage();
+
 
 $tagreq = $_GET['tag'];
 
@@ -26,11 +26,12 @@ if ((strlen($tagreq) == 0) ||
   die("Requête malformée, tag impossible");
 }
 
-$taglist = $page->public_tag_resource_list($tagreq);
+$page = new folksoPage($tagreq);
+$taglist = $page->TagResources();
 
 print "<title>Fabula - Tags - tag \"";
-if ($taglist->is_valid()) {
-  print $taglist->title;
+if ($page->tr->is_valid()) {
+  print $page->tr->title();
 }
 else {
   print " Erreur ";
@@ -38,9 +39,9 @@ else {
 
 print "\"</title>\n</head>\n<body>\n<div id='container'>";
 
-if ($taglist->is_valid()) {
+if ($page->tr->is_valid()) {
   print "<h1>Ressources associées au tag : </h1>\n";
-  print $taglist->html;
+  print $taglist; 
 }
 
 print "</div>\n</body>\n";
