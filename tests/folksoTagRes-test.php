@@ -62,8 +62,6 @@ class testOffolksoTagRes extends  UnitTestCase {
     $this->assertTrue(is_string($tr->title()));
     $this->assertTrue(strlen($tr->title()) > 5);
   }
-
-
 }
 
 

@@ -35,6 +35,17 @@ class testOffolksoPage extends  UnitTestCase {
     $this->assertTrue(is_string($page->DC_description_list()));
     $this->assertIsA($page->pdata->ptags, folksoTagdata); // inheritance works!
   }
+
+  function testTagRes () {
+    $page = new folksoPage(5775);
+    $this->assertIsA($page, folksoPage);
+    $this->assertEqual($page->url, 5775);
+    $html = $page->TagResources();
+    $this->assertIsA($page->tr, folksoTagRes);
+    $this->assertTrue($page->tr->is_valid());
+    $this->assertTrue(strlen($html) > 100);
+
+  }
 }//end class
 
 
