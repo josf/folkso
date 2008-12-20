@@ -281,10 +281,11 @@ function getTagsIds (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc
 
 
 /**
- * Tag cloud local.
+ * Tag cloud.
  *
  * Parameters: GET, folksoclouduri, res.
  * Optional: folksolimit (limit number of tags returned).
+ * Optional: folksopopcloud (pure popularity based cloud).
  */
 function tagCloudLocalPop (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
   $i = new folksoDBinteract($dbc);
@@ -314,13 +315,50 @@ function tagCloudLocalPop (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnec
     $taglimit = $q->get_param('limit');
   }
 
-  $sql = "CALL cloudy(";
 
-  if (is_numeric($q->res)) {
-    $sql .= $q->res . ", '', 1, 5, $taglimit)";
+  if ($q->is_param('bypop')) {
+    $sql = 
+      "SELECT tagid, tagnorm, tagdisplay, \n"
+      ." CASE \n"
+      ." WHEN rese.rank <= (5000 * 0.1) THEN 5 \n"
+      ." WHEN rese.rank <= (5000 * 0.3) THEN 4 \n"
+      ." WHEN rese.rank <= (5000 * 0.7) THEN 2 \n"
+      ." ELSE 1 \n"
+      ." END \n"
+      ." AS cloudweight \n"
+      ." FROM \n"
+      ." (SELECT ta.id AS tagid, \n"
+      ." ta.tagnorm AS tagnorm, \n"
+      ." ta.tagdisplay AS tagdisplay, \n"
+      ." ta.popularity AS pop, \n"
+      ." count(ta2.id) as rank \n"
+      ." FROM tag ta \n"
+      ." right join tag ta2 on ta.popularity <= ta2.popularity \n"
+      ." JOIN tagevent te ON ta.id = te.tag_id \n"
+      ." JOIN resource r ON te.resource_id = r.id \n"
+      ." WHERE ";
+
+    if (is_numeric($q->res)) {
+      $sql .= " (r.id = 16930) \n";
+    }
+    else {
+      $sql .= " (r.uri_normal = url_whack('" . $i->dbescape($q->res) . "')) ";
+    }
+
+    $sql .=      
+      " GROUP BY ta.id) \n"
+      ." AS rese \n"
+      ." ORDER BY cloudweight DESC \n";
   }
   else {
-    $sql .= "'', '" .$i->dbescape($q->res) . "', 1, 5, $taglimit)";
+    $sql = "CALL cloudy(";
+
+    if (is_numeric($q->res)) {
+      $sql .= $q->res . ", '', 1, 5, $taglimit)";
+    }
+    else {
+      $sql .= "'', '" .$i->dbescape($q->res) . "', 1, 5, $taglimit)";
+    }
   }
   $i->query($sql);
 
@@ -377,6 +415,12 @@ function tagCloudLocalPop (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnec
     }
     print $dd->endform();
     break;
+  default:
+    header("501 We need a datatype");
+    print 
+      "Sorry, but you did not give a datatype and we are too lazy "
+      ." right now to supply a default.";
+    return;
   }
 }
 
