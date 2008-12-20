@@ -333,9 +333,9 @@ function tagCloudLocalPop (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnec
       ." ta.tagdisplay AS tagdisplay, \n"
       ." ta.popularity AS pop, \n"
       ." COUNT(ta2.id) AS rank, \n"
-      ." (select count(*) from tag) as totaltags  \n"
+      ." (SELECT COUNT(*) FROM tag) AS totaltags  \n"
       ." FROM tag ta \n"
-      ." right join tag ta2 on ta.popularity <= ta2.popularity \n"
+      ." RIGHT JOIN tag ta2 ON ta.popularity <= ta2.popularity \n"
       ." JOIN tagevent te ON ta.id = te.tag_id \n"
       ." JOIN resource r ON te.resource_id = r.id \n"
       ." WHERE ";
