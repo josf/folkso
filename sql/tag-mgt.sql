@@ -481,7 +481,8 @@ CREATE TEMPORARY TABLE cloud2_temp_table
 SET l_last_row_fetched = 0;
 OPEN getdata;
 cursing: LOOP
-         FETCH getdata INTO tagid_v, tagdisplay_v, tagnorm_v, rank_v, popularity_v, tagtime_v;
+         FETCH getdata 
+         INTO tagid_v, tagdisplay_v, tagnorm_v, rank_v, popularity_v, tagtime_v;
          IF l_last_row_fetched=1 THEN
             LEAVE cursing;
          END IF;
