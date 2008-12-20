@@ -320,9 +320,10 @@ function tagCloudLocalPop (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnec
     $sql = 
       "SELECT tagid, tagnorm, tagdisplay, \n"
       ." CASE \n"
-      ." WHEN rese.rank <= (5000 * 0.1) THEN 5 \n"
-      ." WHEN rese.rank <= (5000 * 0.3) THEN 4 \n"
-      ." WHEN rese.rank <= (5000 * 0.7) THEN 2 \n"
+      ." WHEN rese.rank <= (rese.totaltags * 0.1) THEN 5 \n"
+      ." WHEN rese.rank <= (rese.totaltags * 0.3) THEN 4 \n"
+      ." WHEN rese.rank <= (rese.totaltags * 0.5) THEN 3 \n"
+      ." WHEN rese.rank <= (rese.totaltags * 0.7) THEN 2 \n"
       ." ELSE 1 \n"
       ." END \n"
       ." AS cloudweight \n"
@@ -331,7 +332,8 @@ function tagCloudLocalPop (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnec
       ." ta.tagnorm AS tagnorm, \n"
       ." ta.tagdisplay AS tagdisplay, \n"
       ." ta.popularity AS pop, \n"
-      ." count(ta2.id) as rank \n"
+      ." COUNT(ta2.id) AS rank, \n"
+      ." (select count(*) from tag) as totaltags  \n"
       ." FROM tag ta \n"
       ." right join tag ta2 on ta.popularity <= ta2.popularity \n"
       ." JOIN tagevent te ON ta.id = te.tag_id \n"
@@ -349,6 +351,11 @@ function tagCloudLocalPop (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnec
       " GROUP BY ta.id) \n"
       ." AS rese \n"
       ." ORDER BY cloudweight DESC \n";
+
+    if ($taglimit > 0) {
+      $sql .= " limit $taglimit \n";
+    }
+
   }
   else {
     $sql = "CALL cloudy(";
