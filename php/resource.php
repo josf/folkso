@@ -315,7 +315,6 @@ function tagCloudLocalPop (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnec
     $taglimit = $q->get_param('limit');
   }
 
-
   if ($q->is_param('bypop')) {
     $sql = 
       "SELECT tagid, tagnorm, tagdisplay, \n"
