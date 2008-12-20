@@ -513,7 +513,7 @@ END LOOP cursing;
 CLOSE getdata;
 SET l_last_row_fetched=0;
 
-SELECT tagid, tagdisplay, tagnorm, rank, tagtime, weight FROM cloud2_temp_table;
+SELECT tagid, tagdisplay, tagnorm, rank, tagtime, weight AS cloudweight FROM cloud2_temp_table;
 
 -- end cloud_by_popularity()
 END$$
