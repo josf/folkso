@@ -1,4 +1,11 @@
 <?php
+  /**
+   * 
+   * @package Folkso
+   * @author Joseph Fahey
+   * @copyright 2008 Gnu Public Licence (GPL)
+   * @subpackage Tagserv
+   */
 
   /**
    * A folksoServer object deals with all of the basic interactions
@@ -13,14 +20,8 @@
    *
    * When authorization is added, folksoServer will handle that as
    * well.
-   * 
-   * @package Folkso
-   * @author Joseph Fahey
-   * @copyright 2008 Gnu Public Licence (GPL)
-   * @subpackage Tagserv
-   */
-
-  /**
+   *
+   *
    * @package Folkso
    */
 require_once('folksoDBconnect.php');

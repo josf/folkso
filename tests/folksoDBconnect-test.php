@@ -1,7 +1,9 @@
 <?php
-require_once('/usr/local/www/apache22/lib/simpletest/unit_tester.php');
-require_once('/usr/local/www/apache22/lib/simpletest/reporter.php');
-include('/usr/local/www/apache22/lib/jf/fk/folksoTags.php');
+
+require_once('unit_tester.php');
+require_once('reporter.php');
+
+require_once('folksoDBconnect.php');
 
 
 class testOffolksoDBConnect extends  UnitTestCase {

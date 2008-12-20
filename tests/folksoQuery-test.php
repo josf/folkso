@@ -1,8 +1,10 @@
 <?php
-require_once('/usr/local/www/apache22/lib/simpletest/autorun.php');
-include('/usr/local/www/apache22/lib/jf/fk/folksoQuery.php');
 
-class testOffolksoResponse extends  UnitTestCase {
+require_once('unit_tester.php');
+require_once('reporter.php');
+require_once('folksoQuery.php');
+
+class testOffolksoQuery extends  UnitTestCase {
 
   public $qu;
   public $qu2;
@@ -22,7 +24,7 @@ class testOffolksoResponse extends  UnitTestCase {
   function testGetStuff () {
     $this->qu2 = new folksoQuery( $_SERVER, array('folksoCommand' => 'obey'), $_POST);
     $this->assertTrue($this->qu2 instanceof folksoQuery);
-    $this->assertTrue(key_exists('folksoCommand', $this->qu2->params() ));
+    $this->assertTrue($this->qu2->is_param('folksoCommand'));
     $this->assertEqual($this->qu2->get_param('folksoCommand'), 'obey');
     $this->assertEqual($this->qu2->get_param('Command'), 'obey');
     $this->assertTrue($this->qu2->is_single_param('folksoCommand'));
@@ -33,10 +35,10 @@ class testOffolksoResponse extends  UnitTestCase {
                                     array('folksoCommand' => 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
                                           'varboDeal'    => 'Hey guys'),
                                     array());
-    $params = $this->qubad->params();
-    $this->assertTrue(is_string($params['folksoCommand']));
-    $this->assertTrue(strlen($params['folksoCommand'] < 301));
-    $this->assertFalse(key_exists('varboDeal', $params));
+
+    $this->assertTrue(is_string($this->qubad->get_param('folksoCommand')));
+    $this->assertTrue(strlen($this->qubad->get_param('folksoCommand') < 301));
+    $this->assertFalse($this->qubad->is_param('varboDeal'));
 
   }
 
@@ -46,8 +48,7 @@ class testOffolksoResponse extends  UnitTestCase {
                                             'folksoArgs002' => 'that',
                                             'folksoArgs003' => 'somethingelse'),
                                       array());
-    $params = $this->qumulti->params();
-    $this->assertTrue(is_array($params['folksoArgs']));
+
     $this->assertTrue($this->qumulti->is_multiple_param('folksoArgs'));
     $this->assertFalse($this->qumulti->is_single_param('folksoArgs'));
 
@@ -71,3 +72,5 @@ class testOffolksoResponse extends  UnitTestCase {
   }
 
 }//end class
+$test = new testOffolksoQuery();
+$test->run(new HtmlReporter());
