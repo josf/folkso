@@ -41,6 +41,47 @@ class testOffolksoQueryBuild extends UnitTestCase {
                                     array('bob' => array('func' => 'stuff',
                                                          'value' => 'hector'))),
                        'abchectorxyz');
+  }
+  
+  function testBuildForReal() {
+    $qq = new folksoQueryBuild();
+    $this->assertEqual(
+                       $qq->build(
+                            array(
+                              array('type' => 'common',
+                                    'sql' => "select b from something where d = <<<x>>>")),
+                            5,
+                            array()),
+                       'select b from something where d = 5');
+    $numnotnum =array(
+                      array('type' => 'isnum',
+                            'sql' => 'select b from x where d = <<<x>>>'),
+                      array('type' => 'notnum',
+                            'sql' => 'select b from x where v = <<<x>>>'));
+
+    $this->assertEqual(
+                       $qq->build($numnotnum, 5, array()),
+                       'select b from x where d = 5');
+    $this->assertEqual(
+                       $qq->build($numnotnum, "bob", array()),
+                       'select b from x where v = bob');
+
+    $numstuff =array(
+                      array('type' => 'isnum',
+                            'sql' => 'select b from x where d = <<<stuff>>>'),
+                      array('type' => 'notnum',
+                            'sql' => 'select b from x where v = <<<stuff>>>'));
+    $this->assertEqual(
+                       $qq->build($numstuff, 5, array('stuff' => array('value' => 66,
+                                                                       'func' => ''))),
+                       'select b from x where d = 66');
+    $stupidfunk = create_function('$int', 'if ($int < 0) { return true;}');
+    $this->assertEqual(
+                       $qq->build($numstuff, 5, 
+                                  array('stuff' => array('value' => -12,
+                                                         'func' => $stupidfunk))),
+                       'select b from x where d = -12');
+
 
   }
 

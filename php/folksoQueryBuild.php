@@ -10,16 +10,16 @@ class folksoQueryBuild {
     foreach ($sql_arr as $chunk_arr) {
       switch ($chunk_arr['type']) {
       case 'common':
-        $sql .= " " . $chunk_arr['sql'];
+        $sql = $this->concatSQL($sql, $chunk_arr, $thing, $arg_arr);
         break;
       case 'isnum':
         if (is_numeric($thing)) {
-          $sql .= " " . $chunk_arr['sql'];
+          $sql = $this->concatSQL($sql, $chunk_arr, $thing, $arg_arr);
         }
         break;
       case 'notnum':
         if (! is_numeric($thing)) {
-          $sql .= " " . $chunk_arr['sql'];
+          $sql = $this->concatSQL($sql, $chunk_arr, $thing, $arg_arr);
         }
         break;
       default:
@@ -32,20 +32,19 @@ class folksoQueryBuild {
            non-nullness of the value  **/
           if (! $arg_arr[$type]) {
             if ($arg_arr[$type]['value']) {
-              $sql .= " " . $chunk_arr['sql'];
+              $sql = $this->concatSQL($sql, $chunk_arr, $thing, $arg_arr);
             }
           }
           /** functions must return booleans **/
           elseif (is_callable($arg_arr[$type])) {
             if  (call_user_func($arg_arr[$type]['func'], 
                                 $arg_arr[$type]['value'])){
-              $sql .= " " . $chunk_arr['sql'];
+              $sql = $this->concatSQL($sql, $chunk_arr, $thing, $arg_arr);
             }
           }
           else {
             trigger_error("Something is awry in the arguments for this SQL query: $type",
                           E_USER_ERROR);
-
           }
         }
       }
@@ -53,11 +52,24 @@ class folksoQueryBuild {
     $sql = trim($sql);
     $this->sql = $sql;
     return $sql;
-
   }
+
+  public function concatSQL ($sql, $el_arr, $thing, $arg_arr) {
+    return 
+      $sql . " " . 
+      $this->valRepl($el_arr['sql'], $thing, $arg_arr); 
+  }
+
+
+
   public function valRepl ($str, $thing, $arg_arr) {
     if (strpos($str, '<<<') === FALSE) { // 0 could be first elt of string
       return $str; // do nothing
+    }
+
+    if (strpos($str, '>>>') === false) {
+      trigger_error("Mismatched <<< >>> in SQL query template.",
+                    E_USER_ERROR);
     }
     
     $pos = 0; $remaining = strlen($str);
@@ -77,7 +89,7 @@ class folksoQueryBuild {
     return $str;
   }
 
-public function evalMiddle($middle, $thing, $arg_arr) {
+private function evalMiddle($middle, $thing, $arg_arr) {
     if (($middle == 'x') || ($middle == 'X')) {
       return $thing;
     }
