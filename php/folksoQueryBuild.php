@@ -7,7 +7,7 @@ class folksoQueryBuild {
   public function build($sql_arr, $thing, $arg_arr ) {
     $sql = '';
 
-    for ($sql_arr as $chunk_arr) {
+    foreach ($sql_arr as $chunk_arr) {
       switch ($chunk_arr['type']) {
       case 'common':
         $sql .= " " . $chunk_arr['sql'];
@@ -49,14 +49,44 @@ class folksoQueryBuild {
           }
         }
       }
-      $this->sql = $sql;
-      return $sql;
+    }
+    $sql = trim($sql);
+    $this->sql = $sql;
+    return $sql;
+
+  }
+  public function valRepl ($str, $thing, $arg_arr) {
+    if (strpos($str, '<<<') === FALSE) { // 0 could be first elt of string
+      return $str; // do nothing
+    }
+    
+    $pos = 0; $remaining = strlen($str);
+    while ($pos < $remaining) {
+      $start = strpos($str, '<<<', $pos);
+      $end = strpos($str, '>>>', $pos) + 3;
+      $first = substr($str, 0, $start);
+      $last = substr($str, $end);
+      $middle = substr($str, 
+                       $start + 3, 
+                       (strpos($str, '>>>', $pos) - $start) - 3);
+      $new_middle = $this->evalMiddle($middle, $thing, $arg_arr);
+      $str = $first . $new_middle . $last;
+      $pos = strlen($first . $new_middle);
+      $remaining = strlen($last);
+    }
+    return $str;
+  }
+
+public function evalMiddle($middle, $thing, $arg_arr) {
+    if (($middle == 'x') || ($middle == 'X')) {
+      return $thing;
     }
 
-
-
+    if (array_key_exists($middle, $arg_arr)) {
+      return $arg_arr[$middle]['value'];
+    }
   }
 
+  } // end of class
 
 
-  }
