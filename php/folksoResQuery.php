@@ -20,7 +20,8 @@ class folksoResQuery  {
 
   $a = array(
              array(
-                   'common' => 
+                   'type' => 'common',
+                   'sql' => 
                    "SELECT tagid, tagnorm, tagdisplay, \n"
                    ." CASE \n"
                    ." WHEN rese.rank <= (rese.totaltags * 0.1) THEN 5 \n"
@@ -43,19 +44,20 @@ class folksoResQuery  {
                    ." JOIN resource r ON te.resource_id = r.id \n"
                    ." WHERE "),
              array(
-                   'isnum' =>
-                   " (r.id = 16930) \n"),
+                   'type' => 'isnum',
+                   'sql' => " (r.id = 16930) \n"),
              array(
-                   'notnum' =>
-                   " (r.uri_normal = url_whack('" . $i->dbescape($res) . "')) "),
+                   'type' => 'notnum',
+                   'sql' => " (r.uri_normal = url_whack('" . $i->dbescape($res) . "')) "),
              array(
-                   'commun' =>
+                   'type' => 'commun', 
+                   'sql' =>
                    " GROUP BY ta.id) \n"
                    ." AS rese \n"
                    " ORDER BY cloudweight DESC \n"),
              array(
-                   'taglimit' =>
-                   " LIMIT $taglimit \n"));     
+                   'type' => 'taglimit',
+                   'sql' => " LIMIT $taglimit \n"));     
                    
 
 
