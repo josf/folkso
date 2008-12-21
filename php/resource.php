@@ -352,9 +352,8 @@ function tagCloudLocalPop (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnec
       ." ORDER BY cloudweight DESC \n";
 
     if ($taglimit > 0) {
-      $sql .= " limit $taglimit \n";
+      $sql .= " LIMIT $taglimit \n";
     }
-
   }
   else {
     $sql = "CALL cloudy(";
