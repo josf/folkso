@@ -8,7 +8,11 @@
    */
 require_once('folksoQueryBuild.php');
   /**
-   * Queries for use with resource.php.
+   * Queries for use with resource.php.  
+   *
+   * These queries are written in something like a little language.
+   *
+   * These are all static methods. They just return text.
    */
 class folksoResQuery  {
 
@@ -66,5 +70,57 @@ class folksoResQuery  {
                                                   'value' => $taglimit)));
     return $sql;
   }
+
+  public function getTags ($res, $limit = 0, $metaonly = false) {
+    $q = array(
+               array('type' => 'common',
+                     'sql' =>
+                         "SELECT DISTINCT "
+                          ." t.id as id, t.tagdisplay as tagdisplay, " 
+                     . " t.tagnorm as tagnorm, t.popularity as popularity, "
+                     . " meta.tagdisplay as meta "
+                     . " FROM tag t "
+                     . " JOIN tagevent te ON t.id = te.tag_id "
+                     . " JOIN metatag meta ON te.meta_id = meta.id "
+                     . " JOIN resource r ON r.id = te.resource_id "
+                     . " WHERE "),
+               
+               array('type' => 'isnum',
+                     'sql' => ' (r.id = <<<x>>>)'),
+               array('type' => 'notnum',
+                     'sql' => " WHERE (r.uri_normal = url_whack('<<<x>>>'))"),
+
+               array('type' => 'metaonly',
+                     'sql'=> ' AND (te.meta_id <> 1) '),
+
+               array('type' => 'limit',
+                     'sql' => ' LIMIT <<<limit>>> '),
+
+               array('type' => 'common',
+                     'sql' =>     " UNION "
+                     ." SELECT DISTINCT "
+                     ." ean13 AS id, convert(ean13, char) AS tagdisplay, "
+                     ." convert(ean13, char) AS tagnorm, 1 AS popularity, 'EAN13' AS meta "
+                     ." FROM ean13 "
+                     ." WHERE resource_id = "),
+
+               array('type' => 'isnum',
+                     'sql' => '<<<x>>>'),
+
+               array('type' => 'notnum',
+                     'sql' => 
+                     "(select id from resource ".
+                     "where uri_normal = url_whack('<<<x>>>')"));
+
+    return $this->qb->build($q, 
+                            $res, 
+                            array('limit' => array('func' => '',
+                                                   'value' => $limit),
+                                  'metaonly' => array('func' => '',
+                                                      'value' => $metaonly)));
+
+
+  }
+  
 
   }
