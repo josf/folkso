@@ -173,56 +173,19 @@ function getTagsIds (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc
       return;
     }
   }
-
-  $select = 
-    "SELECT DISTINCT
-                t.id as id, t.tagdisplay as tagdisplay, 
-                t.tagnorm as tagnorm, t.popularity as popularity, 
-                meta.tagdisplay as meta
-             FROM tag t
-             JOIN tagevent te ON t.id = te.tag_id
-             JOIN metatag meta ON te.meta_id = meta.id
-             JOIN resource r ON r.id = te.resource_id ";
-
-  if (is_numeric($q->res)) {
-    $select .= 
-      " WHERE (r.id = " 
-      . $q->res
-      . ")";
-  }
-  else {
-    $select .= 
-      " WHERE (r.uri_normal = url_whack('"
-      . $i->dbescape($q->res) ."')) ";
-  }
   
-  /** optional exclusion of tags with "normal" relation metatag **/
-  if ($q->is_param('metaonly')) {
-    $select .= ' AND (te.meta_id <> 1) ';
-  }
-
+  $limit = 0;
   if ($q->is_param('limit') &&
       is_numeric($q->get_param('limit'))) {
-    $select .= ' LIMIT ' . $q->get_param('limit');
+    $limit = $q->get_param('limit');
+  }
+  $metaonly = false;
+  if ($q->is_param('metaonly')) {
+    $metaonly = true;
   }
 
-  $select .=
-    " UNION "
-    ." SELECT DISTINCT "
-    ." ean13 AS id, convert(ean13, char) AS tagdisplay, "
-    ." convert(ean13, char) AS tagnorm, 1 AS popularity, 'EAN13' AS meta "
-    ." FROM ean13 "
-    ." WHERE resource_id = ";
-
-  if (is_numeric($q->res)) {
-    $select .= $q->res;
-  }
-  else {
-    $select .= 
-      "(select id from resource where uri_normal = url_whack('"
-      . $q->res . "'))";
-  }
-  $select .= ' ORDER BY popularity DESC ';
+  $rq = new folksoResQuery();  
+  $select = $rq->getTags($q->res, $limit, $metaonly);
   $i->query($select);
 
   switch ($i->result_status) {

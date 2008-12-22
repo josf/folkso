@@ -54,10 +54,12 @@ class testOffolksoQueryBuild extends UnitTestCase {
                             array()),
                        'select b from something where d = 5');
     $numnotnum =array(
+                      array('type' => 'common',
+                            'sql' => 'select b from x'),
                       array('type' => 'isnum',
-                            'sql' => 'select b from x where d = <<<x>>>'),
+                            'sql' => 'where d = <<<x>>>'),
                       array('type' => 'notnum',
-                            'sql' => 'select b from x where v = <<<x>>>'));
+                            'sql' => 'where v = <<<x>>>'));
 
     $this->assertEqual(
                        $qq->build($numnotnum, 5, array()),
@@ -67,6 +69,8 @@ class testOffolksoQueryBuild extends UnitTestCase {
                        'select b from x where v = bob');
 
     $numstuff =array(
+                     array('type' => 'common',
+                           'sql' => 'really'),
                       array('type' => 'isnum',
                             'sql' => 'select b from x where d = <<<stuff>>>'),
                       array('type' => 'notnum',
@@ -74,13 +78,13 @@ class testOffolksoQueryBuild extends UnitTestCase {
     $this->assertEqual(
                        $qq->build($numstuff, 5, array('stuff' => array('value' => 66,
                                                                        'func' => ''))),
-                       'select b from x where d = 66');
+                       'really select b from x where d = 66');
     $stupidfunk = create_function('$int', 'if ($int < 0) { return true;}');
     $this->assertEqual(
                        $qq->build($numstuff, 5, 
                                   array('stuff' => array('value' => -12,
                                                          'func' => $stupidfunk))),
-                       'select b from x where d = -12');
+                       'really select b from x where d = -12');
 
 
   }

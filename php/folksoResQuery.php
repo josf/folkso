@@ -88,7 +88,7 @@ class folksoResQuery  {
                array('type' => 'isnum',
                      'sql' => ' (r.id = <<<x>>>)'),
                array('type' => 'notnum',
-                     'sql' => " WHERE (r.uri_normal = url_whack('<<<x>>>'))"),
+                     'sql' => " (r.uri_normal = url_whack('<<<x>>>'))"),
 
                array('type' => 'metaonly',
                      'sql'=> ' AND (te.meta_id <> 1) '),
@@ -109,8 +109,12 @@ class folksoResQuery  {
 
                array('type' => 'notnum',
                      'sql' => 
-                     "(select id from resource ".
-                     "where uri_normal = url_whack('<<<x>>>')"));
+                     "(SELECT id FROM resource ".
+                     "WHERE uri_normal = url_whack('<<<x>>>'))"),
+
+               array('type' => 'common',
+                     'sql' =>
+                     'ORDER BY popularity DESC '));
 
     return $this->qb->build($q, 
                             $res, 
