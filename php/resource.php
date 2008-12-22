@@ -15,6 +15,7 @@
 require_once('folksoTags.php');
 require_once('folksoIndexCache.php');
 require_once('folksoUrl.php');
+require_once('folksoResQuery.php');
 
 $srv = new folksoServer(array( 'methods' => array('POST', 'GET', 'HEAD'),
                                'access_mode' => 'ALL'));
@@ -289,6 +290,7 @@ function getTagsIds (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc
  */
 function tagCloudLocalPop (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
   $i = new folksoDBinteract($dbc);
+  $rq = new folksoResQuery();
 
   if ($i->db_error()) {
     header('HTTP/1.0 501 Database connection problem');
@@ -316,44 +318,7 @@ function tagCloudLocalPop (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnec
   }
 
   if ($q->is_param('bypop')) {
-    $sql = 
-      "SELECT tagid, tagnorm, tagdisplay, \n"
-      ." CASE \n"
-      ." WHEN rese.rank <= (rese.totaltags * 0.1) THEN 5 \n"
-      ." WHEN rese.rank <= (rese.totaltags * 0.3) THEN 4 \n"
-      ." WHEN rese.rank <= (rese.totaltags * 0.5) THEN 3 \n"
-      ." WHEN rese.rank <= (rese.totaltags * 0.7) THEN 2 \n"
-      ." ELSE 1 \n"
-      ." END \n"
-      ." AS cloudweight \n"
-      ." FROM \n"
-      ." (SELECT ta.id AS tagid, \n"
-      ." ta.tagnorm AS tagnorm, \n"
-      ." ta.tagdisplay AS tagdisplay, \n"
-      ." ta.popularity AS pop, \n"
-      ." COUNT(ta2.id) AS rank, \n"
-      ." (SELECT COUNT(*) FROM tag) AS totaltags  \n"
-      ." FROM tag ta \n"
-      ." RIGHT JOIN tag ta2 ON ta.popularity <= ta2.popularity \n"
-      ." JOIN tagevent te ON ta.id = te.tag_id \n"
-      ." JOIN resource r ON te.resource_id = r.id \n"
-      ." WHERE ";
-
-    if (is_numeric($q->res)) {
-      $sql .= " (r.id = 16930) \n";
-    }
-    else {
-      $sql .= " (r.uri_normal = url_whack('" . $i->dbescape($q->res) . "')) ";
-    }
-
-    $sql .=      
-      " GROUP BY ta.id) \n"
-      ." AS rese \n"
-      ." ORDER BY cloudweight DESC \n";
-
-    if ($taglimit > 0) {
-      $sql .= " LIMIT $taglimit \n";
-    }
+    $sql = $rq->cloud_by_popularity($q->res, $taglimit);
   }
   else {
     $sql = "CALL cloudy(";
