@@ -9,7 +9,16 @@ class testOffolksoResQuery extends UnitTestCase {
   function testBasic ()  {
     $rq = new folksoResQuery();
     $this->assertIsA($rq, folksoResQuery);
-    print $rq->cloud_by_popularity(4354, 3);
+    $cl_pop = $rq->cloud_by_popularity(4354, 3);
+    $this->assertTrue(is_string($cl_pop));
+    $this->assertTrue(strlen($cl_pop) > 300);
+
+    $getag = $rq->getTags(1233, 0, false);
+    $this->assertTrue(strlen($getag) > 100);
+    $this->assertPattern('/resource_id\s+=\s+1233/', $getag);
+    $getag2 = $rq->getTags(1233, 10, true);
+    $this->assertPattern('/limit\s+10/i', $getag2);
+    $this->assertPattern('/te\.meta_id\s+<>\s+1/', $getag2);
 
   }
 }
