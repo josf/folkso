@@ -30,13 +30,13 @@ class folksoQueryBuild {
 
           /** If no test function is given, we just test for
            non-nullness of the value  **/
-          if (! $arg_arr[$type]) {
+          if (! $arg_arr[$type]['func']) {
             if ($arg_arr[$type]['value']) {
               $sql = $this->concatSQL($sql, $chunk_arr, $thing, $arg_arr);
             }
           }
           /** functions must return booleans **/
-          elseif (is_callable($arg_arr[$type])) {
+          elseif (is_callable($arg_arr[$type]['func'])) {
             if  (call_user_func($arg_arr[$type]['func'], 
                                 $arg_arr[$type]['value'])){
               $sql = $this->concatSQL($sql, $chunk_arr, $thing, $arg_arr);
@@ -59,8 +59,6 @@ class folksoQueryBuild {
       $sql . " " . 
       $this->valRepl($el_arr['sql'], $thing, $arg_arr); 
   }
-
-
 
   public function valRepl ($str, $thing, $arg_arr) {
     if (strpos($str, '<<<') === FALSE) { // 0 could be first elt of string
