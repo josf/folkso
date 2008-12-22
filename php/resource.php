@@ -114,13 +114,13 @@ function isHead (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
   $query = '';
   if (is_numeric($q->res)) {
     $query = 
-      "select id from resource where id = " .
+      "SELECT id FROM resource WHERE id = " .
       $i->dbescape($q->res);
   }
   else {
-    $query = "select id
-           from resource
-           where uri_normal = url_whack('" .
+    $query = "SELECT id
+           FROM resource
+           WHERE uri_normal = url_whack('" .
       $i->dbescape($q->res) . "')";
   }
 
@@ -185,7 +185,9 @@ function getTagsIds (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc
   }
 
   $rq = new folksoResQuery();  
-  $select = $rq->getTags($q->res, $limit, $metaonly);
+  $select = $rq->getTags($i->dbescape($q->res), 
+                         $limit, 
+                         $metaonly);
   $i->query($select);
 
   switch ($i->result_status) {
@@ -253,7 +255,7 @@ function getTagsIds (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc
  */
 function tagCloudLocalPop (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
   $i = new folksoDBinteract($dbc);
-  $rq = new folksoResQuery();
+
 
   if ($i->db_error()) {
     header('HTTP/1.0 501 Database connection problem');
@@ -280,8 +282,10 @@ function tagCloudLocalPop (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnec
     $taglimit = $q->get_param('limit');
   }
 
+  $rq = new folksoResQuery();
   if ($q->is_param('bypop')) {
-    $sql = $rq->cloud_by_popularity($q->res, $taglimit);
+    $sql = $rq->cloud_by_popularity($i->dbescape($q->res), 
+                                    $taglimit);
   }
   else {
     $sql = "CALL cloudy(";
