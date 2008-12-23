@@ -250,12 +250,13 @@ function getTagsIds (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc
  * Tag cloud.
  *
  * Parameters: GET, folksoclouduri, res.
+ *
  * Optional: folksolimit (limit number of tags returned).
- * Optional: folksopopcloud (pure popularity based cloud).
+ * Optional: folksobypop (pure popularity based cloud).
+ * Optional: folksobydate (date based cloud).
  */
 function tagCloudLocalPop (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
   $i = new folksoDBinteract($dbc);
-
 
   if ($i->db_error()) {
     header('HTTP/1.0 501 Database connection problem');
