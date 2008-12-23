@@ -92,6 +92,50 @@ group by tag_id;
 
    **/
 
+  public function dateCloud ($res, $taglimit = 0) {
+    $q = array(
+               array('type' => 'common',
+                     'sql' => 
+                     'SELECT tagnorm, tag_id, latest, '
+                     .' CASE WHEN DATEDIFF(NOW(),  latest) > 365 THEN 1 '
+                     .' WHEN DATEDIFF(NOW(), latest) > 180 THEN 2 '
+                     .' WHEN DATEDIFF(NOW(),  latest) > 90 THEN 3'
+                     .' WHEN DATEDIFF(NOW(),  latest) > 30 THEN 4'
+                     .' ELSE 5 END AS weight FROM'
+                     .' (SELECT '
+                     .' t.tagdisplay as tagdisplay, t.tagnorm AS tagnorm, '
+                     .' t.id AS tag_id, te.tagtime AS latest '
+                     .' FROM tagevent te '
+                     .' JOIN tag t ON t.id = te.tag_id'
+                     .' WHERE '),
+
+               array('type' => 'isnum',
+                     'sql' => 'te.resource_id = <<<x>>>'),
+
+               array('type' => 'notnum',
+                     'sql' =>
+                     'te.resource_id = '
+                     .' (SELECT id FROM resource '
+                     ." WHERE uri_normal = url_whack('<<<x>>>') )"),
+
+               array('type' => 'common',
+                     'sql' => ') AS xyz'),// required view alias
+               array('type' => 'taglimit',
+                     'sql' => 
+                     'ORDER BY weight DESC LIMIT <<<taglimit>>>')
+               );
+
+    return
+      $this->qb->build($q, 
+                       $res,
+                       array('taglimit' =>
+                             array('func' => '',
+                                   'value' => $taglimit)));
+
+  }
+
+
+
 
   public function getTags ($res, $limit = 0, $metaonly = false) {
     $q = array(

@@ -9,6 +9,7 @@ class testOffolksoResQuery extends UnitTestCase {
   function testBasic ()  {
     $rq = new folksoResQuery();
     $this->assertIsA($rq, folksoResQuery);
+    $this->assertIsA($rq->qb, folksoQueryBuild);
     $cl_pop = $rq->cloud_by_popularity(4354, 3);
     $this->assertTrue(is_string($cl_pop));
     $this->assertTrue(strlen($cl_pop) > 300);
@@ -20,6 +21,17 @@ class testOffolksoResQuery extends UnitTestCase {
     $this->assertPattern('/limit\s+10/i', $getag2);
     $this->assertPattern('/te\.meta_id\s+<>\s+1/', $getag2);
 
+  }
+
+  function testCloudDate() {
+    $rq = new folksoResQuery();
+    $sql = $rq->dateCloud(4354);
+    $this->assertTrue(is_string($sql));
+    $this->assertNoPattern('/DESC\sLIMIT/', $sql);
+    $this->assertPattern('/4354/', $sql);
+    $this->assertNoPattern('/<<</', $sql);
+    $sql2 = $rq->dateCloud(4354, 5);
+    $this->assertPattern('/DESC\sLIMIT/', $sql2);
   }
 }
 
