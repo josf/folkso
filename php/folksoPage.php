@@ -124,6 +124,16 @@ class folksoPage {
   }
 
 
+  public function popularity_cloud($url = '', $max_tags = 0) {
+    $cloud = $this->pdata->prepareCloud($url, $max_tags, 'bypop');
+    return $cloud->html;
+  }
+
+  public function date_cloud($url = '', $max_tags = 0) {
+    $cloud = $this->pdata->prepareCloud($url, $max_tags, 'bydate');
+    return $cloud->html;
+  }
+
   /**
    * Returns a string consting of a comma separated list of all the
    * tags associated with the given resource.

@@ -31,14 +31,27 @@ public $loc;
    *
    * @returns folksoCloud object.
    */
-  public function getData($max_tags = 0, $meta_only = false) {
+  public function getData($max_tags = 0, 
+                          $meta_only = false,
+                          $cloudtype = '') {
+
+
     $fc = new folksoClient('localhost', 
                            $this->loc->server_web_path . 'resource.php',
                            'GET');
+
     $fc->set_getfields(array('folksoclouduri' => 1,
                              'folksores' => $this->url,
                              'folksodatatype' => 'xml', 
                              'folksolimit' => $max_tags)); 
+
+    if ($cloudtype == 'bypop') {
+      $fc->add_getfield('folksobypop', 1);
+    }
+    elseif ($cloudtype == 'bydate') {
+      $fc->add_getfield('folksobydate', 1);
+    }
+
     $result = $fc->execute();
     $status = $fc->query_resultcode();
     if (! $status) {
@@ -62,14 +75,17 @@ public $loc;
    *
    * @returns string The html cloud that is built. 
    */
-  public function buildCloud($url = '', $max_tags = 0) {
+  public function buildCloud($url = '', 
+                             $max_tags = 0, 
+                             $cloudtype = '') {
     if ($this->html) {
       return $this->html;
     }
 
     if (! $this->xml ){
       $this->getData($url ? $url : $this->url,
-                       $max_tags);
+                     $max_tags,
+                     $cloudtype);
     }
 
     if ($this->is_valid()) {

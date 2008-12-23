@@ -92,12 +92,14 @@ class folksoPageData {
    *
    * @return folksoCloud object.
    */
-  public function prepareCloud() {
+  public function prepareCloud($url = '', $max_tags = 0, $cloudtype = '') {
     if (! $this->cloud instanceof folksoCloud) {
       $this->cloud = new folksoCloud($this->loc, $this->url);
     }
 
-    $this->cloud->buildCloud(); // max_tags option possible here.
+    $this->cloud->buildCloud($url,
+                             $max_tags, 
+                             $cloudtype);
     return $this->cloud;
   }
 

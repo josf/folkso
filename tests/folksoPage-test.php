@@ -44,6 +44,26 @@ class testOffolksoPage extends  UnitTestCase {
     $this->assertIsA($page->tr, folksoTagRes);
     $this->assertTrue($page->tr->is_valid());
     $this->assertTrue(strlen($html) > 100);
+  }
+
+
+  function testClouds () {
+    $page = new folksoPage('fabula.org/actualites/article20927.php');
+    $this->assertIsA($page, folksoPage);
+    $cloud = $page->basic_cloud();
+    $this->assertTrue(is_string($cloud));
+    $this->assertTrue(strlen($cloud) > 200);
+
+    $cl2 = $page->popularity_cloud();
+    $this->assertTrue(is_string($cl2));
+    $this->assertTrue(strlen($cl2) > 200);
+    $this->assertTrue($page->pdata->cloud->is_valid());
+
+    $cl3 = $page->date_cloud();
+    $this->assertTrue(is_string($cl3));
+    $this->assertTrue(strlen($cl3) > 200);
+    $this->assertTrue($page->pdata->cloud->is_valid());
+    
 
   }
 }//end class
