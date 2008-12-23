@@ -92,7 +92,7 @@ group by tag_id;
 
    **/
 
-  public function dateCloud ($res, $taglimit = 0) {
+  public function cloud_by_date ($res, $taglimit = 0) {
     $q = array(
                array('type' => 'common',
                      'sql' => 
@@ -101,7 +101,7 @@ group by tag_id;
                      .' WHEN DATEDIFF(NOW(), latest) > 180 THEN 2 '
                      .' WHEN DATEDIFF(NOW(),  latest) > 90 THEN 3'
                      .' WHEN DATEDIFF(NOW(),  latest) > 30 THEN 4'
-                     .' ELSE 5 END AS weight FROM'
+                     .' ELSE 5 END AS cloudweight FROM'
                      .' (SELECT '
                      .' t.tagdisplay as tagdisplay, t.tagnorm AS tagnorm, '
                      .' t.id AS tag_id, te.tagtime AS latest '
@@ -122,7 +122,7 @@ group by tag_id;
                      'sql' => ') AS xyz'),// required view alias
                array('type' => 'taglimit',
                      'sql' => 
-                     'ORDER BY weight DESC LIMIT <<<taglimit>>>')
+                     'ORDER BY cloudweight DESC LIMIT <<<taglimit>>>')
                );
 
     return

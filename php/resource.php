@@ -287,6 +287,10 @@ function tagCloudLocalPop (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnec
     $sql = $rq->cloud_by_popularity($i->dbescape($q->res), 
                                     $taglimit);
   }
+  elseif ($q->is_param('bydate')) {
+    $sql = $rq->cloud_by_date($i->dbescape($q->res),
+                              $taglimit);
+  }
   else {
     $sql = "CALL cloudy(";
 
