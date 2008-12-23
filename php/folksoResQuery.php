@@ -71,6 +71,28 @@ class folksoResQuery  {
     return $sql;
   }
 
+  /**
+
+An attempt at a more sophisticated query. This could be made to work,
+but when max and min timestamps are very close, the results are not
+meaningful, so insted we decide to use fixed temporal slices instead. 
+
+select tag_id, tag_norm, latest,
+case when rank > (max(rank) * 0.8) then 5 
+else 1 end as weight 
+from(select count(te.tag_id) as rank, ta.id as tag_id, ta.tagnorm as tag_norm, max(tes.tagtime) as latest
+from tag ta
+join tagevent te on ta.id = te.tag_id
+join (select * from tagevent te2 where te2.resource_id = 20986) as tes 
+on  te.tagtime >= tes.tagtime
+where te.resource_id = 20986
+group by ta.id
+order by rank) as xyz
+group by tag_id;
+
+   **/
+
+
   public function getTags ($res, $limit = 0, $metaonly = false) {
     $q = array(
                array('type' => 'common',
