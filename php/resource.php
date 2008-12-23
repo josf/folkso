@@ -547,15 +547,15 @@ function unTag (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
     }
     $sql = $query . $where;
   }
-    $i->query($sql);
+  $i->query($sql);
 
-    if ($i->result_status == 'DBERR') {
-      header('HTTP/1.1 501 Database query error');
-      die($i->error_info());
-    }
-    else {
-      header('HTTP/1.1 200 Deleted');
-    }
+  if ($i->result_status == 'DBERR') {
+    header('HTTP/1.1 501 Database query error');
+    die($i->error_info());
+  }
+  else {
+    header('HTTP/1.1 200 Deleted');
+  }
 }
 
 /**
