@@ -23,14 +23,14 @@ class testOffolksoResQuery extends UnitTestCase {
 
   }
 
-  function testCloudDate() {
+  function testCloudbyDate() {
     $rq = new folksoResQuery();
-    $sql = $rq->dateCloud(4354);
+    $sql = $rq->cloud_by_date(4354);
     $this->assertTrue(is_string($sql));
     $this->assertNoPattern('/DESC\sLIMIT/', $sql);
     $this->assertPattern('/4354/', $sql);
     $this->assertNoPattern('/<<</', $sql);
-    $sql2 = $rq->dateCloud(4354, 5);
+    $sql2 = $rq->cloud_by_date(4354, 5);
     $this->assertPattern('/DESC\sLIMIT/', $sql2);
   }
 }
