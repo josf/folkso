@@ -53,6 +53,12 @@ class folksoPage {
    */
   public $tr;
 
+  /**
+   * @param $url string optional, defaults to ''.  
+   *
+   * For most purposes (besides testing) there is no need to use this
+   * parameter. If empty, the URL of the current page is used.
+   */
   public function __construct($url = '') {
     $this->loc = new folksoFabula();
     if ($url) {
