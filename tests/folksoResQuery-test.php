@@ -40,6 +40,8 @@ class testOffolksoResQuery extends UnitTestCase {
     $this->assertTrue(is_string($sql));
     $this->assertNoPattern('/<<</', $sql);
     $this->assertPattern('/r\.id\s+=/', $sql);
+    $this->assertPattern('/UNION/',$sql);
+    $this->assertPattern('/\sid\s+=/', $sql);
     $sql2 = $rq->resEans('http://www.fabula.org/actualites/article22843.php');
     $this->assertTrue(is_string($sql2));
     $this->assertNoPattern('/<<</', $sql2);

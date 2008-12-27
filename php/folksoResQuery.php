@@ -195,8 +195,23 @@ group by tag_id;
   public function resEans($res) {
     $q = array(
                array('type' => 'common',
+                     'sql' =>
+                     'select '
+                     .'id AS id, uri_raw as url, title, NULL AS ean13 '
+                     .'FROM resource '
+                     .'WHERE '),
+               array('type' => 'isnum',
+                     'sql' =>
+                     'id = <<<x>>> '),
+               array('type' => 'notnum',
+                     'sql' =>
+                     "uri_normal = url_whack('<<<x>>>') "),
+               array('type' => 'common',
+                     'sql' => ' UNION '),
+               array('type' => 'common',
                      'sql'  =>
-                     'SELECT r.id, r.url_raw, r.title, e.ean13 '
+                     'SELECT r.id AS id, r.uri_raw AS url, '
+                     .'r.title AS title, e.ean13 AS ean13 '
                      .' FROM ean13 e '
                      .' JOIN resource r ON e.resource_id = r.id '
                      .' WHERE '),
