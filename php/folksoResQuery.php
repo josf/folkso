@@ -192,5 +192,24 @@ group by tag_id;
 
   }
   
+  public function resEans($res) {
+    $q = array(
+               array('type' => 'common',
+                     'sql'  =>
+                     'SELECT r.id, r.url_raw, r.title, e.ean13 '
+                     .' FROM ean13 e '
+                     .' JOIN resource r ON e.resource_id = r.id '
+                     .' WHERE '),
+               array('type' => 'isnum',
+                     'sql' =>
+                     'r.id = <<<x>>> '),
+               array('type' => 'notnum',
+                     'sql' =>
+                     "r.uri_normal = url_whack('<<<x>>>')"));
+    return $this->qb->build($q,
+                            $res,
+                            array());
+
+  }
 
   }
