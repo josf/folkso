@@ -10,6 +10,7 @@ require_once('folksoFabula.php');
 require_once('folksoCloud.php');
 require_once('folksoPagetags.php');
 require_once('folksoPageDataMeta.php');
+require_once('folksoEanList.php');
 
 /**
  * @package Folkso
@@ -52,6 +53,7 @@ class folksoPageData {
    */
   public $mt;
 
+  public $e13;
 
   private $loc;
 
@@ -73,6 +75,7 @@ class folksoPageData {
    *
    * @return folksoPageMetaData object
    */
+
   public function prepareMetaData() {
     if ($this->mt instanceof folksoPageDataMeta) {
       return $this->mt;
@@ -82,9 +85,16 @@ class folksoPageData {
       $this->ptags = new folksoPagetags($this->loc, $this->url);
     }
 
+
     $this->mt = $this->ptags->buildMeta();
+    if (! $this->e13 instanceof folksoEanList) {
+      $this->e13 = new folksoEanList($this->loc, $this->url);
+    }
+    // this is supposed to be a reference. it had better be!
+    $this->mt->e13 = $this->e13;
     return $this->mt;
   }
+
 
   /**
    * Build a folksoCloud object and populate it with data from the

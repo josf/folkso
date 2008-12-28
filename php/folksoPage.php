@@ -25,7 +25,7 @@ class folksoPage {
 
   /**
    * folksoPageData object. All of the available information about the
-   * current resource.
+   * current resource. Including EAN-13 related information.
    */
   public $pdata;
 
@@ -90,6 +90,13 @@ class folksoPage {
     }
   }
 
+
+  public function ean13_dc_identifier($url = '') {
+    $this->pdata->prepareMetaData($url);
+    return $this->pdata->e13->ean13_dc_metalist();
+  }
+
+
   /**
    * Wrapper for $mt->meta_keywords(). 
    * Returns a complete <meta
@@ -133,6 +140,8 @@ class folksoPage {
     $cloud = $this->pdata->prepareCloud($url, $max_tags, 'bydate');
     return $cloud->html;
   }
+
+
 
   /**
    * Returns a string consting of a comma separated list of all the

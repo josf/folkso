@@ -24,6 +24,8 @@ class folksoPageDataMeta  {
    */
   public $alltags;
 
+  public $e13;
+
   public function __construct() {
     $this->array = array();
   }
@@ -81,6 +83,17 @@ class folksoPageDataMeta  {
   public function meta_description_textlist ()  {
     if (count($this->alltags) > 0) {
       return implode(', ', $this->alltags);
+    }
+  }
+
+  /**
+   * Acces to EAN-13 DC.Identifier function. 
+   * 
+   * This is just here for coherence.
+   */
+  public function ean13_dc_identifiers() {
+    if ($this->e13 instanceof folksoEanList) {
+      return $this->e13->ean13_dc_metalist();
     }
   }
 }
