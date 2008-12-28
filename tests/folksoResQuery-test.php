@@ -33,7 +33,23 @@ class testOffolksoResQuery extends UnitTestCase {
     $sql2 = $rq->cloud_by_date(4354, 5);
     $this->assertPattern('/DESC\sLIMIT/', $sql2);
   }
+
+  function testResEans() {
+    $rq = new folksoResQuery();
+    $sql = $rq->resEans(102);
+    $this->assertTrue(is_string($sql));
+    $this->assertNoPattern('/<<</', $sql);
+    $this->assertPattern('/r\.id\s+=/', $sql);
+    $this->assertPattern('/UNION/',$sql);
+    $this->assertPattern('/\sid\s+=/', $sql);
+    $sql2 = $rq->resEans('http://www.fabula.org/actualites/article22843.php');
+    $this->assertTrue(is_string($sql2));
+    $this->assertNoPattern('/<<</', $sql2);
+    $this->assertPattern('/url_whack/', $sql2);
+  }
+
 }
+
 
 
 

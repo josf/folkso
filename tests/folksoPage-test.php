@@ -66,10 +66,19 @@ class testOffolksoPage extends  UnitTestCase {
     
 
   }
+
+  function testEan13 () {
+    $page = new folksoPage(4159);
+    $this->assertIsA($page, folksoPage);
+    $dc = $page->ean13_dc_identifier();
+    $this->assertTrue(is_string($dc));
+    $this->assertPattern('/<meta\s+/', $dc);
+  }
+
 }//end class
 
 
-$test = &new testOffolksoPage();
+$test = new testOffolksoPage();
 $test->run(new HtmlReporter());
 
 

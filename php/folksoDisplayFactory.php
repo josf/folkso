@@ -238,5 +238,26 @@ class folksoDisplayFactory {
     /** $lineformat = "<meta numid=\"XXX\">XXX</meta>"; **/
   }
 
+
+  public function associatedEan13resources () {
+
+    return new folksoDataDisplay(
+                                 array('type' => 'xml',
+                                       'start' => 
+                                       "<?xml version=\"1.0\"?>\n"
+                                       ."<ean13>\n",
+                                       'titleformat' => '',
+                                       'end' => "</ean13>\n",
+                                       'lineformat' =>
+                                       "\t<resource>\n"
+                                       ."\t\t<numid>XXX</numid>\n" 
+                                       ."\t\t<url>XXX</url>\n" 
+                                       . "\t\t<title><![CDATA[XXX]]></title>\n" 
+                                       . "\t</resource>\n",
+                                       'argsperline' => 3));
+    
+
+  }
+
 }
 ?>
