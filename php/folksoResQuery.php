@@ -194,10 +194,19 @@ group by tag_id;
   
   public function resEans($res) {
     $q = array(
+
+               /** we grab the title and resource data even though, at
+                   this time, we are not going to use this
+                   data. However, doing so allows us to avoid doing a
+                   second request to distinguish between 'no resource'
+                   and 'no ean13 data' on our 404s. And should we
+                   decide to use the title row data, it is already
+                   available.**/
+
                array('type' => 'common',
                      'sql' =>
                      'select '
-                     .'id AS id, uri_raw as url, title, NULL AS ean13 '
+                     .'id AS id, uri_raw as url, title '
                      .'FROM resource '
                      .'WHERE '),
                array('type' => 'isnum',
@@ -210,14 +219,15 @@ group by tag_id;
                      'sql' => ' UNION '),
                array('type' => 'common',
                      'sql'  =>
-                     'SELECT r.id AS id, r.uri_raw AS url, '
-                     .'r.title AS title, e.ean13 AS ean13 '
+                     'SELECT DISTINCT e2.resource_id AS id, r.uri_raw AS url, '
+                     .'r.title AS title '
                      .' FROM ean13 e '
-                     .' JOIN resource r ON e.resource_id = r.id '
+                     .' JOIN ean13 e2 ON e2.ean13 = e.ean13 '
+                     .' JOIN resource r ON e2.resource_id = r.id '
                      .' WHERE '),
                array('type' => 'isnum',
                      'sql' =>
-                     'r.id = <<<x>>> '),
+                     'e.resource_id = <<<x>>> '),
                array('type' => 'notnum',
                      'sql' =>
                      "r.uri_normal = url_whack('<<<x>>>')"));
