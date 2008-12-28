@@ -29,9 +29,16 @@ $srv->addResponseObj(new folksoResponse('get',
 
 $srv->addResponseObj(new folksoResponse('get',
                                         array('required' => array('res'),
-                                              'exclude' => array('clouduri', 'visit', 'note')),
+                                              'exclude' => 
+                                              array('clouduri', 'visit', 'note', 'ean13list')),
                                         'getTagsIds'));
 
+
+$srv->addResponseObj(new folksoResponse('get',
+                                        array('required' => array('res', 'ean13list'),
+                                              'exclude' => array('delete', 'clouduri', 'note')),
+                                        'resEans'));
+                                              
 
 $srv->addResponseObj(new folksoResponse('post',
                                         array('required_single' => array('res', 'tag'),
@@ -854,7 +861,8 @@ function getNotes (folksoquery $q, folksoWsseCreds $cred, folksoDBconnect $dbc){
   case 'NOROWS': 
     if ($i->resourcep($q->res)) {
       header('HTTP/1.1 404 No notes associated with this resource');
-      print $sql;
+      //      print $sql;
+      print "No notes have been written yet. Write one if you want.";
     }
     else {
       header('HTTP/1.1 404 Resource not found');
@@ -911,6 +919,70 @@ function rmNote (folksoquery $q, folksoWsseCreds $cred, folksoDBconnect $dbc){
     print "The note " . $q->get_param('note'). " was deleted.";
   }
 }
+
+/**
+ * Returns an xml list of resources associated with the same ean-13 as
+ * the select resource
+ *
+ * Web params: GET, folksores, folksoean13list
+ */
+function resEans (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+  $i = new folksoDBinteract($dbc);
+  if ($i->db_error()) {
+    header('HTTP/1.0 501 Database connection error');
+    die($i->error_info());
+  }
+
+  $rq = new folksoResQuery();
+  $sql = $rq->resEans($i->dbescape($q->res));
+  $i->query($sql);
+
+  switch ($i->result_status) {
+  case 'DBERR':
+    header('HTTP/1.1 501 Database query error');
+    die($i->error_info());
+    break;
+  case 'NOROWS':
+      header('HTTP/1.1 404 Resource not found');
+      print "The requested resource is not present in the database.\n"
+        ." Maybe it  has not been indexed yet, or an erroneous identifier "
+        ." was used. ";
+      return;
+      break;
+  case 'OK':
+    if ($i->result->num_rows == 1) {
+      header('HTTP/1.1 404 No EAN-13 data associated with this resource');
+      print "There is no EAN-13 data yet for the resource " . $q->res . ".";
+      return;
+    }
+    else {
+      header('HTTP/1.1 200 EAN-13 data found');
+    }
+  }
+
+  $title_line = $i->result->fetch_object(); /**popping the title that
+                                               we are not using, but
+                                               we could if we needed
+                                               too (see note in ResQuery) 
+                                            **/
+
+  $df = new folksoDisplayFactory();
+  $dd = $df->associatedEan13resources();
+  $dd->activate_style('xml');
+
+  print $dd->startform();
+  while($row = $i->result->fetch_object()) {
+    print $dd->line($row->id, 
+                    $row->url,
+                    $row->title);
+  }
+  print $dd->endform();                 
+
+  }
+
+
+
+
 /**
  * @param $res string (url) or integer 
  * @param $tag string (tagname) or integer
