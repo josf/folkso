@@ -24,7 +24,7 @@ class testOffolksoEanList extends UnitTestCase {
     $this->assertTrue(is_string($s));
     $this->assertPattern('/<meta/', $s);
     $this->assertPattern('/DC\.Identifier/', $s);
-    $this->assertPattern('/DC\.Identifier/', $e->html);
+    $this->assertPattern('/DC\.Identifier/', $e->dc_identifier_html);
 
   }
 

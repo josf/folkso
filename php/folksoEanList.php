@@ -22,7 +22,24 @@ require_once('folksoClient.php');
    */
 class folksoEanList extends folksoTagdata {
   public $xml;
+
+  /**
+   * We are not going to use this variable, because there are two
+   * different html outputs.
+   */
   public $html;
+  /**
+   * Html output from ean13_dc_metalist. (No longer putting it in
+   * $this->html.
+   */
+  public $dc_identifier_html;
+
+  /**
+   * Html output from ean13_userlist. If data is present, a <ul>
+   * containing a list of related resources.
+   */
+  public $userlist_html;
+
   public $status;
   public $xml_dom;
   public $loc;
@@ -66,8 +83,8 @@ class folksoEanList extends folksoTagdata {
   public function ean13_dc_metalist($url = '',
                             $max_tags = 0,
                             $cloudtype = '') {
-    if ($this->html) {
-      return $this->html;
+    if ($this->dc_identifier_html) {
+      return $this->dc_identifier_html;
     }
 
     if (! $this->xml) {
@@ -75,7 +92,7 @@ class folksoEanList extends folksoTagdata {
     }
 
     if ($this->is_valid()) {
-      $meta_string = '';
+      $meta_string = "\n";
       $exml = $this->xml_DOM();
       $elems = $exml->getElementsByTagName('url');
       if ($elems->length > 0) {
@@ -85,9 +102,16 @@ class folksoEanList extends folksoTagdata {
           . $unode->textContent
           . '"/>' . "\n";
         }
-        $this->html = $meta_string;
+        $this->dc_identifier_html = $meta_string;
         return $meta_string;
       }
     }
   }
+
+  public function ean13_userlist($url = '') {
+    if ($this->userlist_html) {
+      return $this->userlist_html;
+    }
+  }
+
 }
