@@ -230,7 +230,7 @@ group by tag_id;
                      'e.resource_id = <<<x>>> '),
                array('type' => 'notnum',
                      'sql' =>
-                     "r.uri_normal = url_whack('<<<x>>>')"));
+                     "e.resource_id  = (SELECT rr.id from resource rr where uri_normal =  url_whack('<<<x>>>'))"));
     return $this->qb->build($q,
                             $res,
                             array());

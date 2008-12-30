@@ -58,7 +58,7 @@ class folksoPageDataMeta  {
    */
   public function meta_keywords() {
 
-    if (count($this->keywords) > 1) {
+    if (count($this->keywords) > 0) {
       return '<meta name="keywords" content="'
         . implode(' ', $this->keywords)
         . '"/>';
@@ -72,7 +72,7 @@ class folksoPageDataMeta  {
    * Returns a comma-separated list of keyword tags.
    */
   public function meta_textlist() {
-    if (count($this->keywords) > 1) {
+    if (count($this->keywords) > 0) {
       return implode(', ', $this->keywords);
     }
   }
