@@ -33,7 +33,39 @@ class testOffolksoPage extends  UnitTestCase {
     $this->assertTrue((is_string($page->meta_keywords()) &&
                        (strlen($page->meta_keywords()) > 10)));
     $this->assertTrue(is_string($page->DC_description_list()));
+    $this->assertIsA($page->pdata->ptags, folksoPageTags);
     $this->assertIsA($page->pdata->ptags, folksoTagdata); // inheritance works!
+
+    $p2 = new folksoPage('http://fabula.org/actu_meta_test.php');
+    $p3 = new folksoPage(38065);
+    $p2->pdata->prepareMetaData();
+    $p3->pdata->prepareMetaData();
+    $this->assertIsA($p2->pdata, folksoPageData);
+    $this->assertIsA($p2->pdata->mt, folksoPageDataMeta);
+    $this->assertIsA($p2->pdata->ptags, folksoPageTags);
+    $this->assertTrue($p2->pdata->ptags->is_valid(), 
+                      "Valid request for page tags?");
+    $this->assertIsA($p2->pdata->ptags->xml_DOM(), DOMDocument);
+    $this->assertTrue(is_string($p2->pdata->ptags->xml));
+    // url
+
+    print $p2->pdata->ptags->xml;
+
+    // id
+    $this->assertTrue(is_string($p2->pdata->mt->meta_textlist()));
+    $this->assertTrue($p3->pdata->ptags->is_valid(), 
+                      "Valid request for page tags?");
+    $this->assertEqual($p3->pdata->ptags->xml,
+                       $p3->pdata->ptags->xml);
+
+    $this->assertTrue(is_string($p2->keyword_list()), 
+                                "keyword_list() returns string?");
+    $this->assertEqual($p2->keyword_list(), $p3->keyword_list());
+    $this->assertEqual($p2->pdata->mt->meta_keywords(),
+                       $p3->pdata->mt->meta_keywords());
+    $this->assertTrue(strlen($p2->keyword_list()) > 5);
+    $this->assertPattern('/<meta/', $p2->meta_keywords());
+
   }
 
   function testTagRes () {
@@ -68,11 +100,18 @@ class testOffolksoPage extends  UnitTestCase {
   }
 
   function testEan13 () {
-    $page = new folksoPage(4159);
+    $page = new folksoPage(38065);
     $this->assertIsA($page, folksoPage);
     $dc = $page->ean13_dc_identifier();
     $this->assertTrue(is_string($dc));
     $this->assertPattern('/<meta\s+/', $dc);
+
+    $page2 = new folksoPage('http://fabula.org/actu_meta_test.php');
+    $dc2 = $page2->ean13_dc_identifier();
+    $this->assertTrue(is_string($dc2));
+    $this->assertPattern('/<meta\s+/', $dc2);
+
+    print "<pre>" . $dc2 . "</pre>";
   }
 
 }//end class

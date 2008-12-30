@@ -446,7 +446,6 @@ function ean13Checksum (ean) {
   else {
     return 10 - (product % 10);
   }
-  return parse;
 }
 
 function oddp (num) {

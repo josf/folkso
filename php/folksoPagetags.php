@@ -98,8 +98,9 @@ class folksoPagetags extends folksoTagdata {
           $mt->add_all_tags($tagname->item(0)->textContent);
         }
       }
-    }
+    $this->mt = $mt;
     return $mt;
+    }
   }
 
 

@@ -953,6 +953,7 @@ function resEans (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
     if ($i->result->num_rows == 1) {
       header('HTTP/1.1 404 No EAN-13 data associated with this resource');
       print "There is no EAN-13 data yet for the resource " . $q->res . ".";
+      print "<br/>" . $sql;
       return;
     }
     else {
