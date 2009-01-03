@@ -66,6 +66,9 @@ class folksoQuery {
     * Fields ending in three digits are processed differently. Their
     * values are built up into arrays that are then associated with a
     * single parameter name, stripped of the three finale digits.
+    *
+    * Slashes are removed from input data by stripslashes, in case
+    * magic_quotes_gpc is on, which it probably is.
     */
   private function parse_params ($array) {
       $accum = array();
@@ -75,6 +78,10 @@ class folksoQuery {
             
             # to avoid XSS -- no html allowed anywhere.
             $param_val = strip_tags($param_val);
+
+            /** in case the dreaded magic_quotes_gpc is on. We will do
+                our own escaping, thankyou. **/
+            $param_val = stripslashes($param_val);
 
               # if fieldname end in 3 digits : folksothing123, we strip off
               # the digits and build up an array of the fields
