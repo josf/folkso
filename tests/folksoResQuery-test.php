@@ -16,7 +16,8 @@ class testOffolksoResQuery extends UnitTestCase {
 
     $getag = $rq->getTags(1233, 0, false);
     $this->assertTrue(strlen($getag) > 100);
-    $this->assertPattern('/resource_id\s+=\s+1233/', $getag);
+    $this->assertPattern('/popularity/', $getag);
+
     $getag2 = $rq->getTags(1233, 10, true);
     $this->assertPattern('/limit\s+10/i', $getag2);
     $this->assertPattern('/te\.meta_id\s+<>\s+1/', $getag2);
@@ -46,6 +47,19 @@ class testOffolksoResQuery extends UnitTestCase {
     $this->assertTrue(is_string($sql2));
     $this->assertNoPattern('/<<</', $sql2);
     $this->assertPattern('/url_whack/', $sql2);
+
+    $this->assertNoPattern('/resource_id\s+=\s+1233/', 
+                            $sql2, 
+                            'No EAN without option');
+
+    $sql3 = $rq->resEans('http://www.fabula.org/actualites/article22843.php',
+                         0,
+                         false,
+                         true);
+
+
+
+
   }
 
 }

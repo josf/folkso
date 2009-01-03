@@ -137,7 +137,10 @@ group by tag_id;
 
 
 
-  public function getTags ($res, $limit = 0, $metaonly = false) {
+  public function getTags ($res, 
+                           $limit = 0, 
+                           $metaonly = false,
+                           $include_eans = false) {
     $q = array(
                array('type' => 'common',
                      'sql' =>
@@ -162,7 +165,7 @@ group by tag_id;
                array('type' => 'limit',
                      'sql' => ' LIMIT <<<limit>>> '),
 
-               array('type' => 'common',
+               array('type' => 'include_eans',
                      'sql' =>     " UNION "
                      ." SELECT DISTINCT "
                      ." ean13 AS id, convert(ean13, char) AS tagdisplay, "
@@ -170,10 +173,10 @@ group by tag_id;
                      ." FROM ean13 "
                      ." WHERE resource_id = "),
 
-               array('type' => 'isnum',
+               array('type' => array('AND', 'isnum', 'include_eans'),
                      'sql' => '<<<x>>>'),
 
-               array('type' => 'notnum',
+               array('type' => array('AND', 'include_eans', 'notnum'),
                      'sql' => 
                      "(SELECT id FROM resource ".
                      "WHERE uri_normal = url_whack('<<<x>>>'))"),
@@ -187,7 +190,9 @@ group by tag_id;
                             array('limit' => array('func' => '',
                                                    'value' => $limit),
                                   'metaonly' => array('func' => '',
-                                                      'value' => $metaonly)));
+                                                      'value' => $metaonly),
+                                  'include_eans' => array('func' => '',
+                                                          'value' => $include_eans)));
 
 
   }
