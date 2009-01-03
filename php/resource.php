@@ -39,7 +39,6 @@ $srv->addResponseObj(new folksoResponse('get',
                                               'exclude' => array('delete', 'clouduri', 'note')),
                                         'resEans'));
                                               
-
 $srv->addResponseObj(new folksoResponse('post',
                                         array('required_single' => array('res', 'tag'),
                                               'required' => array('delete'),
@@ -935,6 +934,7 @@ function resEans (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
 
   $rq = new folksoResQuery();
   $sql = $rq->resEans($i->dbescape($q->res));
+
   $i->query($sql);
 
   switch ($i->result_status) {
