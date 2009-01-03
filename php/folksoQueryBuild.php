@@ -71,51 +71,89 @@ class folksoQueryBuild {
     $sql = '';
 
     foreach ($sql_arr as $chunk_arr) {
-      switch ($chunk_arr['type']) {
-      case 'common':
+      /** if (! is_string($chunk_arr['type'])) { MIGHT BE AN ARRAY NOW!
+          trigger_error("Problem with SQL building: invalid type", 
+          E_USER_ERROR);
+          }**/
+
+      if ($this->includep($chunk_arr['type'], $thing, $arg_arr)) {
         $sql = $this->concatSQL($sql, $chunk_arr, $thing, $arg_arr);
-        break;
-      case 'isnum':
-        if (is_numeric($thing)) {
-          $sql = $this->concatSQL($sql, $chunk_arr, $thing, $arg_arr);
-        }
-        break;
-      case 'notnum':
-        if (! is_numeric($thing)) {
-          $sql = $this->concatSQL($sql, $chunk_arr, $thing, $arg_arr);
-        }
-        break;
-      default:
-        if ((is_array($arg_arr)) &&
-            (array_key_exists($chunk_arr['type'], $arg_arr))) {
-          $type = $chunk_arr['type']; // to avoid some extra typing 
-
-
-          /** If no test function is given, we just test for
-           non-nullness of the value  **/
-          if (! $arg_arr[$type]['func']) {
-            if ($arg_arr[$type]['value']) {
-              $sql = $this->concatSQL($sql, $chunk_arr, $thing, $arg_arr);
-            }
-          }
-          /** functions must return booleans **/
-          elseif (is_callable($arg_arr[$type]['func'])) {
-            if  (call_user_func($arg_arr[$type]['func'], 
-                                $arg_arr[$type]['value'])){
-              $sql = $this->concatSQL($sql, $chunk_arr, $thing, $arg_arr);
-            }
-          }
-          else {
-            trigger_error("Something is awry in the arguments for this SQL query: $type",
-                          E_USER_ERROR);
-          }
-        }
       }
     }
     $sql = trim($sql);
     $this->sql = $sql;
     return $sql;
+  
   }
+
+
+    private function includep ($item, $thing, $arg_arr) {
+      switch ($item) {
+      case 'common':
+        return true;
+        break;
+      case 'isnum':
+        if (is_numeric($thing)) {
+          return true;
+        }
+        else {
+          return false;
+        }
+        break;
+      case 'notnum':
+        if (! is_numeric($thing)) {
+          return true;
+        }
+        else {
+          return false;
+        }
+        break;
+      default:
+
+
+        if (is_array($item)) {
+          switch ($item[0]){
+          case 'AND':
+            $incl = TRUE;
+            foreach (array_slice($item, 1) as $part) {
+              if (! $this->includep($part, $thing, $arg_arr)) {
+                $incl = FALSE;
+              }
+            }
+            return $incl;
+          case 'OR':
+            $incl = FALSE;
+            foreach (array_slice($item, 1) as $part) {
+              if ($this->includep($part, $thing, $arg_arr)) {
+                $incl = TRUE;
+              }
+            }
+            return $incl;
+          default:
+            trigger_error("Invalid SQLbuild operator",
+                          E_USER_ERROR);
+          }
+        }
+
+        if (! array_key_exists($item, $arg_arr)) {
+          trigger_error("Undefined item in SQL query building: $item", 
+                        E_USER_ERROR);
+        }
+
+        if ((! $arg_arr[$item]['func']) &&
+                 ($arg_arr[$item]['value'])) {
+          return TRUE;
+        }
+        elseif (is_callable($arg_arr[$item]['func']) &&
+                call_user_func($arg_arr[$item]['func'],
+                               $arg_arr[$item]['value'])) {
+          return TRUE;
+        }
+        else {
+          return FALSE;
+        }
+      }
+    }
 
   public function concatSQL ($sql, $el_arr, $thing, $arg_arr) {
     return 

@@ -85,17 +85,54 @@ class testOffolksoQueryBuild extends UnitTestCase {
                                   array('stuff' => array('value' => -12,
                                                          'func' => $stupidfunk))),
                        'really select b from x where d = -12');
+  }
+
+    function testMultipleConds () {
+
+      /** AND **/
+      $subeval = array(
+                     array('type' => 'common',
+                           'sql' => 'some common stuff'),
+                     array('type' => array('AND', 'notnum', 'bob'),
+                           'sql' => 'And <<<x>>> hates it.'));
+      $qq = new folksoQueryBuild();
+      $rq = $qq->build($subeval, 'Robert', array('bob' => array('func' => '',
+                                                                'value' => 1)));
+      $this->assertPattern('/Robert/', $rq);
+      $this->assertPattern('/hates/', $rq);
+
+      /** OR **/
+      $subeval2 = array(array('type' => 'common',
+                              'sql' => 'some common stuff'),
+                        array('type' => array('OR', 'isnum', 'bob'),
+                              'sql' => 'And <<<x>>> hates it'));
+      $rq2 = $qq->build($subeval, 'Robert', array('bob' => array('func' => '',
+                                                                 'value' => '3')));
+      $this->assertPattern('/hates/', $rq2);
+      /** failing AND  **/
+      $subeval3 = array(array('type' => 'common',
+                              'sql' => 'some common stuff'),
+                        array('type' => array('AND', 'isnum', 'bob'),
+                              'sql' => 'And <<<x>>> hates it'));
+      $rq3 = $qq->build($subeval, 123, array('bob' => array('func' => '',
+                                                                 'value' => '')));
+      $this->assertNoPattern('/hates/', $rq3);
+
+      /** failing OR  **/
+      $subeval = array(array('type' => 'common',
+                              'sql' => 'some common stuff'),
+                        array('type' => array('OR', 'isnum', 'bob'),
+                              'sql' => 'And <<<x>>> hates it'));
+      $rq3 = $qq->build($subeval, 'Robert', array('bob' => array('func' => '',
+                                                                 'value' => '')));
+      $this->assertNoPattern('/hates/', $rq3);
 
 
   }
-
-
-
-
 }
 
 
-$test = &new testOffolksoQueryBuild();
+$test = new testOffolksoQueryBuild();
 $test->run(new HtmlReporter());
 
 
