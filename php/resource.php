@@ -151,11 +151,12 @@ function isHead (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
 
 /**
  * Retrieve the tags associated with a given resource. Accepts uri or
- * id. Also includes EAN13 information if available, tagged as 'EAN13'. 
+ * id. 
  * 
  * Web parameters : GET + folksores 
  * Optional: metas only
  * Optional: limit
+ * Optional: ean13 Includes EAN13 information if available, tagged as 'EAN13'. 
  */
 function getTagsIds (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
   $i = new folksoDBinteract($dbc);
@@ -190,10 +191,16 @@ function getTagsIds (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc
     $metaonly = true;
   }
 
+  $include_eans = false;
+  if ($q->is_param('ean13')) {
+    $include_eans = true;
+  }
+
   $rq = new folksoResQuery();  
   $select = $rq->getTags($i->dbescape($q->res), 
                          $limit, 
-                         $metaonly);
+                         $metaonly, 
+                         $include_eans);
   $i->query($select);
 
   switch ($i->result_status) {
