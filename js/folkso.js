@@ -179,6 +179,7 @@ function tagMenuCleanupFunc(lis, tag) {
            datatype: 'text/xml',
            data: {
              folksores: resid,
+             folksoean13: '1',
              folksodatatype: 'xml'},
            success: tagMenuFromXmlFunction,
            error: function(xhr, msg) {
