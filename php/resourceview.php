@@ -65,8 +65,6 @@ ul.resourcelist li { margin-bottom: 1em}
 ul.resourcelist li a.tocloud, ul.resourcelist li a:visited.tocloud, ul.resourcelist li a:link.tocloud {
     font-size:10pt;}
 
-ul.resourcelist a:link.openiframe, 
-ul.resourcelist a:visited.openiframe, 
 ul.resourcelist a:link.editresource, 
 ul.resourcelist a:visited.editresource {
     font-size: 10pt; 
@@ -80,8 +78,6 @@ a.closeedit, a:link.closeedit, a:visited.closeedit {
 display:none;
   margin-left: 2em;
 }
-  
-
 
 div.details {
 display:none;
