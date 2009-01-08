@@ -30,6 +30,7 @@
       <xsl:attribute name="id">
         <xsl:value-of select="concat('res', numid)"/>
       </xsl:attribute>
+      <xsl:attribute name="class">resitem</xsl:attribute>
       <xsl:element name="h4">
       <xsl:element name="a">
         <xsl:attribute name="class">restitle</xsl:attribute>
