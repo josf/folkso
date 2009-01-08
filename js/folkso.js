@@ -173,7 +173,11 @@ function tagMenuCleanupFunc(lis, tag) {
   */
  function getTagMenu(place, resid) {
 //     place.find("ul.tagmenu li").hide();
-     var tagMenuFromXmlFunction = tagMenuFunkMaker(place, resid);
+   if (! resid) {
+     alert("No resid for getTagMenu!");
+   }
+
+   var tagMenuFromXmlFunction = tagMenuFunkMaker(place, resid);
     $.ajax({ url: document.folksonomie.getbase + 'resource.php',
            type: 'get',
            datatype: 'text/xml',
