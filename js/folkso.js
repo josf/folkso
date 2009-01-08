@@ -678,6 +678,9 @@ function infoMessage(elem) {
      tgbx.autocomplete(document.folksonomie.getbase + "tagcomplete.php");
 
      var url = lis.find("a.resurl").attr("href");
+     if (! url){
+       url = lis.attr("id").substring(3);
+     }
 
      lis.find("a.tagbutton").click(
          function(event) {
