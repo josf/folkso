@@ -99,7 +99,6 @@ div.iframeholder {
 
 </head>
 <body>
-
   <div id="superscreen"> <!-- screen that appears with dialogue boxes -->
   <div id="superinfobox">
      <a id="closess" href="#">Fermer</a>
@@ -107,8 +106,6 @@ div.iframeholder {
   </div> <!-- end of superscreen -->
 
 <div id="container">
-
-
 <?php
 
    if ($_GET['tag']) {
@@ -121,10 +118,7 @@ div.iframeholder {
      $fc->set_getfields(array('folksotag' => $tagthing, 'folksofancy' => '1'));
      $reslist = $fc->execute();
 
-     //          print $reslist;
-
      if ($fc->query_resultcode() == 200) {
-
            $resources = new DOMDocument();
            $resources->loadXML($reslist);
            
