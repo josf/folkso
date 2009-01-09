@@ -362,6 +362,13 @@ class folksoPage {
    */
 
 
+  private function title() {
+    if (($this->pdata->cloud instanceof folksoCloud) &&
+        ($this->pdata->cloud->is_valid())) {
+      return $this->pdata->cloud->getTitle();
+    }
+  }
+
   /**
    * Tag resource list.
    * 
