@@ -30,6 +30,7 @@ abstract class folksoTagdata {
    */
   public $xml_dom;
   public $html;
+  private $title;
 
   /**
    * Result status from the http request.
@@ -92,6 +93,7 @@ abstract class folksoTagdata {
     }
     return $this->xml_dom;
   }
+
 
   /**
    * Test whether the request was successful (result status 200 or
