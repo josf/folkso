@@ -47,8 +47,9 @@ class folksoPage {
    * This goes beyond the typical resource oriented use of this class
    * to allow us to build resource lists around a single tag while
    * taking advantage of all our existing code. Sorry if this is too
-   * much of a hack, maybe someday it will move on to its own package,
-   * but for now I would like folksoPage be the only necessary interface. 
+   * much of a hack as regards OO practices. Maybe someday it will
+   * move on to its own package, but for now I would like folksoPage
+   * be the only necessary interface.
    *
    */
   public $tr;
