@@ -361,12 +361,13 @@ $querystart =
     WHEN title IS NULL THEN uri_normal 
     ELSE title
   END AS display,
-  (SELECT GROUP_CONCAT(DISTINCT tagdisplay SEPARATOR \' - \')
-               FROM tag t2
-               JOIN tagevent te2 ON t2.id = te2.tag_id
-               JOIN resource r2 ON r2.id = te2.resource_id
-               WHERE r2.id = r.id
-               ) AS tags
+  (SELECT 
+       GROUP_CONCAT(DISTINCT concat(t2.tagdisplay, \'::\', convert(t2.id,CHAR)) SEPARATOR \' - \')
+       FROM tag t2
+       JOIN tagevent te2 ON t2.id = te2.tag_id
+       JOIN resource r2 ON r2.id = te2.resource_id
+       WHERE r2.id = r.id
+       ) AS tags
   FROM resource r
   JOIN tagevent te ON r.id = te.resource_id
   JOIN tag t ON te.tag_id = t.id';

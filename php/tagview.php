@@ -8,15 +8,21 @@
         media="screen">
     </link>
 
+<script type="text/javascript" src="js/jquery.js"></script>
+<script type="text/javascript" src="js/tagview.js"></script>
+
 <style type="text/css">
 #container { background-color: white; padding: 2em; }
-
+   a.innertag, a.innertag:link, a.innertag:visited {
+   text-decoration: none;
+ border: none;
+   padding-right: 0.3em;
+ }
 </style>
 <?php
 
 require_once('folksoPage.php');
 require_once('folksoPageData.php');
-
 
 
 $tagreq = $_GET['tag'];

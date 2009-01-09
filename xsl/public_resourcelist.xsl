@@ -54,17 +54,95 @@
       </xsl:element>
 
         <xsl:element name="p">
-          <xsl:element name="span">
           <xsl:attribute name="class">currenttags</xsl:attribute>
-          <xsl:text> 
-          </xsl:text>
-          <xsl:value-of select="tags"/>
-          <xsl:text> 
-          </xsl:text>
-          </xsl:element>
+          <xsl:call-template name="divide-tags">
+            <xsl:with-param name="original">
+            <xsl:value-of select="tags"/>
+            </xsl:with-param>
+          </xsl:call-template>
         </xsl:element>
 
         </xsl:element>
   </xsl:template>
+
+  <xsl:template name="divide-tags">
+    <xsl:param name="original"/>
+    <xsl:param name="separator" select="' - '"/>
+    <xsl:choose>
+      <xsl:when test="contains($original, $separator)">
+        <xsl:element name="a">
+
+          <xsl:attribute name="href">
+            <xsl:text>tagview.php?tag=</xsl:text>
+            <xsl:call-template name="extract-tag-id">
+              <xsl:with-param name="rawstring">
+                <xsl:value-of select="substring-before($original, $separator)"/>
+              </xsl:with-param>
+            </xsl:call-template>
+
+          </xsl:attribute>
+          <xsl:attribute name="class">innertag</xsl:attribute>
+          <xsl:call-template name="extract-tag-name">
+            <xsl:with-param name="rawstring">
+              <xsl:value-of select="substring-before($original, $separator)"/>
+            </xsl:with-param>
+          </xsl:call-template>
+        </xsl:element>
+        <!-- add some text before the next element -->
+        <xsl:text> - </xsl:text>
+
+
+        <!-- recursive template call on rest of string -->
+        <xsl:call-template name="divide-tags">
+          <xsl:with-param name="original">
+            <xsl:value-of select="substring-after($original, $separator)"/>
+          </xsl:with-param>
+        </xsl:call-template>
+
+      </xsl:when>
+
+      <!-- last or unique tagname -->
+      <xsl:when test="string-length($original) &gt; 0">
+
+        <xsl:element name="a">
+          <xsl:attribute name="href">
+            <xsl:text>tagview.php?tag=</xsl:text>
+            <xsl:call-template name="extract-tag-id">
+              <xsl:with-param name="rawstring">
+                <xsl:value-of select="$original"/>
+              </xsl:with-param>
+            </xsl:call-template>
+          </xsl:attribute>
+
+          <xsl:attribute name="class">innertag</xsl:attribute>
+          <xsl:call-template name="extract-tag-name">
+            <xsl:with-param name="rawstring">
+              <xsl:value-of select="$original"/>
+            </xsl:with-param>
+          </xsl:call-template>
+
+        </xsl:element>
+      </xsl:when>
+      <xsl:otherwise>
+        <!-- do nothing, no string to do anything with -->
+      </xsl:otherwise>
+
+    </xsl:choose>
+  </xsl:template>
+
+
+  <xsl:template name="extract-tag-name">
+    <xsl:param name="rawstring"/>
+    <xsl:param name="sep" select="'::'"/>
+    <xsl:value-of select="substring-before($rawstring, $sep)"/>
+  </xsl:template>
+
+  <xsl:template name="extract-tag-id">
+    <xsl:param name="rawstring"/>
+    <xsl:param name="sep" select="'::'"/>
+    <xsl:value-of select="substring-after($rawstring, $sep)"/>
+  </xsl:template>
+
+
 
 </xsl:stylesheet>
