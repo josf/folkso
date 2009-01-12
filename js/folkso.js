@@ -229,7 +229,6 @@ function tagMenuFunkMaker(place, resid) {
         else {
           makeStandardTagMenuItem($(this), item, metatype, resid, place);
         }
-
         ul.append(item);
       });
 
