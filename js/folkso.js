@@ -270,8 +270,8 @@ function makeStandardTagMenuItem(xml_tag, tlis, metatype, resid, place) {
                   + "</span>"));
   }
 
-  tlis.append(makeMetatagBox(resid, //closure
-                             $(this).find('numid').text(),
+  tlis.append(makeMetatagBox(resid,
+                             xml_tag.find('numid').text(),
                              place));
   return tlis;
 }
@@ -542,40 +542,52 @@ function metatagDropdown (list, boxclass) {
  * resource and tag can be either text or ids.
  */
 function makeMetatagBox (resource, tag, lis) {
+  if (! resource) {
+    alert("missing resource here in makemetatag box");
+  }
+
   var container = $("<span class='metatagbox'></span>")
     .append("<span class='infohead'>Modifier le metatag </span>");
-//  box.autocomplete(metatag_autocomplete_list); //array defined in <script> on page.
+  //  box.autocomplete(metatag_autocomplete_list); //array defined in <script> on page.
   var box;
   if (document.folksonomie.metatag_autocomplete_list){
-      box = metatagDropdown(
-              document.folksonomie.metatag_autocomplete_list,
-              "metatagbox");
+    box = metatagDropdown(
+      document.folksonomie.metatag_autocomplete_list,
+      "metatagbox");
   }
-    else{
-      box = $("<select class=\"metatagbox\"><option/></select>");
-      box.each(metaSelectOptions);
-    }
+  else{
+    box = $("<select class=\"metatagbox\"><option/></select>");
+    box.each(metaSelectOptions);
+  }
+
+  var postmeta_f = (function(){
+                     return function(newmeta){
+                        $.ajax({
+                                 url: document.folksonomie.postbase + 'resource.php',
+                                 type: 'post',
+                                 data: {
+                                   folksores: resource,
+                                   folksotag: tag,
+                                   folksometa: newmeta
+                                 },
+                                 error: function(xhr, msg) {
+                                   alert("metatag error " + msg);
+                                 },
+                                 success: function(data) {
+                                   getTagMenu(lis, resource);
+                                 }
+                               });
+                        };
+                    })();
 
   var button = $("<a href='#' class='metatagbutton'>Ajouter métatag</a>")
     .click(
       function(event){
         event.preventDefault();
         var newmeta = $(this).siblings("select").val();
-        $.ajax({
-                 url: document.folksonomie.postbase + 'resource.php',
-                 type: 'post',
-                 data: {
-                   folksores: resource,
-                   folksotag: tag,
-                   folksometa: newmeta
-                 },
-                 error: function(xhr, msg) {
-                   alert(msg);
-                 },
-                 success: function(data) {
-                   getTagMenu(lis, resource);
-                 }
-               });
+        if (newmeta){
+          postmeta_f(newmeta);
+          }
       });
    container.append(box);
    return container.append(button);
