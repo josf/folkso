@@ -3,23 +3,41 @@ jQuery.fn.extend({
 
 /**
  * Get the parent resource id (resid) from any element contained
- * inside a <li>, or from the <li> itself.
+ * inside a <li>, or from the <li> itself. Can be either an numeric
+ * id (prefered) or a url.
+ *
  */
-                   resid : function() {
-                     if (this.is("li.resitem")) {
-                       return this.attr("id").substring(3);
-                     }
+                    resid : function() {
+                    var lis;
 
-                     var pars = this.parents("li.resitem");
-                     if (pars.length == 0 ) {
-                       return '';
-                     }
-                     else {
-                       var lis = $(pars[0]);
-                       return lis.attr("id").substring(3);
-                     }
-                   },
-
+                      /* check to see if this is already the "li" item */
+                     if ((this.is("li.resitem") ||
+                         (this.is("li.tagged")) ||
+                         (this.is("li.nottagged")))) {
+                           lis = this;
+                       }
+                      /* otherwise look at ancestors */
+                      else {
+                        var pars = this.parents("li.resitem");
+                        if (pars.length == 0 ) {
+                          pars = this.parents("tagged");
+                        }
+                        else if (this.parents("li.nottagged").length > 0) {
+                          pars = this.parents("li.nottagged");
+                        }
+                        else { /* we bail, there is nothing to be found for some reason */
+                          return ''; /** error instead? **/
+                        }
+                        lis = $(pars[0]);
+                      }
+                      if (lis.attr("id").length > 3) {
+                        return this.attr("id").substring(3);
+                      }
+                      else {
+                        // backup plan, but will provide url instead of id
+                        return this.find("a.resurl").attr("href");
+                      }
+                    },
 
                    tagitem: function() {
                      if (this.is("li.tagitem")) {
