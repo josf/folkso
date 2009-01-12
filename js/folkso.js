@@ -710,10 +710,7 @@ function infoMessage(elem) {
      var tgbx = lis.find("input.tagbox");
      tgbx.autocomplete(document.folksonomie.getbase + "tagcomplete.php");
 
-     var url = lis.find("a.resurl").attr("href");
-     if (! url){
-       url = lis.attr("id").substring(3);
-     }
+     var url = lis.resid();
 
      lis.find("a.tagbutton").click(
          function(event) {
