@@ -242,7 +242,7 @@ function makeStandardTagMenuItem(xml_tag, tlis, metatype, resid, place) {
   tlis.append(taglink);
   /** add tag id **/
   tlis.append($("<span class='tagid'>"
-                + $(this).find('numid').text()
+                + xml_tag.find('numid').text()
                 + "</span>"));
   tlis.append($('<a class="remtag" href="#">Désassocier</a>'));
   /** meta tag (if not "normal") **/
