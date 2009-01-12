@@ -20,7 +20,7 @@ jQuery.fn.extend({
                       else {
                         var pars = this.parents("li.resitem");
                         if (pars.length == 0 ) {
-                          pars = this.parents("tagged");
+                          pars = this.parents("li.tagged");
                         }
                         else if (this.parents("li.nottagged").length > 0) {
                           pars = this.parents("li.nottagged");
@@ -30,12 +30,12 @@ jQuery.fn.extend({
                         }
                         lis = $(pars[0]);
                       }
-                      if (lis.attr("id").length > 3) {
-                        return this.attr("id").substring(3);
+                      if (lis.attr("id") && (lis.attr("id").length > 3)) {
+                        return lis.attr("id").substring(3);
                       }
                       else {
                         // backup plan, but will provide url instead of id
-                        return this.find("a.resurl").attr("href");
+                        return lis.find("a.resurl").attr("href");
                       }
                     },
 
