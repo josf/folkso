@@ -1,41 +1,44 @@
 
 jQuery.fn.extend({
 
-/**
- * Get the parent resource id (resid) from any element contained
- * inside a <li>, or from the <li> itself. Can be either an numeric
- * id (prefered) or a url.
- *
- */
-                    resid : function() {
-                    var lis;
+                   /**
+                    * Get the parent resource id (resid) from any element contained
+                    * inside a <li>, or from the <li> itself. Can be either an numeric
+                    * id (prefered) or a url.
+                    *
+                    */
+                   resid : function() {
+                     var lis;
 
-                      /* check to see if this is already the "li" item */
+                     /* check to see if this is already the "li" item */
                      if ((this.is("li.resitem") ||
-                         (this.is("li.tagged")) ||
-                         (this.is("li.nottagged")))) {
-                           lis = this;
+                          (this.is("li.tagged")) ||
+                          (this.is("li.nottagged")))) {
+                       lis = this;
+                     }
+                     /* otherwise look at ancestors */
+                     else {
+                       var pars = this.parents("li.resitem");
+                       if (this.parents("li.resitem").length > 0) {
+                         pars = this.parents("li.resitem");
                        }
-                      /* otherwise look at ancestors */
-                      else {
-                        var pars = this.parents("li.resitem");
-                        if (pars.length == 0 ) {
-                          pars = this.parents("li.tagged");
-                        }
-                        else if (this.parents("li.nottagged").length > 0) {
-                          pars = this.parents("li.nottagged");
-                        }
-                        else { /* we bail, there is nothing to be found for some reason */
-                          return ''; /** error instead? **/
-                        }
-                        lis = $(pars[0]);
-                      }
-                      if (lis.attr("id") && (lis.attr("id").length > 3)) {
-                        return lis.attr("id").substring(3);
-                      }
-                      else {
-                        // backup plan, but will provide url instead of id
-                        return lis.find("a.resurl").attr("href");
+                       else if (this.parents("li.tagged").length > 0){
+                         pars = this.parents("li.tagged");
+                       }
+                       else if (this.parents("li.nottagged").length > 0) {
+                         pars = this.parents("li.nottagged");
+                       }
+                       else { /* we bail, there is nothing to be found for some reason */
+                         return ''; /** error instead? **/
+                       }
+                       lis = $(pars[0]);
+                     }
+                     if (lis.attr("id") && (lis.attr("id").length > 3)) {
+                       return lis.attr("id").substring(3);
+                     }
+                     else {
+                       // backup plan, but will provide url instead of id
+                       return lis.find("a.resurl").attr("href");
                       }
                     },
 
