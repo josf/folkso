@@ -137,7 +137,9 @@ function tagMenuCleanupFunc(lis, tag) {
    var remove = $(this).find("a.remtag");
 
    var taglistdiv = $(this).parent();
-   var resourceid = taglistdiv.resid();
+   var resourceid = $(this).resid();
+
+   alert("resid is What? its " + resourceid);
 
    remove.click(function(event) {
          event.preventDefault();
@@ -197,7 +199,6 @@ function tagMenuCleanupFunc(lis, tag) {
    if (! resid) {
      alert("No resid for getTagMenu!");
    }
-
    var tagMenuFromXmlFunction = tagMenuFunkMaker(place, resid);
     $.ajax({ url: document.folksonomie.getbase + 'resource.php',
            type: 'get',
@@ -242,7 +243,7 @@ function tagMenuFunkMaker(place, resid) {
     else {
       dest.append(ul);
     }
-    dest.find("ul.tagmenu").each(tagremovePrepare);
+    place.find("ul.tagmenu").each(tagremovePrepare);
   };
 }
 
@@ -545,8 +546,8 @@ function metatagDropdown (list, boxclass) {
  * resource and tag can be either text or ids.
  */
 function makeMetatagBox (resource, tag, lis) {
-  if (! resource) {
-    alert("missing resource here in makemetatag box");
+  if (! tag) {
+    alert("missing tag here in makemetatag box");
   }
 
   var container = $("<span class='metatagbox'></span>")
