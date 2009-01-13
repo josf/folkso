@@ -70,9 +70,17 @@ jQuery.fn.extend({
                      else {
                        return $(pars[0]);
                      }
-                   }
+                   },
 
-}); /** end of jQuery extend
+                   tagid: function() {
+                     var titem  = this.tagitem();
+                     var ret;
+                     if (titem.find("span.tagid").length > 0) {
+                        ret = titem.find("span.tagid").text();
+                       }
+                     return ret;
+                     }
+                 }); /** end of jQuery extend
 
 
  /**
