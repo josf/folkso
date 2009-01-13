@@ -147,8 +147,6 @@ function tagMenuCleanupFunc(lis, tag) {
    var taglistdiv = $(this).parent();
    var resourceid = $(this).resid();
 
-   alert("resid is What? its " + resourceid);
-
    remove.click(function(event) {
          event.preventDefault();
          var tagid = $(this).siblings(".tagid").text();
@@ -597,9 +595,7 @@ function makeMetatagBox (resource, tag, lis) {
       function(event){
         event.preventDefault();
         var newmeta = $(this).siblings("select").val();
-        if (newmeta){
-          postmeta_f(newmeta);
-          }
+        postmeta_f(newmeta);
       });
    container.append(box);
    return container.append(button);
