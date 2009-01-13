@@ -60,10 +60,12 @@ jQuery.fn.extend({
                     */
 
                    resitem: function() {
-                     if (this.is("li.resitem")) {
+                     if ((this.is("li.resitem")) ||
+                         (this.is("li.tagged")) ||
+                         (this.is("li.nottagged"))) {
                        return this;
                      }
-                     var pars = this.parents("li.resitem");
+                     var pars = this.parents("li.resitem, li.tagged, li.nottagged");
                      if (pars.length == 0){
                        return null;
                      }
