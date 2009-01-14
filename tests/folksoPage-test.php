@@ -36,6 +36,7 @@ class testOffolksoPage extends  UnitTestCase {
     $this->assertIsA($page->pdata->ptags, folksoPageTags);
     $this->assertIsA($page->pdata->ptags, folksoTagdata); // inheritance works!
 
+
     $p2 = new folksoPage('http://fabula.org/actu_meta_test.php');
     $p3 = new folksoPage(38065);
     $p2->pdata->prepareMetaData();
@@ -86,10 +87,17 @@ class testOffolksoPage extends  UnitTestCase {
     $this->assertTrue(is_string($cloud));
     $this->assertTrue(strlen($cloud) > 200);
 
+    
+    $page->cloud_reset();
+    $this->assertFalse($page->pdata->cloud);
+
     $cl2 = $page->popularity_cloud();
     $this->assertTrue(is_string($cl2));
     $this->assertTrue(strlen($cl2) > 200);
     $this->assertTrue($page->pdata->cloud->is_valid());
+
+    $page->cloud_reset();
+    $this->assertFalse($page->pdata->cloud);
 
     $cl3 = $page->date_cloud();
     $this->assertTrue(is_string($cl3));

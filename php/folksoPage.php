@@ -19,6 +19,12 @@ require_once('folksoTagRes.php');
  * Ideally, a page should be able to include this library alone in
  * order to access all the tag and resource functionalities.
  *
+ * Most of the data display functions are written in such a way that
+ * if they are called once, the data retreived and formatted is
+ * cached. This means that, at least for now, you cannot have more
+ * than one type of cloud (basic, popularity, date) per folksoPage
+ * object. (This could be changed in future versions if necessary.) 
+ * 
  * @package Folkso
  */
 class folksoPage {
@@ -142,7 +148,13 @@ class folksoPage {
     return $cloud->html;
   }
 
-
+  /**
+   * Delete the current cloud object ($page->pdata->cloud). This is to
+   * be able to reload new kinds of clouds.
+   */
+  public function cloud_reset(){
+    $this->pdata->cloud = null;
+  }
 
   /**
    * Returns a string consting of a comma separated list of all the
