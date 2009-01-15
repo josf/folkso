@@ -96,7 +96,7 @@ group by tag_id;
     $q = array(
                array('type' => 'common',
                      'sql' => 
-                     'SELECT tagnorm, tag_id, latest, '
+                     'SELECT tagnorm, tagid, tagdisplay, latest, '
                      .' CASE WHEN DATEDIFF(NOW(),  latest) > 365 THEN 1 '
                      .' WHEN DATEDIFF(NOW(), latest) > 180 THEN 2 '
                      .' WHEN DATEDIFF(NOW(),  latest) > 90 THEN 3'
@@ -104,7 +104,7 @@ group by tag_id;
                      .' ELSE 5 END AS cloudweight FROM'
                      .' (SELECT '
                      .' t.tagdisplay as tagdisplay, t.tagnorm AS tagnorm, '
-                     .' t.id AS tag_id, te.tagtime AS latest '
+                     .' t.id AS tagid, te.tagtime AS latest '
                      .' FROM tagevent te '
                      .' JOIN tag t ON t.id = te.tag_id'
                      .' WHERE '),
