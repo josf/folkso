@@ -45,11 +45,12 @@ public $loc;
                              'folksodatatype' => 'xml', 
                              'folksolimit' => $max_tags)); 
 
+
     if ($cloudtype == 'bypop') {
-      $fc->add_getfield('folksobypop', 1);
+      $fc->add_getfield('bypop', 1);
     }
     elseif ($cloudtype == 'bydate') {
-      $fc->add_getfield('folksobydate', 1);
+      $fc->add_getfield('bydate', 1);
     }
 
     $result = $fc->execute();

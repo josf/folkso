@@ -98,12 +98,18 @@ class testOffolksoPage extends  UnitTestCase {
 
     $page->cloud_reset();
     $this->assertFalse($page->pdata->cloud);
+    $this->assertNotA($page->pdata->cloud, folksoCloud);
+    $this->assertNull($page->pdata->cloud);
+    $this->assertNull($page->pdata->cloud->xml);
 
     $cl3 = $page->date_cloud();
     $this->assertTrue(is_string($cl3));
     $this->assertTrue(strlen($cl3) > 200);
     $this->assertTrue($page->pdata->cloud->is_valid());
-    
+
+    $this->assertNotEqual($cloud, $cl2);    
+    $this->assertNotEqual($cl2, $cl3);
+
 
   }
 
