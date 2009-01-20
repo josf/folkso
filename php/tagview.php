@@ -74,9 +74,11 @@ pageTracker._trackPageview();
 </script>
 
 <style type="text/css">
+  a.restitle, a.restitle:visited, a.restitle:link {font-size: 12pt;}
+  h2.tagtitle { text-align: center; font-size: 20pt;}
   ul.resourcelist li {padding-bottom: 0.5em }
 p.resurl {display: none}
-a.innertag, a.innertag:visited, a.innertag:link {text-decoration: none }
+a.innertag, a.innertag:visited, a.innertag:link {text-decoration: none; border: none; }
 </style>
 
 
@@ -155,22 +157,11 @@ if ((strlen($tagreq) == 0) ||
 $page = new folksoPage($tagreq);
 $taglist = $page->TagResources();
 
-print "<title>Fabula - Tags - tag \"";
-if ($page->tr->is_valid()) {
-  print $page->tr->title();
-}
-else {
-  print " Erreur ";
-}
-
-print "\"</title>\n</head>\n<body>\n<div id='container'>";
-
 if ($page->tr->is_valid()) {
   print "<h1>Ressources associées au tag : </h1>\n";
   print $taglist; 
 }
 
-print "</div>\n</body>\n";
 
 ?>
 
