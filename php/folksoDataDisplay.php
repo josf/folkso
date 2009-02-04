@@ -71,7 +71,7 @@ class folksoDataDisplay {
    * slots in the $dd object.
    */
   public function activate_style ($type) {
-    $this->type = $type;
+
     $changed = false;
     foreach ($this->datastyles as $display) {
       if ($display['type'] == $type) {
@@ -81,6 +81,7 @@ class folksoDataDisplay {
         $this->start = $display['start'];
         $this->end = $display['end'];
         $changed = true;
+        $this->type = $type;
         break;
       }
     }
