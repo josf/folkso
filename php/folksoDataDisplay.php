@@ -133,7 +133,8 @@ class folksoDataDisplay {
       $offset = strpos($outline, 'XXX');
       if (!$offset) {
         trigger_error(
-                      'Mismatch between arguments and template targets: too many arguments', 
+                      'Mismatch between arguments and template targets: '
+                      .' too many arguments', 
                       E_USER_ERROR);
       }
       
