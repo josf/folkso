@@ -417,7 +417,8 @@ $querystart =
     print $dd->line( $row->id,
                      htmlspecialchars($row->href, ENT_COMPAT, 'UTF-8'),
                      html_entity_decode(strip_tags($row->display), ENT_NOQUOTES, 'UTF-8'),
-                      $row->tags); // inner quotes supplied by sql
+                     htmlspecialchars($row->tags, ENT_COMPAT, 'UTF-8')
+                     ); // inner quotes supplied by sql
   }
   print $dd->endform();
 }
