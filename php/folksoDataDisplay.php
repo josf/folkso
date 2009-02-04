@@ -144,7 +144,9 @@ class folksoDataDisplay {
                                 3);
     }
     if (strpos($outline, 'XXX')) {
-      trigger_error("Template mismatch: not enough arguments: $outline", 
+      trigger_error("Template mismatch: not enough arguments: "
+                    ." lineformat $outline \n"
+                    ." type: " . $this->type, 
                     E_USER_ERROR);
     }
     return $outline;
