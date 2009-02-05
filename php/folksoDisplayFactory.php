@@ -77,8 +77,7 @@ class folksoDisplayFactory {
       $line = $line . ' XXX';
       --$argnum;
     }
-    $line = $line . "\n";
-    $txt['lineformat'] = $line;
+    $txt['lineformat'] = $line . "\n";
     return $txt;
   }
   
