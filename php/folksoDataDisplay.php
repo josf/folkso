@@ -147,6 +147,7 @@ class folksoDataDisplay {
       trigger_error("Template mismatch: not enough arguments: "
                     ." outline $outline \n"
 		    ." format " . $this->lineformat . "\n"
+		    ." vardump: " . var_dump($this) . "\n\n"
                     ." type: " . $this->type, 
                     E_USER_ERROR);
     }
