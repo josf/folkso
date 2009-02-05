@@ -71,7 +71,6 @@ class folksoDataDisplay {
    * slots in the $dd object.
    */
   public function activate_style ($type) {
-
     $changed = false;
     foreach ($this->datastyles as $display) {
       if ($display['type'] == $type) {
@@ -81,7 +80,7 @@ class folksoDataDisplay {
         $this->start = $display['start'];
         $this->end = $display['end'];
         $changed = true;
-        $this->type = $type;
+    	$this->type = $type;
         break;
       }
     }
@@ -149,7 +148,8 @@ class folksoDataDisplay {
     }
     if (strpos($outline, 'XXX', $prev_offset)) {
       trigger_error("Template mismatch: not enough arguments: "
-                    ." lineformat $outline \n"
+                    ." outline $outline \n"
+		    ." format " . $this->lineformat . "\n"
                     ." type: " . $this->type, 
                     E_USER_ERROR);
     }
