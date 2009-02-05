@@ -129,9 +129,10 @@ class folksoDataDisplay {
     $args = func_get_args();
     $args = array_slice($args, 0, $this->argsperline);
     $outline = $this->lineformat; // use a copy, not the format itself
+    $prev_offset = 0;
 
     for ($i = 0; $i < count($args); ++$i) {
-      $offset = strpos($outline, 'XXX');
+      $offset = strpos($outline, 'XXX', $prev_offset);
       if (!$offset) {
         trigger_error(
                       'Mismatch between arguments and template targets: '
@@ -139,12 +140,14 @@ class folksoDataDisplay {
                       E_USER_ERROR);
       }
       
+      $subst = $this->eval_element($args[$i]);
+      $prev_offset = $offset + strlen($subst);
       $outline = substr_replace($outline,
-                                $this->eval_element($args[$i]),
+                                $subst,
                                 $offset,
                                 3);
     }
-    if (strpos($outline, 'XXX')) {
+    if (strpos($outline, 'XXX', $prev_offset)) {
       trigger_error("Template mismatch: not enough arguments: "
                     ." lineformat $outline \n"
                     ." type: " . $this->type, 

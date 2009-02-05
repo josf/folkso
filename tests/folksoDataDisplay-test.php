@@ -43,6 +43,19 @@ class testOffolksoDataDisplay extends  UnitTestCase {
                       '-- bob : Slacker');
     $this->assertEqual($this->dd->line("bob", array("default" => "something")), 
                        '-- bob : something');
+
+    $df = new folksoDisplayFactory();
+    $dd2 = $df->FancyResourceList();
+    $this->assertIsA($dd2, folksoDataDisplay);
+    $dd2->activate_style('xml');
+    $this->assertEqual($dd2->type, 'xml');
+    $ltext = $dd2->line('abcXXXdef', 'WWW', 'Bob is a slob', 'plooof');
+    $this->assertPattern('/<numid>abcXXXdef/',
+                         $ltext);
+    $this->assertPattern('/<url>WWW<\/url>/',
+                         $ltext);
+
+
   }
 }
 
