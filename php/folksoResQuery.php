@@ -61,7 +61,7 @@ class folksoResQuery  {
                      'sql' =>
                      " GROUP BY ta.id) \n"
                      ." AS rese \n"
-                     ." ORDER BY cloudweight DESC \n"),
+                     ." ORDER BY tagdisplay \n"),
                array(
                      'type' => 'taglimit',
                      'sql' => " LIMIT <<<taglimit>>> \n"));     
