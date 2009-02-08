@@ -56,10 +56,17 @@ class testOffolksoResQuery extends UnitTestCase {
                          0,
                          false,
                          true);
+  }
 
+  function testBasic_Cloud() {
+    $rq = new folksoResQuery();
+    $sql = $rq->basic_cloud(4354);
 
+    $this->assertTrue(is_string($sql));
+    $this->assertTrue(strlen($sql) > 100);
 
-
+    $this->assertPattern('/AS\s+metav/', $sql);
+    print $sql;
   }
 
 }
