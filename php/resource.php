@@ -306,14 +306,8 @@ function tagCloudLocalPop (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnec
                               $taglimit);
   }
   else {
-    $sql = "CALL cloudy(";
-
-    if (is_numeric($q->res)) {
-      $sql .= $q->res . ", '', 1, 5, $taglimit)";
-    }
-    else {
-      $sql .= "'', '" .$i->dbescape($q->res) . "', 1, 5, $taglimit)";
-    }
+    $sql = $rq->basic_cloud($i->dbescape($q->res),
+                            $taglimit);
   }
   $i->query($sql);
 
