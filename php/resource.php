@@ -321,7 +321,7 @@ function tagCloudLocalPop (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnec
     return;
     break;
   case 'OK':
-    if ($i->result->num_rows == 1) {
+    if ($i->result->num_rows == 0) {
       header('HTTP/1.1 204 No tags associated with resource');
     } 
     else {
@@ -332,7 +332,7 @@ function tagCloudLocalPop (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnec
 
   $df = new folksoDisplayFactory();
   $dd = $df->cloud();
-  $row1 = $i->result->fetch_object(); // popping the title line
+  //  $row1 = $i->result->fetch_object(); // popping the title line
   
   /** in CLOUDY
    * tagdisplay = r.title
