@@ -18,20 +18,13 @@ jQuery.fn.extend({
                      }
                      /* otherwise look at ancestors */
                      else {
-                       var pars = this.parents("li.resitem");
-                       if (this.parents("li.resitem").length > 0) {
-                         pars = this.parents("li.resitem");
-                       }
-                       else if (this.parents("li.tagged").length > 0){
-                         pars = this.parents("li.tagged");
-                       }
-                       else if (this.parents("li.nottagged").length > 0) {
-                         pars = this.parents("li.nottagged");
-                       }
-                       else { /* we bail, there is nothing to be found for some reason */
+                       var pars = this.parents("li.resitem, li.tagged, li.nottagged");
+                       if (pars.length == 0) {
                          return ''; /** error instead? **/
                        }
+                       else {
                        lis = $(pars[0]);
+                       }
                      }
                      if (lis.attr("id") && (lis.attr("id").length > 3)) {
                        return lis.attr("id").substring(3);
