@@ -212,7 +212,26 @@ class folksoDBinteract {
     else {
       return false;
     }
+  }
 
+  /**
+   * @param  integer $id Must be a number.
+   * @return string The url corresponding to the given id. 0 if no url is found. 
+   */
+  public function url_from_id ($id) {
+    if (! is_numeric($id)) {
+      trigger_error("url_from_id requires a number as argument, and not this: $id",
+                    E_USER_ERROR);
+    }
+    $select = 'SELECT uri_raw FROM resource WHERE id = ' . $id;
+    $this->presult = $this->db->query($select);
+    if ($this->presult->num_rows > 0) {
+      $row = $this->presult->fetch_object();
+      return $row->uri_raw;
+    }
+    else {
+      return 0;
+    }
   }
 
   /**
