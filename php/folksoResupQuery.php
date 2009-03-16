@@ -35,8 +35,19 @@ class folksoResupQuery {
   /**
    * Delete resource (presumably after a 404).
    */
-  public function resremove ($res) {
-    
+  public function resremove ($url) {
+    $a = array(
+               array('type' => 'common',
+                     'sql' =>
+                     "DELETE FROM r, te \n"
+                     . " USING resource r \n"
+                     . " LEFT JOIN tagevent te ON r.id = te.resource_id \n"
+                     . " WHERE r.uri_raw = <<<x>>> \n")
+               );
+    $sql = $this->qb->build($a,
+                            $url,
+                            array());
+    return $sql;
   }
 }
 
