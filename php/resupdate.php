@@ -26,7 +26,15 @@ $srv->addResponseObj(new folksoResponse('post',
 
 
 $srv->Respond();
-
+/**
+ * Given a resource, this function fetches that resource and updates
+ * its status in the database if anything has changed, in particular
+ * the title field.
+ *
+ * If the resource is no longer available (returns 404), the resource
+ * is removed. Is this too radical?
+ *
+ */
 function reload (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
   $i = new folksoDBinteract($dbc);
   if ($i->db_error()) {
@@ -34,6 +42,7 @@ function reload (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
     die($i->error_info());
   }
 
+  /** check initial url **/
   $url = '';
   if (is_numeric($q->res)){
     $url = $i->url_from_id($q->res);
@@ -56,6 +65,7 @@ function reload (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
     }
   }
 
+  /** do request **/
   $ch = curl_init($url);
   curl_setopt($ch, CURLOPT_USERAGENT, 'folksoClient');
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -64,6 +74,7 @@ function reload (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
   $result_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
   curl_close($ch);
 
+  /** react to request results **/
   $rq = new folksoResupQuery();
   switch ($result_code){
   case '404':
@@ -79,5 +90,24 @@ function reload (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
 
 }
 
+
+/**
+ * Given a page of html, returns the contents of the <title> element.
+ *
+ * Not using the DOM because we only will ever need the title (I think).  
+ *
+ * @param $html string Raw html from the reload request.
+ * @return string The contents of the title element, or false if not found.
+ */
+function getTitle ($html) {
+  if (preg_match('{<title>(.*)</title>}i',
+                 $html,
+                 $matches)) {
+    return $matches[0];
+  }
+  else {
+    return false;
+  }
+}
 
 ?>
