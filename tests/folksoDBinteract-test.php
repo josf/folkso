@@ -22,6 +22,13 @@ class testOffolksoDBinteract extends  UnitTestCase {
   public function testDBConnectError () {
     $baddb = new folksoDBconnect('localhost', 'bob', '123456', 'nonexistantdb');
   }
+
+  public function testUrl_from_id () {
+    $this->assertEqual($this->i->url_from_id(3), 
+                       "http://www.fabula.org/actualites/article24402.php");
+    $this->assertEqual($this->i->url_from_id(2),
+                       0);
+  }
 }
 
 
