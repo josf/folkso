@@ -1,0 +1,15 @@
+div.tagbox {
+    position: absolute;
+    z-axis: 10;
+    background: white;
+    width: 400px;
+    height: 300px;
+    border: solid 4px black;
+    top: 200px;
+    left: 100px;
+    padding: 6px;
+}
+
+div.tagbox em {
+    font-weight: bold;
+}
