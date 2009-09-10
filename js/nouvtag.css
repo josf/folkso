@@ -1,5 +1,6 @@
+
 div.tagbox {
-    position: absolute;
+    position: fixed;
     z-axis: 10;
     background: white;
     width: 400px;
@@ -8,8 +9,25 @@ div.tagbox {
     top: 200px;
     left: 100px;
     padding: 6px;
+    padding-left: 170px;
+    background-image: url(etiquette.png);
+    background-repeat: no-repeat;
+    background-position: left top;
 }
 
 div.tagbox em {
     font-weight: bold;
 }
+
+span.tag_del_button  a, span.tag_del_button  a:visited, span.tag_del_button  a:link {
+    width: 100px;
+    height: 30px;
+}
+a.tag_del_button {
+    background: white url(delbutton.png) no-repeat;
+}
+
+span.tag_del_button_text {
+    visibility: hidden;
+}
+
