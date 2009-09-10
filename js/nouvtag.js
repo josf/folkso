@@ -3,6 +3,11 @@
 
 var fk = fk || {};
 
+fk.getresurl = '/resource.php';
+fk.postresurl= '/resource.php';
+fk.tag_auto_url = "/tagcomplete.php";
+fk.metatag_auto_url = "/metatag.php";
+
 fk.row_filter = function(row) {
   var tr =$(row);
   if (tr.find("td").length != 4) {
@@ -74,7 +79,7 @@ fk.tagbox_setup = function (title, url) {
  */
 fk.insert_current_tags = function(res, insert, tag_fmt){
   $.ajax({
-           url: '/resource.php',
+           url: fk.resgeturl,
            type: 'get',
            datatype: 'xml',
            data: {
@@ -113,14 +118,14 @@ fk.make_currtag_unit = function (res, tagdisp, tagid, meta){
            + metapart
            + "<a class=\"tag_del_button\" href=\"#\">"
            + "<span class=\"tag_del_button_text\">Suppr.</span>"
-           + "</a>"
-           + "</span>");
+           + "</a> "
+           + "</span> ");
 
   h.find("a").click(
     function(ev){
       ev.preventDefault();
       $.ajax({
-               url: '/resource.php',
+               url: fk.postresurl,
                type: 'post',
                datatype: 'text/text',
                data: {
@@ -157,7 +162,7 @@ fk.initialize_tagbox = function(box, url, title){
 
   /** immediately report resource to system (might be first time)**/
   $.ajax({
-           url: '/resource.php',
+           url: fk.postresurl,
            type: 'post',
            datatype: 'text/text',
            data: {
@@ -177,15 +182,15 @@ fk.initialize_tagbox = function(box, url, title){
   /** setup autocomplete (note that we have to modify jquery.autocomplete
    * to add "folkso" in front of "q" header)
    **/
-  tagput.autocomplete("http://localhost/tagcomplete.php");
-  metaput.autocomplete("/metatag.php");
+  tagput.autocomplete(fk.tag_auto_url);
+  metaput.autocomplete(fk.metatag_auto_url);
 
   box.find("a.validate_taggage").click(
     function(ev){
       ev.preventDefault();
       if (tagput.val().length > 1){
         $.ajax({
-                 url: '/resource.php',
+                 url: fk.postresurl,
                  type: 'post',
                  datatype: 'text/text',
                  data: {
