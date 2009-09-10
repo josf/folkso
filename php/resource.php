@@ -455,6 +455,8 @@ function addResource (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $db
     $i->dbescape($q->res) .     "', '" .
     $i->dbescape($q->get_param('newtitle')) . "', 500)";
       
+  $i->query($query);
+
   if ($i->result_status == 'DBERR') {
     header('HTTP/1.1 501 DB error');
     die($i->error_info());
