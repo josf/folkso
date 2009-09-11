@@ -4,21 +4,43 @@ div.tagbox {
     z-axis: 10;
     background: white;
     width: 400px;
-    height: 300px;
+    height: 400px;
     border: solid 4px black;
     top: 200px;
     left: 100px;
     padding: 6px;
     padding-left: 170px;
-    background-image: url(etiquette.png);
+    background-image: url(tall_tag.png);
     background-repeat: no-repeat;
-    background-position: left top;
+    background-position: left;
+    font-family: Helvetica, Verdana, sans-serif;
+    border: solid 7px #e66322;
 }
 
 div.tagbox em {
     font-weight: bold;
 }
 
+div.tag_action{
+    width: 320px;
+}
+
+img.validate_taggage{
+    cursor: pointer;
+}
+
+img.close_box{
+    cursor: pointer;
+}
+p.tagcontrols {
+    margin-right: 150px;
+    font-weight: bold;
+}
+
+p.tag_title{
+    font-size: 12pt;
+    color: #f66322;
+}
 span.tag_del_button  a, span.tag_del_button  a:visited, span.tag_del_button  a:link {
     width: 100px;
     height: 30px;
@@ -31,3 +53,8 @@ span.tag_del_button_text {
     visibility: hidden;
 }
 
+span.button {
+    cursor: pointer;
+    color: #e66322;
+    font-weight: bold;
+}
