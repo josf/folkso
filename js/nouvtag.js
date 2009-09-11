@@ -7,6 +7,14 @@ fk.getresurl = '/resource.php';
 fk.postresurl= '/resource.php';
 fk.tag_auto_url = "/tagcomplete.php";
 fk.metatag_auto_url = "/metatag.php";
+fk.meta_list_url = "/metatag.php";
+
+fk.posttagurl = '/tag.php';
+fk.gettagurl = '/tag.php';
+
+fk.image_path = '/';
+
+fk.metatags = [];
 
 fk.row_filter = function(row) {
   var tr =$(row);
@@ -57,14 +65,24 @@ fk.tagbox_setup = function (title, url) {
     + url
     + "</p>"
     + "<p class=\"curr_tags\"></p>"
-    + "<p>Tag: "
+    + "<div class=\"tag_action\">"
+
+    + "<p class=\"tagcontrols\">Tag: "
     + "<input type=\"text\" class=\"maintag\" length=\"50\"></input> "
     + "</p>"
-    + "<p>Métatag: "
-    + "<input type=\"text\" length=\"40\" class=\"meta\"></input>"
+    + "<p class=\"tagcontrols\">Métatag: "
+    + "<select class=\"meta\"></select>"
     + "</p>"
-    + "<a href=\"#\" class=\"validate_taggage\">Valider</a>"
-    + "<p><a href=\"#\" class=\"tagbox_fermer\">Fermer</a></p>"
+
+    + "</div>"
+    + "<p class=\"tag_dialogue\"></p> "
+    + "<table>"
+    + "<tr>"
+    + "<td><img src=\"/validate_button.png\" class=\"validate_taggage\" "
+    + "alt=\"Effectuer le taggage\">"
+    + "</img></td>"
+    + "<td><img src=\"" + fk.image_path + "close_button.png\" "
+    + " class=\"close_box\" alt=\"Fermer\"></img></td></tr>"
     + "</div>"
   );
 };
@@ -79,7 +97,7 @@ fk.tagbox_setup = function (title, url) {
  */
 fk.insert_current_tags = function(res, insert, tag_fmt){
   $.ajax({
-           url: fk.resgeturl,
+           url: fk.getresurl,
            type: 'get',
            datatype: 'xml',
            data: {
@@ -145,20 +163,75 @@ fk.make_currtag_unit = function (res, tagdisp, tagid, meta){
   return h;
 };
 
+/**
+ * Inserts a "data" object into another object, passing the "data"
+ * object by value and not by reference. This assumes that the "data"
+ * object does not contain any objects itself, just string values.
+ *
+ * @param data Object the data
+ * @param bigger Object Where we are inserting Data
+ * @return Object (Still a reference to bigger)
+ */
+fk.integrate_ajax_data = function(data, bigger){
+  bigger.data = {};
+  for (var k in data){
+    bigger.data[k] = data[k];
+  }
+  return bigger;
+};
+
+fk.tagCreateDialogue = function(ajob, box){
+  var dialogue =  box.find(".tag_dialogue");
+  dialogue.html(
+    "Le tag"
+    + "<em> " + ajob.data.folksotag + "</em> n'existe pas. "
+    + "Faut-il le créer?<br/>"
+    + "<span class=\"button yes_create\">Créer</span> "
+    + "<span class=\"button no_create\">Annuler</span> "
+  );
+
+  dialogue.find("span.yes_create").click(
+    function (){ // look ma! no ev!
+
+      $.ajax({
+               url: fk.posttagurl,
+               type: 'post',
+               datatype: 'text/text',
+               data: {
+                 folksonewtag: ajob.data.folksotag
+               },
+               error: function(xhr, msg) {
+                 alert("Error: " + xhr.status + " "
+                       + xhr.statusText + " " + msg);
+               },
+             success: function(answer){
+               $.ajax(ajob);
+               dialogue.html("Le tag a été créé.");
+             }
+             });
+    });
+
+  dialogue.find("span.no_create").click(
+    function(){
+      box.closest(".tagbox").find("input.maintag").val("");
+      dialogue.html("");
+    });
+
+};
 
 /**
  * @param box jQuery tagbox elem
  */
 fk.initialize_tagbox = function(box, url, title){
   /**  Fermer **/
-  box.find("a.tagbox_fermer").click(
+  box.find("img.close_box").click(
     function(ev){
       ev.preventDefault();
       box.remove();
     });
 
   var tagput = box.find("input.maintag");
-  var metaput = box.find("input.meta");
+  var metaput = box.find("select");
 
   /** immediately report resource to system (might be first time)**/
   $.ajax({
@@ -183,35 +256,57 @@ fk.initialize_tagbox = function(box, url, title){
    * to add "folkso" in front of "q" header)
    **/
   tagput.autocomplete(fk.tag_auto_url);
-  metaput.autocomplete(fk.metatag_auto_url);
 
-  box.find("a.validate_taggage").click(
+  var sel = box.find("select");
+  sel.append("<option></option>");
+  if (fk.metatags.length > 0){
+
+    for (var i = 0; i < fk.metatags.length; ++i){
+      sel.append("<option>" + fk.metatags[i] + "</option>");
+    }
+  }
+
+
+  box.find("img.validate_taggage").click(
     function(ev){
       ev.preventDefault();
-      if (tagput.val().length > 1){
-        $.ajax({
+      var tag_text = jQuery.trim(tagput.val());
+      if (tag_text.length > 1){
+        var ajax_base = {
                  url: fk.postresurl,
                  type: 'post',
-                 datatype: 'text/text',
-                 data: {
+                 datatype: 'text/text'
+          };
+        var ajax_data = {
                    folksores: url,
-                   folksotag: tagput.val(), // TODO: add meta tag
+                   folksotag: tag_text,
                    folksometa: metaput.val()
-                 },
-                 error: function(xhr, msg){
-                   console.log(xhr.status + " " + msg + " " + xhr.statusText);
-                 },
-                 success: function(){
+        };
+
+        var ajax_req1 = fk.integrate_ajax_data(ajax_data, ajax_base);
+        ajax_req1.error = function(xhr, msg){
+          if (xhr.statusText.indexOf('ag does not exist') != -1){
+            fk.tagCreateDialogue(
+              fk.integrate_ajax_data(ajax_data, ajax_base),
+              box
+            );
+          }
+        };
+
+        ajax_req1.success = function(){
                    console.log("success with " + tagput.val());
-                   var old = box.find("p.curr_tags").text();
-                   if (old) {
-                     old = old + " ; ";
-                   }
-                   box.find("p.curr_tags").text(old + " " + tagput.val());
+                   box.find("p.curr_tags")
+                     .append(
+                       fk.make_currtag_unit(url,
+                                            tag_text,
+                                            "",
+                                            metaput.val())
+                     );
                    tagput.val("");
-                 }
-               });
-        }
+        };
+
+        $.ajax(ajax_req1);
+      }
     });
 
 
@@ -233,7 +328,26 @@ $(document).ready(
                             fk.insert_taglink.call(rw, fk.prep_tagbutton);
                           });
 
-});
+
+    $.get(fk.meta_list_url,
+          {folksoall: 1},
+          function(data){
+            var ret = "";
+            console.log(data);
+            console.log($(data).find("meta").length);
+            var mets = $(data).find("meta");
+            console.log("mets length " + mets.length);
+            console.log("mets type " + typeof mets);
+            console.log($(mets[0]).text());
+            if (mets.length > 0){
+              for (var i = 0; i < mets.length; ++i){
+                fk.metatags.push($(mets[i]).text());
+              }
+            }
+          },
+          'xml');
+  });
+
 
 
 /**
