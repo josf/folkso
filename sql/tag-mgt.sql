@@ -43,6 +43,69 @@ BEGIN
 end$$
 delimiter ;
 
+delimiter $$
+drop function if exists novel_normal$$
+create function novel_normal(input_tag varchar(255))
+       returns varchar(120)
+       deterministic
+
+begin
+        declare output_tag varchar(255) default '';
+        declare counter int default 1;
+        declare current_char varchar(1) default '';
+        declare prev_char varchar(1) default '';
+        declare replaced_char varchar(1) default '';
+
+        set input_tag  = lower(input_tag);
+
+        while (counter <= char_length(input_tag)) do
+
+                set current_char = substr(input_tag, counter, 1);
+                set prev_char = substr(output_tag, -1);
+                set counter = counter + 1;
+
+                -- we just take the lower case ascii alphabet here
+                if (((ord(current_char) < 123)  
+                   and
+                   (ord(current_char) > 96))
+                   or
+                   ((ord(current_char) > 47) and
+                    (ord(current_char) < 58)) 
+                    or
+                    (current_char = '-')) then
+                    -- if original tag has a hyphen, we leave it but
+                    -- won't add any more later
+
+                   set output_tag = concat(output_tag, current_char);
+                 -- otherwise we look up the characters in the table
+                 else
+                        select replacewith
+                        into replaced_char 
+                        from replace_characters
+                        where ord(current_char) = toreplace_code;
+                                    
+                 -- if previous character was a -, we don't add another one
+                  if ((length(replaced_char) > 0) and
+                     (((prev_char <> '-')
+                        or
+                        ((prev_char = '-') and (replaced_char <> '-'))))) then
+                        set output_tag = concat(output_tag, replaced_char);
+                  end if;
+                  -- any other characters are simply discarded
+              end if;
+        end while;
+
+        -- avoid tags ending with a hyphen
+        if (substr(output_tag, -1) = '-') then
+           return substr(output_tag, 1, char_length(output_tag) -1);
+        end if;
+return output_tag;
+
+end$$
+delimiter ;
+        
+
+
 -- new_tag()
 DELIMITER $$
 DROP PROCEDURE IF EXISTS new_tag$$
