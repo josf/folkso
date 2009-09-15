@@ -47,3 +47,9 @@ insert into replace_characters
        ('-', ord('~'));
 
 
+create table memoize_tagnormal
+       (in_tag  varchar(120) not null primary key,
+       out_tag varchar(120) not null,
+       index theboth (in_tag, out_tag))
+character set utf8;
+

@@ -50,6 +50,7 @@ create function novel_normal(input_tag varchar(255))
        deterministic
 
 begin
+        declare cached_tag varchar(120) default '';
         declare output_tag varchar(255) default '';
         declare counter int default 1;
         declare current_char varchar(1) default '';
@@ -57,6 +58,19 @@ begin
         declare replaced_char varchar(1) default '';
 
         set input_tag  = lower(input_tag);
+
+        if (length(input_tag) = 0) then
+           return '';
+        end if;
+
+        select out_tag 
+        into cached_tag
+        from memoize_tagnormal
+        where in_tag = input_tag;
+
+        if (length(cached_tag) > 0) then
+           return cached_tag;
+        end if;
 
         while (counter <= char_length(input_tag)) do
 
@@ -97,8 +111,14 @@ begin
 
         -- avoid tags ending with a hyphen
         if (substr(output_tag, -1) = '-') then
-           return substr(output_tag, 1, char_length(output_tag) -1);
+        set output_tag =  substr(output_tag, 1, char_length(output_tag) -1);
         end if;
+
+       insert into memoize_tagnormal 
+       (in_tag, out_tag) 
+       values 
+       (input_tag, output_tag);
+
 return output_tag;
 
 end$$
