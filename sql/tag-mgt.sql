@@ -5,46 +5,8 @@
 -- (defun sql-snip () (interactive) (snippet-insert "set final_tag = replace(final_tag, '$${1}', '$${2}');
 -- "))
 
-DELIMITER $$
-DROP FUNCTION IF EXISTS normalize_tag$$
-CREATE FUNCTION normalize_tag(input_tag VARCHAR(255))
-       RETURNS VARCHAR(120)
-       DETERMINISTIC
-BEGIN
-        DECLARE final_tag VARCHAR(255) DEFAULT '';
-
-        SET final_tag = lower(input_tag);
-
-        set final_tag = replace(final_tag, ' ', '');
-        set final_tag = replace(final_tag, '.', '');
-        set final_tag = replace(final_tag, ':', '');
-        set final_tag = replace(final_tag, ';', '');
-        set final_tag = replace(final_tag, ',', '');
-        set final_tag = replace(final_tag, '!', '');
-        set final_tag = replace(final_tag, '?', '');
-        set final_tag = replace(final_tag, '/', '');
-        set final_tag = replace(final_tag, '\\', '');
-        set final_tag = replace(final_tag, '{', '');
-        set final_tag = replace(final_tag, '}', '');
-        set final_tag = replace(final_tag, '=', '');
-        set final_tag = replace(final_tag, '$', '');
-        set final_tag = replace(final_tag, '<', '');
-        set final_tag = replace(final_tag, '>', '');
-        set final_tag = replace(final_tag, '-', '');
-        set final_tag = replace(final_tag, '"', '');
-        set final_tag = replace(final_tag, '''', '');
-
-        -- shorten
-        if (length(final_tag) > 120) then
-            set final_tag = substr(final_tag, 1, 120);
-        end if;
-
-        return(final_tag);
-end$$
-delimiter ;
-
 delimiter $$
-drop function if exists novel_normal$$
+drop function if exists normalize_tag$$
 create function novel_normal(input_tag varchar(255))
        returns varchar(120)
        deterministic
