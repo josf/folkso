@@ -28,37 +28,37 @@ $srv = new folksoServer(array( 'methods' =>
                                array('POST', 'GET', 'HEAD', 'DELETE'),
                                'access_mode' => 'ALL'));
 
-$srv->addResponseObj(new folksoResponse('get',
+$srv->addResponseObj(new folksoResponder('get',
                                         array('required' => array('fancy'),
                                               'required_single' => array('tag')),
                                         'fancyResource'));
 
-$srv->addResponseObj(new folksoResponse('get', 
+$srv->addResponseObj(new folksoResponder('get', 
                                         array('required_single' => 
                                               array('tag', 
                                                     'resources')),
                                         'getTagResourcesDo'));
 
-$srv->addResponseObj(new folksoResponse('get', 
+$srv->addResponseObj(new folksoResponder('get', 
                                         array('required' => array('tag')),
                                         'getTagDo'));
 
-$srv->addResponseObj(new folksoResponse('post',
+$srv->addResponseObj(new folksoResponder('post',
                                         array('required_single' => array('newtag')),
                                         'singlePostTagDo'));
 
-$srv->addResponseObj(new folksoResponse('get', 
+$srv->addResponseObj(new folksoResponder('get', 
                                         array('required' => array('autotag')),
                                         'autoCompleteTagsDo'));
 
-$srv->addResponseObj(new folksoResponse('get',
+$srv->addResponseObj(new folksoResponder('get',
                                         array('required' => array('byalpha')),
                                         'byalpha'));
 
-$srv->addResponseObj(new folksoResponse('head',
+$srv->addResponseObj(new folksoResponder('head',
                                         array('required' => array('tag')),
                                         'headCheckTagDo'));
-$srv->addResponseObj(new folksoResponse('get',
+$srv->addResponseObj(new folksoResponder('get',
                                         array('required' => array('alltags')),
                                         'allTags'));
 
@@ -66,20 +66,20 @@ $srv->addResponseObj(new folksoResponse('get',
  * Note that the "tag" field here refers to the resource that will be
  * deleted during the merge.
  */
-$srv->addResponseObj(new folksoResponse('post',
+$srv->addResponseObj(new folksoResponder('post',
                                         array('required_single' => array('tag', 'target')),
                                         'tagMerge'));
 
-$srv->addResponseObj(new folksoResponse('delete',
+$srv->addResponseObj(new folksoResponder('delete',
                                         array('required_single' => array('tag')),
                                         'deleteTag'));
 
-$srv->addResponseObj(new folksoResponse('post',
+$srv->addResponseObj(new folksoResponder('post',
                                         array('required' => array('delete'),
                                               'required_single' => array('tag')),
                                         'deleteTag'));
 
-$srv->addResponseObj(new folksoResponse('post',
+$srv->addResponseObj(new folksoResponder('post',
                                         array('required_single' => array('tag', 
                                                                          'newname')),
                                         'renameTag'));

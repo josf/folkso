@@ -22,7 +22,7 @@
   /**
    * @package Folkso
    */
-class folksoResponse {
+class folksoResponder {
 
   public $test_func;
   public $action_func;
