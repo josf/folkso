@@ -2,7 +2,7 @@
 
 
   /**
-   * folksoResponse provides objects to be used as args to the
+   * folksoResponder provides objects to be used as args to the
    * addResponseObj method in folksoServer.php. Each object must
    * contain a test function and an "action" function. The test
    * function is called to determine if the action function should be
