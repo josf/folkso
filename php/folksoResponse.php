@@ -35,6 +35,7 @@ class folksoResponse {
                               404 => 'Not Found',
                               405 => 'Method Not Allowed',
                               406 => 'Not Acceptable',
+                              409 => 'Conflict',
                               500 => 'Internal Server Error',
                               501 => 'Not Implemented'
                               );
@@ -92,6 +93,16 @@ class folksoResponse {
 
   public function dbError($status = 500, $message = null){
     $this->setError($status, $message ? $message : 'Database error');
+  }
+
+  public function dbConnectionError($error_info){
+    $this->setError(500, "Database connection error");
+    $this->errorBody($error_info);
+  }
+
+  public function dbQueryError($error_info){
+    $this->setError(500, "Database query error");
+    $this->errorBody($error_info);
   }
 
   public function setOk ($status, $message = null){
