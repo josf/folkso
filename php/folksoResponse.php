@@ -28,6 +28,7 @@ class folksoResponse {
                               203 => 'Non-Authoritative Information',
                               204 => 'No Content',
                               205 => 'Reset content',
+                              303 => 'See Also',
                               304 => 'Not Modified',
                               400 => 'Bad Request',
                               401 => 'Unauthorized',
