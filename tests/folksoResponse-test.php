@@ -62,6 +62,20 @@ class testOffolksoResponse extends  UnitTestCase {
                        'HTML content type not correctly determined');
   }
 
+
+  function testHeader () {
+    $r = new folksoResponse();
+    $r->setType('xml');
+    $r->setOk(200, 'Fine');
+    $r->prepareHeaders();
+    $this->assertTrue(is_array($r->headers),
+                      '$this->headers is not an array');
+
+    $this->assertPattern('/HTTP/',
+                         $r->headers[0], 
+                         'HTTP not in first line of headers');
+
+  }
 }
 
 $test = &new testOffolksoResponse();
