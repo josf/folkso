@@ -159,25 +159,26 @@ function isHead (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
  * Optional: ean13 Includes EAN13 information if available, tagged as 'EAN13'. 
  */
 function getTagsIds (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+  $r = new folksoResponse();
   $i = new folksoDBinteract($dbc);
 
   if ($i->db_error()){
-    header('HTTP/1.0 501 Database connection problem');
-    die($i->error_info());
+    $r->dbConnectionError($i->error_info());
+    return $r;
   }
 
   // check to see if resource is in db.
   if  (!$i->resourcep($q->res))  {
     if ($i->db_error()) {
       $i->done();
-      header('HTTP/1.0 501 Database problem');
-      die($i->error_info());
+      $r->dbQueryError($i->error_info());
+      return $r;
     }
     else {
-      header('HTTP/1.0 404 Resource not found');      
-      print "Resource not present in database";
+      $r->setError(404, 'Resource not found');
+      $r->errorBody("Resource not present in database");
       $i->done();
-      return;
+      return $r;
     }
   }
   
@@ -205,15 +206,15 @@ function getTagsIds (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc
 
   switch ($i->result_status) {
   case 'DBERR':
-    header('HTTP/1.1 501 Database error');
-    die( $i->error_info());
+    $r->dbQueryError($i->error_info());
+    return $r;
     break;
   case 'NOROWS':
-    header('HTTP/1.1 204 No tags associated with resource');
-    return;
+    $r->setOk(204, 'No tags associated with resource');
+    return $r;
     break;
   case 'OK':
-    header('HTTP/1.1 200');
+    $r->setOk(200, 'Resource found');
     break;
   }
   // here everything should be ok (200)
@@ -223,26 +224,27 @@ function getTagsIds (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc
 
   switch ($q->content_type()) {
   case 'text':
-    header('Content-Type: text/text');
+    $r->setType('text');
     $dd->activate_style('text');
     break;
   case 'html':
+    $r->setType('html');
     $dd->activate_style('xhtml');
-    header('Content-Type: text/xhtml');
     break;
   case 'xml':
+    $r->setType('xml');
     $xf->activate_style('xml');
-    header('Content-Type: text/xml');
-    print $xf->startform();
+    $r->t($xf->startform());
     while ($row = $i->result->fetch_object()) {
-      print $xf->line($row->id,
+      $r->t($xf->line($row->id,
                       $row->tagnorm,
                       $row->tagdisplay,
                       $row->popularity,
-                      $row->meta);
+                      $row->meta)
+            );
     }
-    print $xf->endform();
-    return;
+    $r->t($xf->endform());
+    return $r;
     break;
   default:
       $dd->activate_style('xhtml');
@@ -250,12 +252,13 @@ function getTagsIds (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc
   }
 
   //    $row = $i->result->fetch_object(); //???
-    print $dd->title($row->uri_normal);
-    print $dd->startform();
-    while ( $row = $i->result->fetch_object() ) {
-      print $dd->line($row->tagdisplay);
+  $r->t($dd->title($row->uri_normal));
+  $r->t($dd->startform());
+  while ( $row = $i->result->fetch_object() ) {
+    $r->t($dd->line($row->tagdisplay));
     }
-    print $dd->endform();
+  $r->t($dd->endform());
+  return $r;
 }
 
 
