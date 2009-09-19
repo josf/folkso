@@ -20,6 +20,7 @@ class folksoResponse {
   private $errorDeclared;
   private $body;
   public $error_body;
+  public $headers;
 
   private $httpStatus = array(200 => '0K', 
                               201 => 'Created',
@@ -155,5 +156,17 @@ class folksoResponse {
   public function errorBody($str) {
     $this->debug_body = $this->body;
     $this->body = $str;
+  }
+
+  /**
+   * Prepares an array containing the HTTP headers to be sent. 
+   * 
+   */
+  public function prepareHeaders () {
+    $headers = array();
+    $headers[] = 'HTTP/1.1 ' . $this->status . ' ' $this->statusMessage;
+    $headers[] = $this->contentType();
+
+    return $headers;
   }
 }
