@@ -175,9 +175,35 @@ class folksoResponse {
    */
   public function prepareHeaders () {
     $headers = array();
-    $headers[] = 'HTTP/1.1 ' . $this->status . ' ' $this->statusMessage;
+    $headers[] = 'HTTP/1.1 ' . $this->status . ' ' . $this->statusMessage;
     $headers[] = $this->contentType();
-
+    
+    $this->headers = $headers;
     return $headers;
   }
+
+  /**
+   * Final output function. Sets headers then prints body or
+   * errorBody.
+   */
+  public function output () {
+    $this->prepareHeaders();
+    foreach ($this->headers as $head) {
+      header($head);
+    }
+
+    if ($this->isError()){
+      print $this->error_body;
+    }
+    /** Check for status codes that do not allow body **/
+    elseif (in_array($this->status, 
+                     array(204, 304))) {
+      return;
+    } 
+    else {
+      print $this->body;
+    }
+  }
 }
+
+?>

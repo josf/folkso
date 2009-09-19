@@ -19,6 +19,8 @@
    * @subpackage Tagserv
    */
 
+include_once('folksoResponse.php');
+
   /**
    * @package Folkso
    */
@@ -156,9 +158,10 @@ class folksoResponder {
    */
   function Respond (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
     $aa = $this->action_func;
-    return $aa($q, $cred, $dbc); //action (on DB for example) + return document
-                        //+ status. In fact, returned value does not
-                        //matter probably.
+    $resp =  $aa($q, $cred, $dbc); //action (on DB for example) + return document
+    //+ status. In fact, returned value does not
+    //matter probably.
+    $resp->output();
   }
 
   function getHttpMethod () {
