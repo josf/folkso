@@ -124,13 +124,11 @@ class folksoDBinteract {
    * @return 
    */
   public function query ($query) {
-    $this->latest_query = $query;
     $this->affected_rows = 0;
     $this->first_val = ''; // reset first_val for new query (just in case).
-    $this->result = null;
-
-    $this->db->multi_query($query);
+    $this->result = $this->db->query($query);
     $this->affected_rows = $this->db->affected_rows;
+
 
     if ($this->db->errno <> 0) {
       $this->query_error = sprintf("Query error: %s Error code: %d Query: %s", 
@@ -139,25 +137,11 @@ class folksoDBinteract {
       $this->result_status = 'DBERR';
       return;
     }
-
-    /** First result set  **/
-    $result = $this->db->store_result();
-
-    $this->result = $result;
-    if ($result->num_rows == 0) {
+    elseif ($this->result->num_rows == 0) {
       $this->result_status = 'NOROWS';
-      return;
-    }
-    elseif ($result->num_rows > 0) {
-      $this->result_status = 'OK';
     }
     else {
-      $this->result_status = 'INTERR';
-    }
-
-    /** Additional result sets **/
-    while ($this->db->next_result()) {
-      $this->additional_results[] = $this->db->store_result();
+      $this->result_status = 'OK';
     }
   }
   
