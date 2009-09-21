@@ -37,13 +37,13 @@ class testOffolksoDBinteract extends  UnitTestCase {
                        0);
   }
 
-  public function testLiveData () {
+  public function testMultiQuery () {
     $db = new folksoDBinteract($this->dbc);
     /** actually a test of DBconnect...**/
     $this->assertIsA($this->dbc->db_obj(), mysqli, 
                      "Created object is not a mysql object");
 
-    $db->query('select uri_normal as uri from resource where id = 1;'
+    $db->sp_query('select uri_normal as uri from resource where id = 1;'
                .'select uri_raw as raw from resource where id = 1;'
                );
 
@@ -57,14 +57,13 @@ class testOffolksoDBinteract extends  UnitTestCase {
                        'Result is not ok on resouce id = 1');
 
     $this->assertNotNull($db->result, 'Null result from query');
-    $this->assertIsA($res, mysqli_result, 
+    $this->assertIsA($db->result, mysqli_result, 
                      'Not returning a mysqli result object');
+    $this->assertTrue(count($db->result_array) == 1,
+                      'Incorrect number of elements in $i->result_array');
 
+    $this->assertEqual($db->result_array[0]->uri, 'example.com/1');
 
-
-    $this->assertEqual($res->uri, 
-                       'example.com/1', 
-                       'Incorrect result on resource id = 1');
 
     $this->assertEqual(count($db->additional_results), 
                        1,

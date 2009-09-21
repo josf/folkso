@@ -32,6 +32,7 @@ class folksoDBinteract {
   public $query_error = '';
   public $result_status;
   public $latest_query;
+  public $result_array;
 
   /**
    * If the query returns more than one result set, the second and
@@ -71,6 +72,7 @@ class folksoDBinteract {
    */
   public function __construct (folksoDBconnect $dbc) {
     $this->additional_results = array();
+    $this->result_array = array();
     $this->db = $dbc->db_obj();
     $this->db->set_charset('utf8');
         if ( mysqli_connect_errno()) {
@@ -151,18 +153,21 @@ class folksoDBinteract {
     $this->first_val = '';
     $this->result = null;
 
-
     if ($this->db->multi_query($query)) {
-    do {
+      do {
         /* store first result set */
-        if ($result = $mysqli->store_result()) {
+        if ($result = $this->db->store_result()) {
           if (! $this->result) {
-            $this->result = $result;
+            $this->result = &$result;
+            while($row = $result->fetch_object()) {
+              $this->result_array[] = $row;
+            }
           }
           else {
             $this->additional_results[] = $result;
           }
-        } while ($this->dv->next_result());
+        }
+      } while ($this->db->next_result());
     }
 
 
