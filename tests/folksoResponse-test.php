@@ -2,11 +2,12 @@
 require_once('unit_tester.php');
 require_once('reporter.php');
 include('folksoTags.php');
+require_once('dbinit.inc');
 
 
 class testOffolksoResponse extends  UnitTestCase {
 
-
+  
 
 
   function testBasic () {
@@ -74,6 +75,11 @@ class testOffolksoResponse extends  UnitTestCase {
     $this->assertPattern('/HTTP/',
                          $r->headers[0], 
                          'HTTP not in first line of headers');
+
+  }
+
+  function testDB () {
+    test_db_init();
 
   }
 }
