@@ -31,6 +31,13 @@ class folksoDBinteract {
   public $connect_error= '';
   public $query_error = '';
   public $result_status;
+  public $latest_query;
+
+  /**
+   * If the query returns more than one result set, the second and
+   * following results sets are stored here.
+   */
+  public $additional_results;
 
   /**
    * Convenience interface.
@@ -63,6 +70,7 @@ class folksoDBinteract {
    * @param folksoDBconnect $dbc
    */
   public function __construct (folksoDBconnect $dbc) {
+    $this->additional_results = array();
     $this->db = $dbc->db_obj();
     $this->db->set_charset('utf8');
         if ( mysqli_connect_errno()) {
