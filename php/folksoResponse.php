@@ -21,6 +21,7 @@ class folksoResponse {
   private $body;
   public $error_body;
   public $headers;
+  public $debug;
 
   private $httpStatus = array(200 => '0K', 
                               201 => 'Created',
@@ -72,6 +73,15 @@ class folksoResponse {
     }
     else {
       $this->body = $str;
+    }
+  }
+
+  public function deb($str) {
+    if ($this->debug) {
+      $this->debug = $this->debug . "\n" . $str;
+    }
+    else {
+      $this->debug = $str;
     }
   }
 
