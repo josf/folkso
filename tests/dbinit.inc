@@ -28,7 +28,7 @@ function test_db_init() {
   $restitles = array('one', 'two', 'three', 'four', 'five');
   $tags = array('tagone', 'tagtwo', 'tagthree', 'tagfour', 'tagfive');
 
-  $i->query(
+  $i->sp_query(
             'insert into metatag (tagnorm, tagdisplay)'
             . ' values '
             . "('normal', 'normal'), "
@@ -37,7 +37,7 @@ function test_db_init() {
             );
   
   /** fill tables **/
-  $i->query("call bulk_visit('" . implode('&&&&&', $reslist) . "', '"
+  $i->sp_query("call bulk_visit('" . implode('&&&&&', $reslist) . "', '"
             . implode('&&&&&', $restitles) . "', 5)");
 
 
@@ -45,36 +45,36 @@ function test_db_init() {
     print "Bulk " .  $i->error_info();
   }
 
-    $i->query("call new_tag('" . $tags[0] . "')");
+    $i->sp_query("call new_tag('" . $tags[0] . "')");
     
     if ($i->db_error()) { 
       print "bad new tag";
     }
 
-    $i->query("call new_tag('" . $tags[1] . "')");
+    $i->sp_query("call new_tag('" . $tags[1] . "')");
 
     if ($i->db_error()) { 
       print "bad new tag";
     }
 
-    $i->query("call new_tag('" . $tags[2] . "')");
+    $i->sp_query("call new_tag('" . $tags[2] . "')");
     if ($i->db_error()) { 
       print "bad new tag";
     }
 
-    $i->query("call new_tag('" . $tags[3] . "')");
+    $i->sp_query("call new_tag('" . $tags[3] . "')");
     if ($i->db_error()) { 
       print "bad new tag";
     }
 
-    $i->query("call new_tag('" . $tags[4] . "')");
+    $i->sp_query("call new_tag('" . $tags[4] . "')");
     if ($i->db_error()) { 
       print "bad new tag";
     }
 
     foreach ($tags as $t) {
 
-    $i->query("call tag_resource('http://example.com/1', '', '$t', '', '', 1 )");
+    $i->sp_query("call tag_resource('http://example.com/1', '', '$t', '', '', 1 )");
     if ($i->db_error()) { 
       print "bad tag resource<br/>";
       print $i->error_info();
