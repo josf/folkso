@@ -124,10 +124,62 @@ class folksoDBinteract {
    * @return 
    */
   public function query ($query) {
+    $this->latest_query = $query;
     $this->affected_rows = 0;
     $this->first_val = ''; // reset first_val for new query (just in case).
-    $this->result = $this->db->query($query);
+    $this->result = null;
+
+    $this->db->multi_query($query);
     $this->affected_rows = $this->db->affected_rows;
+
+    if ($this->db->errno <> 0) {
+      $this->query_error = sprintf("Query error: %s Error code: %d Query: %s", 
+                                   $this->db->error, 
+                                   $this->db->errno, $query);
+      $this->result_status = 'DBERR';
+      return;
+    }
+
+    /** First result set  **/
+    $result = $this->db->store_result();
+
+    $this->result = $result;
+    if ($result->num_rows == 0) {
+      $this->result_status = 'NOROWS';
+      return;
+    }
+    elseif ($result->num_rows > 0) {
+      $this->result_status = 'OK';
+    }
+    else {
+      $this->result_status = 'INTERR';
+    }
+
+    /** Additional result sets **/
+    while ($this->db->next_result()) {
+      $this->additional_results[] = $this->db->store_result();
+    }
+  }
+  
+  public function sp_query($query) {
+    $this->latest_query = $query; // for possible debug
+    $this->affected_rows = 0;
+    $this->first_val = '';
+    $this->result = null;
+
+
+    if ($this->db->multi_query($query)) {
+    do {
+        /* store first result set */
+        if ($result = $mysqli->store_result()) {
+          if (! $this->result) {
+            $this->result = $result;
+          }
+          else {
+            $this->additional_results[] = $result;
+          }
+        } while ($this->dv->next_result());
+    }
 
 
     if ($this->db->errno <> 0) {
@@ -137,13 +189,20 @@ class folksoDBinteract {
       $this->result_status = 'DBERR';
       return;
     }
-    elseif ($this->result->num_rows == 0) {
+
+    /** First result set  **/
+    if ($this->result->num_rows == 0) {
       $this->result_status = 'NOROWS';
+      return;
     }
-    else {
+    elseif ($result->num_rows > 0) {
       $this->result_status = 'OK';
     }
+    else {
+      $this->result_status = 'INTERR';
+    }
   }
+
   
   /**
    * 
