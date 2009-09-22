@@ -90,8 +90,9 @@ class folksoResponse {
    *
    * @param $status Integer HTTP Error code
    * @param $message String (optional) Error message
+   * @param $representation String Information for body
    */
-  public function setError($status, $message = null) {
+  public function setError($status, $message = null, $representation = null) {
     if (! isset($this->httpStatus[$status])){
       trigger_error("Invalid HTTP status: $status",
                     e_user_warning);
@@ -100,6 +101,9 @@ class folksoResponse {
     $this->status = $status;
     $this->statusMessage 
       = $message ? $message : $this->httpStatus[$status];
+    if ($representation){
+      $this->errorBody($representation);
+    }
   }
 
   public function dbError($status = 500, $message = null){
