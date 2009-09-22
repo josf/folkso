@@ -111,10 +111,11 @@ $srv->Respond();
  * Web parameters: HEAD + folksouri or folksoid
  */
 function isHead (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+  $r = new folksoResponse();
   $i = new folksoDBinteract($dbc);
   if ($i->db_error()) {
-    header('HTTP/1.0 501 Database connection error');
-    die($i->error_info());
+    $r->dbConnectionError($i->error_info());
+    return $r;
   }
 
   $query = '';
@@ -134,17 +135,18 @@ function isHead (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
 
   switch ($i->result_status) {
   case 'DBERR':
-    header('HTTP/1.0 501 Database problem');
-    die($i->error_info());
+    $r->dbQueryError($i->error_info());
     break;
   case 'NOROWS':
-    header('HTTP/1.0 404 Resource not found');
-    die('Resource '. $q->res . ' not present in database');
+    $r->setError(404, 
+                 'Resource not found',
+                 'Resource '. $q->res . ' not present in database');
     break;
   case 'OK':
-    header('HTTP/1.0 200 Resource exists');
+    $r->setOk(200, 'Resource exists');
     break;
   }
+  return $r;
   $i->done();
 }
 
