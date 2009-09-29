@@ -60,13 +60,19 @@ class folksoPageDataMeta  {
 
     if (count($this->keywords) > 0) {
       return '<meta name="keywords" content="'
-        . implode(' ', $this->keywords)
+        . implode(' ', array_map(array($this, 
+                                       'quote_escape'), 
+                                 $this->keywords))
         . '"/>';
     }
     else {
       return '';
     }
   }
+
+  public function  quote_escape ($str) {
+      return preg_replace('/"/', '\\"', $str);
+    }
 
   /**
    * Returns a comma-separated list of keyword tags.
