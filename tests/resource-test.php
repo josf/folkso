@@ -12,8 +12,7 @@ class testOfResource extends  UnitTestCase {
     test_db_init();
     /** not using teardown because this function does a truncate
         before starting. **/
-    $this->dbc = new folksoDBconnect('localhost', 'tester_dude', 
-                                     'testy', 'testostonomie');
+    
   }
 
   function testIsHead () {
@@ -21,7 +20,9 @@ class testOfResource extends  UnitTestCase {
                           array('folksores' => 'http://example.com/1'),
                           array());
      $cred = new folksoWsseCreds('zork');
-     $r = isHead($q, $cred, $this->dbc);
+     $dbc = new folksoDBconnect('localhost', 'tester_dude', 
+                                'testy', 'testostonomie');
+     $r = isHead($q, $cred, $dbc);
      $r->prepareHeaders();
      $this->assertIsA($r, folksoResponse, 
                 'getTagsIds() does not return a folksoResponse object');
@@ -36,7 +37,7 @@ class testOfResource extends  UnitTestCase {
      $q2 = new folksoQuery(array(),
                            array('folksores' => 'http://zorkfest.org'),
                            array());
-     $r2 = isHead($q2, $cred, $this->dbc);
+     $r2 = isHead($q2, $cred, $dbc);
      $r2->prepareHeaders();
 
      $this->assertIsA($r2, folksoResponse,
@@ -51,7 +52,9 @@ class testOfResource extends  UnitTestCase {
                           array('folksores' => 'http://example.com/1'),
                           array());
      $cred = new folksoWsseCreds('zork');
-     $r = getTagsIds($q, $cred, $this->dbc);
+     $dbc = new folksoDBconnect('localhost', 'tester_dude', 
+                                'testy', 'testostonomie');
+     $r = getTagsIds($q, $cred, $dbc);
      $this->assertIsA($r, folksoResponse, 
                 'getTagsIds() does not return a folksoResponse object');
      $this->assertEqual($r->status, 200, 
@@ -69,7 +72,9 @@ class testOfResource extends  UnitTestCase {
                                 'folksodatatype' => 'text/xml'),
                           array());
      $cred = new folksoWsseCreds('zork');
-     $r = getTagsIds($q, $cred, $this->dbc);
+     $dbc = new folksoDBconnect('localhost', 'tester_dude', 
+                                'testy', 'testostonomie');
+     $r = getTagsIds($q, $cred, $dbc);
      $this->assertEqual($r->status, 200,
                         'getTagsIds (xml) returns error status');
      
@@ -80,7 +85,47 @@ class testOfResource extends  UnitTestCase {
      
 
    }
+   function testTagCloudLocalPop () {
+     $q = new folksoQuery(array(),
+                          array('folksoclouduri' => 1,
+                                'folksores' => 'http://example.com/1'),
+                          array());
+     $cred = new folksoWsseCreds('zork');
+     $dbc = new folksoDBconnect('localhost', 'tester_dude', 
+                                'testy', 'testostonomie');
+     $r = tagCloudLocalPop($q, $cred, $dbc);
+     $this->assertIsA($r, folksoResponse, 
+                      'tagCloudLocalPop is not returning a folksoResponse object');
+     $this->assertEqual($r->status, 406, 
+                        'Incorrect status returned by tagCloudLocalPop');
+     $q2 = new folksoQuery(array(),
+                           array('folksoclouduri' => 1,
+                                 'folksodatatype' => 'xml',
+                                 'folksores' => 'http://example.com/1'),
+                           array());
+     $dbc2 = new folksoDBconnect('localhost', 'tester_dude',
+                                 'testy', 'testostonomie');
+     $r2 = tagCloudLocalPop($q2, $cred, $dbc2);
+     $this->assertIsA($r2, folksoResponse,
+                      "tagCloudLocalPop is not returning a Response object (xml request)");
+     $this->assertEqual($r2->status, 200,
+                        'Incorrect http status for tagCloudLocalPop xml request: ' . $r2->status);
 
+     $this->assertTrue(strlen($r2->body()) > 100, 
+                       "No body in xml request");
+
+     $dbc3 = new folksoDBconnect('localhost', 'tester_dude',
+                                 'testy', 'testostonomie');
+     $q3 = new folksoQuery(array(),
+                           array('folksoclouduri' => 1,
+                                 'folksores' => 'http://not-here-at-all.com'),
+                           array());
+     $r3 = tagCloudLocalPop($q3, $cred, $dbc3); 
+     $this->assertIsA($r3, folksoResponse,
+                      'tagCloudPop not returning Response object (non-exist request)');
+     $this->assertEqual($r3->status, 404,
+                        'tagCloudLocalPop not returning 404');
+   }
 
 }//end class
 

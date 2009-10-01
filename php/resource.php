@@ -146,8 +146,8 @@ function isHead (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
     $r->setOk(200, 'Resource exists');
     break;
   }
+  // $i->done();
   return $r;
-  $i->done();
 }
 
 
@@ -247,6 +247,7 @@ function getTagsIds (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc
     }
     $r->t($xf->endform());
     return $r;
+    $i->done();
     break;
   default:
       $dd->activate_style('xhtml');
@@ -260,6 +261,7 @@ function getTagsIds (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc
     $r->t($dd->line($row->tagdisplay));
     }
   $r->t($dd->endform());
+  $i->done();
   return $r;
 }
 
@@ -275,22 +277,23 @@ function getTagsIds (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc
  */
 function tagCloudLocalPop (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
   $i = new folksoDBinteract($dbc);
+  $r = new folksoResponse();
 
-  if ($i->db_error()) {
-    header('HTTP/1.0 501 Database connection problem');
-    die( $i->error_info());
+  if ($i->db_error()) { 
+    $r->dbConnectionError($i->error_info());
+    return $r;
   }
 
   // check to see if resource is in db.
   if  (!$i->resourcep($q->res ))  {
     if ($i->db_error()) {
-      header('HTTP/1.0 501 Database problem');
-      die( $i->error_info());
+      $r->dbQueryError($i->error_info());
+      return $r;
     }
     else {
-      header('HTTP/1.0 404 Resource not found');      
-      print "Resource not present in database";
-      return;
+      $r->setError(404, 'Resource not found');
+      $r->errorBody("Resource not present in database");
+      return $r;
     }
   }
 
@@ -318,19 +321,21 @@ function tagCloudLocalPop (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnec
 
   switch ($i->result_status) {
   case 'DBERR':
-    header('HTTP/1.1 501 Database error');
-    die($i->error_info());
+    $r->dbQueryError();
+    $r->errorBody($i->error_info());
+    return $r;
     break;
   case 'NOROWS': // probably impossible now
-    header('HTTP/1.1 204 No tags associated with resource');
-    return;
+    $r->setOK(204, 'No tags associated with resource');
+    return $r;
     break;
-  case 'OK':
-    if ($i->result->num_rows == 0) {
-      header('HTTP/1.1 204 No tags associated with resource');
+  case 'OK':  
+    if ($i->result->num_rows == 0) { // should this be == 1 instead?
+      $r->setOK(204, 'No tags associated with resource');
+      return $r;
     } 
     else {
-      header('HTTP/1.1 200 Cloud OK');
+      $r->setOK(200, 'Cloud OK');
     }
     break;
   }
@@ -348,33 +353,37 @@ function tagCloudLocalPop (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnec
   switch ($q->content_type()) {
   case 'html':
     $dd->activate_style('xhtml'); 
-    print $dd->title($row1->tagdisplay);
-    print $dd->startform();  // <ul>
+    $r->setType('html');
+    $r->t($dd->title($row1->tagdisplay));
+    $r->t($dd->startform());  // <ul>
     while ($row = $i->result->fetch_object()) {
-      print $dd->line($row->cloudweight, 
+      $r->t($dd->line($row->cloudweight, 
                       "resourceview.php?tagthing=".
-                      $row->tagid, $row->tagdisplay)."\n";
+                      $row->tagid, $row->tagdisplay)."\n");
     }
-    print $dd->endform();
+    $r->t($dd->endform());
+    return $r;
     break;
   case 'xml':
+    $r->setType('xml');
     $dd->activate_style('xml');
-    header('Content-Type: text/xml');
-    print $dd->startform();
-    print $dd->title($q->res);
+    $r->t($dd->startform());
+    $r->t($dd->title($q->res));
     while ($row = $i->result->fetch_object()) {
-      print $dd->line($row->tagid,
+      $r->t($dd->line($row->tagid,
                       $row->tagdisplay,
-                      $row->cloudweight) . "\n";
+                      $row->cloudweight) . "\n");
     }
-    print $dd->endform();
+    $r->t($dd->endform());
+    return $r;
     break;
   default:
-    header("501 We need a datatype");
-    print 
-      "Sorry, but you did not give a datatype and we are too lazy "
-      ." right now to supply a default.";
-    return;
+    $r->setError(406, "No datatype specified");
+    $r->errorBody(
+                  "Sorry, but you did not give a datatype and we are too lazy "
+                  ." right now to supply a default."
+                  );
+    return $r;
   }
 }
 
