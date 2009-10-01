@@ -1,5 +1,6 @@
+set character_set_client = utf8;
 
-
+drop table if exists replace_characters;
 create table replace_characters
        (toreplace_code int unsigned not null primary key, 
        replacewith char(1) not null,
