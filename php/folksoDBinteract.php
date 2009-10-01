@@ -131,7 +131,6 @@ class folksoDBinteract {
     $this->result = $this->db->query($query);
     $this->affected_rows = $this->db->affected_rows;
 
-
     if ($this->db->errno <> 0) {
       $this->query_error = sprintf("Query error: %s Error code: %d Query: %s", 
                                    $this->db->error, 
@@ -146,7 +145,10 @@ class folksoDBinteract {
       $this->result_status = 'OK';
     }
   }
-  
+  /**
+   * Multiquery compatible version of query(). Should especially be
+   * useful for stored procedures
+   */
   public function sp_query($query) {
     $this->latest_query = $query; // for possible debug
     $this->affected_rows = 0;
@@ -212,21 +214,27 @@ class folksoDBinteract {
    * 
    */
   public function tagp ($tagstring) {
-    $select = '';
+    $select = 'SELECT id FROM tag ';
     if (is_numeric($tagstring)) {
-      $select = "SELECT id FROM tag
-                 WHERE id = " . $tagstring .
-                 " LIMIT 1";
+      $select .= " WHERE id = " . $tagstring;
     }
     else {
-      $select = 
-        "SELECT id FROM tag
-                  WHERE tagnorm = normalize_tag('" .
-        $this->db->real_escape_string($tagstring) .
-        "') 
-         LIMIT 1";
+      $select .= "  WHERE tagnorm = normalize_tag('" .
+                $this->db->real_escape_string($tagstring) .
+        "') ";
     }
+    $select .= ' limit 1';
+
     $this->presult = $this->db->query($select);
+
+    if ($this->db->errno <> 0) {
+      $this->query_error = sprintf('Query error: %s Error code: %d Query: %s',
+                                   $this->db->error,
+                                   $this->db->errno,
+                                   $select);
+      // not setting result status because that probably will never be
+      // tested in this case
+        }
     if ($this->presult->num_rows > 0) {
       $this->presult->free();
       return true;

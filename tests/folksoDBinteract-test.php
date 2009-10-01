@@ -107,6 +107,31 @@ class testOffolksoDBinteract extends  UnitTestCase {
                       'Not reporting existence of resource');
 
   }
+
+  function testExistence () {
+    $dbc = new folksoDBconnect('localhost','tester_dude',
+                               'testy', 'testostonomie');
+    $i = new folksoDBinteract($dbc);
+    $this->assertTrue($i->resourcep('http://example.com/1'),
+                      'Not reporting existence of example.com/1 (resourcep)'); 
+    $dbc2 = new folksoDBconnect('localhost','tester_dude',
+                               'testy', 'testostonomie');
+    $i2 = new folksoDBinteract($dbc2);
+    $this->assertTrue($i2->tagp('tagone'),
+                      'Not reporting existence of "tagone"');
+    $this->assertFalse($i2->db_error(),
+                       'tagp() is returning an DB error');
+    $this->assertTrue($i2->tagp(1),
+                      'numeric tagp not reporting existence of tag 1');
+    $this->assertEqual($i2->db->real_escape_string('tagone'),
+                       'tagone',
+                       'Strangeness using real_escape_string');
+    $this->assertFalse($i2->tagp('false tag'),
+                       'Reporting existence of non-existant tag');
+    $this->assertFalse($i2->tagp(199),
+                       'Reporting existence of non-existant tag (numeric)');
+                               
+  }
 }
 
 
