@@ -113,9 +113,10 @@ class folksoDisplayFactory {
                                         . "<numid>XXX</numid>\n"
                                         . "<display>XXX</display>\n"
                                         . "<weight>XXX</weight>\n"
+                                        . "<tagnorm>XXX</tagnorm>"
                                         . "</tag>", 
                                         'end' => '</tagcloud>',
-                                        'argsperline' => 3
+                                        'argsperline' => 4
                                         ));
     return $obj;
 
