@@ -26,3 +26,5 @@
 (url-retrieve-synchronously
  (fk-build-resource-get 
   "http://localhost/" 'numero3 '("folksodatatype" . "xml") '("folksoclouduri" . "1")))
+
+(url-retrieve-synchronously "http://www.fabula.org/tags/resource.php?folksores=http://www.fabula.org/actualites/article23682.php&folksodatatype=html")
