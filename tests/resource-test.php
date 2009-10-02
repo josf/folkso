@@ -154,8 +154,34 @@ class testOfResource extends  UnitTestCase {
 
      $this->assertEqual($is->status, 200,
                         "isHead() not reporting creation of new resource by visitPage()");
+   }
 
-                                        
+   function testAddResourced () {
+     $cred = new folksoWsseCreds('zork');
+     $r = addResource(new folksoQuery(array(),
+                                      array('folksonewtitle' => 'New new!',
+                                            'folksores' => 'http://newone.com'),
+                                      array()),
+                      $cred,
+                      new folksoDBconnect('localhost', 'tester_dude',
+                                          'testy', 'testostonomie')
+                      );
+     $this->assertIsA($r, folksoResponse,
+                      'addResource() not returning folksoResponse object');
+     $this->assertEqual($r->status, 201, 
+                        'addResource() not returning 201');
+     $this->assertNotEqual($r->status, 500, 
+                           'addResource() returning 500 - DB error');
+     $is = isHead(new folksoQuery(array(), 
+                                  array('folksores' => 'http://newone.com'),
+                                  array()),
+                  $cred,
+                  new folksoDBconnect('localhost', 'tester_dude', 
+                                      'testy', 'testostonomie'));
+
+     $this->assertEqual($is->status, 200,
+                        "isHead() not reporting creation of new resource by addResource()");
+
    }
 
 }//end class

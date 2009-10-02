@@ -462,10 +462,11 @@ function visitPage (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc)
  *
  */
 function addResource (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+  $r = new folksoResponse();
   $i = new folksoDBinteract($dbc);
   if ($i->db_error()) {
-    header('HTTP/1.0 501 Database connection error');
-    die($i->error_info());
+    $r->dbConnectionError($i->error_info());
+    return $r;
   }
 
   $query = 
@@ -476,14 +477,15 @@ function addResource (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $db
   $i->query($query);
 
   if ($i->result_status == 'DBERR') {
-    header('HTTP/1.1 501 DB error');
-    die($i->error_info());
+    $r->dbQueryError($i->error_info());
+    return $r;
   }
   else {
-    header('HTTP/1.1 201');
-    print "Resource added";
+    $r->setOk(201, "Resource added");
+    $r->t('Resource added to database'); // TODO Return representation here (id, url)
   }
   $i->done();
+  return $r; 
 }
 
 
