@@ -18,7 +18,6 @@ folksologfile
 /info/folksodump.sql
 /thisisfolkso
 /js/exp.js
-
 /GPATH
 /GRTAGS
 /GSYMS
@@ -32,6 +31,8 @@ folksologfile
 /php/GRTAGS
 /php/GSYMS
 /php/GTAGS
+/tests/nouvelles_admin.pl.html
+/tests/nouvelles_admin.pl_files/style_admin_nouvelles.css
 /tests/GPATH
 /tests/GRTAGS
 /tests/GSYMS

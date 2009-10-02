@@ -362,7 +362,7 @@ $querystart =
     ELSE title
   END AS display,
   (SELECT 
-       GROUP_CONCAT(DISTINCT concat(t2.tagdisplay, \'::\', convert(t2.id,CHAR)) SEPARATOR \' - \')
+       GROUP_CONCAT(DISTINCT concat(t2.tagdisplay, \'::\', t2.tagnorm) SEPARATOR \' - \')
        FROM tag t2
        JOIN tagevent te2 ON t2.id = te2.tag_id
        JOIN resource r2 ON r2.id = te2.resource_id

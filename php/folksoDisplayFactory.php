@@ -112,10 +112,12 @@ class folksoDisplayFactory {
                                         "<tag>\n"
                                         . "<numid>XXX</numid>\n"
                                         . "<display>XXX</display>\n"
+                                        . '<link href="XXX" rel="alternate"/>'
                                         . "<weight>XXX</weight>\n"
+                                        . "<tagnorm>XXX</tagnorm>"
                                         . "</tag>", 
                                         'end' => '</tagcloud>',
-                                        'argsperline' => 3
+                                        'argsperline' => 5
                                         ));
     return $obj;
 

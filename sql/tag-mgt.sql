@@ -5,43 +5,88 @@
 -- (defun sql-snip () (interactive) (snippet-insert "set final_tag = replace(final_tag, '$${1}', '$${2}');
 -- "))
 
-DELIMITER $$
-DROP FUNCTION IF EXISTS normalize_tag$$
-CREATE FUNCTION normalize_tag(input_tag VARCHAR(255))
-       RETURNS VARCHAR(120)
-       DETERMINISTIC
-BEGIN
-        DECLARE final_tag VARCHAR(255) DEFAULT '';
+delimiter $$
+drop function if exists normalize_tag$$
+create function novel_normal(input_tag varchar(255))
+       returns varchar(120)
+       deterministic
 
-        SET final_tag = lower(input_tag);
+begin
+        declare cached_tag varchar(120) default '';
+        declare output_tag varchar(255) default '';
+        declare counter int default 1;
+        declare current_char varchar(1) default '';
+        declare prev_char varchar(1) default '';
+        declare replaced_char varchar(1) default '';
 
-        set final_tag = replace(final_tag, ' ', '');
-        set final_tag = replace(final_tag, '.', '');
-        set final_tag = replace(final_tag, ':', '');
-        set final_tag = replace(final_tag, ';', '');
-        set final_tag = replace(final_tag, ',', '');
-        set final_tag = replace(final_tag, '!', '');
-        set final_tag = replace(final_tag, '?', '');
-        set final_tag = replace(final_tag, '/', '');
-        set final_tag = replace(final_tag, '\\', '');
-        set final_tag = replace(final_tag, '{', '');
-        set final_tag = replace(final_tag, '}', '');
-        set final_tag = replace(final_tag, '=', '');
-        set final_tag = replace(final_tag, '$', '');
-        set final_tag = replace(final_tag, '<', '');
-        set final_tag = replace(final_tag, '>', '');
-        set final_tag = replace(final_tag, '-', '');
-        set final_tag = replace(final_tag, '"', '');
-        set final_tag = replace(final_tag, '''', '');
+        set input_tag  = lower(input_tag);
 
-        -- shorten
-        if (length(final_tag) > 120) then
-            set final_tag = substr(final_tag, 1, 120);
+        if (length(input_tag) = 0) then
+           return '';
         end if;
 
-        return(final_tag);
+        select out_tag 
+        into cached_tag
+        from memoize_tagnormal
+        where in_tag = input_tag;
+
+        if (length(cached_tag) > 0) then
+           return cached_tag;
+        end if;
+
+        while (counter <= char_length(input_tag)) do
+
+                set current_char = substr(input_tag, counter, 1);
+                set prev_char = substr(output_tag, -1);
+                set counter = counter + 1;
+
+                -- we just take the lower case ascii alphabet here
+                if (((ord(current_char) < 123)  
+                   and
+                   (ord(current_char) > 96))
+                   or
+                   ((ord(current_char) > 47) and
+                    (ord(current_char) < 58)) 
+                    or
+                    (current_char = '-')) then
+                    -- if original tag has a hyphen, we leave it but
+                    -- won't add any more later
+
+                   set output_tag = concat(output_tag, current_char);
+                 -- otherwise we look up the characters in the table
+                 else
+                        select replacewith
+                        into replaced_char 
+                        from replace_characters
+                        where ord(current_char) = toreplace_code;
+                                    
+                 -- if previous character was a -, we don't add another one
+                  if ((length(replaced_char) > 0) and
+                     (((prev_char <> '-')
+                        or
+                        ((prev_char = '-') and (replaced_char <> '-'))))) then
+                        set output_tag = concat(output_tag, replaced_char);
+                  end if;
+                  -- any other characters are simply discarded
+              end if;
+        end while;
+
+        -- avoid tags ending with a hyphen
+        if (substr(output_tag, -1) = '-') then
+        set output_tag =  substr(output_tag, 1, char_length(output_tag) -1);
+        end if;
+
+       insert into memoize_tagnormal 
+       (in_tag, out_tag) 
+       values 
+       (input_tag, output_tag);
+
+return output_tag;
+
 end$$
 delimiter ;
+        
+
 
 -- new_tag()
 DELIMITER $$

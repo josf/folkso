@@ -30,6 +30,12 @@ class testOffolksoPageDataMeta extends  UnitTestCase {
     $this->assertPattern('/,/', $m->meta_textlist());
   }
 
+
+  function testInserting () {
+    $m = new folksoPageDataMeta();
+    $this->assertEqual('not \"quoted\"', $m->quote_escape('not "quoted"'));
+    $this->assertEqual('nothing', $m->quote_escape('nothing'));
+  }
 }//end class
 
 

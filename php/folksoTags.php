@@ -9,5 +9,7 @@ require_once('folksoResponse.php');
 require_once('folksoQuery.php');
 require_once('folksoWsseCreds.php');
 require_once('folksoDBconnect.php');
-
+require_once('folksoLink.php');
+require_once('folksoResourceLink.php');
+require_once('folksoTagLink.php');
 ?>
