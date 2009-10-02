@@ -25,6 +25,14 @@ abstract class folksoLocal {
    */
   public $xsl_dir;
 
+
+
+  /**
+   * The web server's url. Set with setServerUrl() which will add the
+   * 'http://' part if necessary
+   */
+  public $web_url;
+
   /**
    * The path part of the uri where tag.php and resource.php are to
    * be accessed. 
@@ -107,5 +115,28 @@ abstract class folksoLocal {
 
     return $return;
   }
+
+  /**
+   * Very minimal validation. We just make sure that the url starts
+   * with http:// and add it if missing. We also remove trailing
+   * slash.
+   *
+   * @param $url
+   */
+   public function setServerUrl ($url) {
+     $new_url = '';
+     if (substr($url, 0, 7) == 'http://') {
+       $new_url = $url;
+     }
+     else {
+       $new_url = 'http://' . $url;
+     }
+     if (substr($new_url, -1, 1) == '/') {
+       $new_url = substr($new_url, 0, strlen($new_url) - 1);
+     }
+     $this->web_url = $new_url;
+     return $this->web_url;
+   }
+  
   }
 ?>
