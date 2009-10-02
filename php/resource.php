@@ -360,7 +360,8 @@ function tagCloudLocalPop (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnec
     while ($row = $i->result->fetch_object()) {
       print $dd->line($row->tagid,
                       $row->tagdisplay,
-                      $row->cloudweight) . "\n";
+                      $row->cloudweight,
+                      $row->tagnorm) . "\n";
     }
     print $dd->endform();
     break;
