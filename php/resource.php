@@ -57,7 +57,7 @@ $srv->addResponseObj(new folksoResponder('post',
                                         'visitPage'));
 
 $srv->addResponseObj(new folksoResponder('post',
-                                        array('required' => array('res', 'newresource'),
+                                        array('required' => array('res', 'newtitle'),
                                               'exclude' => array('note', 'delete')),
                                         'addResource'));
 
