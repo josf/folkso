@@ -127,6 +127,37 @@ class testOfResource extends  UnitTestCase {
                         'tagCloudLocalPop not returning 404');
    }
 
+   function testVisitPage () {
+     $dbc = new folksoDBconnect('localhost', 'tester_dude',
+                                'testy', 'testostonomie');
+     $q = new folksoQuery(array(),
+                          array('folksores' => 'http://newone.com',
+                                'folksovisit' => 1,
+                                ),
+                          array());
+     $cred = new folksoWsseCreds('zork');
+     $r = visitPage($q,  $cred, $dbc);
+     $this->assertIsA($r, folksoResponse, 
+                      "visitPage() not returning a folksoResponse object");
+     $this->assertEqual($r->status, 202, 
+                        'visitPage() not returning 202 on cache request');
+     for ($i = 0; $i < 6; ++$i ) {
+       visitPage($q, $cred, new folksoDBconnect('localhost', 'tester_dude',
+                                                    'testy', 'testostonomie'));
+     }
+     $is = isHead(new folksoQuery(array(), 
+                                  array('folksores' => 'http://newone.com'),
+                                  array()),
+                  $cred,
+                  new folksoDBconnect('localhost', 'tester_dude', 
+                                      'testy', 'testostonomie'));
+
+     $this->assertEqual($is->status, 200,
+                        "isHead() not reporting creation of new resource by visitPage()");
+
+                                        
+   }
+
 }//end class
 
 $test = &new testOfResource();

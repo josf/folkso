@@ -404,7 +404,7 @@ function tagCloudLocalPop (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnec
  */
 function visitPage (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
   $ic = new folksoIndexCache('/tmp/cachetest', 5);  
-
+  $r = new folksoResponse();
   $page = new folksoUrl($q->res, 
                         $q->is_single_param('urititle') ? $q->get_param('urititle') : '' );
 
@@ -417,8 +417,8 @@ function visitPage (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc)
 
     $i = new folksoDBinteract($dbc);
     if ($i->db_error()) {
-      header('HTTP/1.0 501 Database connection problem');
-      die( $i->error_info());
+      $r->dbConnectionError($i->error_info());
+      return $r; 
     }
 
     $urls = array();
@@ -440,19 +440,20 @@ function visitPage (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc)
     fwrite($lfh, implode("\n", $urls) . "\n");
     fclose($lfh);
 
-      $i->query($sql);
-      if ($i->result_status == 'DBERR') {
-        header('HTTP/1.1 501 Database error');
-        print $i->error_info() . "\n";
-      }
-      header('HTTP/1.1 200 Read cache');
-      print "updated db";
-      $i->done();
+    $i->query($sql);
+    if ($i->result_status == 'DBERR') {
+      $r->dbQueryError($i->error_info());
+      return $r;
+    }
+    $r->setOk(200, "200 Read cache'");
+    $r->t("updated db");
+    $i->done();
     } 
   else {
-    header("HTTP/1.1 202 Caching visit");
-    print "caching visit";
+    $r->setOk(202, "Caching visit");
+    $r->t('Caching visit. Results will be incorporated shortly.');
   }
+  return $r;
 }
 
 /**
