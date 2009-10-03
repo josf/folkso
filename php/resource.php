@@ -493,10 +493,11 @@ function addResource (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $db
  * Optional : folksometa (defaults to 'normal' (1)). 
  */
 function tagResource (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+  $r = new folksoResponse();
   $i = new folksoDBinteract($dbc);
   if ($i->db_error()) {
-    header('HTTP/1.0 501 Database connection error');
-    die($i->error_info());
+    $r->dbConnectionError($i->error_info());
+    return $r;
   }
 
   $tag_args = argSort($q->res, $q->tag, $q->get_param('meta'), $i);
@@ -507,35 +508,31 @@ function tagResource (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $db
   if ($i->result_status == 'DBERR') {
     if (($i->db->errno == 1048) &&
         (strpos($i->db->error, 'resource_id'))) {
-      header('HTTP/1.1 404 Missing resource');
-      print "Resource ". $q->res . " has not been indexed yet.";
-      $i->done();
-      return;
+      $r->setError(404, 
+                   "Missing resource",
+                   "Resource ". $q->res . " has not been indexed yet.");
     }
     elseif (($i->db->errno == 1048) &&
             (strpos($i->db->error, 'tag_id'))) {
-      header('HTTP/1.1 404 Tag does not exist');
-      print "Tag ". $q->tag . " does not exist.";
-      print $i->error_info();
-      $i->done;
-      return;
+      $r->setError(404, 'Tag does not exist',
+                   "Tag ". $q->tag . " does not exist. "
+                   . $i->error_info());
     }
     else {
-      header('HTTP/1.1 501 Database query error.');
-      $i->done();
-      print "obscure database problem";
-      die($i->error_info());
+      $r->dbConnectionError($i->error_info());
     }
+    $i->done();
+    return $r;
   }
   else {
-    header('HTTP/1.1 200 Tagged');
-    print "Resource has been tagged";
-    print $query;
-    print "  DB says: ". $i->db->error;
+    $r->setOk(200, "Tagged");
+    $r->t("Resource has been tagged");
+    $r->t($query);
+    $r->t("  DB says: ". $i->db->error);
   }
   $i->done();
+  return $r;
 }
-
 
 function unTag (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
   $i = new folksoDBinteract($dbc);

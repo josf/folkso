@@ -140,7 +140,7 @@ class testOfResource extends  UnitTestCase {
      $this->assertIsA($r, folksoResponse, 
                       "visitPage() not returning a folksoResponse object");
      $this->assertEqual($r->status, 202, 
-                        'visitPage() not returning 202 on cache request');
+                        'visitPage() not returning 202 on cache request. Warning: this might depend on the state of the cache.');
      for ($i = 0; $i < 6; ++$i ) {
        visitPage($q, $cred, new folksoDBconnect('localhost', 'tester_dude',
                                                     'testy', 'testostonomie'));
@@ -184,6 +184,58 @@ class testOfResource extends  UnitTestCase {
 
    }
 
+   function testTagResource() {
+     $cred = new folksoWsseCreds('zork');
+     $r = tagResource(new folksoQuery(array(),
+                                      array('folksores' => 'http://example.com/4',
+                                            'folksotag' => 'tagone'),
+                                      array()),
+                      $cred,
+                      new folksoDBconnect('localhost', 'tester_dude',
+                                          'testy', 'testostonomie')
+                      );
+     $this->assertIsA($r, folksoResponse, "tagResource not returning Response object");
+     $this->assertEqual($r->status, 200,
+                        "tagResource throws error");
+     $r2 = getTagsIds(new folksoQuery(array(),
+                                  array('folksores' => 'http://example.com/4'),
+                                  array()),
+                      $cred,
+                      new folksoDBconnect('localhost', 'tester_dude',
+                                          'testy', 'testostonomie')
+                      );
+     $this->assertEqual($r2->status, 200, 
+                        'tagResource failed to tag example.com/4, getTagsIds not returning 200');
+     $this->assertNotEqual($r2->status, 204,
+                           'getTagsIds returning 204: resource is there but untagged');
+
+     // Unknown resource
+     $r3 = tagResource(new folksoQuery(array(),
+                                      array('folksores' => 'http://bobworld.com/4',
+                                            'folksotag' => 'tagone'),
+                                      array()),
+                      $cred,
+                      new folksoDBconnect('localhost', 'tester_dude',
+                                          'testy', 'testostonomie')
+                      );
+     $this->assertEqual($r3->status, 404,
+                        "Tagging unknown resource should return 404");
+
+     // Unknown tag
+     $r4 = tagResource(new folksoQuery(array(),
+                                       array('folksores' => 'http://example.com/4',
+                                             'folksotag' => 'pistonengine'),
+                                       array()),
+                       $cred,
+                       new folksoDBconnect('localhost', 'tester_dude',
+                                           'testy', 'testostonomie')
+                       );
+     $this->assertEqual($r4->status, 404,
+                        "Tagging with unknown tag should return 404");
+     $this->assertEqual($r4->statusMessage,
+                        "Tag does not exist",
+                        "Bad tag not appearing as such");
+   }
 }//end class
 
 $test = &new testOfResource();
