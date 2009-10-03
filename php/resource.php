@@ -174,14 +174,13 @@ function getTagsIds (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc
     if ($i->db_error()) {
       $i->done();
       $r->dbQueryError($i->error_info());
-      return $r;
     }
     else {
       $r->setError(404, 'Resource not found');
       $r->errorBody("Resource not present in database");
-      $i->done();
-      return $r;
     }
+    $i->done();
+    return $r;
   }
   
   $limit = 0;
