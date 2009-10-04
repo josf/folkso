@@ -12,6 +12,7 @@
 
 require_once('folksoTags.php');
 require_once('folksoAlpha.php');
+require_once('folksoTagQuery.php');
 
 /** 
  * When the tag's name or id is known, the field name "tag"
@@ -293,7 +294,7 @@ function getTagResourcesDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconne
                                               'UTF-8'),*/
 
 
-function relatedTags (folksoQuery $q, folksoWsseCreds $cred, folksoConnect $dbc) {
+function relatedTags (folksoQuery $q, folksoWsseCreds $cred, folksoDBConnect $dbc) {
   $i = new folksoDBinteract($dbc);
   //$r = new folksoResponse();
 
