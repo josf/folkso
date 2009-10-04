@@ -4,6 +4,7 @@
 (setq fktest-resources 
       '((rembrandt . "http://www.fabula.org/actualites/article13644.php")
         (numero3 . "http://www.fabula.org/actualites/article22002.php")))
+
 (defun fk-build-resource-get (base key &rest apairs)
   (let ((res-and-base (concat 
                        base "resource.php?folksores=" (cdr (assoc key fktest-resources)))))
@@ -15,8 +16,6 @@
 
 (setq fktest-tags
       '((number . "8170")))
-        
-
 
 (defun fk-build-tag-get (base key &rest apairs)
   (let ((res-and-base (concat 
