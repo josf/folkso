@@ -50,7 +50,10 @@ $srv->addResponseObj(new folksoResponse('post',
 $srv->addResponseObj(new folksoResponse('get', 
                                         array('required' => array('autotag')),
                                         'autoCompleteTagsDo'));
-
+$srv->addResponseObj(new folksoResponse('get',
+                                        array('required' => array('related')),
+                                        'relatedTags'));
+                     
 $srv->addResponseObj(new folksoResponse('get',
                                         array('required' => array('byalpha')),
                                         'byalpha'));
@@ -288,6 +291,56 @@ function getTagResourcesDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconne
 /*                           html_entity_decode(strip_tags($row->display), 
                                               ENT_NOQUOTES, 
                                               'UTF-8'),*/
+
+
+function relatedTags (folksoQuery $q, folksoWsseCreds $cred, folksoConnect $dbc) {
+  $i = new folksoDBinteract($dbc);
+  //$r = new folksoResponse();
+
+  if ($i->db_error()){
+    //$r->dbConnectionError();
+    //return $r;
+    header('HTTP/1.1 501 Database connection error');
+    die($i->error_info());
+  }
+  
+  $tq = new folksoTagQuery();
+  $i->query($tq->related_tags($q->tag));
+  switch($i->result_status){
+  case 'DBERR':
+    //$r->dbQueryError($i->error_info);
+    //return $r;
+    header('HTTP/1.1 501 Database query error');
+    die($i->error_info());
+    break;
+  case 'NOROWS':
+    //$r->setOk(204, 'No related tags yet');
+    header('HTTP/1.1 204 No related tags yet');
+    return;
+  case 'OK':
+    //$r->setOk(200, 'Related tags found');
+    header('HTTP/1.1 200 Related tags found');
+  }
+  
+  $df = new folksoDisplayFactory();
+  $dd = $df->TagList();
+  $dd->activate_style('xml');
+
+  print $dd->startform();
+  while ($row = $i->result->fetch_object()) {
+    //$r->t(
+    print $dd->line($row->tagid,
+                    $row->tagnorm,
+                    $row->tagdisplay,
+                    $row->popularity,
+                    '');
+  }
+  print $dd->endform();
+  
+
+}
+
+
 /**
  * Add a new tag.
  *

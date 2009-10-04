@@ -13,6 +13,20 @@
                   (loop for pair in apairs concat 
                         (concat "&" (car pair) "=" (cdr pair)))))))
 
+(setq fktest-tags
+      '((number . "8170")))
+        
+
+
+(defun fk-build-tag-get (base key &rest apairs)
+  (let ((res-and-base (concat 
+                       base "tag.php?folksotag=" (cdr (assoc key fktest-tags)))))
+    (if (null apairs)
+        res-and-base
+      (concat res-and-base 
+              (loop for pair in apairs concat 
+                    (concat "&" (car pair) "=" (cdr pair)))))))
+
 
 
 ;; basic xml get
@@ -26,3 +40,7 @@
 (url-retrieve-synchronously
  (fk-build-resource-get 
   "http://localhost/" 'numero3 '("folksodatatype" . "xml") '("folksoclouduri" . "1")))
+
+(url-retrieve-synchronously
+ (fk-build-tag-get
+  "http://localhost/" 'number '("folksorelated" . "1")))
