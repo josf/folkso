@@ -44,3 +44,6 @@
 (url-retrieve-synchronously
  (fk-build-tag-get
   "http://localhost/" 'number '("folksorelated" . "1")))
+
+(url-retrieve-synchronously "http://www.fabula.org/tags/resource.php?folksores=http://www.fabula.org/actualites/article23682.php&folksodatatype=html")
+
