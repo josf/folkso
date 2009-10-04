@@ -41,7 +41,8 @@ $srv->addResponseObj(new folksoResponse('get',
                                         'getTagResourcesDo'));
 
 $srv->addResponseObj(new folksoResponse('get', 
-                                        array('required' => array('tag')),
+                                        array('required' => array('tag'),
+                                              'exclude' => array('related')),
                                         'getTagDo'));
 
 $srv->addResponseObj(new folksoResponse('post',
