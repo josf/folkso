@@ -28,7 +28,7 @@ class folksoTagQuery {
                       .' from '
                       .' tagevent te '
                       .' where te.resource_id in '
-                      .' (select te2.resource_id from tagevent te2 '
+                      .' (select te2.resource_id '
                       .' from '
                       .' tagevent te2 '),
                 array(
