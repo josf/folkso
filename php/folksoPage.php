@@ -419,6 +419,19 @@ class folksoPage {
     return $html;
   }
 
+  /**
+   * @param $tag
+   * @param String HTML formatted tag cloud of related tags
+   */
+   public function RelatedTags ($tag = null) {
+     if (! $tag) {
+       $tag = strip_tags(substr($_GET['tag'], 0, 255));
+     }
+     
+     $rt = new folksoRelatedTags($this->loc, $this->url, $tag);
+     return $rt->buildCloud();
+   }
+  
 
 
 }
