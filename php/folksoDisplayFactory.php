@@ -143,7 +143,7 @@ class folksoDisplayFactory {
                                        "\n\t<display>XXX</display>".
                                        "\n\t<popularity>XXX</popularity>".
                                        "\n\t<metatag>XXX</metatag>".
-                                       "\n</tag>",
+                                       "\n</tag>\n",
                                        'argsperline' => 5));
     return $obj;
   }
