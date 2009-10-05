@@ -333,7 +333,7 @@ function relatedTags (folksoQuery $q, folksoWsseCreds $cred, folksoDBConnect $db
     //$r->t(
     print $dd->line($row->tagid,
                     $row->tagnorm,
-                    $row->tagdisplay,
+                    $row->display,
                     $row->popularity,
                     '');
   }
