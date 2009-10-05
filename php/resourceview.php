@@ -105,7 +105,7 @@ div.iframeholder {
 <?php
 
    if ($_GET['tag']) {
-     $tagthing = substr($_GET['tag'], 0, 255);
+     $tagthing = strip_tags(substr($_GET['tag'], 0, 255));
 
      $fc = new folksoClient('localhost', 
                             $loc->server_web_path . 'tag.php', 
