@@ -147,7 +147,7 @@ require_once('folksoPage.php');
 require_once('folksoPageData.php');
 
 
-$tagreq = $_GET['tag'];
+$tagreq = strip_tags($_GET['tag']);
 
 if ((strlen($tagreq) == 0) ||
     (strlen($tagreq) > 300)) {
