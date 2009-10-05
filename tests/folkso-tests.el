@@ -3,7 +3,9 @@
 (setq fktest-base "http://www.fabula.org/tags/")
 (setq fktest-resources 
       '((rembrandt . "http://www.fabula.org/actualites/article13644.php")
-        (numero3 . "http://www.fabula.org/actualites/article22002.php")))
+        (numero3 . "http://www.fabula.org/actualites/article22002.php")
+        (yokel . "20634")))
+      
 
 (defun fk-build-resource-get (base key &rest apairs)
   (let ((res-and-base (concat 
@@ -43,6 +45,16 @@
 (switch-to-buffer (url-retrieve-synchronously
  (fk-build-tag-get
   "http://localhost/" 'number '("folksorelated" . "1"))))
+
+(switch-to-buffer (url-retrieve-synchronously
+                   (fk-build-resource-get
+                    "http://localhost/" 
+                    'yokel 
+                    '("folksoclouduri" . "1")
+                    '("folksodatatype" . "xml"))))
+                    
+                    
+                    
 
 (url-retrieve-synchronously "http://www.fabula.org/tags/resource.php?folksores=http://www.fabula.org/actualites/article23682.php&folksodatatype=html")
 
