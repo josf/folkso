@@ -11,9 +11,13 @@ class testOffolksoTagQuery extends  UnitTestCase {
     $tq = new folksoTagQuery();
     $this->assertPattern('/101/',
                          $tq->related_tags(101));
+    $this->assertPattern('/tag <> 101/',
+                         $tq->related_tags('101'));
     $this->assertPattern('/bobness/',
                          $tq->related_tags('bobness'));
     $this->assertPattern("/normalize_tag\('bobness'\)/",
+                         $tq->related_tags('bobness'));
+    $this->assertPattern("/tagnorm <> normalize_tag\('bobness'\)/",
                          $tq->related_tags('bobness'));
    }
 }//end class

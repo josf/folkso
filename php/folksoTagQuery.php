@@ -22,7 +22,8 @@ class folksoTagQuery {
                 array(
                       'type' => 'common',
                       'sql' =>
-                      'select tag as tagid, t.tagnorm as tagnorm, t.tagdisplay as display, cnt as popularity '
+                      'select '
+                      . ' work.tag as tagid, t.tagnorm as tagnorm, t.tagdisplay as display, work.cnt as popularity '
                       .' from '
                       .' (select te.tag_id as tag, count(te.resource_id) as cnt '
                       .' from '
@@ -47,6 +48,19 @@ class folksoTagQuery {
                       ' ) group by te.tag_id ) as work '
                       . ' join tag t on t.id = work.tag '
                       . ' where cnt > 1 '
+                      . ' and '),
+
+                array(
+                      'type' => 'isnum',
+                      'sql' =>
+                      ' tag <> <<<x>>> '),
+                array(
+                      'type' => 'notnum',
+                      'sql' => 
+                      " tagnorm <> normalize_tag('<<<x>>>') "),
+                array('type' => 'common',
+                      'sql' => 
+                      ' order by cnt desc'
                       )
                 );
      return $this->qb->build($a, $tag, array());
