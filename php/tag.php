@@ -329,21 +329,41 @@ function relatedTags (folksoQuery $q, folksoWsseCreds $cred, folksoDBConnect $db
   $dd = $df->TagList();
   $dd->activate_style('xml');
 
-  print $dd->startform();
+  $accum .= $dd->startform();
   //pop title row
   $title_row = $i->result->fetch_object();
   
-  print $dd->title($title_row->display);
+  //  $accum = $dd->title($title_row->display);
   while ($row = $i->result->fetch_object()) {
     //$r->t(
-    print $dd->line($row->tagid,
-                    $row->tagnorm,
-                    $row->display,
-                    $row->popularity,
-                    '');
+    $accum .= $dd->line($row->tagid,
+                       $row->tagnorm,
+                       $row->display,
+                       $row->popularity,
+                       '');
   }
-  print $dd->endform();
+
+  $accum .= $dd->endform();
+
+  /** Default html output via xslt transformation. Content-type
+      negotiation should be handled here. **/
+  $accum_XML = new DOMDocument();
+  $accum_XML->loadXML($accum);
   
+  $loc = new folksoFabula();
+  $xsl = new DOMDocument();
+  $xsl->load($loc->xsl_dir . "reltags.xsl");
+
+  $proc = new XsltProcessor();
+  $proc->importStylesheet($xsl);
+  $proc->setParameter('', 
+                    'tagviewbase',
+                    $loc->server_web_path . 'tagview.php?tag=');
+  // by using transformToXML instead of transformToDoc, we avoid
+  // putting an xml type declaration into the output doc.
+  $reltags = $proc->transformToXML($accum_XML);
+  //  $xml = $reltags->saveXML();
+  print $reltags;
 
 }
 
