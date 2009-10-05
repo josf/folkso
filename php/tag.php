@@ -317,6 +317,7 @@ function relatedTags (folksoQuery $q, folksoWsseCreds $cred, folksoDBConnect $db
     break;
   case 'NOROWS':
     //$r->setOk(204, 'No related tags yet');
+    //return $r;
     header('HTTP/1.1 204 No related tags yet');
     return;
   case 'OK':
@@ -329,6 +330,10 @@ function relatedTags (folksoQuery $q, folksoWsseCreds $cred, folksoDBConnect $db
   $dd->activate_style('xml');
 
   print $dd->startform();
+  //pop title row
+  $title_row = $i->result->fetch_object();
+  
+  print $dd->title($title_row->display);
   while ($row = $i->result->fetch_object()) {
     //$r->t(
     print $dd->line($row->tagid,
