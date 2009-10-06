@@ -61,6 +61,11 @@ class folksoPage {
   public $tr;
 
   /**
+   * The title of the page, when page is a tag page, ie. one tag and a
+   * list of resources.
+   */
+  public $title;
+  /**
    * @param $url string optional, defaults to ''.  
    *
    * For most purposes (besides testing) there is no need to use this
@@ -416,6 +421,7 @@ class folksoPage {
       $html .= '<h2 class="tagtitle">Erreur</h2>';
       $html .= '<p>Il y a eu une erreur quelque part.</p>';
     }
+    $this->title = $this->tr->title();
     return $html;
   }
 
