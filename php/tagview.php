@@ -166,7 +166,9 @@ if ($page->tr->is_valid()) {
   $reltags = $page->RelatedTags();
   if ($reltags) {
      print "<h2>Tags voisins : </h2>";
+print '<div id="bloc_orange">';
      print $reltags;
+print "</div>";
   }
   print $taglist; 
 }
