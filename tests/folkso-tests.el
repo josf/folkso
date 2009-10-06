@@ -59,6 +59,13 @@
                     "http://localhost/"
                     'poesie
                     '("folksorelated" . "1"))))
+
+(switch-to-buffer (url-retrieve-synchronously
+                   (fk-build-tag-get
+                    "http://localhost/"
+                    'poesie
+                    '("folksofancy" . "1")
+                    '("folksodatatype" . "xml"))))
                     
 
 (url-retrieve-synchronously "http://www.fabula.org/tags/resource.php?folksores=http://www.fabula.org/actualites/article23682.php&folksodatatype=html")
