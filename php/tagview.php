@@ -1,7 +1,24 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
+
+<?php
+
+require_once('folksoPage.php');
+require_once('folksoPageData.php');
+
+
+$tagreq = $_GET['tag'];
+
+if ((strlen($tagreq) == 0) ||
+    (strlen($tagreq) > 300)) {
+  die("Requête malformée, tag impossible");
+}
+
+$page = new folksoPage($tagreq);
+$taglist = $page->TagResources();
+?>
 <head>
-<title>Fabula - Tag</title>
+<title>Fabula - Tag: <?php echo $page->title ?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <meta http-equiv="Content-Language" content="fr-FR"/>
 <meta name="url" content="http://www.fabula.org/equipe.php"/>
@@ -140,27 +157,12 @@ a.innertag, a.innertag:visited, a.innertag:link {text-decoration: none; border: 
   </div>
 </div><div id="container_1col">
 <div id="<div id="colonnes_mono">
-
 <?php
-
-require_once('folksoPage.php');
-require_once('folksoPageData.php');
-
-
-$tagreq = $_GET['tag'];
-
-if ((strlen($tagreq) == 0) ||
-    (strlen($tagreq) > 300)) {
-  die("Requête malformée, tag impossible");
-}
-
-$page = new folksoPage($tagreq);
-$taglist = $page->TagResources();
-
 
 
 if ($page->tr->is_valid()) {
-  print "<h1>Ressources associées au tag : </h1>\n";
+  print "<h1>Ressources associées au tag : </h1>" 
+    .' <h2 class="tagtitle">' . $page->title . "</h2>\n";
   $reltags = $page->RelatedTags();
   if ($reltags) {
      print "<h2>Tags voisins : </h2>";
