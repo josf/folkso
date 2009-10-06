@@ -12,7 +12,7 @@ require_once('folksoFabula.php');
 require_once('folksoPageData.php');
 require_once('folksoPageDataMeta.php');
 require_once('folksoTagRes.php');
-
+require_once('folksoRelatedTags.php');
 /**
  * A class that regroups the functions that might be called from a
  * page: presentation, certain database interaction, tag clouds etc.
@@ -60,6 +60,11 @@ class folksoPage {
    */
   public $tr;
 
+  /**
+   * The title of the page, when page is a tag page, ie. one tag and a
+   * list of resources.
+   */
+  public $title;
   /**
    * @param $url string optional, defaults to ''.  
    *
@@ -416,9 +421,23 @@ class folksoPage {
       $html .= '<h2 class="tagtitle">Erreur</h2>';
       $html .= '<p>Il y a eu une erreur quelque part.</p>';
     }
+    $this->title = $this->tr->title();
     return $html;
   }
 
+  /**
+   * @param $tag
+   * @param String HTML formatted tag cloud of related tags
+   */
+   public function RelatedTags ($tag = null) {
+     if (! $tag) {
+       $tag = strip_tags(substr($_GET['tag'], 0, 255));
+     }
+     
+     $rt = new folksoRelatedTags($this->loc, $tag);
+     return $rt->buildCloud();
+   }
+  
 
 
 }

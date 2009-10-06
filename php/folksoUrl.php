@@ -18,7 +18,7 @@ class folksoUrl {
   var $url;
   var $title;
   
-  function folksoUrl ($url, $title) {
+  function __construct ($url, $title) {
     $this->set_url( $this->validate_url($url));
     $this->set_title( $title );
   }
@@ -50,6 +50,6 @@ class folksoUrl {
     return $string;
   }
 
-  }
+}
 
 ?>

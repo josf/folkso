@@ -8,7 +8,7 @@
    */
 
 require_once('folksoTagdata.php');
-
+require_once('folksoClient.php');
   /**
    *
    * Cloud objects for use through folksoPage and more specifically
