@@ -157,10 +157,15 @@ if ((strlen($tagreq) == 0) ||
 $page = new folksoPage($tagreq);
 $taglist = $page->TagResources();
 
-print $page->RelatedTags();
+
 
 if ($page->tr->is_valid()) {
   print "<h1>Ressources associées au tag : </h1>\n";
+  $reltags = $page->RelatedTags();
+  if ($reltags) {
+     print "<h2>Tags voisins : </h2>";
+     print $reltags;
+  }
   print $taglist; 
 }
 
