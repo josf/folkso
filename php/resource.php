@@ -535,10 +535,11 @@ function tagResource (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $db
 }
 
 function unTag (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+  $r = new folksoResponse();
   $i = new folksoDBinteract($dbc);
   if ($i->db_error()) {
-    header('HTTP/1.0 501 Database connection error');
-    die($i->error_info());
+    $r->dbConnectionError($i->error_info);
+    return $r;
   }
 
   $sql = '';
@@ -580,12 +581,12 @@ function unTag (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
   $i->query($sql);
 
   if ($i->result_status == 'DBERR') {
-    header('HTTP/1.1 501 Database query error');
-    die($i->error_info());
+    $r->dbQueryError();
   }
   else {
-    header('HTTP/1.1 200 Deleted');
+    $r->setOK(200, 'Deleted');
   }
+  return $r;
 }
 
 /**
