@@ -236,6 +236,57 @@ class testOfResource extends  UnitTestCase {
                         "Tag does not exist",
                         "Bad tag not appearing as such");
    }
+   function testUnTag () {
+     $cred = new folksoWsseCreds('zork');
+     $r = unTag(new folksoQuery(array(),
+                                array('folksores' => 'http://example.com/1',
+                                      'folksotag' => 'tagone',
+                                      'folksodelete' => 1),
+                                array()),
+                $cred,
+                new folksoDBconnect('localhost', 'tester_dude',
+                                    'testy', 'testostonomie'));
+
+     $this->assertIsA($r, folksoResponse,
+                      'unTag not return a folksoResponse object');
+     $this->assertEqual($r->status, 200,
+                        'Error code on unTag request');
+     $h = getTagsIds(new folksoQuery(array(),
+                                     array('folksores' => 'http://example.com/1'),
+                                     array()),
+                     $cred,
+                     new folksoDBconnect('localhost', 'tester_dude',
+                                         'testy', 'testostonomie'));
+     $this->assertEqual($h->status, 200, 
+                        'getTagsIds not returning a 200. Must be a problem');
+     $this->assertNoPattern('/tagone/',
+                             $h->body(),
+                             'removed tag still present in returned tags');
+   }
+
+   function testRmRes() {
+     $cred = new folksoWsseCreds('zork');
+     $r = rmRes(new folksoQuery(array(),
+                                array('folksores' => 'http://example.com/1'),
+                                array()),
+                $cred,
+                new folksoDBconnect('localhost', 'tester_dude',
+                                    'testy', 'testostonomie'));
+     $this->assertIsA($r, folksoResponse,
+                      'rmRes does not return a folksoResponse object');
+     $this->assertEqual($r->status, 200, 
+                        'rmRes returns error code' 
+                        . $r->status . $r->statusMessage);
+     $h = isHead(new folksoQuery(array(),
+                                  array('folksores' => 'http://example.com/1'),
+                                  array()),
+                     $cred,
+                     new folksoDBconnect('localhost', 'tester_dude',
+                                         'testy', 'testostonomie'));
+
+     $this->assertEqual($r->status, 404, 
+                        'Removed resource still present in DB');
+   }
 }//end class
 
 $test = &new testOfResource();

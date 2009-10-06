@@ -593,10 +593,11 @@ function unTag (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
  * Delete a resource and add its url to the list of excluded URL.
  */
 function rmRes (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+  $r = new folksoResponse();
   $i = new folksoDBinteract($dbc);
   if ($i->db_error()) {
-    header('HTTP/1.0 501 Database connection error');
-    die($i->error_info());
+    $r->dbConnectionError($i->error_info());
+    return $r;
   }
 
   // call rmres('url', id);
@@ -610,15 +611,14 @@ function rmRes (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
   $i->query($sql);
 
  if ($i->result_status == 'DBERR') {
-    header('HTTP/1.1 501 Database error');
-    die($i->error_info());
+   $r->dbQueryError($i->error_info());
  }
  else {
-   header('HTTP/1.1 200 Resource deleted');
-   print "Resource " . $q->res . " permanently deleted\n";
-   print "This resource will not be indexed in the future.";
-   //   print $sql;
+   $r->setOk(200, "Resource deleted");
+   $r->t("Resource " . $q->res . " permanently deleted");
+   $r->t("This resource will not be indexed in the future.");
  }
+ return $r;
 }
 
 /**
