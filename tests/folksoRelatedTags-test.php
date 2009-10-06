@@ -30,6 +30,15 @@ class testOffolksoRelatedTags extends  UnitTestCase {
      $r2->buildCloud();
      $this->assertEqual($r2->xml, $r2->html,
                         '$r2->html does not contain the same thing as ->xml. (This might be a bad test for future dev');
+
+
+     $r3 = new folksoRelatedTags(new folksoFabula(),
+                                 "poesie");
+     $this->assertIsA($r3, folksoRelatedTags,
+                      "Constructor problem with string tag arg");
+     $r3->getData();
+     $this->assertPattern('/autobiographie/', $r3->xml,
+                          "Not finding 'autobiographie' in tags related to 'poesie'");
    }
 }//end class
 

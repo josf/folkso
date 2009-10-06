@@ -77,6 +77,7 @@ class folksoTagQuery {
                 array('type' => 'common',
                       'sql' => 
                       ' order by cnt desc)'
+                      . ' limit 16 '
                       )
                 );
      return $this->qb->build($a, $tag, array());

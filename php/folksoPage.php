@@ -428,7 +428,7 @@ class folksoPage {
        $tag = strip_tags(substr($_GET['tag'], 0, 255));
      }
      
-     $rt = new folksoRelatedTags($this->loc, $this->url, $tag);
+     $rt = new folksoRelatedTags($this->loc, $tag);
      return $rt->buildCloud();
    }
   

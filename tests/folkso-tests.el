@@ -17,7 +17,8 @@
                         (concat "&" (car pair) "=" (cdr pair)))))))
 
 (setq fktest-tags
-      '((number . "8170")))
+      '((number . "8170")
+        (poesie . "poésie")))
 
 (defun fk-build-tag-get (base key &rest apairs)
   (let ((res-and-base (concat 
@@ -53,7 +54,11 @@
                     '("folksoclouduri" . "1")
                     '("folksodatatype" . "xml"))))
                     
-                    
+(switch-to-buffer (url-retrieve-synchronously
+                   (fk-build-tag-get
+                    "http://localhost/"
+                    'poesie
+                    '("folksorelated" . "1"))))
                     
 
 (url-retrieve-synchronously "http://www.fabula.org/tags/resource.php?folksores=http://www.fabula.org/actualites/article23682.php&folksodatatype=html")
