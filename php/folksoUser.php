@@ -18,12 +18,6 @@ class folksoUser {
   public $userid;
 
   /**
-   * Boolean. Whether or not we have enough information to write user
-   * data to the DB.
-   */
-  public $writeable;
-
-  /**
    * User's screen name.
    */
   public $nick;
@@ -41,24 +35,30 @@ class folksoUser {
   
 
    public function setNick($nick) {
-     $this->nick = $nick;
-     if (strlen($this->nick) < 5) {
-       $this->notWriteable();
+     $this->nick = strtolower($nick);
+   }
+
+   /**
+    * Nick must be lowercase, all letters and numbers, and at least 5
+    * characters long.
+    */
+   public function validNick($nick = null){
+     $nick = $nick ? $nick : $this->nick;
+     if (preg_match('/^[a-z0-9]{5,}/',
+                    $nick) === 0){
+       return false;
+     }
+     else {
+       return true;
      }
    }
 
    public function setFirstName($first){
      $this->firstName = $first;
-     if (! $this->firstName) {
-       $this->notWriteable();
-     }
    }
 
    public function setLastName($arg) {
           $this->lastName = $arg;
-          if (strlen($this->lastName) < 2){
-            $this->notWriteable();
-          }
    }
    public function setOidUrl($arg) {
           $this->oidUrl = $arg;
@@ -73,12 +73,13 @@ class folksoUser {
           $this->fonction = $arg;
    }
    public function setEmail($arg) {
+     $this->email = $arg;
+   }
+   public function validEmail($arg){
      if ((strpos($arg, '@') === false) ||
          (strlen($arg) < 8)) {
-       $this->notWriteable();
-       return;
+       return false;
      }
-     $this->email = $arg;
    }
 
   public $dbc;
@@ -90,16 +91,24 @@ class folksoUser {
     $this->dbc = $dbc;
   }
 
-
   /**
-   * Set writable state to false
-   */
-   public function notWriteable () {
-     $this->writeable = false;
-   }
-  
+   * Tests to see if User object contains enough data to be
+   * used. Requires valid nick, first and last names and (possibly) valid
+   * email address.
+   */  
    public function Writeable() {
-     $this->writeable = true;
+     /** check presence of vars **/
+     if ( empty($this->firstName) ||
+          empty($this->lastName) ||
+          empty($this->email) ||
+          empty($this->nick)) {
+       return false;
+     }
+
+     if ($this->validNick() === false) {
+       return false;
+     }
+     return true;
    }
 
   /**

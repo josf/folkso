@@ -25,17 +25,27 @@ class testOffolksoUser extends  UnitTestCase {
 
          $this->assertFalse($u->writeable,
                             'initial writable state should be false');
-         $simple_u = $u->createUser(array('nick' => 'Bobert',
+         $simple_u = $u->createUser(array('nick' => 'bobert',
                                           'firstname' => 'Bobness',
                                           'lastname' => 'Justaguy',
                                           'email' => 'sloink@zoink.com',
                                           'oid_url' => 'http://i.am.me'));
          $this->assertTrue($simple_u[0],
                            'Basic user creation fails');
-         $this->assertTrue($u->writeable,
+         $this->assertTrue($u->Writeable(),
                            'Writeable state incorrect: should be writeable now');
 
-
+         $this->assertTrue($u->validNick('abcde'),
+                           'Nick validation of "abcde" fails');
+         $this->assertFalse($u->validNick('a'),
+                            'Nick validation incorrect: single character should fail');
+         $this->assertTrue($u->validNick('abcdefghijklm'),
+                           'Nick validation incorrect. Long password should pass.');
+         $this->assertTrue($u->validNick('abc123'),
+                           'Nick validation incorrect. Should accept numbers');
+         $this->assertFalse($u->validNick('abc_def'),
+                            'Nick validation incorrect. Should not accept underscore');
+                                         
    }
 }//end class
 
