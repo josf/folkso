@@ -75,11 +75,13 @@ class folksoUser {
    public function setEmail($arg) {
      $this->email = $arg;
    }
-   public function validEmail($arg){
-     if ((strpos($arg, '@') === false) ||
-         (strlen($arg) < 8)) {
+   public function validEmail($arg = null){
+     $em = $arg ? $arg : $this->email;
+     if ((strpos($em, '@') === false) ||
+         (strlen($em) < 8)) {
        return false;
      }
+     return true;
    }
 
   public $dbc;
@@ -106,6 +108,9 @@ class folksoUser {
      }
 
      if ($this->validNick() === false) {
+       return false;
+     }
+     if ($this->validEmail() === false){
        return false;
      }
      return true;

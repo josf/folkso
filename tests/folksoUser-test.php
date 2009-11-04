@@ -45,6 +45,14 @@ class testOffolksoUser extends  UnitTestCase {
                            'Nick validation incorrect. Should accept numbers');
          $this->assertFalse($u->validNick('abc_def'),
                             'Nick validation incorrect. Should not accept underscore');
+
+         $this->assertFalse($u->validEmail("zork"), 
+                            'Not detecting incomplete email (zork)');
+
+         $this->assertTrue($u->validEmail("zork@zork.zork"),
+                           'Email should be considered valid');
+         $this->assertTrue($u->validEmail(),
+                           'Email checking of object email value not working');
                                          
    }
 }//end class
