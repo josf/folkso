@@ -11,9 +11,8 @@ ENGINE=InnoDB;
 drop table if exists users;
 create table users
        (userid varchar(255) primary key,
-       userno  integer unsigned auto_increment not null,
+       userno  integer unsigned auto_increment not null, -- not to be used but mysql wants it
        created datetime not null,
-       oid_url text not null,
        last_visit datetime not null,
        firstname varchar(255) not null,
        lastname varchar(255) not null,
@@ -22,7 +21,26 @@ create table users
        institution varchar(255) null,
        pays varchar(50) null,
        fonction varchar(50) null,
-       index unumb (userno),
-       index oid (oid_url(400))
+       index unumb (userno)
        )
 ENGINE=InnoDB;
+
+drop table if exists fb_ids;
+create table fb_ids
+       (userid varchar(255) primary key,
+       fb_uid integer unsigned,
+       index fb (fb_uid))
+ENGINE=InnoDB;
+
+
+drop table if exists oid_urls;
+create table oid_urls
+       (userid varchar(255) primary key,
+      oid_url text not null,
+      index oid (oid_url(400)))
+ENGINE=InnoDB;
+
+
+
+
+
