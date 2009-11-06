@@ -29,6 +29,7 @@ drop table if exists fb_ids;
 create table fb_ids
        (userid varchar(255) primary key,
        fb_uid integer unsigned,
+       foreign key (userid) references users (userid),
        index fb (fb_uid))
 ENGINE=InnoDB;
 
@@ -36,7 +37,8 @@ ENGINE=InnoDB;
 drop table if exists oid_urls;
 create table oid_urls
        (userid varchar(255) primary key,
-      oid_url text not null,
+       oid_url text not null,
+       foreign key (userid) references users (userid),
       index oid (oid_url(400)))
 ENGINE=InnoDB;
 
