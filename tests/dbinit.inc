@@ -8,7 +8,7 @@ function test_db_init() {
                   'memoize_tagnormal', 
                   'note', 'replace_characters', 'resource',
                   'tag',  'urltest',
-                  'metatag' );
+                  'metatag',  'sessions', 'users' );
   $dbc = new folksoDBconnect('localhost', 'tester_dude', 'testy', 'testostonomie');
   $i = new folksoDBinteract($dbc);
   
@@ -18,6 +18,9 @@ function test_db_init() {
   }
 
   print $i->error_info();
+  $user = array( 'marcelp' => array('Marcel', 'Proust', 'marcelp@temps.eu'),
+                 'gustav' => array('Gustave', 'Flaubert', 'gflaub@sentimental.edu'),
+                 'rambo' => array('Arthur', 'Rimbaud', 'arthurrr@ivoire.biz'));
 
   $reslist = array('http://example.com/1',
                    'http://example.com/2',
@@ -35,7 +38,7 @@ function test_db_init() {
             . "('auteur1', 'Auteur 1'), "
             . "('auteur2', 'Auteur 2')"
             );
-  
+
   /** fill tables **/
   $i->sp_query("call bulk_visit('" . implode('&&&&&', $reslist) . "', '"
             . implode('&&&&&', $restitles) . "', 5)");
@@ -80,5 +83,12 @@ function test_db_init() {
       print $i->error_info();
     }
     }
+    foreach($user as $k => $v){
+      print $k;
+      $i->sp_query(sprintf("call create_user('%s', '%s', '%s', '%s', '', '', '')",
+                           $k, $v[0], $v[1], $v[2]));
+      print $i->error_info();
+    }
+
 }
 
