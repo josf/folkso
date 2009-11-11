@@ -1,0 +1,133 @@
+<?php
+  /**
+   * 
+   *
+   * @package Folkso
+   * @subpackage tagserv
+   * @author Joseph Fahey
+   * @copyright 2009 Gnu Public Licence (GPL)
+   */
+require_once 'folksoUser.php';
+require_once 'folksoDBconnect.php';
+require_once 'folksoDBinteract.php';
+  /**
+   * @package Folkso
+   */
+class folksoSession {
+
+  public $sessionId;
+  public $dbc;
+
+  /**
+   * @param $dbc folksoDBconnect 
+   */
+  function __construct(folksoDBconnect $dbc){
+    $this->dbc = $dbc;
+  }
+
+
+/**
+ *
+ * @param $uid
+ */
+ public function validateUid ($uid) {
+   if ((strlen($uid) > 11) &&
+       (strlen($uid) < 100) &&
+       preg_match('/^[a-z]+-\d+-\d+/',  $uid)){
+     return true;
+    }
+   return false;
+ }
+
+
+/**
+ *
+ * @param $session_id String (actually should be a hash...)
+ */
+ public function validateSid ($session_id) {
+   if (strlen($session_id) == 64){
+     return true;
+   }
+   return false;
+ }
+
+
+  /**
+   * @param $uid String
+   */
+  public function startSession ($uid) {
+    if ($this->validateUid($uid) === false) {
+      return false; // error
+    }
+
+    $i = new folksoDBinteract($this->dbc);
+    if ($i->db_error()) {
+      trigger_error("Database connection error: " .  $i->error_info(), 
+                    E_USER_ERROR);
+    }    
+    
+    $i->query(
+              'insert into sessions '
+              .' (token, userid) '
+              ." values ('"
+              . $i->dbescape($this->newSessionId()) . "', '"
+              . $i->dbescape($uid) . "')"
+              );
+    if ($i->result_status == 'DBERR'){
+      print $i->error_info();
+      return false; // exception, errror ?
+    }
+    return $this->sessionId;
+  }
+      
+  /**
+   * Erases any current session id.
+   */
+  public function newSessionId () {
+    $this->sessionId = hash('sha256', getdate() . 'OldSalts');
+    return $this->sessionId;
+  }
+
+/**
+ * @param 
+ */
+ public function checkSession ($session_id) {
+   $i = new folksoDBinteract($this->dbc);
+   if ($i->db_error()) {
+     trigger_error("Database connection error: " .  $i->error_info(), 
+                   E_USER_ERROR);
+   }    
+   if ($this->validateSid($session_id) === false){
+     trigger_error("Bad session id", E_USER_WARNING);
+   }
+
+   $i->query("select userid, started from sessions where token = '"
+             . $i->dbescape($session_id) . "'");
+   if( $i->result_status == 'OK') {
+     return true;
+   }
+   elseif ($i->result_status == 'NOROWS'){
+     return false;
+   }
+   else {
+     trigger_error("DB query error: " . $i->error_info(),
+                   E_USER_ERROR);
+   }
+ }
+
+/**
+ * @param $session_id (optional)
+ */
+ public function killSession ($session_id = null) {
+   $sid = $session_id ? $session_id : $this->sessionId;
+   $i = new folksoDBinteract($this->dbc);
+   if ($i->db_error()){
+     trigger_error("Database connection error: " . $i->error_info(),
+                   E_USER_ERROR);
+   }
+   $i->query("delete from sessions where token = '" . $i->dbescape($sid) . "'");
+ }
+       
+       
+}
+?>
