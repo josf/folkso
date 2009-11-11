@@ -42,7 +42,9 @@ class testOffolksoSession extends  UnitTestCase {
                                        
          $this->assertFalse($s->startSession('zork-ù**-volvp zZkr'),
                             'bad uid should prevent session from starting');
-         
+         $this->assertFalse($s->checkSession('eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee'),
+                            'nonexistant session should not check true');
+
          $sess = $s->startSession('gustav-2009-001');
          $this->assertTrue($sess,
                            'This session should work');
@@ -50,7 +52,10 @@ class testOffolksoSession extends  UnitTestCase {
                            'startSession() should return a valid session id');
          $this->assertTrue($s->checkSession($sess),
                            'Session is there, we should see it with check');
-         
+         $s->killSession($sess);
+         print $sess;
+         $this->assertFalse($s->checkSession($sess),
+                            'the session should be gone now');
    }
 }//end class
 

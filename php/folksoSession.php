@@ -120,12 +120,17 @@ class folksoSession {
  */
  public function killSession ($session_id = null) {
    $sid = $session_id ? $session_id : $this->sessionId;
+   if ($this->validateSid($sid)){
    $i = new folksoDBinteract($this->dbc);
    if ($i->db_error()){
      trigger_error("Database connection error: " . $i->error_info(),
                    E_USER_ERROR);
    }
-   $i->query("delete from sessions where token = '" . $i->dbescape($sid) . "'");
+   $i->query( "delete from sessions where token = '" . $i->dbescape($sid) . "'");
+   }
+   else {
+     trigger_error('invalid session id', E_USER_WARNING);
+   }
  }
        
        
