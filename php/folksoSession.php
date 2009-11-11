@@ -84,12 +84,12 @@ class folksoSession {
    * Erases any current session id.
    */
   public function newSessionId () {
-    $this->sessionId = hash('sha256', getdate() . 'OldSalts');
+    $this->sessionId = hash('sha256', time() . 'OldSalts');
     return $this->sessionId;
   }
 
 /**
- * @param 
+ * @param $session_id
  */
  public function checkSession ($session_id) {
    $i = new folksoDBinteract($this->dbc);

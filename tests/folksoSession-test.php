@@ -56,6 +56,7 @@ class testOffolksoSession extends  UnitTestCase {
          print $sess;
          $this->assertFalse($s->checkSession($sess),
                             'the session should be gone now');
+         $s->startSession('gustav-2009-001');
    }
 }//end class
 
