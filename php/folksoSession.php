@@ -102,7 +102,7 @@ class folksoSession {
    }
 
    $i->query("select userid, started from sessions where token = '"
-             . $i->dbescape($session_id) . "'");
+             . $i->dbescape($session_id) . "'  and started > now() - 1209600");
    if( $i->result_status == 'OK') {
      return true;
    }
