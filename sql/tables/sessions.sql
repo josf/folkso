@@ -49,7 +49,7 @@ create table rights
        description text null)
 ENGINE=InnoDB;
 
-insert into rights (rightid, service) values ('tag', 'folkso');
+
 insert into rights (rightid, service) values ('create', 'folkso');
 insert into rights (rightid, service) values ('delete_othertaggage', 'folkso');
 insert into rights (rightid, service) values ('supertag', 'folkso');
