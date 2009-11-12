@@ -32,7 +32,7 @@ class folksoUser {
   public $institution;
   public $pays;
   public $fonction;
-  
+  public $uid;
 
    public function setNick($nick) {
      $this->nick = strtolower($nick);
@@ -84,7 +84,33 @@ class folksoUser {
      return true;
    }
 
-  public $dbc;
+   /**
+    * this function exists in folksoSession too. They should be identical.
+    *
+    * @param $uid
+    */
+   public function validateUid ($uid) {
+     if ((strlen($uid) > 11) &&
+         (strlen($uid) < 100) &&
+         preg_match('/^[a-z]+-\d+-\d+/',  $uid)){
+       return true;
+     }
+     return false;
+   }
+
+   /**
+    * @param $uid String
+    */
+   public function setUid ($uid) {
+     if ($this->validateUid($uid)){
+       $this->uid = $uid;
+     }   
+     return $uid;
+   }
+   
+
+
+   public $dbc;
   private $required_fields = array('nick', 'email', 'firstname', 'lastname');
   private $allowed_fields = array('nick', 'email', 'firstname', 'lastname', 'userid', 'oid_url', 'fb_id', 'institution', 'pays', 'fonction');
 
@@ -142,10 +168,55 @@ class folksoUser {
      $this->setPays($params['pays']);
      $this->setFonction($params['fonction']);
      $this->setEmail($params['email']);
-     $this->setUserId($params['userid']);
+     $this->setUid($params['userid']);
 
      $this->Writeable();
      return array(true);
    }
+
+
+/**
+ * @param $right
+ */
+ public function checkUserRight ($right) {
+   $i = new folksoDBinteract($this->dbc);
+   if ($i->db_error()) {
+     trigger_error("Database connection error: " .  $i->error_info(), 
+                   E_USER_ERROR);
+   }    
+   if ($this->validateRight($right) === false) {
+     return false;
+   }
+
+   $i->query('select rightid '
+             .' from users_rights '
+             ." where userid = '" . $this->uid . "' "
+             ." and "
+             ." rightid = '" . $right . "'");
+
+   if ($i->result_status == 'OK') {
+     return true;
+   }
+   elseif ($i->result_status == 'DBERR') {
+     trigger_error("DB error on right check: " . $i->error_info(),
+                   E_USER_WARNING);
+     return false;
+   }
+   return false;
+ }
+
+/**
+ * @param $right String
+ */
+ public function validateRight ($right) {
+   if (is_string($right) && 
+       (strlen($right) > 2) &&
+       preg_match('/^[a-z_]+$/', $right)) {
+     return true;
+   }
+   return false;
+ }
+
+
 }  
 ?>
