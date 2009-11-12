@@ -49,6 +49,14 @@ create table rights
        description text null)
 ENGINE=InnoDB;
 
+insert into rights (rightid, service) values ('tag', 'folkso');
+insert into rights (rightid, service) values ('create', 'folkso');
+insert into rights (rightid, service) values ('delete_othertaggage', 'folkso');
+insert into rights (rightid, service) values ('supertag', 'folkso');
+insert into rights (rightid, service) values ('delete_tags', 'folkso');
+insert into rights (rightid, service) values ('delete', 'folkso_user');
+
+
 create table users_rights
        (userid varchar(255) not null,
        rightid varchar(20) not null,

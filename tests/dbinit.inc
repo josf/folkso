@@ -8,7 +8,7 @@ function test_db_init() {
                   'memoize_tagnormal', 
                   'note', 'replace_characters', 'resource',
                   'tag',  'urltest',
-                  'metatag',  'sessions', 'users' );
+                  'metatag',  'sessions', 'users_rights', 'users' );
   $dbc = new folksoDBconnect('localhost', 'tester_dude', 'testy', 'testostonomie');
   $i = new folksoDBinteract($dbc);
   
@@ -89,6 +89,11 @@ function test_db_init() {
                            $k, $v[0], $v[1], $v[2]));
       print $i->error_info();
     }
+    $i->query("insert into users_rights (userid, rightid) values "
+              ."('rambo-2009-001', 'tag'), "
+              ."('rambo-2009-001', 'create'), "
+              ."('marcelp-2009-001', 'tag'), "
+              ."('gustav-2009-001', 'tag')");
 
 }
 
