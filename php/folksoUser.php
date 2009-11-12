@@ -63,6 +63,58 @@ class folksoUser {
    public function setOidUrl($arg) {
           $this->oidUrl = $arg;
    }
+
+   /**
+    * @param $url
+    */
+    public function checkOidUrl ($url = null) {
+      $url = $url ? $url : $this->oidUrl;
+      if ((strlen($url) > 12) &&
+          preg_match('/^http:\/\/[a-z]+/',
+                     $url)){
+        return true;
+      }
+      return false;   
+    }
+   
+
+   /**
+    * @param $id Facebook id
+    */
+    public function setFbId ($id) {
+      $this->fbId = $id;
+    }
+
+    /**
+     * @param $id
+     */
+     public function checkFbId ($id = null) {
+       $id_to_check = $id ? $id : $this->fbId;
+       if (strlen($id_to_check) > 5){
+         return true;
+       }
+       return false;
+     }
+    
+
+    /**
+     * Makes sure that the user has either a plausible OpenId url or a
+     * Facebook identifier, but not both.
+     */
+     public function checkIds () {
+       if ((! empty($this->oidUrl) && (! empty($this->fbId)))) {
+         return false; // can't have both!
+       }
+
+       if ($this->checkOidUrl() ||
+           $this->checkFbId()){
+         return true;
+       }
+       return false;
+     }
+    
+
+
    public function setInstitution($arg) {
      $this->institution = $arg;
    }
