@@ -91,10 +91,10 @@ class folksoSession {
 /**
  * @param $session_id
  */
- public function checkSession ($session_id) {
-   $i = new folksoDBinteract($this->dbc);
-   if ($i->db_error()) {
-     trigger_error("Database connection error: " .  $i->error_info(), 
+  public function checkSession ($session_id) {
+    $i = new folksoDBinteract($this->dbc);
+    if ($i->db_error()) {
+      trigger_error("Database connection error: " .  $i->error_info(), 
                    E_USER_ERROR);
    }    
    if ($this->validateSid($session_id) === false){
