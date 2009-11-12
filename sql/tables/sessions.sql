@@ -35,7 +35,27 @@ create table oid_urls
       index oid (oid_url(400)))
 ENGINE=InnoDB;
 
+create table sessions  
+       (token char(64) primary key,
+       userid varchar(255) not null,
+       started timestamp not null default current_timestamp,
+       foreign key (userid) references users (userid)
+       )      
+ENGINE=InnoDB;
 
+create table rights
+       (rightid varchar(20) not null unique,
+       service varchar(20) not null, 
+       description text null)
+ENGINE=InnoDB;
+
+create table users_rights
+       (userid varchar(255) not null,
+       rightid varchar(20) not null,
+       foreign key (userid) references users (userid),
+       foreign key (rightid) references rights (rightid),
+       primary key (userid, rightid))
+ENGINE=InnoDB;
 
 
 
