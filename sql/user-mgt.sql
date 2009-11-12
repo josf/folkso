@@ -4,7 +4,6 @@ delimiter $$
 drop procedure if exists create_user$$
 create procedure create_user(
                   nick_arg varchar(70),
-                  oid_url text,
                   firstname varchar(255),
                   lastname varchar(255),
                   email varchar(255),
@@ -57,10 +56,10 @@ else
      select err_msg;
   else
    insert into users 
-        (userid, oid_url, firstname, lastname, nick, email, institution, pays, fonction)
+        (userid, firstname, lastname, nick, email, institution, pays, fonction)
         values
-        (uid, oid_url, firstname, lastname, nick, email, institution, pays, fonction);
-   select userid, oid_url, firstname, lastname, nick, email, institution, pays, fonction
+        (uid, firstname, lastname, nick, email, institution, pays, fonction);
+   select userid, firstname, lastname, nick, email, institution, pays, fonction
    from users 
    where userid = uid;
 end if;
