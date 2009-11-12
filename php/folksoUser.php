@@ -85,9 +85,8 @@ class folksoUser {
    }
 
   public $dbc;
-  private $required_fields = array('nick', 'email', 'firstname', 'lastname', 'oid_url');
-  private $allowed_fields = array('nick', 'email', 'firstname', 'lastname', 'oid_url',
-                                  'institution', 'pays', 'fonction');
+  private $required_fields = array('nick', 'email', 'firstname', 'lastname');
+  private $allowed_fields = array('nick', 'email', 'firstname', 'lastname', 'userid', 'oid_url', 'fb_id', 'institution', 'pays', 'fonction');
 
   public function __construct (folksoDBconnect $dbc) {
     $this->dbc = $dbc;
@@ -143,6 +142,7 @@ class folksoUser {
      $this->setPays($params['pays']);
      $this->setFonction($params['fonction']);
      $this->setEmail($params['email']);
+     $this->setUserId($params['userid']);
 
      $this->Writeable();
      return array(true);

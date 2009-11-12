@@ -132,6 +132,46 @@ class folksoSession {
      trigger_error('invalid session id', E_USER_WARNING);
    }
  }
+
+ /**
+  * @param $sid
+  */
+  public function userSession ($sid) {
+    $sid = $sid ? $sid : $this->sessionId;
+    if ($this->validateSid($sid) === false) {
+      return false;  // excepmtion
+    }
+    
+   $i = new folksoDBinteract($this->dbc);
+   if ($i->db_error()){
+     trigger_error("Database connection error: " . $i->error_info(),
+                   E_USER_ERROR);
+   }
+   
+   $i->query('select u.nick as nick, u.firstname as firstname, '
+             .'  u.lastname as lastname, u.email as email, u.userid  as userid'
+             .' from sessions s '
+             .' join users u on u.userid = s.userid '
+             ." where s.token = '" . $sid . "'"
+             ." and s.started > now() - 1209600 ");
+   if ($i->result_status == 'OK') {
+     $u = new folksoUser($this->dbc);
+     $res = $i->result->fetch_object();
+     print "---" . $res->nick . "---";
+     $u->createUser(array(
+                          'nick' => $res->nick,
+                          'firstname' => $res->firstname,
+                          'lastname' => $res->lastname,
+                          'email' => $res->email,
+                          'userid' => $res->userid
+                          ));
+     return $u;
+   }
+   else {
+     return false;
+   }
+  }
+ 
        
        
 }

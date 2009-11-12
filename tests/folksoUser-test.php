@@ -35,6 +35,11 @@ class testOffolksoUser extends  UnitTestCase {
          $this->assertTrue($u->Writeable(),
                            'Writeable state incorrect: should be writeable now');
 
+         $this->assertEqual($u->nick, 'bobert',
+                            'Not retreiving nick correctly');
+         $this->assertEqual($u->firstName, 'Bobness',
+                            'Not retreiving first name correctly');
+
          $this->assertTrue($u->validNick('abcde'),
                            'Nick validation of "abcde" fails');
          $this->assertFalse($u->validNick('a'),
@@ -53,6 +58,16 @@ class testOffolksoUser extends  UnitTestCase {
                            'Email should be considered valid');
          $this->assertTrue($u->validEmail(),
                            'Email checking of object email value not working');
+
+
+         $this->assertTrue($u->checkFbId('abcdef'),
+                           'ultra simple FB id should pass.');
+         $this->assertTrue($u->checkOidUrl('http://bob.com'),
+                           'simple but valid url fails oid check');
+         $this->assertFalse($u->checkOidUrl('bob.kom'),
+                            'invalid oid url should fail');
+         $this->assertTrue($u->checkIds(),
+                           'oid_url should be enough for getting a valid check here');
                                          
    }
 }//end class

@@ -2,7 +2,7 @@
 require_once('unit_tester.php');
 require_once('reporter.php');
 include('folksoTags.php');
-include('folksoSession.php');
+require('folksoSession.php');
 require('dbinit.inc');
 
 class testOffolksoSession extends  UnitTestCase {
@@ -56,7 +56,18 @@ class testOffolksoSession extends  UnitTestCase {
          print $sess;
          $this->assertFalse($s->checkSession($sess),
                             'the session should be gone now');
-         $s->startSession('gustav-2009-001');
+         $sess2 = $s->startSession('gustav-2009-001');
+         $this->assertTrue($sess2,
+                           'session creation failed');
+         $this->assertTrue($s->checkSession($sess2),
+                           'session not valid (sess2)');
+         $u = $s->userSession($sess2);
+         $this->assertIsA($u, folksoUser,
+                          'userSession not returning folksoUser object');
+
+         $this->assertEqual($u->nick, 'gustav',
+                            'User nick not correctly retrieved' . $u->nick);
+         print_r( $u);
    }
 }//end class
 
