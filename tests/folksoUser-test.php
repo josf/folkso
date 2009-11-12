@@ -68,7 +68,38 @@ class testOffolksoUser extends  UnitTestCase {
                             'invalid oid url should fail');
          $this->assertTrue($u->checkIds(),
                            'oid_url should be enough for getting a valid check here');
-                                         
+
+         $this->assertFalse($u->validateRight('i win'),
+                            'spaces in right name should not validate');
+         $this->assertFalse($u->validateRight('Iwin'),
+                            'capitals in right name should not validate');
+         $this->assertTrue($u->validateRight('tag'),
+                           'right name "tag" should validate');
+         
+         $this->assertFalse($u->checkUserRight('99oooo zork'),
+                            'bad right name should fail in checkUserRight');
+
+         $this->assertFalse($u->checkUserRight('haroomph'),
+                            'non existant right should return false');
+   }
+
+   function testWithDB (){
+     $u = new folksoUser($this->dbc);
+     $u->createUser(array( 'nick' => 'marcelp',
+                           'firstname' => 'Marcel',
+                           'lastname' => 'Proust',
+                           'email' => 'marcep@temps.eu',
+                           'userid' => 'marcelp-2009-001'));
+     $this->assertIsA($u, folksoUser,
+                      'problem with object creation');
+     $this->assertEqual($u->nick, 'marcelp',
+                        'missing data in user object');
+     $this->assertEqual($u->uid, 'marcelp-2009-001',
+                        'userid not present');
+     $this->assertTrue($u->checkUserRight('tag'),
+                       'user right fails incorrectly');
+     $this->assertFalse($u->checkUserRight('ploop'),
+                        'inexistant right should not validate');
    }
 }//end class
 
