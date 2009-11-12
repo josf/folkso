@@ -1,14 +1,8 @@
-
+drop table if exists oid_urls;
+drop table if exists fb_ids;
 drop table if exists sessions;
-create table sessions  
-       (token char(128) primary key,
-       userid varchar(255) not null,
-       started datetime not null default now(),
-       foreign key (userid) references users (userid)
-       )      
-ENGINE=InnoDB;
-
 drop table if exists users;
+
 create table users
        (userid varchar(255) primary key,
        userno  integer unsigned auto_increment not null, -- not to be used but mysql wants it
@@ -25,7 +19,7 @@ create table users
        )
 ENGINE=InnoDB;
 
-drop table if exists fb_ids;
+
 create table fb_ids
        (userid varchar(255) primary key,
        fb_uid integer unsigned,
@@ -34,7 +28,6 @@ create table fb_ids
 ENGINE=InnoDB;
 
 
-drop table if exists oid_urls;
 create table oid_urls
        (userid varchar(255) primary key,
        oid_url text not null,
