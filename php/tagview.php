@@ -170,6 +170,9 @@ if ($page->tr->is_valid()) {
   }
   print $taglist; 
 }
+else {
+print "Erreur";
+}
 
 
 ?>
