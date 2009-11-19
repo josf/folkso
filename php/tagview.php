@@ -158,6 +158,7 @@ a.innertag, a.innertag:visited, a.innertag:link {text-decoration: none; border: 
 <div id="<div id="colonnes_mono">
 <?php
 
+
 if ($page->tr->is_valid()) {
   print "<h1>Ressources associées au tag : </h1>" 
     .' <h2 class="tagtitle">' . $page->title . "</h2>\n";
