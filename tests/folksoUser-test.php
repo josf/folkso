@@ -62,13 +62,7 @@ class testOffolksoUser extends  UnitTestCase {
 
          $this->assertTrue($u->checkFbId('abcdef'),
                            'ultra simple FB id should pass.');
-         $this->assertTrue($u->checkOidUrl('http://bob.com'),
-                           'simple but valid url fails oid check');
-         $this->assertFalse($u->checkOidUrl('bob.kom'),
-                            'invalid oid url should fail');
-         $this->assertTrue($u->checkIds(),
-                           'oid_url should be enough for getting a valid check here');
-
+   
          $this->assertFalse($u->validateRight('i win'),
                             'spaces in right name should not validate');
          $this->assertFalse($u->validateRight('Iwin'),
