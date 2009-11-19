@@ -44,7 +44,7 @@ class folksoRelatedTags extends folksoTagdata {
    * @param $cloud_type Unused, though maybe could be used some day for something.
    */
   public function getData ($max_tags = 0,$meta_only = false, $cloud_type = '') {
-    $fc = new folksoClient('localhost',
+    $fc = new folksoClient($this->loc->web_url,
                            $this->loc->server_web_path . 'tag.php',
                            'GET');
 

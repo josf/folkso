@@ -201,7 +201,7 @@ class folksoPage {
       return;
     }
 
-    $fc = new folksoClient('localhost', 
+    $fc = new folksoClient($this->loc->web_url,
                            $this->loc->server_web_path . 'admin/resource.php',
                            'POST');
     $fc->set_postfields(array('folksovisit' => 1,
@@ -335,7 +335,7 @@ class folksoPage {
    */
   private function resource_list($tag) {
 
-    $fc = new folksoClient('localhost',
+    $fc = new folksoClient($this->loc->web_url,
                            $this->loc->server_web_path . 'tag.php',
                            'GET');
     $fc->set_getfields(array('folksotag' => $tag,
