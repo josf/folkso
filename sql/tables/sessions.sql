@@ -35,6 +35,16 @@ create table oid_urls
       index oid (oid_url(400)))
 ENGINE=InnoDB;
 
+create or replace view fb_users
+       as select fb_uid, u.userid as userid, last_visit, lastname, firstname, nick, email, institution, pays, fonction
+          from users u 
+          join fb_ids f on f.userid = u.userid;
+
+create or replace view oi_users
+       as select oid_url, u.userid as userid, last_visit, lastname, firstname, nick, email, institution, pays, fonction
+       from users u
+       join oid_urls o on u.userid = o.userid;
+
 create table sessions  
        (token char(64) primary key,
        userid varchar(255) not null,
