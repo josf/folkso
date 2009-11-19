@@ -7,12 +7,24 @@
 (defun fk-build-resource-get (base key &rest apairs)
   (let ((res-and-base (concat 
                        base "resource.php?folksores=" (cdr (assoc key fktest-resources)))))
-        (if (null apairs)
-            res-and-base
-          (concat res-and-base 
-                  (loop for pair in apairs concat 
-                        (concat "&" (car pair) "=" (cdr pair)))))))
+    (if (null apairs)
+        res-and-base
+      (concat res-and-base 
+              (loop for pair in apairs concat 
+                    (concat "&" (car pair) "=" (cdr pair)))))))
 
+(setq fktest-tags
+      '((communication . "communication")))
+
+(defun fk-build-tag-get (base key &rest apairs)
+  (let ((tag-and-base (concat
+                       base "tag.php?folksotag="
+                       (cdr (assoc key fktest-tags)))))
+    (if (null apairs)
+        tag-and-base
+      (concat tag-and-base
+              (loop for pair in apairs concat
+                    (concat "&" (car pair) "=" (cdr pair)))))))
 
 
 ;; basic xml get
@@ -28,3 +40,8 @@
   "http://localhost/" 'numero3 '("folksodatatype" . "xml") '("folksoclouduri" . "1")))
 
 (url-retrieve-synchronously "http://www.fabula.org/tags/resource.php?folksores=http://www.fabula.org/actualites/article23682.php&folksodatatype=html")
+
+
+(url-retrieve-synchronously
+ (fk-build-tag-get
+  fktest-base 'communication '("folksodatatype" . "xml") '("folksofancy" . "1")))
