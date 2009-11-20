@@ -26,7 +26,9 @@ class testOffolksoFBuser extends  UnitTestCase {
                           'object hierarchy problem');
          $this->assertFalse($fb->exists('999999'),
                             'bad fb id should return false');
-         
+         $this->assertTrue($fb->validateLoginId('abcdef'),
+                           'ultra simple FB id should pass.');
+   
 
    }
 }//end class
