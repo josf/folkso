@@ -28,15 +28,37 @@ class folksoUser {
   public $email;
   public $lastName;
   public $firstName;
-  public $oidUrl;
   public $institution;
   public $pays;
   public $fonction;
   public $uid;
+  public $loginId;
+  public $dbc;
+
+  private $required_fields = array('nick', 'email', 'firstname', 'lastname');
+  private $allowed_fields = array('nick', 'email', 'firstname', 'lastname', 'userid', 'oid_url', 'fb_id', 'institution', 'pays', 'fonction');
+
 
   public function __construct (folksoDBconnect $dbc) {
     $this->dbc = $dbc;
   }
+
+/**
+ * @param $id
+ */
+ public function initializeUser ($id) {
+   if ($this->Writeable === false) {
+     return false;
+   }
+   $id = $id ? $id : $this->loginId;
+   
+   if (substr($id, 0, 7) == 'http://') {
+     
+   }
+
+
+ }
+
 
 
   public function setNick($nick) {
@@ -121,10 +143,6 @@ class folksoUser {
     }   
     return $uid;
   }
-
-  public $dbc;
-  private $required_fields = array('nick', 'email', 'firstname', 'lastname');
-  private $allowed_fields = array('nick', 'email', 'firstname', 'lastname', 'userid', 'oid_url', 'fb_id', 'institution', 'pays', 'fonction');
 
 
   /**
