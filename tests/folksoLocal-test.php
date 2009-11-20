@@ -24,6 +24,8 @@ class testOffolksoLocal extends  UnitTestCase {
                        'http://bobworld3',
                        'setServerUrl() is not removing trailing slash');
 
+    $this->assertIsA($loc->locDBC(), folksoDBconnect,
+                     'Not able to build a dbc object');
    }
 }//end class
 

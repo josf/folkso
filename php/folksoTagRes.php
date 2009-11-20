@@ -44,7 +44,7 @@ class folksoTagRes extends folksoTagdata {
    * me. You can use it, but nothing will happen.
    */
   public function getData($max_tags = 0, $meta_only = false) {
-    $fc = new folksoClient('localhost',
+    $fc = new folksoClient($this->loc->web_url,
                            $this->loc->server_web_path . 'tag.php',
                            'GET');
     $fc->set_getfields(array('folksotag' => $this->url,

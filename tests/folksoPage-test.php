@@ -128,6 +128,15 @@ class testOffolksoPage extends  UnitTestCase {
     print "<pre>" . $dc2 . "</pre>";
   }
 
+  function testRelatedTags () {
+    $page = new folksoPage(38065);
+    $this->assertTrue(is_string($page->RelatedTags(8170)),
+                      'RelatedTags method does not return string');
+    $this->assertPattern('/cloudclass/',
+                         $page->RelatedTags(8170),
+                         'RelatedTags does not produce a tag cloud');
+  }
+
 }//end class
 
 

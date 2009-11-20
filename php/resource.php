@@ -372,7 +372,7 @@ function tagCloudLocalPop (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnec
       $link = new folksoTagLink($row->tagnorm);
       $r->t($dd->line($row->tagid,
                       $row->tagdisplay,
-                      $link->getLink(),
+                      htmlspecialchars($link->getLink()),
                       $row->cloudweight . "\n",
                       $row->tagnorm) . "\n");
     }

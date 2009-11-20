@@ -12,6 +12,7 @@
 
 require_once('folksoTags.php');
 require_once('folksoAlpha.php');
+require_once('folksoTagQuery.php');
 
 /** 
  * When the tag's name or id is known, the field name "tag"
@@ -40,7 +41,7 @@ $srv->addResponseObj(new folksoResponder('get',
                                         'getTagResourcesDo'));
 
 $srv->addResponseObj(new folksoResponder('get', 
-                                        array('required' => array('tag')),
+                                        array('required' => array('tag')
                                         'getTagDo'));
 
 $srv->addResponseObj(new folksoResponder('post',
@@ -52,6 +53,10 @@ $srv->addResponseObj(new folksoResponder('get',
                                         'autoCompleteTagsDo'));
 
 $srv->addResponseObj(new folksoResponder('get',
+                                        array('required' => array('related')),
+                                        'relatedTags'));
+                     
+$srv->addResponseObj(new folksoResponse('get',
                                         array('required' => array('byalpha')),
                                         'byalpha'));
 
@@ -288,6 +293,81 @@ function getTagResourcesDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconne
 /*                           html_entity_decode(strip_tags($row->display), 
                                               ENT_NOQUOTES, 
                                               'UTF-8'),*/
+
+
+function relatedTags (folksoQuery $q, folksoWsseCreds $cred, folksoDBConnect $dbc) {
+  $i = new folksoDBinteract($dbc);
+  //$r = new folksoResponse();
+
+  if ($i->db_error()){
+    //$r->dbConnectionError();
+    //return $r;
+    header('HTTP/1.1 501 Database connection error');
+    die($i->error_info());
+  }
+  
+  $tq = new folksoTagQuery();
+  $i->query($tq->related_tags($q->tag));
+  switch($i->result_status){
+  case 'DBERR':
+    //$r->dbQueryError($i->error_info);
+    //return $r;
+    header('HTTP/1.1 501 Database query error');
+    die($i->error_info());
+    break;
+  case 'NOROWS':
+    //$r->setOk(204, 'No related tags yet');
+    //return $r;
+    header('HTTP/1.1 204 No related tags yet');
+    return;
+  case 'OK':
+    //$r->setOk(200, 'Related tags found');
+    header('HTTP/1.1 200 Related tags found');
+  }
+  
+  $df = new folksoDisplayFactory();
+  $dd = $df->TagList();
+  $dd->activate_style('xml');
+
+  $accum .= $dd->startform();
+  //pop title row
+  $title_row = $i->result->fetch_object();
+  
+  //  $accum = $dd->title($title_row->display);
+  while ($row = $i->result->fetch_object()) {
+    //$r->t(
+    $accum .= $dd->line($row->tagid,
+                       $row->tagnorm,
+                       $row->display,
+                       $row->popularity,
+                       '');
+  }
+
+  $accum .= $dd->endform();
+
+  /** Default html output via xslt transformation. Content-type
+      negotiation should be handled here. **/
+  $accum_XML = new DOMDocument();
+  $accum_XML->loadXML($accum);
+  
+  $loc = new folksoFabula();
+  $xsl = new DOMDocument();
+  $xsl->load($loc->xsl_dir . "reltags.xsl");
+
+  $proc = new XsltProcessor();
+  $proc->importStylesheet($xsl);
+  $proc->setParameter('', 
+                    'tagviewbase',
+                    $loc->server_web_path . 'tagview.php?tag=');
+  // by using transformToXML instead of transformToDoc, we avoid
+  // putting an xml type declaration into the output doc.
+  $reltags = $proc->transformToXML($accum_XML);
+  //  $xml = $reltags->saveXML();
+  print $reltags;
+
+}
+
+
 /**
  * Add a new tag.
  *

@@ -10,6 +10,8 @@
    * @copyright 2008 Gnu Public Licence (GPL)
    * @subpackage Tagserv
    */
+
+require_once 'folksoDBconnect.php';
   /**
    * @package Folkso
    */
@@ -64,7 +66,7 @@ abstract class folksoLocal {
    * that URI from being indexed.
    */
   public $visit_ignore_url;
-
+ 
   /**
    * Like $visit_ignore_url but used against page titles.
    */
@@ -137,6 +139,18 @@ abstract class folksoLocal {
      $this->web_url = $new_url;
      return $this->web_url;
    }
+
+   /**
+    * Convenience method for producing DBconnect objects
+    */
+    public function locDBC () {
+      return new folksoDBconnect($this->db_server,
+                                 $this->db_user,
+                                 $this->db_password,
+                                 $this->db_database_name);
+   
+    }
+   
   
   }
 ?>
