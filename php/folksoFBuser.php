@@ -14,6 +14,14 @@ require_once('folksoUser.php');
 class folksoFBuser extends folksoUser{
   public $loginId;
 
+/**
+ * @param folksoDBconnect $dbc
+ */
+ public function __construct (folksoDBconnect $dbc) {
+   $this->dbc = $dbc;
+ }
+
+
   /**
    * @param $id FB id to verify
    */
@@ -24,7 +32,6 @@ class folksoFBuser extends folksoUser{
     }
     return false;
   }
-
 
   /**
    * @param $id The id that we want to check
@@ -41,14 +48,31 @@ class folksoFBuser extends folksoUser{
                      E_USER_ERROR);
      }
 
-     $i->query("select userid from fb_users "
-               . " where fb_uid = '" . $id . "'"
-               . " from fb_users");
+     $i->query("select userid  "
+               . " from fb_users"
+               . " where fb_uid = " . $id );
+
      if ($i->result_status == 'OK') {
        return true;
      }
+     elseif ($i->result_status == 'DBERR'){
+       trigger_error('query error ' . $i->error_info(),
+                     E_USER_ERROR);
+     }
      return false;
    }
+
+/**
+ * @param $id
+ */
+ public function userFromLogin ($id) {
+   if($this->userFromLogin_base($id, 'fb_users', 'fb_uid')) {
+     return $this;
+   }
+   else {
+     return false;
+   }
+ }
   
 
 }

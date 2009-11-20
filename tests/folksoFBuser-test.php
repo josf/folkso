@@ -28,7 +28,14 @@ class testOffolksoFBuser extends  UnitTestCase {
                             'bad fb id should return false');
          $this->assertTrue($fb->validateLoginId('abcdef'),
                            'ultra simple FB id should pass.');
-   
+         $this->assertTrue($fb->validateLoginId('123456'),
+                           '123456 not validating as FB id');
+         $this->assertTrue($fb->exists('123456'),
+                           'rambo-2009-001 at 123456 not showing up');
+         $this->assertTrue($fb->userFromLogin('123456'),
+                           'userFromLogin returns false');
+         $this->assertEqual($fb->nick, 'rambo',
+                            'Incorrect nick');
 
    }
 }//end class

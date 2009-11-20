@@ -8,7 +8,7 @@ function test_db_init() {
                   'memoize_tagnormal', 
                   'note', 'replace_characters', 'resource',
                   'tag',  'urltest',
-                  'metatag',  'sessions', 'users_rights', 'users' );
+                  'metatag',  'fb_ids', 'oid_urls', 'sessions', 'users_rights', 'users' );
   $dbc = new folksoDBconnect('localhost', 'tester_dude', 'testy', 'testostonomie');
   $i = new folksoDBinteract($dbc);
   
@@ -94,6 +94,12 @@ function test_db_init() {
               ."('rambo-2009-001', 'create'), "
               ."('marcelp-2009-001', 'tag'), "
               ."('gustav-2009-001', 'tag')");
+
+    $i->query("insert into fb_ids (userid, fb_uid) values "
+              ." ('rambo-2009-001', 123456) ");
+    $i->query("insert into oid_urls (userid, oid_url) values "
+              ." ('marcelp-2009-001', 'http://flickr.com/marcelp'), "
+              ." ('gustav-2009-001', 'http://myspace/gustav')");
 
 }
 

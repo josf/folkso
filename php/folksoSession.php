@@ -134,6 +134,8 @@ class folksoSession {
  }
 
  /**
+  * Load user data from session id (cookie). Retuns folksoUser obj
+  *
   * @param $sid
   */
   public function userSession ($sid) {
