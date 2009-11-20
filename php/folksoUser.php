@@ -34,6 +34,11 @@ class folksoUser {
   public $fonction;
   public $uid;
 
+  public function __construct (folksoDBconnect $dbc) {
+    $this->dbc = $dbc;
+  }
+
+
   public function setNick($nick) {
     $this->nick = strtolower($nick);
   }
@@ -72,9 +77,6 @@ class folksoUser {
     $this->fbId = $id;
   }
     
-    
-
-
   public function setInstitution($arg) {
     $this->institution = $arg;
   }
@@ -119,16 +121,11 @@ class folksoUser {
     }   
     return $uid;
   }
-   
-
 
   public $dbc;
   private $required_fields = array('nick', 'email', 'firstname', 'lastname');
   private $allowed_fields = array('nick', 'email', 'firstname', 'lastname', 'userid', 'oid_url', 'fb_id', 'institution', 'pays', 'fonction');
 
-  public function __construct (folksoDBconnect $dbc) {
-    $this->dbc = $dbc;
-  }
 
   /**
    * Tests to see if User object contains enough data to be
