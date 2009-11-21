@@ -81,6 +81,9 @@ class folksoSession {
       print $i->error_info();
       return false; // exception, errror ?
     }
+    setcookie('folksosess', $this->sessionId, 
+              time() + 1800, '/', 
+              $this->loc->web_domain);
     return $this->sessionId;
   }
       
