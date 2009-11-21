@@ -10,6 +10,8 @@
 require_once 'folksoUser.php';
 require_once 'folksoDBconnect.php';
 require_once 'folksoDBinteract.php';
+require_once 'folksoFabula.php';
+
   /**
    * @package Folkso
    */
@@ -17,12 +19,14 @@ class folksoSession {
 
   public $sessionId;
   public $dbc;
+  public $loc;
 
   /**
    * @param $dbc folksoDBconnect 
    */
   function __construct(folksoDBconnect $dbc){
     $this->dbc = $dbc;
+    $this->loc = new folksoFabula();
   }
 
 
