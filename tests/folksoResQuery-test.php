@@ -1,10 +1,19 @@
 <?php
 require_once('unit_tester.php');
 require_once('reporter.php');
-
+require_once('dbinit.inc');
 require_once('folksoResQuery.php');
 
 class testOffolksoResQuery extends UnitTestCase {
+
+
+  function setUp() {
+    test_db_init();
+    /** not using teardown because this function does a truncate
+        before starting. **/
+    
+  }
+
 
   function testBasic ()  {
     $rq = new folksoResQuery();
@@ -67,6 +76,26 @@ class testOffolksoResQuery extends UnitTestCase {
 
     $this->assertPattern('/AS\s+metav/', $sql);
     print $sql;
+  }
+
+  function testGetTags () {
+    $rq = new folksoResQuery();
+    $sql = $rq->getTags('http://www.example.com');
+    $this->assertTrue(is_string($sql),
+                      'No string returned');
+    $this->assertTrue(strlen($sql) > 100,
+                      'sql output is not long enough');
+    $this->assertPattern('/example/',
+                         $sql,
+                         'Not finding original url in sql');
+    $sql_ean = $rq->getTags('http://www.example.com',
+                            0, false, true);
+    $this->assertPattern('/ean13/',
+                         $sql_ean,
+                         'Not finding ean13 in sql ' . $sql_ean);
+    print '==================' . $sql_ean;
+      
+
   }
 
 }
