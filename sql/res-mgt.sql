@@ -121,8 +121,9 @@ END IF;
 
 INSERT INTO exclude SET uri_normal = res_norm;
 
-DELETE FROM te, r 
+DELETE FROM te, ean
 USING resource r LEFT JOIN tagevent te ON r.id = te.resource_id
+                 LEFT JOIN ean13 ean ON ean.resource_id = r.id
 WHERE r.id = real_id;
 
 DELETE FROM ex, r

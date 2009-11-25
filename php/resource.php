@@ -640,29 +640,30 @@ function rmRes (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
  * POST, res, ean13
  */
 function assocEan13 (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
-
+  $r = new folksoResponse();
+  $i = new folksoDBinteract($dbc);
+  if ($i->db_error()) {
+    $r->dbConnectionError($i->error_info());
+    return $r;
+  }
+  
   /** check **/
   if (! ean13dataCheck($q->get_param('ean13'))) {
     header('HTTP/1.1 406 Bad EAN13 data');
-    print 
-      "The folksoean13 field should consist of exactly 13 digits. "
-      . $q->get_param('ean13') . " is " . strlen($q->get_param('ean13')) . " long "
-      . is_numeric($q->get_param('ean13')) ? " and it is numeric " : " but it is not numeric " 
-      ."\n\nPlease check your "
-      ."data before trying again.";
-    return;
-  }
+    $r->setError(406, "Bad EAN13 data",
 
-  $i = new folksoDBinteract($dbc);
-  if ($i->db_error()) {
-    header('HTTP/1.0 501 Database connection error');
-    die($i->error_info());
+                 "The folksoean13 field should consist of exactly 13 digits. "
+                 . $q->get_param('ean13') . " is " . strlen($q->get_param('ean13')) . " long "
+                 . is_numeric($q->get_param('ean13')) ? " and it is numeric " : " but it is not numeric " 
+                 ."\n\nPlease check your "
+                 ."data before trying again.");
+    return $r;
   }
 
   if (is_numeric($q->res)) {
     $sql = 
       "INSERT INTO ean13 SET resource_id = " . $q->res
-      . ", ean13 = " . $q->get_param('ean13'); //not escaping because we know this is just numbers
+      . ", ean13 = " . $q->get_param('ean13'); 
   }
   else {
     $sql =
@@ -677,30 +678,28 @@ function assocEan13 (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc
 
     if (($i->db->errno == 1048) || // resource_id cannot be null
         ($i->db->errno == 1452)) { // cannot add or update a child row
-      header('HTTP/1.1 404 Resource not found');
-      print 
-        "The resource you tried to associate with a EAN13 was not" 
-        ." found in the database. \n\nPerhaps it has not yet been indexed,".
-        "  or your reference is incorrect.";
+      $r->setError(404,
+                   "Resource not found",
+                   "The resource you tried to associate with a EAN13 was not" 
+                   ." found in the database. \n\nPerhaps it has not yet been indexed,".
+                   "  or your reference is incorrect.");
     }
     elseif ($i->db->errno == 1062) {
-      header('HTTP/1.1 409 Duplicate EAN13');
-      print 
-        "This resource/EAN13 combination is already present in the database.\n\n"
-        ."Duplicate EAN13 entries for the same resource are not allowed. This is "
-        ."slightly different from how tags work.";
-      return;
+      $r->setError(409,
+                   'Duplicate EAN13',
+                   "This resource/EAN13 combination is already present in the database.\n\n"
+                   ."Duplicate EAN13 entries for the same resource are not allowed. This is "
+                   ."slightly different from how tags work.");
     }
     else {
-      header('HTTP/1.1 501 Database error');
-      die($i->error_info());
+      $r->dbQueryError($i->error_info());
     }
   }
   else {
-    header('HTTP/1.1 200 OK');
-    print "The EAN13 information was added to a resource.";
-    return;
+    $r->setOk(200, 'Added');
+    $r->t("The EAN13 information was added to a resource.");
   }
+  return $r;
 }
 
 /**
