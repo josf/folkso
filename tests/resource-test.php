@@ -266,6 +266,16 @@ class testOfResource extends  UnitTestCase {
 
    function testRmRes() {
      $cred = new folksoWsseCreds('zork');
+
+     $h1 = isHead(new folksoQuery(array(),
+                                  array('folksores' => 'http://example.com/1'),
+                                  array()),
+                     $cred,
+                     new folksoDBconnect('localhost', 'tester_dude',
+                                         'testy', 'testostonomie'));
+     $this->assertEqual($h1->status, 200,
+                        'example.com/1 not present acorrding to isHead. Test pb.');
+
      $r = rmRes(new folksoQuery(array(),
                                 array('folksores' => 'http://example.com/1'),
                                 array()),
@@ -276,7 +286,7 @@ class testOfResource extends  UnitTestCase {
                       'rmRes does not return a folksoResponse object');
      $this->assertEqual($r->status, 200, 
                         'rmRes returns error code' 
-                        . $r->status . $r->statusMessage);
+                        . $r->status . $r->statusMessage . $r->body());
      $h = isHead(new folksoQuery(array(),
                                   array('folksores' => 'http://example.com/1'),
                                   array()),
@@ -284,9 +294,44 @@ class testOfResource extends  UnitTestCase {
                      new folksoDBconnect('localhost', 'tester_dude',
                                          'testy', 'testostonomie'));
 
-     $this->assertEqual($r->status, 404, 
-                        'Removed resource still present in DB');
+     $this->assertEqual($h->status, 404, 
+                        'Removed resource still present in DB' . $r->status);
    }
+
+   function testAssocEan13 () {
+     $cred = new folksoWsseCreds('zork');
+     $r = assocEan13(new folksoQuery(array(),
+                                array('folksores' => 'http://example.com/1',
+                                      'folksoean13' => '1234567890123'),
+                                array()),
+                $cred,
+                new folksoDBconnect('localhost', 'tester_dude',
+                                    'testy', 'testostonomie'));
+     $this->assertIsA($r, folksoResponse,
+                      'assocEan13 does not return a folksoResponse object');
+     $this->assertEqual($r->status, 200,
+                        'assocEan13 returns error : ' . $r->status . $r->body());
+
+     $cl = getTagsIds(new folksoQuery(array(),
+                                            array('folksores' => 1,
+                                                  'folksoean13' => 1,
+                                                  'folksodatatype' => 'xml'),
+                                            array()),
+                            $cred,
+                            new folksoDBconnect('localhost', 'tester_dude',
+                                                'testy', 'testostonomie'));                 
+     $this->assertPattern('/ean13/i',
+                          $cl->body(),
+                          'Did not find "ean13" in xml response');
+       
+     $this->assertPattern('/1234567890123/',
+                          $cl->body(),
+                          'Did not find ean13 data'. $cl->body());
+     
+
+   }
+
+
 }//end class
 
 $test = &new testOfResource();
