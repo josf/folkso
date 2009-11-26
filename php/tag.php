@@ -327,10 +327,11 @@ function singlePostTag (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $
 
 
 function fancyResource (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+  $r = new folksoResponse();
   $i = new folksoDBinteract($dbc);
-  if ( $i->db_error() ) {
-    header('HTTP/1.1 501 Database problem');
-    die( $i->error_info());
+  if ($i->db_error()) {
+    $r->dbConnectionError($i->error_info());
+    return $r;
   }
 
   /*
@@ -390,19 +391,20 @@ $querystart =
 
   switch ($i->result_status) {
   case 'DBERR':
-    header('HTTP/1.1 501 Database query error');
-    die($i->error_info());
+    $r->dbQueryError($i->error_info());
+    return $r;
     break;
   case 'NOROWS':
-    header('HTTP/1.1 200 No resources associated with  tag');
-    return;
+    $r->setOk(200, 'No resources associated with  tag');
+    return $r;
     break;
   case 'OK':
-    header('HTTP/1.1 200');
+    $r->setOk(200, 'Found');
     break;
   default:
-      header('HTTP/1.1 501 Inexplicable error');
-    die('This does not make sense');
+    $r->setError(500, 'Inexplicable error',    
+                 'This does not make sense');
+    return $r;
   }
   // so we are 'OK'
 
@@ -413,18 +415,18 @@ $querystart =
 
   //pop the first line of the results containing the tagtitle
   $row1 = $i->result->fetch_object();  
-  print $dd->startform();
-  print $dd->title($row1->title);
+  $r->t($dd->startform());
+  $r->t($dd->title($row1->title));
 
-  print "\n";
   while ($row = $i->result->fetch_object()) {
-    print $dd->line( $row->id,
+    $r->t( $dd->line( $row->id,
                      htmlspecialchars($row->href, ENT_COMPAT, 'UTF-8'),
                      html_entity_decode(strip_tags($row->display), ENT_NOQUOTES, 'UTF-8'),
                      htmlspecialchars($row->tags, ENT_COMPAT, 'UTF-8')
-                     ); // inner quotes supplied by sql
+                      )); // inner quotes supplied by sql
   }
-  print $dd->endform();
+  $r->t( $dd->endform());
+  return $r;
 }
 
 

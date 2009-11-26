@@ -91,6 +91,52 @@ class testOffolksotag extends  UnitTestCase {
                       'headcheck says the tag is still not there');
    }
 
+   function testGetTagResources() {
+     $r = getTagResources(new folksoQuery(array(),
+                                          array('folksotag' => 'tagone'),
+                                          array()),
+                          $this->cred,
+                          $this->dbc);
+     $this->assertIsA($r, folksoResponse,
+                      'problem w/ object creation');
+     $this->assertEqual(200, $r->status,
+                        sprintf('getting error msg with getTagResources: %d %s ',
+                                $r->status, $r->status_message));
+     $this->assertPattern('/example.com/', $r->body(),
+                          'Not finding url');
+
+     $rbad = getTagResources(new folksoQuery(array(),
+                                          array('folksotag' => 'emacs'),
+                                          array()),
+                          $this->cred,
+                          $this->dbc);
+
+     $this->assertEqual(404, $rbad->status,
+                        'bad tag should return 404');
+   }
+
+   function testFancyResource() {
+     $r = fancyResource(new folksoQuery(array(),
+                                        array('folksotag' => 'tagone'),
+                                        array()),
+                        $this->cred,
+                        $this->dbc);
+     $this->assertIsA($r, folksoResponse,
+                      'problem w/ object creation');
+     $this->assertEqual(200, $r->status,
+                        sprintf('getting error msg with getTagResources: %d %s ',
+                                $r->status, $r->status_message));
+
+     $this->assertPattern('/http:\/\/example.com\/1/',
+                          $r->body(),
+                          'Not getting url back');
+     $this->assertPattern('/tagtwo/',
+                          $r->body(),
+                          'Not getting tagtwo back');
+
+   }
+
+
 }//end class
 
 $test = &new testOffolksotag();
