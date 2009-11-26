@@ -327,9 +327,49 @@ class testOfResource extends  UnitTestCase {
      $this->assertPattern('/1234567890123/',
                           $cl->body(),
                           'Did not find ean13 data'. $cl->body());
-     
-
    }
+
+   function testModify() {
+     $cred = new folksoWsseCreds('zork'); 
+     /** setup oldean **/
+     $su = assocEan13(new folksoQuery(array(),
+                                array('folksores' => 'http://example.com/1',
+                                      'folksoean13' => '1234567890123'),
+                                      array()),
+                      $cred,
+                      new folksoDBconnect('localhost', 'tester_dude',
+                                          'testy', 'testostonomie'));
+     /** do the deed **/
+     $r = modifyEan13(new folksoQuery(array(),
+                                     array('folksores' => 'http://example.com/1',
+                                           'folksooldean13' => '1234567890123',
+                                           'folksonewean13' => '1111111111111'),
+                                     array()),
+                     $cred,
+                     new folksoDBconnect('localhost', 'tester_dude',
+                                         'testy', 'testostonomie'));
+     $this->assertIsA($r, folksoResponse,
+                      'not returning folksoReponse object');
+     $this->assertEqual($r->status, 200,
+                        'Error message on ean13 modification' . $r->status . $r->status_message . $r->body());
+     
+     $cl = getTagsIds(new folksoQuery(array(),
+                                            array('folksores' => 1,
+                                                  'folksoean13' => 1,
+                                                  'folksodatatype' => 'xml'),
+                                            array()),
+                            $cred,
+                            new folksoDBconnect('localhost', 'tester_dude',
+                                         'testy', 'testostonomie'));
+
+     $this->assertEqual(200, $cl->status,
+                        'Problem getting resource data back.');
+     $this->assertPattern('/111111111/', $cl->body(),
+                          'Not finding new ean13');
+     $this->assertNoPattern('/1234567/', $cl->body(),
+                            'Still finding old ean13');
+
+}
 
 
 }//end class

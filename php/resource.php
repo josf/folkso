@@ -649,9 +649,7 @@ function assocEan13 (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc
   
   /** check **/
   if (! ean13dataCheck($q->get_param('ean13'))) {
-    header('HTTP/1.1 406 Bad EAN13 data');
     $r->setError(406, "Bad EAN13 data",
-
                  "The folksoean13 field should consist of exactly 13 digits. "
                  . $q->get_param('ean13') . " is " . strlen($q->get_param('ean13')) . " long "
                  . is_numeric($q->get_param('ean13')) ? " and it is numeric " : " but it is not numeric " 
@@ -706,25 +704,24 @@ function assocEan13 (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc
  * Web params: POST, res, oldean13, newean13
  */
 function modifyEan13 (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
-
+    $r = new folksoResponse();
+    $i = new folksoDBinteract($dbc);
+    if ($i->db_error()) {
+      $r->dbConnectionError($i->error_info());
+      return $r;
+    }
+  
   if (! ean13dataCheck($q->get_param('newean13'))) {
-    header('HTTP/1.1 406 Bad EAN13 data');
-    print 
-      "The folksoean13 fields (old and new) should consist of up to 13 "
-      ."digits. "
-      . $q->get_param('oldean13') . " is " . strlen($get_param('oldean13')) . " long "
-      . "and " . $q->get_param('newean13') . " is " . strlen($get_param('newean13')) . " long "
-      ." \n\nPlease check your "
-      ."data before trying again.";
-    return;
+    $r->setError(406, 
+                 'Bad EAN13 data',
+                 "The folksoean13 fields (old and new) should consist of up to 13 "
+                 ."digits. "
+                 . $q->get_param('oldean13') . " is " . strlen($get_param('oldean13')) . " long "
+                 . "and " . $q->get_param('newean13') . " is " . strlen($get_param('newean13')) . " long "
+                 ." \n\nPlease check your data before trying again.");
+      return $r;
   }
   
-  $i = new folksoDBinteract($dbc);
-  if ($i->db_error()) {
-    header('HTTP/1.1 501 Database connection error');
-    die($i->error_info());
-  }
-
   $sql = 
     "UPDATE ean13 " 
     ."SET ean13 = " . $i->dbescape($q->get_param('newean13'));
@@ -742,18 +739,19 @@ function modifyEan13 (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $db
 
   $i->query($sql);
   if ($i->result_status == 'DBERR') {
-    header('HTTP/1.1 501 Database query error');
-    die($i->error_info());
+    $r->dbQueryError($i->error_info());
   }
   elseif ($i->affected_rows == 0) {
-    header('HTTP/1.1 404 Resource/EAN13  not found');
-    print "The combination resource + ean13 was not found.";
-    return;
+    $r->setError(404, 
+                 'Resource/EAN13  not found',
+                 "The combination resource + ean13 was not found.");
+
   }
   else {
-    header('HTTP/1.1 200 Modified');
-    print "The EAN13 information was successfully modified.\n\nHave a nice day.";
+    $r->setOk(200, 'Modified');
+    $r->t("The EAN13 information was successfully modified.\n\nHave a nice day.");
   }
+  return $r;
 }
 
 /**
