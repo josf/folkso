@@ -57,7 +57,7 @@ $srv->addResponseObj(new folksoResponder('get',
 
 $srv->addResponseObj(new folksoResponder('head',
                                         array('required' => array('tag')),
-                                        'headCheckTagDo'));
+                                        'headCheckTag'));
 $srv->addResponseObj(new folksoResponder('get',
                                         array('required' => array('alltags')),
                                         'allTags'));
@@ -100,11 +100,12 @@ $srv->Respond();
  * HEAD, tag
  *
  */
-function headCheckTagDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+function headCheckTag (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+  $r = new folksoResponse();
   $i = new folksoDBinteract($dbc);
   if ($i->db_error()) {
-    header('HTTP/1.1 501 Database error');
-    die($i->error_info());
+    $r->dbConnectionError($i->error_info());
+    return $r;
   }
 
   $i->query("select id from tag where tagnorm = normalize_tag('" .
@@ -114,20 +115,23 @@ function headCheckTagDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect 
   
   switch ($i->result_status) {
   case 'DBERR':
-    header('HTTP/1.1 501 Database error');
-    die($i->error_info());
+    $r->dbQueryError($i->error_info());
+    return $r;
     break;
   case 'NOROWS':
-    header('HTTP/1.1 404 Tag does not exist');
-    die('The tag '. $q->get_param('tag') . ' is not present in our database.');
+    $r->setError(404, 'Tag does not exist',
+                 'The tag '. $q->get_param('tag') 
+                 . ' is not present in our database.');
+    return $r;
     break;
   case 'OK':
-    header('HTTP/1.1 200 Tag exists');
+    $r->setOk(200, 'Tag exists');
     $id = 0;
     while ($row = $i->result->fetch_object()) {
       $id = $row->id;
     }
-    header("X-Folkso-Tagid: " . $id);
+    $r->addHeader("X-Folkso-Tagid: " . $id);
+    return $r;
   }
 }
 
