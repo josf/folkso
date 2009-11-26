@@ -361,7 +361,6 @@ class testOfResource extends  UnitTestCase {
                             $cred,
                             new folksoDBconnect('localhost', 'tester_dude',
                                          'testy', 'testostonomie'));
-
      $this->assertEqual(200, $cl->status,
                         'Problem getting resource data back.');
      $this->assertPattern('/111111111/', $cl->body(),
@@ -370,6 +369,45 @@ class testOfResource extends  UnitTestCase {
                             'Still finding old ean13');
 
 }
+
+
+   function testDeleteEan13 () {
+     $cred = new folksoWsseCreds('zork'); 
+     /** setup oldean **/
+     $su = assocEan13(new folksoQuery(array(),
+                                array('folksores' => 'http://example.com/1',
+                                      'folksoean13' => '1234567890123'),
+                                      array()),
+                      $cred,
+                      new folksoDBconnect('localhost', 'tester_dude',
+                                          'testy', 'testostonomie'));
+     /** do the deed **/
+     $r = deleteEan13(new folksoQuery(array(),
+                                     array('folksores' => 'http://example.com/1',
+                                           'folksoean13' => '1234567890123'),
+                                     array()),
+                     $cred,
+                     new folksoDBconnect('localhost', 'tester_dude',
+                                         'testy', 'testostonomie'));
+     $this->assertIsA($r, folksoResponse,
+                      'not returning folksoReponse object');
+     $this->assertEqual(200, $r->status,
+                        sprintf('Error returned on ean deletion %d %s <br/>%s',
+                                $r->status, $r->status_message, $r->body())
+                        );
+
+     $cl = getTagsIds(new folksoQuery(array(),
+                                            array('folksores' => 1,
+                                                  'folksoean13' => 1,
+                                                  'folksodatatype' => 'xml'),
+                                            array()),
+                            $cred,
+                            new folksoDBconnect('localhost', 'tester_dude',
+                                         'testy', 'testostonomie'));
+     $this->assertNoPattern('/1234567/', $cl->body(),
+                            'Still finding old ean13');
+
+   }
 
 
 }//end class

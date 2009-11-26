@@ -758,19 +758,19 @@ function modifyEan13 (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $db
  * Delete EAN13 information from a resource.
  */
 function deleteEan13 (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
-  if (! ean13dataCheck($q->get_param('ean13'))) {
-    header('HTTP/1.1 406 Bad EAN13 data');
-    print 
-      "The folksoean13 field should consist of exactly 13 digits. "
-      ."\n\nPlease check your "
-      ."data before trying again.";
-    return;
-  }
-
+  $r = new folksoResponse();
   $i = new folksoDBinteract($dbc);
   if ($i->db_error()) {
-    header('HTTP/1.0 501 Database connection error');
-    die($i->error_info());
+    $r->dbConnectionError($i->error_info());
+    return $r;
+  }
+
+  if (! ean13dataCheck($q->get_param('ean13'))) {
+    $r->setError(406, 'Bad EAN13 data',
+                 "The folksoean13 field should consist of exactly 13 digits. "
+                 ."\n\nPlease check your "
+                 ."data before trying again.");
+    return $r;
   }
 
   $sql = 
@@ -789,23 +789,20 @@ function deleteEan13 (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $db
   $i->query($sql);
 
   if ($i->result_status == 'DBERR') {
-    header('HTTP/1.1 501 Database insert error');
-    die($i->error_info());
+    $r->dbQueryError($i->error_info());
   }
   else {
     if ($i->affected_rows == 0) {
-      header('HTTP/1.1 404 Resource/EAN13 not found');
-      print 
-        "The combination resource + EAN13 could not be found. "
-        ."Nothing was deleted.";
-      return;
+      $r->setError(404, 'Resource/EAN13 not found',
+                   "The combination resource + EAN13 could not be found. "
+                   ."Nothing was deleted.");
     }
     else {
-      header('HTTP/1.1 200 Deleted');
-      print "The EAN13 information was deleted";
-      return;
+      $r->setOk(200, 'Deleted');
+      $r->t( "The EAN13 information was deleted");
     }
   }
+  return $r;
 }
 
 
