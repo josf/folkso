@@ -49,7 +49,7 @@ $srv->addResponseObj(new folksoResponder('post',
 
 $srv->addResponseObj(new folksoResponder('get', 
                                         array('required' => array('autotag')),
-                                        'autoCompleteTagsDo'));
+                                        'autoCompleteTags'));
 
 $srv->addResponseObj(new folksoResponder('get',
                                         array('required' => array('byalpha')),
@@ -433,39 +433,43 @@ $querystart =
 /** 
  * GET, autotag
  */
-function autoCompleteTagsDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+function autoCompleteTags (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+  $r = new folksoResponse();
+  $i = new folksoDBinteract($dbc);
+  if ($i->db_error()) {
+    $r->dbConnectionError($i->error_info());
+    return $r;
+  }
+
   $req = substr($q->get_param('autotag'), 0, 3);
   
-  $db = $dbc->db_obj();
-  $result = $db->query("select tagdisplay
+  $i->query("select tagdisplay
                         from tag
                         where tagdisplay like '" .
-                       $db->real_escape_string($req) .
-                       "%'");
+            $i->dbescape($req) .
+            "%'");
 
-  if ($db->errno <> 0) {
-    header('HTTP/1.1 501');
-    printf("Statement failed %d: (%s) %s\n", 
-           $db->errno, $db->sqlstate, $db->error);
-    return;
-  }
-  elseif ($result->num_rows > 0) {
-    header('HTTP/1.1 200');
-
+  switch ($i->result_status){
+  case 'DBERR':
+    $r->dbQueryError($i->error_info());
+    return $r;
+    break;
+  case 'OK':
+    $r->setOk(200, 'Tags found');
     $df = new folksoDisplayFactory();
     $dd = $df->singleElementList();
     $dd->activate_style('xhtml');
 
-    print $dd->startform();
-    while($row = $result->fetch_object()) {
-      print $dd->line($row->tagdisplay) . "\n";
+    $r->t($dd->startform());
+    while($row = $i->result->fetch_object()) {
+      $r->t($dd->line($row->tagdisplay) . "\n");
     }
-    print $dd->endform();
-    return;
-  }
-  else {
-    header('HTTP/1.1 204 No rows');
-    return;
+    $r->t($dd->endform());
+    return $r;
+    break;
+  case 'NOROWS':
+    $r->setOk(204, 'No tags');
+    return $r;
   }
 }
 

@@ -124,7 +124,7 @@ class testOffolksotag extends  UnitTestCase {
      $this->assertIsA($r, folksoResponse,
                       'problem w/ object creation');
      $this->assertEqual(200, $r->status,
-                        sprintf('getting error msg with getTagResources: %d %s ',
+                        sprintf('getting error msg with fancyResource: %d %s ',
                                 $r->status, $r->status_message));
 
      $this->assertPattern('/http:\/\/example.com\/1/',
@@ -133,6 +133,22 @@ class testOffolksotag extends  UnitTestCase {
      $this->assertPattern('/tagtwo/',
                           $r->body(),
                           'Not getting tagtwo back');
+
+   }
+
+   function testAutoCompleteTags() {
+     $r = autoCompleteTags(new folksoQuery(array(),
+                                           array('folksoautotag' => 't'),
+                                           array()),
+                           $this->cred,
+                           $this->dbc);
+     $this->assertIsA($r, folksoResponse,
+                      'problem w/ object creation');
+     $this->assertEqual(200, $r->status,
+                        sprintf('getting error msg with autocompleteTags: %d %s',
+                                $r->status, $r->status_message));
+
+
 
    }
 
