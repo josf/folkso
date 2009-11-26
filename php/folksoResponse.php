@@ -138,6 +138,7 @@ class folksoResponse {
     if ($this->errorDeclared) {
       return true;
     }
+    return $false;
   }
 
   public function setType($str) {
