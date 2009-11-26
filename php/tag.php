@@ -37,7 +37,7 @@ $srv->addResponseObj(new folksoResponder('get',
                                         array('required_single' => 
                                               array('tag', 
                                                     'resources')),
-                                        'getTagResourcesDo'));
+                                        'getTagResources'));
 
 $srv->addResponseObj(new folksoResponder('get', 
                                         array('required' => array('tag')),
@@ -45,7 +45,7 @@ $srv->addResponseObj(new folksoResponder('get',
 
 $srv->addResponseObj(new folksoResponder('post',
                                         array('required_single' => array('newtag')),
-                                        'singlePostTagDo'));
+                                        'singlePostTag'));
 
 $srv->addResponseObj(new folksoResponder('get', 
                                         array('required' => array('autotag')),
@@ -197,26 +197,24 @@ function getTag (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
  * 
  * Currently supports xhtml and xml dataformats.
  */
-function getTagResourcesDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+function getTagResources (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+  $r = new folksoResponse();
   $i = new folksoDBinteract($dbc);
-
-  if ( $i->db_error() ) {
-    header('HTTP/1.1 501 Database problem');
-    print $i->error_info() . "\n";
-    return;
+  if ($i->db_error()) {
+    $r->dbConnectionError($i->error_info());
+    return $r;
   }
 
   // check to see if tag exists -- can this be done with the main query instead?
   if (!$i->tagp($q->tag)) {
     if ($i->db_error()) {
-      header('HTTP/1.0 501 Database problem');
-      print $i->error_info() . "\n";
-      return;
+      $r->dbQueryError($i->error_info());
+      return $r;
     }
     else {
-      header('HTTP/1.1 404 Tag not found');
-      print $q->tag . " does not exist in the database";
-      return;
+      $r->setError(404, 'Tag not found',
+                   $q->tag . " does not exist in the database");
+      return $r;
     }
   }
     
@@ -257,18 +255,17 @@ function getTagResourcesDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconne
   $i->query($querybase);
   switch ($i->result_status) {
   case 'DBERR':
-    header('HTTP/1.1 501 Database error');
-    print $i->error_info() . "\n";
-    return;
+    $r->dbQueryError($i->error_info());
+    return $r;
     break;
   case 'NOROWS':
-    header('HTTP/1.1 204 No resources associated with  tag');
-    print "No resources are currently associated with " . 
-      $q->tag;
-    return;
+    $r->setOk(204, 'No resources associated with  tag');
+    $r->t( "No resources are currently associated with " .
+           $q->tag);
+    return $r;
     break;
   case 'OK':
-    header('HTTP/1.1 200');
+    $r->setOk(200, 'Tag found');
     break; // now we do the rest, assuming all is well.
   }
 
@@ -281,14 +278,15 @@ function getTagResourcesDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconne
   else {
     $dd->activate_style('xml');
   }
-  print $dd->startform();
+  $r->t($dd->startform());
   while ($row = $i->result->fetch_object()) {
-    print $dd->line( $row->id, 
+    $r->t($dd->line( $row->id, 
                      $row->href, 
                      array('xml' => $row->display,
-                           'default' => $row->display));
+                           'default' => $row->display)));
   }
-  print $dd->endform();
+  $r->t($dd->endform());
+  return $r;
 }
 /*                           html_entity_decode(strip_tags($row->display), 
                                               ENT_NOQUOTES, 
@@ -299,30 +297,31 @@ function getTagResourcesDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconne
  * POST, newtag
  *
  */
-function singlePostTagDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+function singlePostTag (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+  $r = new folksoResponse();
   $i = new folksoDBinteract($dbc);
-  if ( $i->db_error() ) {
-    header('HTTP/1.1 501 Database problem');
-    die( $i->error_info());
+  if ($i->db_error()) {
+    $r->dbConnectionError($i->error_info());
+    return $r;
   }
 
-$sql = 
-  "CALL new_tag('" . 
-  $i->dbescape(stripslashes($q->get_param('folksonewtag'))) . "')";
-
+  $sql = 
+    "CALL new_tag('" . 
+    $i->dbescape(stripslashes($q->get_param('folksonewtag'))) . "')";
   $i->query($sql);
 
-switch ($i->result_status) {
-case 'DBERR':
-    header('HTTP/1.1 501 Database query error');
-    die($i->error_info());
+  switch ($i->result_status) {
+  case 'DBERR':
+    $r->dbQueryError($i->error_info());
+    return $r;
     break;
-case 'OK':
-  header('HTTP/1.1 201 Tag created'); // should add a "location" header
-  while($row = $i->result->fetch_object()) {
-    header('X-Folksonomie-Newtag: ' . $row->id);
-    print "Tag created (or already existed), id is ".$row->id . ' : ' . $q->get_param('newtag') ;
-  }
+  case 'OK':
+    $r->setOk(201, 'Tag created');
+    $row = $i->result->fetch_object();
+    $r->addHeader('X-Folksonomie-Newtag: ' . $row->tagnorm);
+    $r->t("Tag created (or already existed), id is " 
+          . $row->id . ' : ' . $q->get_param('newtag'));
+  return $r;
   }
 }
 

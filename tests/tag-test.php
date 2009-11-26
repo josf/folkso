@@ -59,6 +59,37 @@ class testOffolksotag extends  UnitTestCase {
 
    }
 
+   function testSinglePostTag() {
+     $r = singlePostTag(new folksoQuery(array(),
+                                 array('folksonewtag' => 'emacs'),
+                                 array()),
+                 $this->cred,
+                 $this->dbc);
+
+     $this->assertIsA($r, folksoResponse,
+                      'Problem with object creation');
+     $this->assertEqual($r->status,
+                        201,
+                        'Tag creation returning error: ' . $r->status);
+     $t = getTag(new folksoQuery(array(),
+                                 array('folksotag' => 'emacs'),
+                                 array()),
+                 $this->cred,
+                 new folksoDBconnect('localhost', 'tester_dude', 
+                                     'testy', 'testostonomie'));
+
+     $this->assertEqual(200, $t->status,
+                        'New tag not created: ' . $t->status . $t->status_message);
+   $h = headCheckTag(new folksoQuery(array(),
+                                       array('folksotag' => 'tagone'),
+                                       array()),
+                       $this->cred,
+                     new folksoDBconnect('localhost', 'tester_dude', 
+                                         'testy', 'testostonomie'));
+
+   $this->assertEqual($h->status, 200,
+                      'headcheck says the tag is still not there');
+   }
 
 }//end class
 
