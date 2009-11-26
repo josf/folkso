@@ -41,7 +41,7 @@ $srv->addResponseObj(new folksoResponder('get',
 
 $srv->addResponseObj(new folksoResponder('get', 
                                         array('required' => array('tag')),
-                                        'getTagDo'));
+                                        'getTag'));
 
 $srv->addResponseObj(new folksoResponder('post',
                                         array('required_single' => array('newtag')),
@@ -144,14 +144,13 @@ function headCheckTag (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $d
  * return the display version of the tag.
  *
  */
-function getTagDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+function getTag (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+  $r = new folksoResponse();
   $i = new folksoDBinteract($dbc);
-
   if ($i->db_error()) {
-    header('HTTP/1.1 501 Database problem');
-    die( $i->error_info());
+    $r->dbConnectionError($i->error_info());
+    return $r;
   }
-
   $query = 'SELECT tagdisplay FROM tag WHERE ';
 
   if (is_numeric($q->tag)) {
@@ -164,26 +163,28 @@ function getTagDo (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) 
 
   switch ($i->result_status) {
   case 'DBERR':
-    header('HTTP/1.1 501 Database error');
-    die( $i->error_info());
+    $r->dbQueryError($i->error_info());
+    return $r;
     break;
   case 'NOROWS':
-    header('HTTP/1.1 404 Tag not found');
-    die('The tag ' . $q->tag . ' was not found');
+    $r->setError(404, 'Tag not found',
+                 'The tag ' . $q->tag . ' was not found');
+    return $r;
     break;
   case 'OK':
-    header('HTTP/1.1 200');
+    $r->setOk(200, 'Found');
     break;
   }
 
   $df = new folksoDisplayFactory();
   $disp = $df->singleElementList();
   $disp->activate_style('xml');
-  print $disp->startform();
+  $r->t($disp->startform());
   while($row = $i->result->fetch_object()) {
-    print $disp->line($row->tagdisplay);
+    $r->t($disp->line($row->tagdisplay));
   }
-  print $disp->endform();
+  $r->t( $disp->endform());
+  return $r;
 }
 
 /**
