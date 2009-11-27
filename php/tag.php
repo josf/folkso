@@ -484,10 +484,11 @@ function autoCompleteTags (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnec
  */
 
 function tagMerge (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+  $r = new folksoResponse();
   $i = new folksoDBinteract($dbc);
-  if ( $i->db_error() ) {
-    header('HTTP/1.1 501 Database connection problem');
-    die($i->error_info());
+  if ($i->db_error()) {
+    $r->dbConnectionError($i->error_info());
+    return $r;
   }
 
   /* build query. all the funny quote marks are there because the
@@ -512,36 +513,35 @@ function tagMerge (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) 
   $i->query("CALL TAGMERGE($source_part, $target_part)");
   
   if ($i->result_status == 'DBERR') {
-    header('HTTP/1.1 501 Database error');
-    die($i->error_info());
+    $r->dbQueryError($i->error_info());
   }
   else {
     $row = $i->result->fetch_object();
-    $status = $row->status;
     $newid = $row->newid;
-    switch ($status) {
+    switch ($row->status) {
     case 'OK':
-      header('HTTP/1.1 204 Merge successful');
-      print $i->first_val('status');
-      header('X-Folksonomie-TargetId: ' . $newid);
-      return;
+      $r->setOk(204, 'Merge successful');
+      $r->t( $i->first_val('status'));
+      $r->addHeader('X-Folksonomie-TargetId: ' . $newid);
       break;
     case 'NOTARGET':
-      header('HTTP/1.1 404 Invalid target tag');
-      print $status;
-      die($q->get_param('target') . 
-          " is not present in the database. Merge not accomplished.");
+      $r->setError(404, 'Invalid target tag', 
+                   $status .
+                   $q->get_param('target') . 
+                   " is not present in the database. Merge not accomplished.");
       break;
     case 'NOSOURCE':
-      header('HTTP/1.1 404 Invalid source tag');
-      die($q->res . 
-          " is not present in the database. Merge not accomplished.");
+      $r->setError(404, 'Invalid source tag',
+                   $q->res . 
+                   " is not present in the database. Merge not accomplished.");
       break;
+    default:
+      $r->setError(500, 'Strange server error',
+                   "fv: ". $status .
+                   'This should not have happened.' . $row->status);
     }
-    header('HTTP/1.1 501 Strange server error');
-    print "fv: ". $status;
-    die('This should not have happened.');
   }
+  return $r;
 }
 
 /**

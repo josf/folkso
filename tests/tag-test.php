@@ -14,6 +14,10 @@ class testOffolksotag extends  UnitTestCase {
         before starting. **/
      $this->dbc = new folksoDBconnect('localhost', 'tester_dude', 
                                       'testy', 'testostonomie');
+     $this->dbc2 = new folksoDBconnect('localhost', 'tester_dude', 
+                                      'testy', 'testostonomie');
+     $this->db3 = new folksoDBconnect('localhost', 'tester_dude', 
+                                      'testy', 'testostonomie');
      $this->cred = new folksoWsseCreds('zork');
   }
 
@@ -147,7 +151,40 @@ class testOffolksotag extends  UnitTestCase {
      $this->assertEqual(200, $r->status,
                         sprintf('getting error msg with autocompleteTags: %d %s',
                                 $r->status, $r->status_message));
+   }
 
+   function testTagMerge() {
+     $r = tagMerge(new folksoQuery(array(),
+                                   array('folksotag' => 'tagone',
+                                         'folksotarget' => 'tagtwo'),
+                                   array()),
+                   $this->cred,
+                   $this->dbc);
+     $this->assertIsA($r, folksoResponse,
+                      'Problem with object creation');
+     $this->assertEqual(204, $r->status,
+                        sprintf('tagmerge returns error: %d %s %s',
+                                $r->status, $r->status_message, $r->body()));
+     $h = headCheckTag(new folksoQuery(array(),
+                                       array('folksotag' => 'tagone'),
+                                       array()),
+                       $this->cred,
+                       new folksoDBconnect('localhost', 'tester_dude', 
+                                         'testy', 'testostonomie'));
+
+     $this->assertEqual(404, $h->status,
+                        'tagone tag should not exist after merge');
+     $rbad = tagMerge(new folksoQuery(array(),
+                                      array('folksotag' => 'tagone',
+                                            'folksotarget' => 'emacs'),
+                                      array()),
+                      $this->cred,
+                      $this->dbc2);
+     $this->assertEqual(404, $rbad->status,
+                        sprintf('fake tag should return 404: %s %s %s',
+                                $rbad->status,
+                                $rbad->status_message,
+                                $rbad->body()));
 
 
    }
