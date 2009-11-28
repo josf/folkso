@@ -41,7 +41,7 @@ $srv->addResponseObj(new folksoResponder('get',
                                         'getTagResources'));
 
 
-$srv->addResponseObj(new folksoResponse('get', 
+$srv->addResponseObj(new folksoResponder('get', 
                                         array('required' => array('tag'),
                                               'exclude' => array('related')),
                                         'getTag'));
@@ -54,11 +54,11 @@ $srv->addResponseObj(new folksoResponder('get',
                                         array('required' => array('autotag')),
                                         'autoCompleteTags'));
 
-$srv->addResponseObj(new folksoResponse('get',
+$srv->addResponseObj(new folksoResponder('get',
                                         array('required' => array('related')),
                                         'relatedTags'));
                      
-$srv->addResponseObj(new folksoResponse('get',
+$srv->addResponseObj(new folksoResponder('get',
                                         array('required' => array('byalpha')),
                                         'byalpha'));
 
