@@ -8,7 +8,7 @@
    */
 
 require_once('folksoTagdata.php');
-
+require_once('folksoClient.php');
   /**
    *
    * Cloud objects for use through folksoPage and more specifically
@@ -36,7 +36,7 @@ public $loc;
                           $cloudtype = '') {
 
 
-    $fc = new folksoClient('localhost', 
+    $fc = new folksoClient($this->loc->web_url,
                            $this->loc->server_web_path . 'resource.php',
                            'GET');
 

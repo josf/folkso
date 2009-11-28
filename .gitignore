@@ -37,3 +37,5 @@ folksologfile
 /tests/GRTAGS
 /tests/GSYMS
 /tests/GTAGS
+/php/#folksoTagdata.php#
+/php/.#folksoTagdata.php

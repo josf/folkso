@@ -52,7 +52,7 @@ class folksoEanList extends folksoTagdata {
                           $meta_only = false,
                           $cloudtype = '') {
 
-    $fc = new folksoClient('localhost', 
+    $fc = new folksoClient($this->loc->web_url,
                            $this->loc->server_web_path . 'resource.php',
                            'GET');
 

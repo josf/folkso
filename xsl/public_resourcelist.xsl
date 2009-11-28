@@ -10,10 +10,11 @@
 
     
   <xsl:template match="tagtitle">
-    <xsl:element name="h2">
+<!--    <xsl:element name="h2">
       <xsl:attribute name="class">tagtitle</xsl:attribute>
       <xsl:value-of select="."/>
     </xsl:element>
+-->
   </xsl:template>
 
 
