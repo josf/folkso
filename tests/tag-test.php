@@ -210,6 +210,22 @@ class testOffolksotag extends  UnitTestCase {
                   $this->cred,
                   $this->dbc);
 
+     $this->assertIsA($r, folksoResponse,
+                      'problem with object creation');
+     $this->assertEqual($r->status, 200,
+                        'byalpha not returning 200');
+     $this->assertPattern('/tagone/', $r->body(),
+                          'Body odes not include tagone');
+     $r2 = byalpha(new folksoQuery(array(),
+                                   array('folksobyalpha' => 'zor'),
+                                   array()),
+                   $this->cred,
+                   $this->dbc2);
+     $this->assertEqual(204, 
+                        $r2->status,
+                        sprintf('No corresponding tags should be a 204 %s %s %s',
+                                $r2->status, $r2->status_message, $r2->body()));
+
    }
 
 }//end class
