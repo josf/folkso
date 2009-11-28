@@ -673,15 +673,17 @@ function byalpha (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
  * 
  */
 function renameTag (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+  $r = new folksoResponse();
   $i = new folksoDBinteract($dbc);
   if ($i->db_error()) {
-    header('HTTP/1.1 501 Database connection problem');
-    die($i->error_info());
+    $r->dbConnectionError($i->error_info());
+    return $r;
   }
 
   if (!$i->tagp($q->tag)) {
-    header('HTTP/1.1 404 Tag not found');
-    die('Nothing to rename. No such tag: ' . $q->tag);
+    $r->setError(404, 'Tag not found',
+                 'Nothing to rename. No such tag: ' . $q->tag);
+    return $r;
   }
 
   $query = "UPDATE tag
@@ -699,12 +701,11 @@ function renameTag (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc)
   }
   $i->query($query);
   if ($i->result_status == 'DBERR') {
-    header('HTTP/1.1 501 Database error');
-    die($i->error_info());
+    $r->dbQueryError($i->error_info());
   }
   else {
-    header('HTTP/1.1 204 Tag renamed');
-    return;
+    $r->setOk(204, 'Tag renamed');
+    return $r;
   }
 }
 

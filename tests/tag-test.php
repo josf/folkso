@@ -16,7 +16,7 @@ class testOffolksotag extends  UnitTestCase {
                                       'testy', 'testostonomie');
      $this->dbc2 = new folksoDBconnect('localhost', 'tester_dude', 
                                       'testy', 'testostonomie');
-     $this->db3 = new folksoDBconnect('localhost', 'tester_dude', 
+     $this->dbc3 =new folksoDBconnect('localhost', 'tester_dude', 
                                       'testy', 'testostonomie');
      $this->cred = new folksoWsseCreds('zork');
   }
@@ -226,6 +226,34 @@ class testOffolksotag extends  UnitTestCase {
                         sprintf('No corresponding tags should be a 204 %s %s %s',
                                 $r2->status, $r2->status_message, $r2->body()));
 
+   }
+
+   function testRenameTag(){
+     $r = renameTag(new folksoQuery(array(),
+                                    array('folksonewname' => 'emacs',
+                                          'folksotag' => 'tagone'),
+                                    array()),
+                    $this->cred,
+                    $this->dbc);
+     $this->assertIsA($r, folksoResponse,
+                      'Problem with object creation');
+     $this->assertEqual(204, $r->status,
+                        'tag rename should return 204');
+     
+     $h = headCheckTag(new folksoQuery(array(),
+                                       array('folksotag' => 'emacs'),
+                                       array()),
+                       $this->cred,
+                       $this->dbc2);
+     $this->assertEqual($h->status, 200,
+                        'No tag with new tag name');
+     $h2 = headCheckTag(new folksoQuery(array(),
+                                        array('folksotag' => 'tagone'),
+                                        array()),
+                        $this->cred,
+                        $this->dbc3);
+     $this->assertEqual($h2->status, 404,
+                        'Old tag name is still present');
    }
 
 }//end class
