@@ -189,6 +189,28 @@ class testOffolksotag extends  UnitTestCase {
 
    }
 
+   function testDeleteTag() {
+     $r = deleteTag(new folksoQuery(array(),
+                                    array('folksotag' => 'tagone'),
+                                    array()),
+                    $this->cred, 
+                    $this->dbc);
+     $this->assertIsA($r, folksoResponse,
+                      'problem with object creation');
+     $this->assertEqual(204, $r->status,
+                        sprintf('deleteTag returning error %s %s %s',
+                                $r->status, 
+                                $r->status_message,
+                                $r->body()));
+   }
+   function testByAlpha(){
+     $r = byalpha(new folksoQuery(array(),
+                                  array('folksobyalpha' => 'ta'),
+                                  array()),
+                  $this->cred,
+                  $this->dbc);
+
+   }
 
 }//end class
 

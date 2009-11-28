@@ -552,26 +552,24 @@ function tagMerge (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) 
  * 404 on tag not found. 204 on success.
  */
 function deleteTag  (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+  $r = new folksoResponse();
   $i = new folksoDBinteract($dbc);
-
-  if ( $i->db_error() ) {
-    header('HTTP/1.1 501 Database problem');
-    print $i->error_info() . "\n";
-    return;
+  if ($i->db_error()) {
+    $r->dbConnectionError($i->error_info());
+    return $r;
   }
 
   /* Check to see if tag is there. This might not be necessary: if the
    * tag does not exist, we just continue */
   if (!$i->tagp($q->tag)) {
     if ($i->db_error()) {
-      header('HTTP/1.1 501 Database problem');
-      die($i->error_info());
+      $r->dbQueryError($i->error_info());
     }
     else {
-      header('HTTP/1.1 404 Could not delete - tag not found');
-      print $q->tag . " does not exist in the database";
-      return;
+      $r->setError(404, 'Could not delete - tag not found',
+                   $q->tag . " does not exist in the database");
     }
+    return $r;
   }
 
   // delete 1 : remove tagevents
@@ -584,26 +582,27 @@ function deleteTag  (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc
     $delete2 .= ' WHERE id='. $q->tag;
   }
   else {
-    $delete1 .= " DELETE tagevent ".
-      " FROM tagevent JOIN tag ON tagevent.tag_id = tag.id".
-      "WHERE tag.tagnorm = normalize_tag('" . $i->dbescape($q->tag) . "')";    
+    $delete1 .= " DELETE  "
+      ." FROM tagevent USING tag, tagevent "
+      ." where tag.id = tagevent.tag_id and "
+      ." tag.tagnorm = normalize_tag('" . $i->dbescape($q->tag) . "')";    
 
     $delete2 .= " WHERE tagnorm = normalize_tag('" . $i->dbescape($q->tag) . "')";
   }
 
   $i->query($delete1); // delete tagevent
   if ($i->result_status ==  'DBERR') {
-    header('HTTP/1.1 501 Database error');
-    die("Initial tagevent delete failed " . $i->error_info());
+    $r->dbQueryError($i->error_info());
+    return $r;
   }
-
   $i->query($delete2); // delete tag
   if ($i->result_status ==  'DBERR') {
-    header('HTTP/1.1 501 Database error');
-    die("Secondary delete failed ". $i->error_info());
+    $r->setError(500, 'Database error',
+                 "Secondary delete failed ". $i->error_info());
+    return $r;
   }
-
-  header('HTTP/1.1 204 Tag deleted');
+  $r->setOk(204, 'Tag deleted');
+  return $r;
 }
 
 /**
@@ -615,16 +614,16 @@ function deleteTag  (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc
  *
  */
 function byalpha (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+  $r = new folksoResponse();
   $i = new folksoDBinteract($dbc);
   if ($i->db_error()) {
-    header('HTTP/1.1 501 Database connection problem');
-    die($i->error_info());
+    $r->dbConnectionError($i->error_info());
+    return $r;
   }
   
   $alpha = substr($q->get_param('byalpha'), 0, 1);
-  
-  $al = new folksoAlpha();
 
+  $al = new folksoAlpha();
   // we are not going to escape anything because only one-character
   // strings are allowed.
   $ors = $al->SQLgroup($al->lettergroup($alpha), "tagnorm"); 
@@ -640,33 +639,31 @@ function byalpha (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
   $i->query($query);
   switch ($i->result_status) {
   case 'DBERR':
-    header('HTTP/1.1 501 Database error');
-    die($i->error_info());
+    $r->dbQueryError($i->error_info());
     break;
   case 'NOROWS':
-    header('HTTP/1.1 204 No matching tags');
-    return;
+    $r->setOk(204, 'No matching tags');
     break;
   case 'OK':
-    header('HTTP/1.1 200 Ok');
+    $r->setOk(200, 'OK');
+
+    // assuming everything is ok (200)
+    $df = new folksoDisplayFactory();
+    $dd = $df->TagList();
+    $dd->activate_style('xml');
+    $r->setType('xml');
+    $r->t($dd->startform());
+    while ($row = $i->result->fetch_object()) {
+      $r->t($dd->line($row->id, 
+                      $row->tagnorm,
+                      $row->tagdisplay,
+                      $row->popularity,
+                      '') . "\n"); // empty field because there are no metatags here
+    }
+    $r->t($dd->endform());
     break;
   }
-
-  // assuming everything is ok (200)
-  $df = new folksoDisplayFactory();
-  $dd = $df->TagList();
-  $dd->activate_style('xml');
-    header('Content-Type: text/xml');
-  print $dd->startform();
-  while ($row = $i->result->fetch_object()) {
-    print $dd->line($row->id, 
-                    $row->tagnorm,
-                    $row->tagdisplay,
-                    $row->popularity,
-                    '') . "\n"; // empty field because there are no metatags here
-  }
-   print $dd->endform();
-  return;
+  return $r;
 }
 
 /**
