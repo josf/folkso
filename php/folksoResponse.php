@@ -1,186 +1,245 @@
 <?php
 
+/**
+ * @package Folkso
+ * @author Joseph Fahey
+ * @copyright 2009 Gnu Public Licence (GPL)
+ * @subpackage Tagserv
+ */
 
-  /**
-   * folksoResponse provides objects to be used as args to the
-   * addResponseObj method in folksoServer.php. Each object must
-   * contain a test function and an "action" function. The test
-   * function is called to determine if the action function should be
-   * called or not.
-   *
-   * Both test and action functions receive folksoQuery objects as
-   * mandatory arguments. Test functions must return either true or
-   * false. Action functions should provide a document of some sort to
-   * return and probably should provide a status code.
-   *
-   * @package Folkso
-   * @author Joseph Fahey
-   * @copyright 2008 Gnu Public Licence (GPL)
-   * @subpackage Tagserv
-   */
+/**
+ * @package Folkso
+ * 
+ */
+require_once('folksoTags.php');
 
-  /**
-   * @package Folkso
-   */
 class folksoResponse {
 
-  public $test_func;
-  public $action_func;
+  public $status;
+  public $statusMessage;
+  private $errorDeclared;
+  private $body;
+  public $error_body;
+  public $headers;
 
   /**
-   * The required method for this response. Should always be in
-   * lowercase.
+   * Special headers added before header preparation.
    */
-  public $method;
-  protected $activate_params;
+  public $preheaders;
+  public $debug;
+
+  private $httpStatus = array(200 => '0K', 
+                              201 => 'Created',
+                              202 => 'Accepted',
+                              203 => 'Non-Authoritative Information',
+                              204 => 'No Content',
+                              205 => 'Reset content',
+                              303 => 'See Also',
+                              304 => 'Not Modified',
+                              400 => 'Bad Request',
+                              401 => 'Unauthorized',
+                              403 => 'Forbidden',
+                              404 => 'Not Found',
+                              405 => 'Method Not Allowed',
+                              406 => 'Not Acceptable',
+                              409 => 'Conflict',
+                              500 => 'Internal Server Error',
+                              501 => 'Not Implemented'
+                              );
 
   /**
-   * @param string $method The method that this Response will respond
-   * to.  
-   *
-   * @param associative array $params An associative array of
-   * arrays. The four possible keys are 'required', 'oneof',
-   * 'required_single', and 'required_multiple'. The key or keys
-   * present must contain a linear array of field names (not
-   * necessarily preceded by 'folkso'). If just one of the fields in
-   * the 'oneof' array are present in the query, the query will be
-   * considered valid (provided that the other conditions from the
-   * 'required*' arrays are met, if present).
-   *
-   * @param function $action_func This function will be called if this
-   * response is activated.
+   * Internal representation of output content type. One of 'xml',
+   * 'text', 'html'...
    */
-  function __construct ($method, $params, $action_func) {
-    $this->method = strtolower($method);
-    $this->action_func = $action_func;
-    $this->activate_params = $params;
+  private $outType;
+
+  function __construct() {
+    $this->errorDeclared = false;
+
   }
 
   /**
-   * Tests whether this Response object should respond to the request ($q).
-   * 
-   * First the method is tested.
-   * 
-   * Using the information in $params passed on object creation, this
-   * method tests that information against the query information ($q).
-   *
-   * @param folksoQuery $q
-   * @uses method
-   * @return boolean
+   * @return String The body to be returned.
    */
-  function activatep (folksoQuery $q, folksoWsseCreds $cred) {
-    if (($q->method() == $this->method) &&
-        ($this->param_check($q))) {
+  public function body() {
+    return $this->body;
+  }
+
+  /**
+   * Append $str to response body, inserting a newline between
+   * successive calls. (This mimics using php's print function when
+   * outputting directly.)
+   *
+   * @param $str String
+   */
+  public function t ($str) {
+    if ($this->body) {
+      $this->body = $this->body . "\n" . $str;
+    }
+    else {
+      $this->body = $str;
+    }
+  }
+
+  public function deb($str) {
+    if ($this->debug) {
+      $this->debug = $this->debug . "\n" . $str;
+    }
+    else {
+      $this->debug = $str;
+    }
+  }
+
+  /**
+   * Declare an error. Sets internal error status to 'TRUE'.
+   *
+   * @param $status Integer HTTP Error code
+   * @param $message String (optional) Error message
+   * @param $representation String Information for body
+   */
+  public function setError($status, $message = null, $representation = null) {
+    if (! isset($this->httpStatus[$status])){
+      trigger_error("Invalid HTTP status: $status",
+                    e_user_warning);
+    }
+    $this->errorDeclared = true;
+    $this->status = $status;
+    $this->statusMessage 
+      = $message ? $message : $this->httpStatus[$status];
+    if ($representation){
+      $this->errorBody($representation);
+    }
+  }
+
+  public function dbError($status = 500, $message = null){
+    $this->setError($status, $message ? $message : 'Database error');
+  }
+
+  public function dbConnectionError($error_info){
+    $this->setError(500, "Database connection error");
+    $this->errorBody($error_info);
+  }
+
+  public function dbQueryError($error_info){
+    $this->setError(500, "Database query error");
+    $this->errorBody($error_info);
+  }
+
+  public function setOk ($status, $message = null){
+    if (! isset($this->httpStatus[$status])){
+      trigger_error("Invalid HTTP status: $status",
+                    e_user_warning);
+    }
+    $this->errorDeclared = false;
+    $this->status = $status;
+    $this->statusMessage = 
+      $message ? $message : $this->httpStatus[$status];
+  }
+
+  /**
+   * Translating true to true or false to false. Hmmm
+   */
+  public function isError() {
+    if ($this->errorDeclared) {
       return true;
     }
-    else {
-      return false;
-    }
+    return $false;
   }
-  
-  /**
-   * Checks to see if this Response should be used to respond to the query $q.
-   *
-   * If there are 'exclude' parameters, they are checked first. If any
-   * of them are present, param_check returns 'false'.
-   *
-   * Then we check the 'required' parameters in $this->activate_params
-   * and returns false if any of them are missing. If one of the
-   * 'oneof' fields is present (and assuming conditions in the other
-   * arrays are met), 'true' is returned.
-   *
-   * @param folksoQuery $q
-   * @return boolean
-   */
-  private function param_check(folksoQuery $q) {
 
-    if (is_array($this->activate_params['exclude'])) {
-        foreach ($this->activate_params['exclude'] as $no) {
-          if ($q->is_param($no)) {
-            return false;
-          }
-        }
-      }
-    $all_requireds = array();
-    foreach (array($this->activate_params['required'],
-                   $this->activate_params['required_single'],
-                   $this->activate_params['required_multiple']) as $arr) {
-      if (is_array($arr)) {
-        $all_requireds = array_merge($all_requireds, $arr);
-      }
+  public function setType($str) {
+    if (! in_array($str, array('xml', 'text', 'html'))){
+      trigger_error("Invalid output content type", e_user_warning);
+      $str = 'text';
+    }
+    $this->outType = $str;
+  }
+
+  /**
+   * Returns the string for the HTTP content-type header but does not
+   * set the header.
+   *
+   * @return String
+   */  
+  public function contentType () {
+    $type = '';
+    switch ($this->outType) {
+    case 'xml': 
+      $type =  'text/xml';
+      break;
+    case 'text':
+      $type =  'text/text';
+      break;
+    case 'html':
+      $type =  'text/html';
+      break;
+    default: 
+      $type =  'text/text';
+    }
+   return 'Content-Type: ' . $type;
+  }
+
+
+  /**
+   * In case of an error, we make sure that the old body is not
+   * output.
+   * 
+   * @param $str String
+   */
+  public function errorBody($str) {
+    $this->debug_body = $this->body;
+    $this->body = $str;
+  }
+
+/**
+ * Generic header adding function. No checking done. 
+ *
+ * Headers added this way will appear after the first two headers
+ * (HTTP/1.1 and content-type).
+ * 
+ * @param $str
+ */
+ public function addHeader ($str) {
+   $this->preheaders[] = $str;
+ }
+
+  /**
+   * Prepares an array containing the HTTP headers to be sent. 
+   * 
+   */
+  public function prepareHeaders () {
+    $headers = array();
+    $headers[] = 'HTTP/1.1 ' . $this->status . ' ' . $this->statusMessage;
+    $headers[] = $this->contentType();
+    if (count($this->preheaders) > 0) {
+      $headers = array_merge($headers, $this->preheaders);
     }
     
-    foreach ($all_requireds as $p) {
-      if (!$q->is_param($p)) {
-          return false;
-      }
-    }
-
-    if (is_array($this->activate_params['required_single'])) {
-      foreach ($this->activate_params['required_single'] as $p) {
-        if (!$q->is_single_param($p)) {
-          return false;
-        }
-      }
-    }
-
-    if (is_array($this->activate_params['required_multiple'])) {
-      foreach ($this->activate_params['required_multiple'] as $p) {
-        if (!$q->is_multiple_param($p)) {
-          return false;
-        }
-      }
-    }
-
-    $oneof = false;
-    if (is_array($this->activate_params['oneof'])) {
-      foreach ($this->activate_params['oneof'] as $p) {
-        if ($q->is_param($p)) {
-          $oneof = true;
-        }
-      }
-      if (!$oneof) {
-        return false;
-      }
-    }
-    return true;
+    $this->headers = $headers;
+    return $headers;
   }
 
   /**
-   * Passes t
-   * @param folksoQuery $q
-   * @param folksoWsseCreds $cred (this will probably change)
-   * @param folkskoDBconnect $dbc (passed in from folksoServer)
-   * @return HTTP response. The return value is never used as such,
-   * since the action is performed in the server.
+   * Final output function. Sets headers then prints body or
+   * errorBody.
    */
-  function Respond (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
-    $aa = $this->action_func;
-    return $aa($q, $cred, $dbc); //action (on DB for example) + return document
-                        //+ status. In fact, returned value does not
-                        //matter probably.
-  }
-
-  function getHttpMethod () {
-    return strtolower($this->method);
-  }
-
-  /**
-   * I think this is deprecated.
-   */
-  function setHttpMethod ($meth) {
-    if ((is_string($meth)) &&
-        in_array(strtolower($meth), array('get', 'put', 'post', 'delete'))) {
-      $this->method = strtolower($meth);
-      return $this->method;
+  public function output () {
+    $this->prepareHeaders();
+    foreach ($this->headers as $head) {
+      header($head);
     }
+
+    if ($this->isError()){
+      print $this->error_body;
+    }
+    /** Check for status codes that do not allow body **/
+    elseif (in_array($this->status, 
+                     array(204, 304))) {
+      return;
+    } 
     else {
-      //Error
+      print $this->body;
     }
   }
-
-  }// end of class
-
-
+}
 
 ?>

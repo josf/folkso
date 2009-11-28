@@ -31,6 +31,14 @@ class folksoDBinteract {
   public $connect_error= '';
   public $query_error = '';
   public $result_status;
+  public $latest_query;
+  public $result_array;
+
+  /**
+   * If the query returns more than one result set, the second and
+   * following results sets are stored here.
+   */
+  public $additional_results;
 
   /**
    * Convenience interface.
@@ -63,6 +71,8 @@ class folksoDBinteract {
    * @param folksoDBconnect $dbc
    */
   public function __construct (folksoDBconnect $dbc) {
+    $this->additional_results = array();
+    $this->result_array = array();
     $this->db = $dbc->db_obj();
     $this->db->set_charset('utf8');
         if ( mysqli_connect_errno()) {
@@ -121,7 +131,6 @@ class folksoDBinteract {
     $this->result = $this->db->query($query);
     $this->affected_rows = $this->db->affected_rows;
 
-
     if ($this->db->errno <> 0) {
       $this->query_error = sprintf("Query error: %s Error code: %d Query: %s", 
                                    $this->db->error, 
@@ -136,6 +145,55 @@ class folksoDBinteract {
       $this->result_status = 'OK';
     }
   }
+  /**
+   * Multiquery compatible version of query(). Should especially be
+   * useful for stored procedures
+   */
+  public function sp_query($query) {
+    $this->latest_query = $query; // for possible debug
+    $this->affected_rows = 0;
+    $this->first_val = '';
+    $this->result = null;
+
+    if ($this->db->multi_query($query)) {
+      do {
+        /* store first result set */
+        if ($result = $this->db->store_result()) {
+          if (! $this->result) {
+            $this->result = &$result;
+            while($row = $result->fetch_object()) {
+              $this->result_array[] = $row;
+            }
+          }
+          else {
+            $this->additional_results[] = $result;
+          }
+        }
+      } while ($this->db->next_result());
+    }
+
+
+    if ($this->db->errno <> 0) {
+      $this->query_error = sprintf("Query error: %s Error code: %d Query: %s", 
+                                   $this->db->error, 
+                                   $this->db->errno, $query);
+      $this->result_status = 'DBERR';
+      return;
+    }
+
+    /** First result set  **/
+    if ($this->result->num_rows == 0) {
+      $this->result_status = 'NOROWS';
+      return;
+    }
+    elseif ($result->num_rows > 0) {
+      $this->result_status = 'OK';
+    }
+    else {
+      $this->result_status = 'INTERR';
+    }
+  }
+
   
   /**
    * 
@@ -156,21 +214,27 @@ class folksoDBinteract {
    * 
    */
   public function tagp ($tagstring) {
-    $select = '';
+    $select = 'SELECT id FROM tag ';
     if (is_numeric($tagstring)) {
-      $select = "SELECT id FROM tag
-                 WHERE id = " . $tagstring .
-                 " LIMIT 1";
+      $select .= " WHERE id = " . $tagstring;
     }
     else {
-      $select = 
-        "SELECT id FROM tag
-                  WHERE tagnorm = normalize_tag('" .
-        $this->db->real_escape_string($tagstring) .
-        "') 
-         LIMIT 1";
+      $select .= "  WHERE tagnorm = normalize_tag('" .
+                $this->db->real_escape_string($tagstring) .
+        "') ";
     }
+    $select .= ' limit 1';
+
     $this->presult = $this->db->query($select);
+
+    if ($this->db->errno <> 0) {
+      $this->query_error = sprintf('Query error: %s Error code: %d Query: %s',
+                                   $this->db->error,
+                                   $this->db->errno,
+                                   $select);
+      // not setting result status because that probably will never be
+      // tested in this case
+        }
     if ($this->presult->num_rows > 0) {
       $this->presult->free();
       return true;

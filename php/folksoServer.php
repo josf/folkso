@@ -28,7 +28,7 @@ require_once('folksoDBconnect.php');
 require_once('folksoQuery.php');
 require_once('folksoWsseCreds.php');
 require_once('folksoFabula.php');
-require_once('folksoResponse.php');
+require_once('folksoResponder.php');
 
 class folksoServer {
 
@@ -111,7 +111,7 @@ class folksoServer {
    * @param folksoResponse $resp 
    *
    */ 
-  public function addResponseObj (folksoResponse $resp) { //one arg here to indicate
+  public function addResponseObj (folksoResponder $resp) { //one arg here to indicate
     //that at least one is
     //necessary
     $this->responseObjects[] = $resp;

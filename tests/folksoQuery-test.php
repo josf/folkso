@@ -4,12 +4,14 @@ require_once('unit_tester.php');
 require_once('reporter.php');
 require_once('folksoQuery.php');
 
+
 class testOffolksoQuery extends  UnitTestCase {
 
   public $qu;
   public $qu2;
   public $qubad;
   public $qumulti;
+
 
   function testConstructor () {
 
@@ -66,6 +68,12 @@ class testOffolksoQuery extends  UnitTestCase {
 
   }
 
+  function testBasic () {
+    $url='http://example.com/1';
+    $cuki = new folksoQuery(array(), array('folksores' => $url), array());
+    $this->assertEqual($url, $cuki->res, "Not getting correct res out of object");
+
+  }
 
   function message($message) {
 

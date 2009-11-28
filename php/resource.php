@@ -19,86 +19,86 @@ require_once('folksoResQuery.php');
 
 $srv = new folksoServer(array( 'methods' => array('POST', 'GET', 'HEAD'),
                                'access_mode' => 'ALL'));
-$srv->addResponseObj(new folksoResponse('head', 
+$srv->addResponseObj(new folksoResponder('head', 
                                         array('required' => array('res')),
                                         'isHead'));
 
-$srv->addResponseObj(new folksoResponse('get',
+$srv->addResponseObj(new folksoResponder('get',
                                         array('required' => array('clouduri', 'res')),
                                         'tagCloudLocalPop'));
 
-$srv->addResponseObj(new folksoResponse('get',
+$srv->addResponseObj(new folksoResponder('get',
                                         array('required' => array('res'),
                                               'exclude' => 
                                               array('clouduri', 'visit', 'note', 'ean13list')),
                                         'getTagsIds'));
 
 
-$srv->addResponseObj(new folksoResponse('get',
+$srv->addResponseObj(new folksoResponder('get',
                                         array('required' => array('res', 'ean13list'),
                                               'exclude' => array('delete', 'clouduri', 'note')),
                                         'resEans'));
                                               
-$srv->addResponseObj(new folksoResponse('post',
+$srv->addResponseObj(new folksoResponder('post',
                                         array('required_single' => array('res', 'tag'),
                                               'required' => array('delete'),
                                               'exclude' => array('meta', 'newresource', 'ean13')),
                                         'unTag'));
 
-$srv->addResponseObj(new folksoResponse('post',
+$srv->addResponseObj(new folksoResponder('post',
                                         array('required' => array('res', 'tag'),
                                               'exclude' => array('delete', 'newresource')),
                                         'tagResource'));
 
-$srv->addResponseObj(new folksoResponse('post',
+$srv->addResponseObj(new folksoResponder('post',
                                         array('required_single' => array('res'),
                                               'required' => array('visit'),
                                               'exclude' => array('tag', 'note')),
                                         'visitPage'));
 
-$srv->addResponseObj(new folksoResponse('post',
-                                        array('required' => array('res', 'newresource'),
+$srv->addResponseObj(new folksoResponder('post',
+                                        array('required' => array('res', 'newtitle'),
                                               'exclude' => array('note', 'delete')),
                                         'addResource'));
 
-$srv->addResponseObj(new folksoResponse('post',
+$srv->addResponseObj(new folksoResponder('post',
                                         array('required' => array('res', 'ean13'),
                                               'exclude' => array('newean13', 'oldean13', 'note', 'meta', 'tag', 'delete')),
                                         'assocEan13'));
 
-$srv->addResponseObj(new folksoResponse('post',
+$srv->addResponseObj(new folksoResponder('post',
                                         array('required' => array('res', 'newean13', 'oldean13'),
                                               'exclude' => array('ean13', 'tag', 'delete')),
                                         'modifyEan13'));
-$srv->addResponseObj(new folksoResponse('post',
+$srv->addResponseObj(new folksoResponder('post',
                                         array('required' => array('delete', 'res', 'ean13'),
                                               'exclude' => array('tag', 'note')),
                                         'deleteEan13'));
 
 
-$srv->addResponseObj(new folksoResponse('delete',
+$srv->addResponseObj(new folksoResponder('delete',
                                         array('required' => array('res', 'tag')),
                                         'unTag'));
 
-$srv->addResponseObj(new folksoResponse('delete',
+$srv->addResponseObj(new folksoResponder('delete',
                                         array('required_single' => array('res'),
                                               'exclude' => array('tag')),
                                         'rmRes'));
-$srv->addResponseObj(new folksoResponse('post',
+$srv->addResponseObj(new folksoResponder('post',
                                         array('required_single' => array('res', 'delete'),
                                               'exclude' => array('tag')),
                                         'rmRes'));
-$srv->addResponseObj(new folksoResponse('post',
+$srv->addResponseObj(new folksoResponder('post',
                                         array('required_single' => array('res', 'note'),
                                               'exclude' => array('tag', 'delete')),
                                         'addNote'));
 
-$srv->addResponseObj(new folksoResponse('get',
+$srv->addResponseObj(new folksoResponder('get',
                                        array('required_single' => array('res', 'note'),
                                              'exclude' => array('tag', 'delete')),
                                        'getNotes'));
 
-$srv->addResponseObj(new folksoResponse('post',
+$srv->addResponseObj(new folksoResponder('post',
                                         array('required_single' => array('note', 'delete'),
                                               'exclude' => array('res', 'tag')),
                                         'rmNote'));
@@ -111,10 +111,11 @@ $srv->Respond();
  * Web parameters: HEAD + folksouri or folksoid
  */
 function isHead (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+  $r = new folksoResponse();
   $i = new folksoDBinteract($dbc);
   if ($i->db_error()) {
-    header('HTTP/1.0 501 Database connection error');
-    die($i->error_info());
+    $r->dbConnectionError($i->error_info());
+    return $r;
   }
 
   $query = '';
@@ -134,18 +135,19 @@ function isHead (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
 
   switch ($i->result_status) {
   case 'DBERR':
-    header('HTTP/1.0 501 Database problem');
-    die($i->error_info());
+    $r->dbQueryError($i->error_info());
     break;
   case 'NOROWS':
-    header('HTTP/1.0 404 Resource not found');
-    die('Resource '. $q->res . ' not present in database');
+    $r->setError(404, 
+                 'Resource not found',
+                 'Resource '. $q->res . ' not present in database');
     break;
   case 'OK':
-    header('HTTP/1.0 200 Resource exists');
+    $r->setOk(200, 'Resource exists');
     break;
   }
-  $i->done();
+  // $i->done();
+  return $r;
 }
 
 
@@ -159,26 +161,26 @@ function isHead (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
  * Optional: ean13 Includes EAN13 information if available, tagged as 'EAN13'. 
  */
 function getTagsIds (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+  $r = new folksoResponse();
   $i = new folksoDBinteract($dbc);
 
   if ($i->db_error()){
-    header('HTTP/1.0 501 Database connection problem');
-    die($i->error_info());
+    $r->dbConnectionError($i->error_info());
+    return $r;
   }
 
   // check to see if resource is in db.
   if  (!$i->resourcep($q->res))  {
     if ($i->db_error()) {
       $i->done();
-      header('HTTP/1.0 501 Database problem');
-      die($i->error_info());
+      $r->dbQueryError($i->error_info());
     }
     else {
-      header('HTTP/1.0 404 Resource not found');      
-      print "Resource not present in database";
-      $i->done();
-      return;
+      $r->setError(404, 'Resource not found');
+      $r->errorBody("Resource not present in database");
     }
+    $i->done();
+    return $r;
   }
   
   $limit = 0;
@@ -205,15 +207,15 @@ function getTagsIds (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc
 
   switch ($i->result_status) {
   case 'DBERR':
-    header('HTTP/1.1 501 Database error');
-    die( $i->error_info());
+    $r->dbQueryError($i->error_info());
+    return $r;
     break;
   case 'NOROWS':
-    header('HTTP/1.1 204 No tags associated with resource');
-    return;
+    $r->setOk(204, 'No tags associated with resource');
+    return $r;
     break;
   case 'OK':
-    header('HTTP/1.1 200');
+    $r->setOk(200, 'Resource found');
     break;
   }
   // here everything should be ok (200)
@@ -223,26 +225,28 @@ function getTagsIds (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc
 
   switch ($q->content_type()) {
   case 'text':
-    header('Content-Type: text/text');
+    $r->setType('text');
     $dd->activate_style('text');
     break;
   case 'html':
+    $r->setType('html');
     $dd->activate_style('xhtml');
-    header('Content-Type: text/xhtml');
     break;
   case 'xml':
+    $r->setType('xml');
     $xf->activate_style('xml');
-    header('Content-Type: text/xml');
-    print $xf->startform();
+    $r->t($xf->startform());
     while ($row = $i->result->fetch_object()) {
-      print $xf->line($row->id,
+      $r->t($xf->line($row->id,
                       $row->tagnorm,
                       $row->tagdisplay,
                       $row->popularity,
-                      $row->meta);
+                      $row->meta)
+            );
     }
-    print $xf->endform();
-    return;
+    $r->t($xf->endform());
+    return $r;
+    $i->done();
     break;
   default:
       $dd->activate_style('xhtml');
@@ -250,12 +254,14 @@ function getTagsIds (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc
   }
 
   //    $row = $i->result->fetch_object(); //???
-    print $dd->title($row->uri_normal);
-    print $dd->startform();
-    while ( $row = $i->result->fetch_object() ) {
-      print $dd->line($row->tagdisplay);
+  $r->t($dd->title($row->uri_normal));
+  $r->t($dd->startform());
+  while ( $row = $i->result->fetch_object() ) {
+    $r->t($dd->line($row->tagdisplay));
     }
-    print $dd->endform();
+  $r->t($dd->endform());
+  $i->done();
+  return $r;
 }
 
 
@@ -270,22 +276,23 @@ function getTagsIds (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc
  */
 function tagCloudLocalPop (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
   $i = new folksoDBinteract($dbc);
+  $r = new folksoResponse();
 
-  if ($i->db_error()) {
-    header('HTTP/1.0 501 Database connection problem');
-    die( $i->error_info());
+  if ($i->db_error()) { 
+    $r->dbConnectionError($i->error_info());
+    return $r;
   }
 
   // check to see if resource is in db.
   if  (!$i->resourcep($q->res ))  {
     if ($i->db_error()) {
-      header('HTTP/1.0 501 Database problem');
-      die( $i->error_info());
+      $r->dbQueryError($i->error_info());
+      return $r;
     }
     else {
-      header('HTTP/1.0 404 Resource not found');      
-      print "Resource not present in database";
-      return;
+      $r->setError(404, 'Resource not found');
+      $r->errorBody("Resource not present in database");
+      return $r;
     }
   }
 
@@ -313,19 +320,21 @@ function tagCloudLocalPop (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnec
 
   switch ($i->result_status) {
   case 'DBERR':
-    header('HTTP/1.1 501 Database error');
-    die($i->error_info());
+    $r->dbQueryError();
+    $r->errorBody($i->error_info());
+    return $r;
     break;
   case 'NOROWS': // probably impossible now
-    header('HTTP/1.1 204 No tags associated with resource');
-    return;
+    $r->setOK(204, 'No tags associated with resource');
+    return $r;
     break;
-  case 'OK':
-    if ($i->result->num_rows == 0) {
-      header('HTTP/1.1 204 No tags associated with resource');
+  case 'OK':  
+    if ($i->result->num_rows == 0) { // should this be == 1 instead?
+      $r->setOK(204, 'No tags associated with resource');
+      return $r;
     } 
     else {
-      header('HTTP/1.1 200 Cloud OK');
+      $r->setOK(200, 'Cloud OK');
     }
     break;
   }
@@ -343,36 +352,40 @@ function tagCloudLocalPop (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnec
   switch ($q->content_type()) {
   case 'html':
     $dd->activate_style('xhtml'); 
-    print $dd->title($row1->tagdisplay);
-    print $dd->startform();  // <ul>
+    $r->setType('html');
+    $r->t($dd->title($row1->tagdisplay));
+    $r->t($dd->startform());  // <ul>
     while ($row = $i->result->fetch_object()) {
-      print $dd->line($row->cloudweight, 
+      $r->t($dd->line($row->cloudweight, 
                       "resourceview.php?tagthing=".
-                      $row->tagid, $row->tagdisplay)."\n";
+                      $row->tagid, $row->tagdisplay)."\n");
     }
-    print $dd->endform();
+    $r->t($dd->endform());
+    return $r;
     break;
   case 'xml':
+    $r->setType('xml');
     $dd->activate_style('xml');
-    header('Content-Type: text/xml');
-    print $dd->startform();
-    print $dd->title($q->res);
+    $r->t($dd->startform());
+    $r->t($dd->title($q->res));
     while ($row = $i->result->fetch_object()) {
       $link = new folksoTagLink($row->tagnorm);
-      print $dd->line($row->tagid,
+      $r->t($dd->line($row->tagid,
                       $row->tagdisplay,
                       htmlspecialchars($link->getLink()),
                       $row->cloudweight,
                       $row->tagnorm) . "\n";
     }
-    print $dd->endform();
+    $r->t($dd->endform());
+    return $r;
     break;
   default:
-    header("501 We need a datatype");
-    print 
-      "Sorry, but you did not give a datatype and we are too lazy "
-      ." right now to supply a default.";
-    return;
+    $r->setError(406, "No datatype specified");
+    $r->errorBody(
+                  "Sorry, but you did not give a datatype and we are too lazy "
+                  ." right now to supply a default."
+                  );
+    return $r;
   }
 }
 
@@ -390,7 +403,7 @@ function tagCloudLocalPop (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnec
  */
 function visitPage (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
   $ic = new folksoIndexCache('/tmp/cachetest', 5);  
-
+  $r = new folksoResponse();
   $page = new folksoUrl($q->res, 
                         $q->is_single_param('urititle') ? $q->get_param('urititle') : '' );
 
@@ -403,8 +416,8 @@ function visitPage (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc)
 
     $i = new folksoDBinteract($dbc);
     if ($i->db_error()) {
-      header('HTTP/1.0 501 Database connection problem');
-      die( $i->error_info());
+      $r->dbConnectionError($i->error_info());
+      return $r; 
     }
 
     $urls = array();
@@ -426,19 +439,20 @@ function visitPage (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc)
     fwrite($lfh, implode("\n", $urls) . "\n");
     fclose($lfh);
 
-      $i->query($sql);
-      if ($i->result_status == 'DBERR') {
-        header('HTTP/1.1 501 Database error');
-        print $i->error_info() . "\n";
-      }
-      header('HTTP/1.1 200 Read cache');
-      print "updated db";
-      $i->done();
+    $i->query($sql);
+    if ($i->result_status == 'DBERR') {
+      $r->dbQueryError($i->error_info());
+      return $r;
+    }
+    $r->setOk(200, "200 Read cache'");
+    $r->t("updated db");
+    $i->done();
     } 
   else {
-    header("HTTP/1.1 202 Caching visit");
-    print "caching visit";
+    $r->setOk(202, "Caching visit");
+    $r->t('Caching visit. Results will be incorporated shortly.');
   }
+  return $r;
 }
 
 /**
@@ -447,10 +461,11 @@ function visitPage (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc)
  *
  */
 function addResource (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+  $r = new folksoResponse();
   $i = new folksoDBinteract($dbc);
   if ($i->db_error()) {
-    header('HTTP/1.0 501 Database connection error');
-    die($i->error_info());
+    $r->dbConnectionError($i->error_info());
+    return $r;
   }
 
   $query = 
@@ -461,14 +476,15 @@ function addResource (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $db
   $i->query($query);
 
   if ($i->result_status == 'DBERR') {
-    header('HTTP/1.1 501 DB error');
-    die($i->error_info());
+    $r->dbQueryError($i->error_info());
+    return $r;
   }
   else {
-    header('HTTP/1.1 201');
-    print "Resource added";
+    $r->setOk(201, "Resource added");
+    $r->t('Resource added to database'); // TODO Return representation here (id, url)
   }
   $i->done();
+  return $r; 
 }
 
 
@@ -477,10 +493,11 @@ function addResource (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $db
  * Optional : folksometa (defaults to 'normal' (1)). 
  */
 function tagResource (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+  $r = new folksoResponse();
   $i = new folksoDBinteract($dbc);
   if ($i->db_error()) {
-    header('HTTP/1.0 501 Database connection error');
-    die($i->error_info());
+    $r->dbConnectionError($i->error_info());
+    return $r;
   }
 
   $tag_args = argSort($q->res, $q->tag, $q->get_param('meta'), $i);
@@ -491,41 +508,38 @@ function tagResource (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $db
   if ($i->result_status == 'DBERR') {
     if (($i->db->errno == 1048) &&
         (strpos($i->db->error, 'resource_id'))) {
-      header('HTTP/1.1 404 Missing resource');
-      print "Resource ". $q->res . " has not been indexed yet.";
-      $i->done();
-      return;
+      $r->setError(404, 
+                   "Missing resource",
+                   "Resource ". $q->res . " has not been indexed yet.");
     }
     elseif (($i->db->errno == 1048) &&
             (strpos($i->db->error, 'tag_id'))) {
-      header('HTTP/1.1 404 Tag does not exist');
-      print "Tag ". $q->tag . " does not exist.";
-      print $i->error_info();
-      $i->done;
-      return;
+      $r->setError(404, 'Tag does not exist',
+                   "Tag ". $q->tag . " does not exist. "
+                   . $i->error_info());
     }
     else {
-      header('HTTP/1.1 501 Database query error.');
-      $i->done();
-      print "obscure database problem";
-      die($i->error_info());
+      $r->dbConnectionError($i->error_info());
     }
+    $i->done();
+    return $r;
   }
   else {
-    header('HTTP/1.1 200 Tagged');
-    print "Resource has been tagged";
-    print $query;
-    print "  DB says: ". $i->db->error;
+    $r->setOk(200, "Tagged");
+    $r->t("Resource has been tagged");
+    $r->t($query);
+    $r->t("  DB says: ". $i->db->error);
   }
   $i->done();
+  return $r;
 }
 
-
 function unTag (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+  $r = new folksoResponse();
   $i = new folksoDBinteract($dbc);
   if ($i->db_error()) {
-    header('HTTP/1.0 501 Database connection error');
-    die($i->error_info());
+    $r->dbConnectionError($i->error_info);
+    return $r;
   }
 
   $sql = '';
@@ -567,22 +581,23 @@ function unTag (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
   $i->query($sql);
 
   if ($i->result_status == 'DBERR') {
-    header('HTTP/1.1 501 Database query error');
-    die($i->error_info());
+    $r->dbQueryError();
   }
   else {
-    header('HTTP/1.1 200 Deleted');
+    $r->setOK(200, 'Deleted');
   }
+  return $r;
 }
 
 /**
  * Delete a resource and add its url to the list of excluded URL.
  */
 function rmRes (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+  $r = new folksoResponse();
   $i = new folksoDBinteract($dbc);
   if ($i->db_error()) {
-    header('HTTP/1.0 501 Database connection error');
-    die($i->error_info());
+    $r->dbConnectionError($i->error_info());
+    return $r;
   }
 
   // call rmres('url', id);
@@ -596,15 +611,14 @@ function rmRes (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
   $i->query($sql);
 
  if ($i->result_status == 'DBERR') {
-    header('HTTP/1.1 501 Database error');
-    die($i->error_info());
+   $r->dbQueryError($i->error_info());
  }
  else {
-   header('HTTP/1.1 200 Resource deleted');
-   print "Resource " . $q->res . " permanently deleted\n";
-   print "This resource will not be indexed in the future.";
-   //   print $sql;
+   $r->setOk(200, "Resource deleted");
+   $r->t("Resource " . $q->res . " permanently deleted");
+   $r->t("This resource will not be indexed in the future.");
  }
+ return $r;
 }
 
 /**
@@ -626,29 +640,28 @@ function rmRes (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
  * POST, res, ean13
  */
 function assocEan13 (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
-
-  /** check **/
-  if (! ean13dataCheck($q->get_param('ean13'))) {
-    header('HTTP/1.1 406 Bad EAN13 data');
-    print 
-      "The folksoean13 field should consist of exactly 13 digits. "
-      . $q->get_param('ean13') . " is " . strlen($q->get_param('ean13')) . " long "
-      . is_numeric($q->get_param('ean13')) ? " and it is numeric " : " but it is not numeric " 
-      ."\n\nPlease check your "
-      ."data before trying again.";
-    return;
-  }
-
+  $r = new folksoResponse();
   $i = new folksoDBinteract($dbc);
   if ($i->db_error()) {
-    header('HTTP/1.0 501 Database connection error');
-    die($i->error_info());
+    $r->dbConnectionError($i->error_info());
+    return $r;
+  }
+  
+  /** check **/
+  if (! ean13dataCheck($q->get_param('ean13'))) {
+    $r->setError(406, "Bad EAN13 data",
+                 "The folksoean13 field should consist of exactly 13 digits. "
+                 . $q->get_param('ean13') . " is " . strlen($q->get_param('ean13')) . " long "
+                 . is_numeric($q->get_param('ean13')) ? " and it is numeric " : " but it is not numeric " 
+                 ."\n\nPlease check your "
+                 ."data before trying again.");
+    return $r;
   }
 
   if (is_numeric($q->res)) {
     $sql = 
       "INSERT INTO ean13 SET resource_id = " . $q->res
-      . ", ean13 = " . $q->get_param('ean13'); //not escaping because we know this is just numbers
+      . ", ean13 = " . $q->get_param('ean13'); 
   }
   else {
     $sql =
@@ -663,55 +676,52 @@ function assocEan13 (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc
 
     if (($i->db->errno == 1048) || // resource_id cannot be null
         ($i->db->errno == 1452)) { // cannot add or update a child row
-      header('HTTP/1.1 404 Resource not found');
-      print 
-        "The resource you tried to associate with a EAN13 was not" 
-        ." found in the database. \n\nPerhaps it has not yet been indexed,".
-        "  or your reference is incorrect.";
+      $r->setError(404,
+                   "Resource not found",
+                   "The resource you tried to associate with a EAN13 was not" 
+                   ." found in the database. \n\nPerhaps it has not yet been indexed,".
+                   "  or your reference is incorrect.");
     }
     elseif ($i->db->errno == 1062) {
-      header('HTTP/1.1 409 Duplicate EAN13');
-      print 
-        "This resource/EAN13 combination is already present in the database.\n\n"
-        ."Duplicate EAN13 entries for the same resource are not allowed. This is "
-        ."slightly different from how tags work.";
-      return;
+      $r->setError(409,
+                   'Duplicate EAN13',
+                   "This resource/EAN13 combination is already present in the database.\n\n"
+                   ."Duplicate EAN13 entries for the same resource are not allowed. This is "
+                   ."slightly different from how tags work.");
     }
     else {
-      header('HTTP/1.1 501 Database error');
-      die($i->error_info());
+      $r->dbQueryError($i->error_info());
     }
   }
   else {
-    header('HTTP/1.1 200 OK');
-    print "The EAN13 information was added to a resource.";
-    return;
+    $r->setOk(200, 'Added');
+    $r->t("The EAN13 information was added to a resource.");
   }
+  return $r;
 }
 
 /**
  * Web params: POST, res, oldean13, newean13
  */
 function modifyEan13 (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
-
+    $r = new folksoResponse();
+    $i = new folksoDBinteract($dbc);
+    if ($i->db_error()) {
+      $r->dbConnectionError($i->error_info());
+      return $r;
+    }
+  
   if (! ean13dataCheck($q->get_param('newean13'))) {
-    header('HTTP/1.1 406 Bad EAN13 data');
-    print 
-      "The folksoean13 fields (old and new) should consist of up to 13 "
-      ."digits. "
-      . $q->get_param('oldean13') . " is " . strlen($get_param('oldean13')) . " long "
-      . "and " . $q->get_param('newean13') . " is " . strlen($get_param('newean13')) . " long "
-      ." \n\nPlease check your "
-      ."data before trying again.";
-    return;
+    $r->setError(406, 
+                 'Bad EAN13 data',
+                 "The folksoean13 fields (old and new) should consist of up to 13 "
+                 ."digits. "
+                 . $q->get_param('oldean13') . " is " . strlen($get_param('oldean13')) . " long "
+                 . "and " . $q->get_param('newean13') . " is " . strlen($get_param('newean13')) . " long "
+                 ." \n\nPlease check your data before trying again.");
+      return $r;
   }
   
-  $i = new folksoDBinteract($dbc);
-  if ($i->db_error()) {
-    header('HTTP/1.1 501 Database connection error');
-    die($i->error_info());
-  }
-
   $sql = 
     "UPDATE ean13 " 
     ."SET ean13 = " . $i->dbescape($q->get_param('newean13'));
@@ -729,37 +739,38 @@ function modifyEan13 (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $db
 
   $i->query($sql);
   if ($i->result_status == 'DBERR') {
-    header('HTTP/1.1 501 Database query error');
-    die($i->error_info());
+    $r->dbQueryError($i->error_info());
   }
   elseif ($i->affected_rows == 0) {
-    header('HTTP/1.1 404 Resource/EAN13  not found');
-    print "The combination resource + ean13 was not found.";
-    return;
+    $r->setError(404, 
+                 'Resource/EAN13  not found',
+                 "The combination resource + ean13 was not found.");
+
   }
   else {
-    header('HTTP/1.1 200 Modified');
-    print "The EAN13 information was successfully modified.\n\nHave a nice day.";
+    $r->setOk(200, 'Modified');
+    $r->t("The EAN13 information was successfully modified.\n\nHave a nice day.");
   }
+  return $r;
 }
 
 /**
  * Delete EAN13 information from a resource.
  */
 function deleteEan13 (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
-  if (! ean13dataCheck($q->get_param('ean13'))) {
-    header('HTTP/1.1 406 Bad EAN13 data');
-    print 
-      "The folksoean13 field should consist of exactly 13 digits. "
-      ."\n\nPlease check your "
-      ."data before trying again.";
-    return;
-  }
-
+  $r = new folksoResponse();
   $i = new folksoDBinteract($dbc);
   if ($i->db_error()) {
-    header('HTTP/1.0 501 Database connection error');
-    die($i->error_info());
+    $r->dbConnectionError($i->error_info());
+    return $r;
+  }
+
+  if (! ean13dataCheck($q->get_param('ean13'))) {
+    $r->setError(406, 'Bad EAN13 data',
+                 "The folksoean13 field should consist of exactly 13 digits. "
+                 ."\n\nPlease check your "
+                 ."data before trying again.");
+    return $r;
   }
 
   $sql = 
@@ -778,23 +789,20 @@ function deleteEan13 (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $db
   $i->query($sql);
 
   if ($i->result_status == 'DBERR') {
-    header('HTTP/1.1 501 Database insert error');
-    die($i->error_info());
+    $r->dbQueryError($i->error_info());
   }
   else {
     if ($i->affected_rows == 0) {
-      header('HTTP/1.1 404 Resource/EAN13 not found');
-      print 
-        "The combination resource + EAN13 could not be found. "
-        ."Nothing was deleted.";
-      return;
+      $r->setError(404, 'Resource/EAN13 not found',
+                   "The combination resource + EAN13 could not be found. "
+                   ."Nothing was deleted.");
     }
     else {
-      header('HTTP/1.1 200 Deleted');
-      print "The EAN13 information was deleted";
-      return;
+      $r->setOk(200, 'Deleted');
+      $r->t( "The EAN13 information was deleted");
     }
   }
+  return $r;
 }
 
 
@@ -804,10 +812,11 @@ function deleteEan13 (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $db
  * Web params: POST, note, res
  */
 function addNote (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+  $r = new folksoResponse();
   $i = new folksoDBinteract($dbc);
   if ($i->db_error()) {
-    header('HTTP/1.0 501 Database connection error');
-    die($i->error_info());
+    $r->dbConnectionError($i->error_info());
+    return $r;
   }
 
   $sql = 
@@ -827,21 +836,22 @@ function addNote (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
 
   $i->query($sql);
   if ($i->result_status == 'DBERR') {
-    header('HTTP/1.1 501 Database insert error');
-    die($i->error_info());
+    $r->dbQueryError($i->error_info());
   }
   else {
-    header('HTTP/1.1 202 Note accepted');
-    print "This note will be added to the resource: " . $q->res;
-    print "\n\nText of the submitted note:\n". $q->get_param('note');
+    $r->setOk(202, 'Note accepted');
+    $r->t( "This note will be added to the resource: " . $q->res);
+    $r->t( "\n\nText of the submitted note:\n". $q->get_param('note'));
   }
+  return $r;
 }
 
 function getNotes (folksoquery $q, folksoWsseCreds $cred, folksoDBconnect $dbc){
- $i = new folksoDBinteract($dbc);
+  $r = new folksoResponse();
+  $i = new folksoDBinteract($dbc);
   if ($i->db_error()) {
-    header('HTTP/1.0 501 Database connection error');
-    die($i->error_info());
+    $r->dbConnectionError($i->error_info());
+    return $r;
   }
 
   $sql = 
@@ -860,40 +870,41 @@ function getNotes (folksoquery $q, folksoWsseCreds $cred, folksoDBconnect $dbc){
   $i->query($sql);
   switch ($i->result_status) {
   case 'DBERR':
-    header('HTTP/1.1 501 Database query error');
-    die($i->error_info());
+    $r->dbQueryError($i->error_info());
+    return $r;
     break;
   case 'NOROWS': 
     if ($i->resourcep($q->res)) {
-      header('HTTP/1.1 404 No notes associated with this resource');
-      //      print $sql;
-      print "No notes have been written yet. Write one if you want.";
+      $r->setError(404, 'No notes associated with this resource',
+                   "No notes have been written yet. Write one if you want.");
     }
     else {
-      header('HTTP/1.1 404 Resource not found');
-      print "Sorry. The resource for which you requested an annotation".
-        " is not present in the database";
+      $r->setError(404, 'Resource not found',
+                   "Sorry. The resource for which you requested an annotation".
+                   " is not present in the database");
     }
-    return;
+    return $r;
     break;
   case 'OK':
-    header('HTTP/1.1 200 Notes found');
+    $r->setOk(200, 'Notes found');
     break;
 }
+
   // assuming 200 from here on
 
   $df = new folksoDisplayFactory();
   $dd = $df->NoteList();
   $dd->activate_style('xml');
 
-  print $dd->startform();
-  print $dd->title($q->res);
+  $r->t( $dd->startform());
+  $r->t( $dd->title($q->res));
   while ($row = $i->result->fetch_object()) {
-    print $dd->line($row->user_id,
+    $r->t( $dd->line($row->user_id,
                     $row->id, 
-                    $row->note);
+                     $row->note));
   }
-  print $dd->endform();
+  $r->t( $dd->endform());
+  return $r;
 }
 
 /**
@@ -902,27 +913,31 @@ function getNotes (folksoquery $q, folksoWsseCreds $cred, folksoDBconnect $dbc){
  * "note" must be a numerical note id.
  */
 function rmNote (folksoquery $q, folksoWsseCreds $cred, folksoDBconnect $dbc){
- $i = new folksoDBinteract($dbc);
+  $r = new folksoResponse();
+  $i = new folksoDBinteract($dbc);
   if ($i->db_error()) {
-    header('HTTP/1.0 501 Database connection error');
-    die($i->error_info());
+    $r->dbConnectionError($i->error_info());
+    return $r;
   }
+
   if (! is_numeric($q->get_param('note'))){
-    header('HTTP/1.1 400 Bad note argument');
-    die($q->get_param('note') . ' is not a number');
+    $r->setError(400, 'Bad note argument',
+                 $q->get_param('note') . ' is not a number');
+    return $r;
   }
 
   $sql = "DELETE FROM note WHERE id = " . $q->get_param('note');
   $i->query($sql);
 
   if ($i->result_status == 'DBERR'){
-    header('HTTP/1.1 Database delete errors');
-    die($i->error_info());
+    $r->setError(500, 'Database delete errors',
+                 $i->error_info());
   }
   else {
-    header('HTTP/1.1 200 Deleted');
-    print "The note " . $q->get_param('note'). " was deleted.";
+    $r->setOk(200, 'Deleted');
+    $r->t( "The note " . $q->get_param('note'). " was deleted.");
   }
+  return $r;
 }
 
 /**
@@ -932,10 +947,11 @@ function rmNote (folksoquery $q, folksoWsseCreds $cred, folksoDBconnect $dbc){
  * Web params: GET, folksores, folksoean13list
  */
 function resEans (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+  $r = new folksoResponse();
   $i = new folksoDBinteract($dbc);
   if ($i->db_error()) {
-    header('HTTP/1.0 501 Database connection error');
-    die($i->error_info());
+    $r->dbConnectionError($i->error_info());
+    return $r;
   }
 
   $rq = new folksoResQuery();
@@ -945,26 +961,25 @@ function resEans (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
 
   switch ($i->result_status) {
   case 'DBERR':
-    header('HTTP/1.1 501 Database query error');
-    die($i->error_info());
+    $r->dbQueryError($i->error_info());
     break;
   case 'NOROWS':
-      header('HTTP/1.1 404 Resource not found');
-      print "The requested resource is not present in the database.\n"
-        ." Maybe it  has not been indexed yet, or an erroneous identifier "
-        ." was used. ";
-      return;
-      break;
+    $r->setError(404, 'Resource not found',
+                 "The requested resource is not present in the database.\n"
+                 ." Maybe it  has not been indexed yet, or an erroneous identifier "
+                 ." was used. ");
+    break;
   case 'OK':
     if ($i->result->num_rows == 1) {
-      header('HTTP/1.1 404 No EAN-13 data associated with this resource');
-      print "There is no EAN-13 data yet for the resource " . $q->res . ".";
-      print "<br/>" . $sql;
-      return;
+      $r->setError(404, 'No EAN-13 data associated with this resource',
+                   "There is no EAN-13 data yet for the resource " . $q->res . ".");
     }
     else {
-      header('HTTP/1.1 200 EAN-13 data found');
+      $r->setOk(200, 'EAN-13 data found');
     }
+  }
+  if ($r->isError()) {
+    return $r;
   }
 
   $title_line = $i->result->fetch_object(); /**popping the title that
@@ -977,15 +992,14 @@ function resEans (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
   $dd = $df->associatedEan13resources();
   $dd->activate_style('xml');
 
-  print $dd->startform();
+  $r->t($dd->startform());
   while($row = $i->result->fetch_object()) {
-    print $dd->line($row->id, 
-                    $row->url,
-                    $row->title);
+    $r->t( $dd->line($row->id, 
+                     $row->url,
+                     $row->title));
   }
-  print $dd->endform();                 
-
-  }
+  $r->t( $dd->endform());
+}
 
 
 
