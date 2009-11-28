@@ -174,8 +174,8 @@ class folksoResponse {
       break;
     default: 
       $type =  'text/text';
-  }
-    return 'Content-Type: ' . $type;
+    }
+   return 'Content-Type: ' . $type;
   }
 
 
