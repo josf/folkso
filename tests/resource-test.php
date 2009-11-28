@@ -7,12 +7,21 @@ include('dbinit.inc');
 
 class testOfResource extends  UnitTestCase {
   public $dbc;
+  public $dbc2;
+  public $dbc3;
+  public $cred;
 
   function setUp() {
     test_db_init();
     /** not using teardown because this function does a truncate
         before starting. **/
-    
+     $this->dbc = new folksoDBconnect('localhost', 'tester_dude', 
+                                      'testy', 'testostonomie');
+     $this->dbc2 = new folksoDBconnect('localhost', 'tester_dude', 
+                                      'testy', 'testostonomie');
+     $this->dbc3 =new folksoDBconnect('localhost', 'tester_dude', 
+                                      'testy', 'testostonomie');
+     $this->cred = new folksoWsseCreds('zork');    
   }
 
   function testIsHead () {
@@ -64,6 +73,18 @@ class testOfResource extends  UnitTestCase {
      $this->assertPattern('/tagone/',
                           $r->body(),
                           '"tagone" tag not found in response body');
+
+     $r2 = getTagsIds(new folksoQuery(array(),
+                                      array('folksores' => 'http://example.com/1',
+                                            'folksodatatype' => 'xml'),
+                                      array()),
+                      new folksoWsseCreds('zork'),
+                      $this->dbc);
+     $this->assertEqual($r2->status, 200,
+                        'getTagsIds returns error with xml datatype');
+     $xxx = new DOMDocument();
+     $this->assertTrue($xxx->loadXML($r2->body()),
+                       'failed to load xml');
    }
 
    function testGetTagsIds_xml () {
@@ -82,6 +103,9 @@ class testOfResource extends  UnitTestCase {
                           $r->body(),
                           'Does not look like xml'
                           );
+     $xxx = new DOMDocument();
+     $this->assertTrue($xxx->loadXML($r->body()),
+                       'xml failed to load');
      
 
    }
@@ -113,6 +137,9 @@ class testOfResource extends  UnitTestCase {
 
      $this->assertTrue(strlen($r2->body()) > 100, 
                        "No body in xml request");
+     $xxx = new DOMDocument();
+     $this->assertTrue($xxx->loadXML($r2->body()),
+                       'failed to load xml: ' . $r2->body());
 
      $dbc3 = new folksoDBconnect('localhost', 'tester_dude',
                                  'testy', 'testostonomie');
