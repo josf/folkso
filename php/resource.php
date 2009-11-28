@@ -374,7 +374,7 @@ function tagCloudLocalPop (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnec
                       $row->tagdisplay,
                       htmlspecialchars($link->getLink()),
                       $row->cloudweight,
-                      $row->tagnorm) . "\n";
+                      $row->tagnorm) . "\n");
     }
     $r->t($dd->endform());
     return $r;
@@ -942,7 +942,7 @@ function rmNote (folksoquery $q, folksoWsseCreds $cred, folksoDBconnect $dbc){
 
 /**
  * Returns an xml list of resources associated with the same ean-13 as
- * the select resource
+ * the selected resource
  *
  * Web params: GET, folksores, folksoean13list
  */
@@ -999,6 +999,7 @@ function resEans (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
                      $row->title));
   }
   $r->t( $dd->endform());
+  return $r;
 }
 
 
