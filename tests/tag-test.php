@@ -61,6 +61,10 @@ class testOffolksotag extends  UnitTestCase {
      $this->assertEqual(200, $r->status,
                         'Error returned by getTag');
 
+     $xxx = new DOMDocument();
+     $this->assertTrue($xxx->loadXML($r->body()),
+                       'xml incorrect');
+
    }
 
    function testSinglePostTag() {
@@ -117,6 +121,20 @@ class testOffolksotag extends  UnitTestCase {
 
      $this->assertEqual(404, $rbad->status,
                         'bad tag should return 404');
+
+
+     $rx = getTagResources(new folksoQuery(array(),
+                                           array('folksotag' => 'tagone',
+                                                 'folksodatatype' => 'xml'),
+                                           array()),
+                           $this->cred,
+                           $this->dbc3);
+     $this->assertEqual(200, $rx->status,
+                        'xml request failiing');
+     $xxx = new DOMDocument();
+     $this->assertTrue($xxx->loadXML($rx->body()),
+                       'failed to load xml');
+     
    }
 
    function testFancyResource() {
@@ -137,6 +155,10 @@ class testOffolksotag extends  UnitTestCase {
      $this->assertPattern('/tagtwo/',
                           $r->body(),
                           'Not getting tagtwo back');
+
+     $xxx = new DOMDocument();
+     $this->assertTrue($xxx->loadXML($r->body()),
+                       'failed to load xml');
 
    }
 
@@ -268,7 +290,9 @@ class testOffolksotag extends  UnitTestCase {
      $this->assertPattern('/tagone/',
                           $r->body(),
                           'Missing data');
-
+     $xxx = new DOMDocument();
+     $this->assertTrue($xxx->loadXML($r->body()),
+                       'xml failed to load');
    }
 
 }//end class
