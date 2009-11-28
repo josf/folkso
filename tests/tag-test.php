@@ -255,6 +255,21 @@ class testOffolksotag extends  UnitTestCase {
      $this->assertEqual($h2->status, 404,
                         'Old tag name is still present');
    }
+   function testAllTags () {
+     $r = allTags(new folksoQuery(array(),
+                                  array(),
+                                  array()),
+                  $this->cred,
+                  $this->dbc);
+     $this->assertIsA($r, folksoResponse,
+                      'problem with object creation');
+     $this->assertEqual(200, $r->status,
+                        'all tags not returning a 200');
+     $this->assertPattern('/tagone/',
+                          $r->body(),
+                          'Missing data');
+
+   }
 
 }//end class
 

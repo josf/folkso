@@ -714,10 +714,11 @@ function renameTag (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc)
  * List of all the tags.
  */
 function allTags (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+  $r = new folksoResponse();
   $i = new folksoDBinteract($dbc);
   if ($i->db_error()) {
-    header('HTTP/1.1 501 Database connection problem');
-    die($i->error_info());
+    $r->dbConnectionError($i->error_info());
+    return $r;
   }
 
   $query = 
@@ -726,27 +727,27 @@ function allTags (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
     "(SELECT COUNT(*) FROM tagevent te WHERE te.tag_id = t.id) AS popularity \n".
     "FROM tag t \n".
   " ORDER BY display ";
-
     
   $i->query($query);
   if ($i->result_status != 'OK') {
-    header("HTTP/1.1 501 Database error");
-    die($i->error_info());
+    $r->dbQueryError($i->error_info());
+    return $r;
   }
-            
+  $r->setOk(200, 'There they are');
   $df = new folksoDisplayFactory();
   $dd = $df->TagList();
   $dd->activate_style('xml');
 
-  print $dd->startform();
+  $r->t($dd->startform());
   while ($row = $i->result->fetch_object()) {
-    print $dd->line($row->tagid,
+    $r->t($dd->line($row->tagid,
                     $row->tagnorm,
                     $row->display,
                     $row->popularity,
-                    '');
+                    ''));
   }
-  print $dd->endform();
+  $r->t($dd->endform());
+  return $r;
 }
 
 ?>
