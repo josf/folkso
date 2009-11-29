@@ -94,10 +94,7 @@ class testOffolksoResQuery extends UnitTestCase {
                          $sql_ean,
                          'Not finding ean13 in sql ' . $sql_ean);
     print '==================' . $sql_ean;
-      
-
   }
-
 }
 
 

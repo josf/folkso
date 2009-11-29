@@ -135,15 +135,18 @@ class folksoDisplayFactory {
                                  $this->standardTextList(4),
                                  array('type' => 'xml',
                                        'start' => '<?xml version="1.0"?>'.
-                                       "\n<taglist>",
+                                       "\n<taglist>\n",
                                        'end' => '</taglist>',
+                                       
+                                       'titleformat' => "<tagtitle>XXX</tagtitle>\n",
+                                       
                                        'lineformat' => 
                                        "<tag>\n\t<numid>XXX</numid>".
                                        "\n\t<tagnorm>XXX</tagnorm>".
                                        "\n\t<display>XXX</display>".
                                        "\n\t<popularity>XXX</popularity>".
                                        "\n\t<metatag>XXX</metatag>".
-                                       "\n</tag>",
+                                       "\n</tag>\n",
                                        'argsperline' => 5));
     return $obj;
   }

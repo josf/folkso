@@ -61,6 +61,8 @@ class testOffolksoTagRes extends  UnitTestCase {
     $tr = new folksoTagRes($this->loc, 5775);
     $this->assertTrue(is_string($tr->title()));
     $this->assertTrue(strlen($tr->title()) > 5);
+    $this->assertEqual($tr->title(), 'Illustration',
+                       'Not extracting title correctly, expected "Illustrantion", not ' . $tr->title());
   }
 }
 

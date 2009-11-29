@@ -64,7 +64,7 @@ abstract class folksoLocal {
    * that URI from being indexed.
    */
   public $visit_ignore_url;
-
+ 
   /**
    * Like $visit_ignore_url but used against page titles.
    */

@@ -372,8 +372,8 @@ function tagCloudLocalPop (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnec
       $link = new folksoTagLink($row->tagnorm);
       $r->t($dd->line($row->tagid,
                       $row->tagdisplay,
-                      $link->getLink(),
-                      $row->cloudweight . "\n",
+                      htmlspecialchars($link->getLink()),
+                      $row->cloudweight,
                       $row->tagnorm) . "\n");
     }
     $r->t($dd->endform());
@@ -649,9 +649,7 @@ function assocEan13 (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc
   
   /** check **/
   if (! ean13dataCheck($q->get_param('ean13'))) {
-    header('HTTP/1.1 406 Bad EAN13 data');
     $r->setError(406, "Bad EAN13 data",
-
                  "The folksoean13 field should consist of exactly 13 digits. "
                  . $q->get_param('ean13') . " is " . strlen($q->get_param('ean13')) . " long "
                  . is_numeric($q->get_param('ean13')) ? " and it is numeric " : " but it is not numeric " 
@@ -706,25 +704,24 @@ function assocEan13 (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc
  * Web params: POST, res, oldean13, newean13
  */
 function modifyEan13 (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
-
+    $r = new folksoResponse();
+    $i = new folksoDBinteract($dbc);
+    if ($i->db_error()) {
+      $r->dbConnectionError($i->error_info());
+      return $r;
+    }
+  
   if (! ean13dataCheck($q->get_param('newean13'))) {
-    header('HTTP/1.1 406 Bad EAN13 data');
-    print 
-      "The folksoean13 fields (old and new) should consist of up to 13 "
-      ."digits. "
-      . $q->get_param('oldean13') . " is " . strlen($get_param('oldean13')) . " long "
-      . "and " . $q->get_param('newean13') . " is " . strlen($get_param('newean13')) . " long "
-      ." \n\nPlease check your "
-      ."data before trying again.";
-    return;
+    $r->setError(406, 
+                 'Bad EAN13 data',
+                 "The folksoean13 fields (old and new) should consist of up to 13 "
+                 ."digits. "
+                 . $q->get_param('oldean13') . " is " . strlen($get_param('oldean13')) . " long "
+                 . "and " . $q->get_param('newean13') . " is " . strlen($get_param('newean13')) . " long "
+                 ." \n\nPlease check your data before trying again.");
+      return $r;
   }
   
-  $i = new folksoDBinteract($dbc);
-  if ($i->db_error()) {
-    header('HTTP/1.1 501 Database connection error');
-    die($i->error_info());
-  }
-
   $sql = 
     "UPDATE ean13 " 
     ."SET ean13 = " . $i->dbescape($q->get_param('newean13'));
@@ -742,37 +739,38 @@ function modifyEan13 (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $db
 
   $i->query($sql);
   if ($i->result_status == 'DBERR') {
-    header('HTTP/1.1 501 Database query error');
-    die($i->error_info());
+    $r->dbQueryError($i->error_info());
   }
   elseif ($i->affected_rows == 0) {
-    header('HTTP/1.1 404 Resource/EAN13  not found');
-    print "The combination resource + ean13 was not found.";
-    return;
+    $r->setError(404, 
+                 'Resource/EAN13  not found',
+                 "The combination resource + ean13 was not found.");
+
   }
   else {
-    header('HTTP/1.1 200 Modified');
-    print "The EAN13 information was successfully modified.\n\nHave a nice day.";
+    $r->setOk(200, 'Modified');
+    $r->t("The EAN13 information was successfully modified.\n\nHave a nice day.");
   }
+  return $r;
 }
 
 /**
  * Delete EAN13 information from a resource.
  */
 function deleteEan13 (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
-  if (! ean13dataCheck($q->get_param('ean13'))) {
-    header('HTTP/1.1 406 Bad EAN13 data');
-    print 
-      "The folksoean13 field should consist of exactly 13 digits. "
-      ."\n\nPlease check your "
-      ."data before trying again.";
-    return;
-  }
-
+  $r = new folksoResponse();
   $i = new folksoDBinteract($dbc);
   if ($i->db_error()) {
-    header('HTTP/1.0 501 Database connection error');
-    die($i->error_info());
+    $r->dbConnectionError($i->error_info());
+    return $r;
+  }
+
+  if (! ean13dataCheck($q->get_param('ean13'))) {
+    $r->setError(406, 'Bad EAN13 data',
+                 "The folksoean13 field should consist of exactly 13 digits. "
+                 ."\n\nPlease check your "
+                 ."data before trying again.");
+    return $r;
   }
 
   $sql = 
@@ -791,23 +789,20 @@ function deleteEan13 (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $db
   $i->query($sql);
 
   if ($i->result_status == 'DBERR') {
-    header('HTTP/1.1 501 Database insert error');
-    die($i->error_info());
+    $r->dbQueryError($i->error_info());
   }
   else {
     if ($i->affected_rows == 0) {
-      header('HTTP/1.1 404 Resource/EAN13 not found');
-      print 
-        "The combination resource + EAN13 could not be found. "
-        ."Nothing was deleted.";
-      return;
+      $r->setError(404, 'Resource/EAN13 not found',
+                   "The combination resource + EAN13 could not be found. "
+                   ."Nothing was deleted.");
     }
     else {
-      header('HTTP/1.1 200 Deleted');
-      print "The EAN13 information was deleted";
-      return;
+      $r->setOk(200, 'Deleted');
+      $r->t( "The EAN13 information was deleted");
     }
   }
+  return $r;
 }
 
 
@@ -817,10 +812,11 @@ function deleteEan13 (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $db
  * Web params: POST, note, res
  */
 function addNote (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+  $r = new folksoResponse();
   $i = new folksoDBinteract($dbc);
   if ($i->db_error()) {
-    header('HTTP/1.0 501 Database connection error');
-    die($i->error_info());
+    $r->dbConnectionError($i->error_info());
+    return $r;
   }
 
   $sql = 
@@ -840,21 +836,22 @@ function addNote (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
 
   $i->query($sql);
   if ($i->result_status == 'DBERR') {
-    header('HTTP/1.1 501 Database insert error');
-    die($i->error_info());
+    $r->dbQueryError($i->error_info());
   }
   else {
-    header('HTTP/1.1 202 Note accepted');
-    print "This note will be added to the resource: " . $q->res;
-    print "\n\nText of the submitted note:\n". $q->get_param('note');
+    $r->setOk(202, 'Note accepted');
+    $r->t( "This note will be added to the resource: " . $q->res);
+    $r->t( "\n\nText of the submitted note:\n". $q->get_param('note'));
   }
+  return $r;
 }
 
 function getNotes (folksoquery $q, folksoWsseCreds $cred, folksoDBconnect $dbc){
- $i = new folksoDBinteract($dbc);
+  $r = new folksoResponse();
+  $i = new folksoDBinteract($dbc);
   if ($i->db_error()) {
-    header('HTTP/1.0 501 Database connection error');
-    die($i->error_info());
+    $r->dbConnectionError($i->error_info());
+    return $r;
   }
 
   $sql = 
@@ -873,40 +870,41 @@ function getNotes (folksoquery $q, folksoWsseCreds $cred, folksoDBconnect $dbc){
   $i->query($sql);
   switch ($i->result_status) {
   case 'DBERR':
-    header('HTTP/1.1 501 Database query error');
-    die($i->error_info());
+    $r->dbQueryError($i->error_info());
+    return $r;
     break;
   case 'NOROWS': 
     if ($i->resourcep($q->res)) {
-      header('HTTP/1.1 404 No notes associated with this resource');
-      //      print $sql;
-      print "No notes have been written yet. Write one if you want.";
+      $r->setError(404, 'No notes associated with this resource',
+                   "No notes have been written yet. Write one if you want.");
     }
     else {
-      header('HTTP/1.1 404 Resource not found');
-      print "Sorry. The resource for which you requested an annotation".
-        " is not present in the database";
+      $r->setError(404, 'Resource not found',
+                   "Sorry. The resource for which you requested an annotation".
+                   " is not present in the database");
     }
-    return;
+    return $r;
     break;
   case 'OK':
-    header('HTTP/1.1 200 Notes found');
+    $r->setOk(200, 'Notes found');
     break;
 }
+
   // assuming 200 from here on
 
   $df = new folksoDisplayFactory();
   $dd = $df->NoteList();
   $dd->activate_style('xml');
 
-  print $dd->startform();
-  print $dd->title($q->res);
+  $r->t( $dd->startform());
+  $r->t( $dd->title($q->res));
   while ($row = $i->result->fetch_object()) {
-    print $dd->line($row->user_id,
+    $r->t( $dd->line($row->user_id,
                     $row->id, 
-                    $row->note);
+                     $row->note));
   }
-  print $dd->endform();
+  $r->t( $dd->endform());
+  return $r;
 }
 
 /**
@@ -915,40 +913,45 @@ function getNotes (folksoquery $q, folksoWsseCreds $cred, folksoDBconnect $dbc){
  * "note" must be a numerical note id.
  */
 function rmNote (folksoquery $q, folksoWsseCreds $cred, folksoDBconnect $dbc){
- $i = new folksoDBinteract($dbc);
+  $r = new folksoResponse();
+  $i = new folksoDBinteract($dbc);
   if ($i->db_error()) {
-    header('HTTP/1.0 501 Database connection error');
-    die($i->error_info());
+    $r->dbConnectionError($i->error_info());
+    return $r;
   }
+
   if (! is_numeric($q->get_param('note'))){
-    header('HTTP/1.1 400 Bad note argument');
-    die($q->get_param('note') . ' is not a number');
+    $r->setError(400, 'Bad note argument',
+                 $q->get_param('note') . ' is not a number');
+    return $r;
   }
 
   $sql = "DELETE FROM note WHERE id = " . $q->get_param('note');
   $i->query($sql);
 
   if ($i->result_status == 'DBERR'){
-    header('HTTP/1.1 Database delete errors');
-    die($i->error_info());
+    $r->setError(500, 'Database delete errors',
+                 $i->error_info());
   }
   else {
-    header('HTTP/1.1 200 Deleted');
-    print "The note " . $q->get_param('note'). " was deleted.";
+    $r->setOk(200, 'Deleted');
+    $r->t( "The note " . $q->get_param('note'). " was deleted.");
   }
+  return $r;
 }
 
 /**
  * Returns an xml list of resources associated with the same ean-13 as
- * the select resource
+ * the selected resource
  *
  * Web params: GET, folksores, folksoean13list
  */
 function resEans (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+  $r = new folksoResponse();
   $i = new folksoDBinteract($dbc);
   if ($i->db_error()) {
-    header('HTTP/1.0 501 Database connection error');
-    die($i->error_info());
+    $r->dbConnectionError($i->error_info());
+    return $r;
   }
 
   $rq = new folksoResQuery();
@@ -958,26 +961,25 @@ function resEans (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
 
   switch ($i->result_status) {
   case 'DBERR':
-    header('HTTP/1.1 501 Database query error');
-    die($i->error_info());
+    $r->dbQueryError($i->error_info());
     break;
   case 'NOROWS':
-      header('HTTP/1.1 404 Resource not found');
-      print "The requested resource is not present in the database.\n"
-        ." Maybe it  has not been indexed yet, or an erroneous identifier "
-        ." was used. ";
-      return;
-      break;
+    $r->setError(404, 'Resource not found',
+                 "The requested resource is not present in the database.\n"
+                 ." Maybe it  has not been indexed yet, or an erroneous identifier "
+                 ." was used. ");
+    break;
   case 'OK':
     if ($i->result->num_rows == 1) {
-      header('HTTP/1.1 404 No EAN-13 data associated with this resource');
-      print "There is no EAN-13 data yet for the resource " . $q->res . ".";
-      print "<br/>" . $sql;
-      return;
+      $r->setError(404, 'No EAN-13 data associated with this resource',
+                   "There is no EAN-13 data yet for the resource " . $q->res . ".");
     }
     else {
-      header('HTTP/1.1 200 EAN-13 data found');
+      $r->setOk(200, 'EAN-13 data found');
     }
+  }
+  if ($r->isError()) {
+    return $r;
   }
 
   $title_line = $i->result->fetch_object(); /**popping the title that
@@ -990,15 +992,15 @@ function resEans (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
   $dd = $df->associatedEan13resources();
   $dd->activate_style('xml');
 
-  print $dd->startform();
+  $r->t($dd->startform());
   while($row = $i->result->fetch_object()) {
-    print $dd->line($row->id, 
-                    $row->url,
-                    $row->title);
+    $r->t( $dd->line($row->id, 
+                     $row->url,
+                     $row->title));
   }
-  print $dd->endform();                 
-
-  }
+  $r->t( $dd->endform());
+  return $r;
+}
 
 
 

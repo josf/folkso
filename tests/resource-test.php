@@ -7,12 +7,21 @@ include('dbinit.inc');
 
 class testOfResource extends  UnitTestCase {
   public $dbc;
+  public $dbc2;
+  public $dbc3;
+  public $cred;
 
   function setUp() {
     test_db_init();
     /** not using teardown because this function does a truncate
         before starting. **/
-    
+     $this->dbc = new folksoDBconnect('localhost', 'tester_dude', 
+                                      'testy', 'testostonomie');
+     $this->dbc2 = new folksoDBconnect('localhost', 'tester_dude', 
+                                      'testy', 'testostonomie');
+     $this->dbc3 =new folksoDBconnect('localhost', 'tester_dude', 
+                                      'testy', 'testostonomie');
+     $this->cred = new folksoWsseCreds('zork');    
   }
 
   function testIsHead () {
@@ -64,6 +73,18 @@ class testOfResource extends  UnitTestCase {
      $this->assertPattern('/tagone/',
                           $r->body(),
                           '"tagone" tag not found in response body');
+
+     $r2 = getTagsIds(new folksoQuery(array(),
+                                      array('folksores' => 'http://example.com/1',
+                                            'folksodatatype' => 'xml'),
+                                      array()),
+                      new folksoWsseCreds('zork'),
+                      $this->dbc);
+     $this->assertEqual($r2->status, 200,
+                        'getTagsIds returns error with xml datatype');
+     $xxx = new DOMDocument();
+     $this->assertTrue($xxx->loadXML($r2->body()),
+                       'failed to load xml');
    }
 
    function testGetTagsIds_xml () {
@@ -82,6 +103,9 @@ class testOfResource extends  UnitTestCase {
                           $r->body(),
                           'Does not look like xml'
                           );
+     $xxx = new DOMDocument();
+     $this->assertTrue($xxx->loadXML($r->body()),
+                       'xml failed to load');
      
 
    }
@@ -113,6 +137,9 @@ class testOfResource extends  UnitTestCase {
 
      $this->assertTrue(strlen($r2->body()) > 100, 
                        "No body in xml request");
+     $xxx = new DOMDocument();
+     $this->assertTrue($xxx->loadXML($r2->body()),
+                       'failed to load xml: ' . $r2->body());
 
      $dbc3 = new folksoDBconnect('localhost', 'tester_dude',
                                  'testy', 'testostonomie');
@@ -298,6 +325,61 @@ class testOfResource extends  UnitTestCase {
                         'Removed resource still present in DB' . $r->status);
    }
 
+   function testResEans() {
+     $r = resEans(new folksoQuery(array(),
+                                  array('folksores' => 'http://example.com/1'),
+                                  array()),
+                  $this->cred,
+                  $this->dbc);
+     $this->assertIsA($r, folksoResponse,
+                      'Problem with object creation');
+     $this->assertEqual($r->status, 404,
+                        'Should not be any ean13 data yet');
+     $r2 = assocEan13(new folksoQuery(array(),
+                                array('folksores' => 'http://example.com/1',
+                                      'folksoean13' => '1234567890123'),
+                                array()),
+                $this->cred,
+                new folksoDBconnect('localhost', 'tester_dude',
+                                    'testy', 'testostonomie'));
+
+     $r2bis = assocEan13(new folksoQuery(array(),
+                                array('folksores' => 'http://example.com/2',
+                                      'folksoean13' => '1234567890123'),
+                                array()),
+                $this->cred,
+                new folksoDBconnect('localhost', 'tester_dude',
+                                    'testy', 'testostonomie'));
+     $this->assertEqual($r2->status, 200,
+                        'Failed to associate ean13 to resource, following test may fail');
+     $cl = getTagsIds(new folksoQuery(array(),
+                                      array('folksores' => 'http://example.com/2',
+                                            'folksoean13' => 1,
+                                            'folksodatatype' => 'xml'),
+                                      array()),
+                      $this->cred,
+                      new folksoDBconnect('localhost', 'tester_dude',
+                                                'testy', 'testostonomie'));               
+     $this->assertEqual($cl->status, 200,
+                        'Ean data not there');
+
+     $r3 = resEans(new folksoQuery(array(),
+                                   array('folksores' => 'http://example.com/1'),
+                                   array()),
+                   $this->cred, 
+                   $this->dbc2);
+     $this->assertIsA($r3, folksoResponse,
+                      'This is not my beautiful folksoResponse object');
+     $this->assertEqual($r3->status, 200,
+                        'ean13 related resources not showing up ' . $r3->status . " ". 
+                        $r3->body());
+     $xxx = new DOMDocument();
+     $this->assertTrue($xxx->loadXML($r3->body()),
+                       'xml does not load');
+   }
+
+
+
    function testAssocEan13 () {
      $cred = new folksoWsseCreds('zork');
      $r = assocEan13(new folksoQuery(array(),
@@ -327,7 +409,85 @@ class testOfResource extends  UnitTestCase {
      $this->assertPattern('/1234567890123/',
                           $cl->body(),
                           'Did not find ean13 data'. $cl->body());
+   }
+
+   function testModify() {
+     $cred = new folksoWsseCreds('zork'); 
+     /** setup oldean **/
+     $su = assocEan13(new folksoQuery(array(),
+                                array('folksores' => 'http://example.com/1',
+                                      'folksoean13' => '1234567890123'),
+                                      array()),
+                      $cred,
+                      new folksoDBconnect('localhost', 'tester_dude',
+                                          'testy', 'testostonomie'));
+     /** do the deed **/
+     $r = modifyEan13(new folksoQuery(array(),
+                                     array('folksores' => 'http://example.com/1',
+                                           'folksooldean13' => '1234567890123',
+                                           'folksonewean13' => '1111111111111'),
+                                     array()),
+                     $cred,
+                     new folksoDBconnect('localhost', 'tester_dude',
+                                         'testy', 'testostonomie'));
+     $this->assertIsA($r, folksoResponse,
+                      'not returning folksoReponse object');
+     $this->assertEqual($r->status, 200,
+                        'Error message on ean13 modification' . $r->status . $r->status_message . $r->body());
      
+     $cl = getTagsIds(new folksoQuery(array(),
+                                            array('folksores' => 1,
+                                                  'folksoean13' => 1,
+                                                  'folksodatatype' => 'xml'),
+                                            array()),
+                            $cred,
+                            new folksoDBconnect('localhost', 'tester_dude',
+                                         'testy', 'testostonomie'));
+     $this->assertEqual(200, $cl->status,
+                        'Problem getting resource data back.');
+     $this->assertPattern('/111111111/', $cl->body(),
+                          'Not finding new ean13');
+     $this->assertNoPattern('/1234567/', $cl->body(),
+                            'Still finding old ean13');
+
+}
+
+
+   function testDeleteEan13 () {
+     $cred = new folksoWsseCreds('zork'); 
+     /** setup oldean **/
+     $su = assocEan13(new folksoQuery(array(),
+                                array('folksores' => 'http://example.com/1',
+                                      'folksoean13' => '1234567890123'),
+                                      array()),
+                      $cred,
+                      new folksoDBconnect('localhost', 'tester_dude',
+                                          'testy', 'testostonomie'));
+     /** do the deed **/
+     $r = deleteEan13(new folksoQuery(array(),
+                                     array('folksores' => 'http://example.com/1',
+                                           'folksoean13' => '1234567890123'),
+                                     array()),
+                     $cred,
+                     new folksoDBconnect('localhost', 'tester_dude',
+                                         'testy', 'testostonomie'));
+     $this->assertIsA($r, folksoResponse,
+                      'not returning folksoReponse object');
+     $this->assertEqual(200, $r->status,
+                        sprintf('Error returned on ean deletion %d %s <br/>%s',
+                                $r->status, $r->status_message, $r->body())
+                        );
+
+     $cl = getTagsIds(new folksoQuery(array(),
+                                            array('folksores' => 1,
+                                                  'folksoean13' => 1,
+                                                  'folksodatatype' => 'xml'),
+                                            array()),
+                            $cred,
+                            new folksoDBconnect('localhost', 'tester_dude',
+                                         'testy', 'testostonomie'));
+     $this->assertNoPattern('/1234567/', $cl->body(),
+                            'Still finding old ean13');
 
    }
 
