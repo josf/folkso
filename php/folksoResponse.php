@@ -21,6 +21,11 @@ class folksoResponse {
   private $body;
   public $error_body;
   public $headers;
+
+  /**
+   * Special headers added before header preparation.
+   */
+  public $preheaders;
   public $debug;
 
   private $httpStatus = array(200 => '0K', 
@@ -138,6 +143,7 @@ class folksoResponse {
     if ($this->errorDeclared) {
       return true;
     }
+    return $false;
   }
 
   public function setType($str) {
@@ -168,8 +174,8 @@ class folksoResponse {
       break;
     default: 
       $type =  'text/text';
-  }
-    return 'Content-Type: ' . $type;
+    }
+   return 'Content-Type: ' . $type;
   }
 
 
@@ -184,6 +190,18 @@ class folksoResponse {
     $this->body = $str;
   }
 
+/**
+ * Generic header adding function. No checking done. 
+ *
+ * Headers added this way will appear after the first two headers
+ * (HTTP/1.1 and content-type).
+ * 
+ * @param $str
+ */
+ public function addHeader ($str) {
+   $this->preheaders[] = $str;
+ }
+
   /**
    * Prepares an array containing the HTTP headers to be sent. 
    * 
@@ -192,6 +210,9 @@ class folksoResponse {
     $headers = array();
     $headers[] = 'HTTP/1.1 ' . $this->status . ' ' . $this->statusMessage;
     $headers[] = $this->contentType();
+    if (count($this->preheaders) > 0) {
+      $headers = array_merge($headers, $this->preheaders);
+    }
     
     $this->headers = $headers;
     return $headers;

@@ -12,20 +12,23 @@
  */
 
 require_once('folksoTags.php');
+require_once('folksoResponse.php');
+require_once('folksoResponder.php');
 
 $srv = new folksoServer(array( 'methods' => array('GET'),
                                'access_mode' => 'ALL'));
 
-$srv->addResponseObj(new folksoResponse('get',
+$srv->addResponseObj(new folksoResponder('get',
                                         array('required' => array('q')),
                                         'autocomplete'));
 $srv->Respond();
 
 function autocomplete (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
   $i = new folksoDBinteract($dbc);
+  $r = new folksoResponse();
   if ($i->db_error()) {
-    header('HTTP/1.1 501 Database error');
-    die($i->error_info());
+    $r->dbConnectionError($i->error_info());
+    return $r;
   }
 
   $sql = "SELECT tagdisplay ".
@@ -36,26 +39,27 @@ function autocomplete (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $d
   $i->query($sql);
   switch ($i->result_status) {
   case 'DBERR':
-    header('HTTP/1.1 501 Database query error');
-    die($i->error_info());
+    $r->dbQueryError($i->error_info());
+    return $r;
     break;
   case 'NOROWS':
-    header('HTTP/1.1 204 No matching tags');
-    return;
+    $r->setOk(204, 'No matching tags');
+    return $r;
     break;
   case 'OK':
-    header('HTTP/1.1 200 OK I guess');
+    $r->setOk(200, 'OK I guess');
     while ($row = $i->result->fetch_object()) {
 
       /** For entirely numeric tags, we enclose them in quotes so that
           they can be treated as text instead of as ids. **/
       if (is_numeric($row->tagdisplay)) {
-        print '"' . $row->tagdisplay . '"' . "\n";
+        $r->t('"' . $row->tagdisplay . '"' . "\n");
       }
       else {
-        print $row->tagdisplay . "\n";
+        $r->t( $row->tagdisplay . "\n");
       }
     }
+    return $r;
     break;
   }
 }

@@ -78,6 +78,21 @@ class testOffolksoResponse extends  UnitTestCase {
 
   }
 
+  function testAdHocHeaders () {
+    $r = new folksoResponse();
+    $r->setType('xml');
+    $r->setOk(200, 'Dandy');
+    $r->addHeader('X-Test-Random: Bob');
+    $r->prepareHeaders();
+    $this->assertTrue(count($r->headers) == 3,
+                      'Incorrect number of headers: ' . count($r->headers));
+    $this->assertEqual($r->headers[2], 
+                       'X-Test-Random: Bob',
+                       'Not retrieveing correct ad-hoc header data');
+
+  }
+
+
   function testDB () {
     test_db_init();
 
