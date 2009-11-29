@@ -325,6 +325,61 @@ class testOfResource extends  UnitTestCase {
                         'Removed resource still present in DB' . $r->status);
    }
 
+   function testResEans() {
+     $r = resEans(new folksoQuery(array(),
+                                  array('folksores' => 'http://example.com/1'),
+                                  array()),
+                  $this->cred,
+                  $this->dbc);
+     $this->assertIsA($r, folksoResponse,
+                      'Problem with object creation');
+     $this->assertEqual($r->status, 404,
+                        'Should not be any ean13 data yet');
+     $r2 = assocEan13(new folksoQuery(array(),
+                                array('folksores' => 'http://example.com/1',
+                                      'folksoean13' => '1234567890123'),
+                                array()),
+                $this->cred,
+                new folksoDBconnect('localhost', 'tester_dude',
+                                    'testy', 'testostonomie'));
+
+     $r2bis = assocEan13(new folksoQuery(array(),
+                                array('folksores' => 'http://example.com/2',
+                                      'folksoean13' => '1234567890123'),
+                                array()),
+                $this->cred,
+                new folksoDBconnect('localhost', 'tester_dude',
+                                    'testy', 'testostonomie'));
+     $this->assertEqual($r2->status, 200,
+                        'Failed to associate ean13 to resource, following test may fail');
+     $cl = getTagsIds(new folksoQuery(array(),
+                                      array('folksores' => 'http://example.com/2',
+                                            'folksoean13' => 1,
+                                            'folksodatatype' => 'xml'),
+                                      array()),
+                      $this->cred,
+                      new folksoDBconnect('localhost', 'tester_dude',
+                                                'testy', 'testostonomie'));               
+     $this->assertEqual($cl->status, 200,
+                        'Ean data not there');
+
+     $r3 = resEans(new folksoQuery(array(),
+                                   array('folksores' => 'http://example.com/1'),
+                                   array()),
+                   $this->cred, 
+                   $this->dbc2);
+     $this->assertIsA($r3, folksoResponse,
+                      'This is not my beautiful folksoResponse object');
+     $this->assertEqual($r3->status, 200,
+                        'ean13 related resources not showing up ' . $r3->status . " ". 
+                        $r3->body());
+     $xxx = new DOMDocument();
+     $this->assertTrue($xxx->loadXML($r3->body()),
+                       'xml does not load');
+   }
+
+
+
    function testAssocEan13 () {
      $cred = new folksoWsseCreds('zork');
      $r = assocEan13(new folksoQuery(array(),
