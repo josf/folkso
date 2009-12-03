@@ -69,12 +69,12 @@ class folksoSession {
       trigger_error("Database connection error: " .  $i->error_info(), 
                     E_USER_ERROR);
     }    
-    
+    $sess = $this->newSessionId();
     $i->query(
               'insert into sessions '
               .' (token, userid) '
               ." values ('"
-              . $i->dbescape($this->newSessionId()) . "', '"
+              . $i->dbescape($sess) . "', '"
               . $i->dbescape($uid) . "')"
               );
     if ($i->result_status == 'DBERR'){
