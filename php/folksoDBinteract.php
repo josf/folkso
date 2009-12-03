@@ -51,6 +51,12 @@ class folksoDBinteract {
    * or not.
    */
   public $affected_rows;
+
+  /**
+   * From mysqli_result->num_rows
+   */
+  public $rowCount;
+
   /**
    * When $this->first_val() is called, it stores the result here for
    * future calls.
@@ -130,6 +136,7 @@ class folksoDBinteract {
     $this->first_val = ''; // reset first_val for new query (just in case).
     $this->result = $this->db->query($query);
     $this->affected_rows = $this->db->affected_rows;
+    $this->rowCount = $this->result->num_rows;
 
     if ($this->db->errno <> 0) {
       $this->query_error = sprintf("Query error: %s Error code: %d Query: %s", 
@@ -205,6 +212,7 @@ class folksoDBinteract {
       return $this->result;
     }
   }
+
 
   /**
    * Utiliity function to test the existence of a tag. 
