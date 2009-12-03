@@ -53,7 +53,7 @@ class folksoOIuser extends folksoUser {
      }
 
      $i->query("select userid from oi_users "
-               . " where oid_url = '" . $id . "'");
+               . " where oid_url = '" . $i->dbescape($id) . "'");
 
      if ($i->result_status == 'OK') {
        return true;

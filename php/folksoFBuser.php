@@ -50,7 +50,7 @@ class folksoFBuser extends folksoUser{
 
      $i->query("select userid  "
                . " from fb_users"
-               . " where fb_uid = " . $id );
+               . " where fb_uid = " . $i->dbescape($id) );
 
      if ($i->result_status == 'OK') {
        return true;
