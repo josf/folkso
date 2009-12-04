@@ -16,6 +16,14 @@ class folksoOIuser extends folksoUser {
   public $loginId;
 
   /**
+   * @param folksoDBconnect $dbc
+   */
+  public function __construct (folksoDBconnect $dbc) {
+    $this->dbc = $dbc;
+  }
+
+
+  /**
    * @param $url
    */
   public function validateLoginId ($loginId = null) {
@@ -44,15 +52,27 @@ class folksoOIuser extends folksoUser {
                      E_USER_ERROR);
      }
 
-     $i->query("select userid from fb_users "
-               . " where oid_url = '" . $id . "'"
-               . " from oi_users");
+     $i->query("select userid from oi_users "
+               . " where oid_url = '" . $i->dbescape($id) . "'");
+
      if ($i->result_status == 'OK') {
        return true;
      }
      return false;
    }
 
+  
+/**
+ * @param $id
+ */
+ public function userFromLogin ($id) {
+   if($this->userFromLogin_base($id, 'oi_users', 'oid_url')) {
+     return $this;
+   }
+   else {
+     return false;
+   }
+ }
 
 
 }

@@ -7,7 +7,7 @@
 
 delimiter $$
 drop function if exists normalize_tag$$
-create function novel_normal(input_tag varchar(255))
+create function normalize_tag(input_tag varchar(255))
        returns varchar(120)
        deterministic
 

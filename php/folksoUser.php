@@ -144,7 +144,6 @@ class folksoUser {
     return $uid;
   }
 
-
   /**
    * Tests to see if User object contains enough data to be
    * used. Requires valid nick, first and last names and (possibly) valid
@@ -175,7 +174,7 @@ class folksoUser {
    * object or false in case of error, the second is a message
    * (typically an error message).final
    */
-  public function createUser ($params) {
+  public function loadUser ($params) {
     $missing = array();
     foreach ($this->required_fields as $field){
       if ((! isset($params[$field])) ||
@@ -199,6 +198,48 @@ class folksoUser {
 
     $this->Writeable();
     return array(true);
+  }
+
+
+  public function userFromLogin_base ($id, $view, $login_column) {
+   if ($this->validateLoginId($id) === false) {
+     return false; // exception ? warning ?
+   }
+   
+   $i = new folksoDBinteract($this->dbc);
+   if ($i->db_error()) {
+     trigger_error("Database connection error: " .  $i->error_info(), 
+                   E_USER_ERROR);
+   }
+
+   $i->query("select "
+             ." userid, last_visit, lastname, firstname, nick, email, institution, pays, fonction "
+             ." from "
+             ." $view "
+             ." where $login_column = '" . $i->dbescape($id) . "'");
+
+   switch ($i->result_status) {
+   case 'DBERR':
+     trigger_error('database query error ' . $i->error_info(),
+                   E_USER_ERROR);
+     return false;
+     break;
+   case 'NOROWS':
+     print "User not found";
+     return false;
+     break;
+   case 'OK':
+     $res = $i->result->fetch_object();
+     $this->loadUser(array('nick' => $res->nick,
+                           'firstname' => $res->firstname,
+                           'lastname' => $res->lastname,
+                           'email' => $res->email,
+                           'userid' => $res->userid,
+                           'institution' => $res->institution,
+                           'pays' => $res->pays,
+                           'fonction' => $res->fonction));
+   }
+   return $this;
   }
 
 

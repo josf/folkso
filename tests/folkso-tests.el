@@ -17,10 +17,10 @@
                     (concat "&" (car pair) "=" (cdr pair)))))))
 
 (setq fktest-tags
-
       '((number . "8170")
         (poesie . "poésie")
         (communication . "communication")))
+
 
 (defun fk-build-tag-get (base key &rest apairs)
   (let ((res-and-base (concat 
@@ -71,10 +71,7 @@
 
 (url-retrieve-synchronously "http://www.fabula.org/tags/resource.php?folksores=http://www.fabula.org/actualites/article23682.php&folksodatatype=html")
 
-<<<<<<< HEAD:tests/folkso-tests.el
 
 (url-retrieve-synchronously
  (fk-build-tag-get
   fktest-base 'communication '("folksodatatype" . "xml") '("folksofancy" . "1")))
-=======
->>>>>>> resp_ob:tests/folkso-tests.el

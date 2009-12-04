@@ -40,7 +40,6 @@ $srv->addResponseObj(new folksoResponder('get',
                                                     'resources')),
                                         'getTagResources'));
 
-
 $srv->addResponseObj(new folksoResponder('get', 
                                         array('required' => array('tag'),
                                               'exclude' => array('related')),
@@ -57,7 +56,7 @@ $srv->addResponseObj(new folksoResponder('get',
 $srv->addResponseObj(new folksoResponder('get',
                                         array('required' => array('related')),
                                         'relatedTags'));
-                     
+
 $srv->addResponseObj(new folksoResponder('get',
                                         array('required' => array('byalpha')),
                                         'byalpha'));

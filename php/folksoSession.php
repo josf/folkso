@@ -10,6 +10,8 @@
 require_once 'folksoUser.php';
 require_once 'folksoDBconnect.php';
 require_once 'folksoDBinteract.php';
+require_once 'folksoFabula.php';
+
   /**
    * @package Folkso
    */
@@ -17,12 +19,14 @@ class folksoSession {
 
   public $sessionId;
   public $dbc;
+  public $loc;
 
   /**
    * @param $dbc folksoDBconnect 
    */
   function __construct(folksoDBconnect $dbc){
     $this->dbc = $dbc;
+    $this->loc = new folksoFabula();
   }
 
 
@@ -65,18 +69,21 @@ class folksoSession {
       trigger_error("Database connection error: " .  $i->error_info(), 
                     E_USER_ERROR);
     }    
-    
+    $sess = $this->newSessionId();
     $i->query(
               'insert into sessions '
               .' (token, userid) '
               ." values ('"
-              . $i->dbescape($this->newSessionId()) . "', '"
+              . $i->dbescape($sess) . "', '"
               . $i->dbescape($uid) . "')"
               );
     if ($i->result_status == 'DBERR'){
       print $i->error_info();
       return false; // exception, errror ?
     }
+    setcookie('folksosess', $this->sessionId, 
+              time() + 1800, '/', 
+              $this->loc->web_domain);
     return $this->sessionId;
   }
       
@@ -134,6 +141,8 @@ class folksoSession {
  }
 
  /**
+  * Load user data from session id (cookie). Retuns folksoUser obj
+  *
   * @param $sid
   */
   public function userSession ($sid) {

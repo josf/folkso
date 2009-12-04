@@ -30,6 +30,10 @@ class testOffolksoOIuser extends  UnitTestCase {
                            'simple but valid url fails oid check');
          $this->assertFalse($oi->validateLoginId('bob.kom'),
                             'invalid oid url should fail');
+         $this->assertTrue($oi->validateLoginId('http://myspace/gustav'),
+                           'gustav url should validate, but is not');
+         $this->assertTrue($oi->exists('http://myspace/gustav'),
+                           'not existing gustav');
    }
 }//end class
 

@@ -10,6 +10,8 @@
    * @copyright 2008 Gnu Public Licence (GPL)
    * @subpackage Tagserv
    */
+
+require_once 'folksoDBconnect.php';
   /**
    * @package Folkso
    */
@@ -32,6 +34,13 @@ abstract class folksoLocal {
    * 'http://' part if necessary
    */
   public $web_url;
+ 
+  /**
+   * The domain to be used for session cookies. Should be something
+   * like '.example.com'
+   */
+  public $web_domain;
+
 
   /**
    * The path part of the uri where tag.php and resource.php are to
@@ -137,6 +146,18 @@ abstract class folksoLocal {
      $this->web_url = $new_url;
      return $this->web_url;
    }
+
+   /**
+    * Convenience method for producing DBconnect objects
+    */
+    public function locDBC () {
+      return new folksoDBconnect($this->db_server,
+                                 $this->db_user,
+                                 $this->db_password,
+                                 $this->db_database_name);
+   
+    }
+   
   
   }
 ?>
