@@ -25,7 +25,7 @@ class testOffolksoUser extends  UnitTestCase {
 
          $this->assertFalse($u->writeable,
                             'initial writable state should be false');
-         $simple_u = $u->createUser(array('nick' => 'bobert',
+         $simple_u = $u->loadUser(array('nick' => 'bobert',
                                           'firstname' => 'Bobness',
                                           'lastname' => 'Justaguy',
                                           'email' => 'sloink@zoink.com',
@@ -58,10 +58,6 @@ class testOffolksoUser extends  UnitTestCase {
                            'Email should be considered valid');
          $this->assertTrue($u->validEmail(),
                            'Email checking of object email value not working');
-
-
-         $this->assertTrue($u->checkFbId('abcdef'),
-                           'ultra simple FB id should pass.');
    
          $this->assertFalse($u->validateRight('i win'),
                             'spaces in right name should not validate');
@@ -79,7 +75,7 @@ class testOffolksoUser extends  UnitTestCase {
 
    function testWithDB (){
      $u = new folksoUser($this->dbc);
-     $u->createUser(array( 'nick' => 'marcelp',
+     $u->loadUser(array( 'nick' => 'marcelp',
                            'firstname' => 'Marcel',
                            'lastname' => 'Proust',
                            'email' => 'marcep@temps.eu',
