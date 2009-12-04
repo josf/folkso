@@ -167,7 +167,7 @@ class folksoSession {
      $u = new folksoUser($this->dbc);
      $res = $i->result->fetch_object();
      print "---" . $res->nick . "---";
-     $u->createUser(array(
+     $u->loadUser(array(
                           'nick' => $res->nick,
                           'firstname' => $res->firstname,
                           'lastname' => $res->lastname,
