@@ -18,8 +18,8 @@ create table users
        index unumb (userno)
        )
 ENGINE=InnoDB;
-grant select to folkso on users;
-grant select, insert, update, delete to folkso-rw on users;
+grant select on users to 'folkso'@'localhost';
+grant select, insert, update, delete on users to 'folkso-rw'@'localhost';
 
 create table fb_ids
        (userid varchar(255) primary key,
@@ -27,8 +27,8 @@ create table fb_ids
        foreign key (userid) references users (userid),
        index fb (fb_uid))
 ENGINE=InnoDB;
-grant select to 'folkso'@'localhost' on fb_ids;
-grant select, insert, update, delete to 'folkso-rw'@'localhost' on fb_ids;
+grant select on fb_ids to 'folkso'@'localhost';
+grant select, insert, update, delete on fb_ids to 'folkso-rw'@'localhost';
 
 create table oid_urls
        (userid varchar(255) primary key,
@@ -36,15 +36,15 @@ create table oid_urls
        foreign key (userid) references users (userid),
       index oid (oid_url(400)))
 ENGINE=InnoDB;
-grant select to 'folkso'@'localhost' on oid_urls;
-grant select, insert, update, delete to 'folkso-rw'@'localhost' on oid_urls;
+grant select  on oid_urls to 'folkso'@'localhost';
+grant select, insert, update, delete on oid_urls to 'folkso-rw'@'localhost';
 
 create or replace view fb_users
        as select fb_uid, u.userid as userid, last_visit, lastname, firstname, nick, email, institution, pays, fonction
           from users u 
           join fb_ids f on f.userid = u.userid;
-grant select to 'folkso'@'localhost' on fb_users;
-grant select to folkso on fb_users
+grant select on fb_users to 'folkso'@'localhost';
+grant select on fb_users to 'folkso-rw'@'localhost';
 
 
 create or replace view oi_users
@@ -59,16 +59,16 @@ create table sessions
        foreign key (userid) references users (userid)
        )      
 ENGINE=InnoDB;
-grant select to 'folkso'@'localhost' on sessions;
-grant select, insert, update, delete to 'folkso-rw'@'localhost' on sessions;
+grant select on sessions to 'folkso'@'localhost';
+grant select, insert, update, delete on sessions to 'folkso-rw'@'localhost';
 
 create table rights
        (rightid varchar(20) not null unique,
        service varchar(20) not null, 
        description text null)
 ENGINE=InnoDB;
-grant select to 'folkso'@'localhost' on sessions;
-grant select, insert, update, delete to 'folkso-rw'@'localhost' on sessions;
+grant select on sessions to 'folkso'@'localhost';
+grant select, insert, update, delete on sessions to 'folkso-rw'@'localhost';
 
 insert into rights (rightid, service) values ('create', 'folkso');
 insert into rights (rightid, service) values ('delete_othertaggage', 'folkso');
@@ -84,7 +84,7 @@ create table users_rights
        foreign key (rightid) references rights (rightid),
        primary key (userid, rightid))
 ENGINE=InnoDB;
-grant select to 'folkso'@'localhost' on sessions;
-grant select, insert, update, delete to 'folkso-rw'@'localhost' on sessions;
+grant select on sessions to 'folkso'@'localhost';
+grant select, insert, update, delete on sessions to 'folkso-rw'@'localhost';
 
 
