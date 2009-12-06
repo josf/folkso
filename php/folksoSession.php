@@ -78,7 +78,7 @@ class folksoSession {
               . $i->dbescape($uid) . "')"
               );
     if ($i->result_status == 'DBERR'){
-      print $i->error_info();
+      //      print $i->error_info();
       return false; // exception, errror ?
     }
     setcookie('folksosess', $this->sessionId, 
