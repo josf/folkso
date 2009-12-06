@@ -50,6 +50,7 @@ class folksoOIuser extends folksoUser {
      if ($i->db_error()) {
        trigger_error("Database connection error: " .  $i->error_info(), 
                      E_USER_ERROR);
+       return false;
      }
 
      $i->query("select userid from oi_users "
