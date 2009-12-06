@@ -29,7 +29,7 @@ class folksoOIuser extends folksoUser {
   public function validateLoginId ($loginId = null) {
     $url = $loginId ? $loginId : $this->loginId;
     if ((strlen($url) > 12) &&
-        preg_match('/^http:\/\/[a-z]+/',
+        preg_match('/^https?:\/\/[a-z]+/',
                    $url)){
       return true;
     }
