@@ -55,8 +55,6 @@ class folksoUser {
    if (substr($id, 0, 7) == 'http://') {
      
    }
-
-
  }
 
 
