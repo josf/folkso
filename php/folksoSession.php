@@ -61,7 +61,7 @@ class folksoSession {
    */
   public function startSession ($uid) {
     if ($this->validateUid($uid) === false) {
-      return false; // error
+      throw new Exception('Bad userid');
     }
 
     $i = new folksoDBinteract($this->dbc);
