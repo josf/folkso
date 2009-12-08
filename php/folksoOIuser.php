@@ -68,12 +68,8 @@ class folksoOIuser extends folksoUser {
  * @param $id
  */
  public function userFromLogin ($id) {
-   if($this->userFromLogin_base($id, 'oi_users', 'oid_url')) {
-     return $this;
-   }
-   else {
-     return false;
-   }
+   $z = $this->userFromLogin_base($id, 'oi_users', 'oid_url');
+   return $z;
  }
 
 
