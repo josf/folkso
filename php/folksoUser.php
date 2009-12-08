@@ -35,8 +35,8 @@ class folksoUser {
   public $loginId;
   public $dbc;
 
-  private $required_fields = array('nick', 'email', 'firstname', 'lastname');
-  private $allowed_fields = array('nick', 'email', 'firstname', 'lastname', 'userid', 'oid_url', 'fb_id', 'institution', 'pays', 'fonction');
+  private $required_fields = array('nick', 'email', 'firstname', 'lastname', 'loginid');
+  private $allowed_fields = array('nick', 'email', 'firstname', 'lastname', 'userid', 'loginid', 'institution', 'pays', 'fonction');
 
 
   public function __construct (folksoDBconnect $dbc) {
@@ -118,6 +118,17 @@ class folksoUser {
     return true;
   }
 
+
+  /**
+   * @param $id
+   */
+   public function setLoginId ($id) {
+     if ($this->validateLoginId($id)) {
+       $this->loginId = $id;
+     }
+   }
+
+
   /**
    * this function exists in folksoSession too. They should be identical.
    *
@@ -152,7 +163,8 @@ class folksoUser {
     if ( empty($this->firstName) ||
          empty($this->lastName) ||
          empty($this->email) ||
-         empty($this->nick)) {
+         empty($this->nick)  ||
+         empty($this->loginId)){
       return false;
     }
 
@@ -187,7 +199,7 @@ class folksoUser {
     $this->setNick($params['nick']);
     $this->setFirstName($params['firstname']);
     $this->setLastName($params['lastname']);
-    $this->setOidUrl($params['oid_url']);
+    $this->setLoginId($params['loginid']);
     $this->setInstitution($params['institution']);
     $this->setPays($params['pays']);
     $this->setFonction($params['fonction']);
@@ -197,6 +209,8 @@ class folksoUser {
     $this->Writeable();
     return array(true);
   }
+
+
 
 
   public function userFromLogin_base ($id, $view, $login_column) {
@@ -281,8 +295,8 @@ class folksoUser {
       return true;
     }
     return false;
+  }
 
-}
 
 }  
 ?>
