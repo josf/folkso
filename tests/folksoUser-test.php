@@ -19,58 +19,9 @@ class testOffolksoUser extends  UnitTestCase {
   }
 
    function testUser () {
-         $u   = new folksoUser($this->dbc);
-         $this->assertIsA($u, folksoUser,
-                               'object creation failed');
 
-         $this->assertFalse($u->writeable,
-                            'initial writable state should be false');
-         $simple_u = $u->loadUser(array('nick' => 'bobert',
-                                          'firstname' => 'Bobness',
-                                          'lastname' => 'Justaguy',
-                                          'email' => 'sloink@zoink.com',
-                                          'oid_url' => 'http://i.am.me'));
-         $this->assertTrue($simple_u[0],
-                           'Basic user creation fails');
-         $this->assertTrue($u->Writeable(),
-                           'Writeable state incorrect: should be writeable now');
 
-         $this->assertEqual($u->nick, 'bobert',
-                            'Not retreiving nick correctly');
-         $this->assertEqual($u->firstName, 'Bobness',
-                            'Not retreiving first name correctly');
 
-         $this->assertTrue($u->validNick('abcde'),
-                           'Nick validation of "abcde" fails');
-         $this->assertFalse($u->validNick('a'),
-                            'Nick validation incorrect: single character should fail');
-         $this->assertTrue($u->validNick('abcdefghijklm'),
-                           'Nick validation incorrect. Long password should pass.');
-         $this->assertTrue($u->validNick('abc123'),
-                           'Nick validation incorrect. Should accept numbers');
-         $this->assertFalse($u->validNick('abc_def'),
-                            'Nick validation incorrect. Should not accept underscore');
-
-         $this->assertFalse($u->validEmail("zork"), 
-                            'Not detecting incomplete email (zork)');
-
-         $this->assertTrue($u->validEmail("zork@zork.zork"),
-                           'Email should be considered valid');
-         $this->assertTrue($u->validEmail(),
-                           'Email checking of object email value not working');
-   
-         $this->assertFalse($u->validateRight('i win'),
-                            'spaces in right name should not validate');
-         $this->assertFalse($u->validateRight('Iwin'),
-                            'capitals in right name should not validate');
-         $this->assertTrue($u->validateRight('tag'),
-                           'right name "tag" should validate');
-         
-         $this->assertFalse($u->checkUserRight('99oooo zork'),
-                            'bad right name should fail in checkUserRight');
-
-         $this->assertFalse($u->checkUserRight('haroomph'),
-                            'non existant right should return false');
    }
 
    function testWithDB (){
