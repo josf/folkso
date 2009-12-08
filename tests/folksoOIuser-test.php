@@ -97,8 +97,19 @@ class testOffolksoOIuser extends  UnitTestCase {
          $this->assertTrue($oi->exists('http://myspace.com/gustav'),
                            'not existing gustav');
 
-         $gus = new folksoOIuser($this->dbc);
-         $gus->userFromLogin('http://myspace.com/gustav');
+         $noone = new folksoOIuser($this->dbc2);
+         $bzork = $noone->userFromLogin('http://myspace.com/ploof');
+         $this->assertFalse($bzork,
+                            'bad user id should return false in userFromLogin');
+
+         
+         $gus = new folksoOIuser($this->dbc3);
+         $zork = $gus->userFromLogin('http://myspace.com/gustav');
+
+         $this->assertIsA($zork, folksoOIuser,
+                          'userFromLogin should not return false');
+         $this->assertTrue($gus->Writeable(),
+                           'userFromLogin does not fetch a writeable user'. print_r($gus));
          $this->assertEqual($gus->nick, 'gustav',
                             'Not retreiving correct nick');
          $this->assertTrue(strlen($gus->nick) > 2,
@@ -108,6 +119,20 @@ class testOffolksoOIuser extends  UnitTestCase {
          $this->assertEqual($gus->email, 'gflaub@sentimental.edu',
                             'Not retrieving correct email address');
          $this->assertTrue($gus->Writeable(), 'retrieved user is not writeable');
+
+
+   }
+
+   function testCreation () {
+         $claud = new folksoOIuser($this->dbc);
+         $claud->loadUser(array('nick' => 'paulc',
+                                'firstname' => 'Paul',
+                                'lastname' => 'Claudel',
+                                'email' => 'pclaudel@vatican.com',
+                                'loginid' => 'http://pclaudel.openid.fr'));
+         $this->assertTrue($claud->Writeable(),
+                           'Claudel: failed to create writeable user');
+
    }
 }//end class
 
