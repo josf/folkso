@@ -243,6 +243,7 @@ class folksoUser {
    case 'OK':
      $res = $i->result->fetch_object();
      $this->loadUser(array('nick' => $res->nick,
+                           'loginid' => $id,
                            'firstname' => $res->firstname,
                            'lastname' => $res->lastname,
                            'email' => $res->email,
