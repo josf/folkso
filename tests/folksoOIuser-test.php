@@ -116,6 +116,8 @@ class testOffolksoOIuser extends  UnitTestCase {
                           'userFromLogin should not return false');
          $this->assertTrue($gus->Writeable(),
                            'userFromLogin does not fetch a writeable user'. print_r($gus));
+         $this->assertEqual($gus->userid, 'gustav-2009-001',
+                            'Not retreiving userid');
          $this->assertEqual($gus->nick, 'gustav',
                             'Not retreiving correct nick');
          $this->assertTrue(strlen($gus->nick) > 2,

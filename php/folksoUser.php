@@ -148,9 +148,9 @@ class folksoUser {
    */
   public function setUid ($uid) {
     if ($this->validateUid($uid)){
-      $this->uid = $uid;
+      $this->userid = $uid;
     }   
-    return $uid;
+    return $userid;
   }
 
   /**
@@ -244,6 +244,7 @@ class folksoUser {
      $res = $i->result->fetch_object();
      $this->loadUser(array('nick' => $res->nick,
                            'loginid' => $id,
+                           'userid' => $res->userid,
                            'firstname' => $res->firstname,
                            'lastname' => $res->lastname,
                            'email' => $res->email,
