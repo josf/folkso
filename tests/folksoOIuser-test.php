@@ -102,6 +102,12 @@ class testOffolksoOIuser extends  UnitTestCase {
          $this->assertFalse($bzork,
                             'bad user id should return false in userFromLogin');
 
+         $marcel = new folksoOIuser($this->dbc4);
+         $marcel->userFromLogin('http://flickr.com/marcelp');
+         $this->assertEqual($marcel->nick, 'marcelp',
+                            'Not retreiving correct nick for marcelp');
+
+
          
          $gus = new folksoOIuser($this->dbc3);
          $zork = $gus->userFromLogin('http://myspace.com/gustav');
