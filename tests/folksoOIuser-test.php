@@ -138,6 +138,17 @@ class testOffolksoOIuser extends  UnitTestCase {
                                 'loginid' => 'http://pclaudel.openid.fr'));
          $this->assertTrue($claud->Writeable(),
                            'Claudel: failed to create writeable user');
+         $claud->writeNewUser();
+         $ex = new folksoOIuser($this->dbc2);
+         $this->assertTrue($ex->exists('http://pclaudel.openid.fr'),
+                           'User does not seem to have been created');
+
+         $bad = new folksoOIuser($this->dbc3);
+         $bad->loadUser(array('nick' => 'celine75',
+                              'firstname' => 'Ferdy',
+                              'lastname' => 'Céline',
+                              'email' => 'f.celine@fn.fr'));
+
 
    }
 }//end class
