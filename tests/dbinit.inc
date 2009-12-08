@@ -18,9 +18,13 @@ function test_db_init() {
   }
 
   print $i->error_info();
-  $user = array( 'marcelp' => array('Marcel', 'Proust', 'marcelp@temps.eu'),
-                 'gustav' => array('Gustave', 'Flaubert', 'gflaub@sentimental.edu'),
-                 'rambo' => array('Arthur', 'Rimbaud', 'arthurrr@ivoire.biz'));
+  $user = array( 'marcelp' => 
+                 array('Marcel', 'Proust', 'marcelp@temps.eu', 
+                       0, 'http://flickr.com/marcelp'),
+                 'gustav' => array('Gustave', 'Flaubert', 'gflaub@sentimental.edu',
+                                   0, 'http://myspace.com/gustav'),
+                 'rambo' => array('Arthur', 'Rimbaud', 'arthurrr@ivoire.biz',
+                                  543210, ''));
 
   $reslist = array('http://example.com/1',
                    'http://example.com/2',
@@ -85,8 +89,8 @@ function test_db_init() {
     }
     foreach($user as $k => $v){
       print $k;
-      $i->sp_query(sprintf("call create_user('%s', '%s', '%s', '%s', '', '', '')",
-                           $k, $v[0], $v[1], $v[2]));
+      $i->sp_query(sprintf("call create_user('%s', '%s', '%s', '%s', '%s', %d, '', '', '')",
+                           $k, $v[0], $v[1], $v[2], $v[4], $v[3]));
       print $i->error_info();
     }
     $i->query("insert into users_rights (userid, rightid) values "
@@ -95,11 +99,11 @@ function test_db_init() {
               ."('marcelp-2009-001', 'tag'), "
               ."('gustav-2009-001', 'tag')");
 
-    $i->query("insert into fb_ids (userid, fb_uid) values "
+    /*    $i->query("insert into fb_ids (userid, fb_uid) values "
               ." ('rambo-2009-001', 123456) ");
     $i->query("insert into oid_urls (userid, oid_url) values "
               ." ('marcelp-2009-001', 'http://flickr.com/marcelp'), "
-              ." ('gustav-2009-001', 'http://myspace.com/gustav')");
+              ." ('gustav-2009-001', 'http://myspace.com/gustav')"); */
 
 }
 
