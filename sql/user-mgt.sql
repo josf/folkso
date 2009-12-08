@@ -7,6 +7,8 @@ create procedure create_user(
                   firstname varchar(255),
                   lastname varchar(255),
                   email varchar(255),
+                  oid_url_val text,
+                  fb_id int,
                   institution varchar(255),
                   pays varchar(50),
                   fonction varchar(50)
@@ -26,6 +28,10 @@ set counting = 1;
 
 if length(nick) < 5 then
    set err_msg =  'ERROR: nick is less than 5 characters long';
+elseif length(oid_url_val) = 0 and fb_id = 0 then
+   set err_msg = 'ERROR: no login id data (fb and oid are empty)';
+elseif length(oid_url_val) > 0 and fb_id > 0 then
+   set err_msg = 'ERROR: we have both fb and oid. This will not work';
 else
 
 -- build userid from nick
@@ -49,16 +55,30 @@ else
     end if;          
  end loop UID;
 
- end if;  -- nick length check (we avoid the loop)
+ end if;  -- end of data checks (we avoid the loop)
 
 
   if length(err_msg) > 1 then
      select err_msg;
   else
+   start transaction;
    insert into users 
         (userid, firstname, lastname, nick, email, institution, pays, fonction)
         values
         (uid, firstname, lastname, nick, email, institution, pays, fonction);
+
+   if length(oid_url_val) > 1 then
+   insert into oid_urls
+          (userid, oid_url)
+          values
+          (uid, oid_url_val);
+   else
+   insert into fb_ids
+          (userid, fb_uid)
+          values
+          (uid, fb_id);
+   end if;
+   commit;
    select userid, firstname, lastname, nick, email, institution, pays, fonction
    from users 
    where userid = uid;
