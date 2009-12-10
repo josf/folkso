@@ -32,14 +32,15 @@ class testOffolksoSession extends  UnitTestCase {
                             'this uid should not validate');
          $this->assertFalse($s->validateUid('zork-**--000'),
                             'this uid should not validate either');
-    
+
          $this->assertTrue($s->validateSid('eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee'),
                            'this should be a valid session id');
          $this->assertTrue($s->validateSid($s->newSessionId()),
                            'a new session id should validate');
          $this->assertFalse($s->validateSid('tooshort'),
                             'a short session id should not validate');
-                                       
+                                      
+         $this->expectException();
          $this->assertFalse($s->startSession('zork-ù**-volvp zZkr'),
                             'bad uid should prevent session from starting');
          $this->assertFalse($s->checkSession('eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee'),
