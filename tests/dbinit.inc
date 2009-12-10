@@ -99,9 +99,9 @@ function test_db_init() {
               ."('marcelp-2009-001', 'tag'), "
               ."('gustav-2009-001', 'tag')");
 
-    /*    $i->query("insert into fb_ids (userid, fb_uid) values "
+    $i->query("insert into fb_ids (userid, fb_uid) values "
               ." ('rambo-2009-001', 123456) ");
-    $i->query("insert into oid_urls (userid, oid_url) values "
+    /*    $i->query("insert into oid_urls (userid, oid_url) values "
               ." ('marcelp-2009-001', 'http://flickr.com/marcelp'), "
               ." ('gustav-2009-001', 'http://myspace.com/gustav')"); */
 
