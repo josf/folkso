@@ -63,6 +63,8 @@ class folksoSession {
 
 
   /**
+   * Starts session and sets cookie.
+   * 
    * @param $uid String
    */
   public function startSession ($uid) {
@@ -94,7 +96,7 @@ class folksoSession {
   }
       
   /**
-   * Erases any current session id.
+   * Erases any current session id from current object (but not from DB).
    */
   public function newSessionId () {
     $this->sessionId = hash('sha256', time() . 'OldSalts');
@@ -102,6 +104,8 @@ class folksoSession {
   }
 
 /**
+ * Verifies that session is present.
+ *
  * @param $session_id
  */
   public function checkSession ($session_id) {
@@ -154,7 +158,7 @@ class folksoSession {
   public function userSession ($sid) {
     $sid = $sid ? $sid : $this->sessionId;
     if ($this->validateSid($sid) === false) {
-      return false;  // excepmtion
+      return false;  // exception?
     }
     
    $i = new folksoDBinteract($this->dbc);
@@ -172,7 +176,6 @@ class folksoSession {
    if ($i->result_status == 'OK') {
      $u = new folksoUser($this->dbc);
      $res = $i->result->fetch_object();
-     print "---" . $res->nick . "---";
      $u->loadUser(array(
                           'nick' => $res->nick,
                           'firstname' => $res->firstname,
