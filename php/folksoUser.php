@@ -60,7 +60,7 @@ class folksoUser {
 
 
   public function setNick($nick) {
-    $this->nick = strtolower($nick);
+    $this->nick = trim(strtolower($nick));
   }
 
   /**
@@ -79,14 +79,14 @@ class folksoUser {
   }
 
   public function setFirstName($first){
-    $this->firstName = $first;
+    $this->firstName = trim($first);
   }
 
   public function setLastName($arg) {
-    $this->lastName = $arg;
+    $this->lastName = trim($arg);
   }
   public function setOidUrl($arg) {
-    $this->oidUrl = $arg;
+    $this->oidUrl = trim($arg);
   }
    
 
@@ -98,16 +98,16 @@ class folksoUser {
   }
     
   public function setInstitution($arg) {
-    $this->institution = $arg;
+    $this->institution = trim($arg);
   }
   public function setPays($arg) {
-    $this->pays = $arg;
+    $this->pays = trim($arg);
   }
   public function setFonction($arg) {
-    $this->fonction = $arg;
+    $this->fonction = trim($arg);
   }
   public function setEmail($arg) {
-    $this->email = $arg;
+    $this->email = trim($arg);
   }
   public function validEmail($arg = null){
     $em = $arg ? $arg : $this->email;
@@ -123,8 +123,8 @@ class folksoUser {
    * @param $id
    */
    public function setLoginId ($id) {
-     if ($this->validateLoginId($id)) {
-       $this->loginId = $id;
+     if ($this->validateLoginId(trim($id))) {
+       $this->loginId = trim($id);
      }
    }
 
@@ -147,6 +147,7 @@ class folksoUser {
    * @param $uid String
    */
   public function setUid ($uid) {
+    $uid = trim($uid);
     if ($this->validateUid($uid)){
       $this->userid = $uid;
     }   
