@@ -14,6 +14,8 @@ class testOffolksoFBuser extends  UnitTestCase {
         before starting. **/
      $this->dbc = new folksoDBconnect('localhost', 'tester_dude', 
                                       'testy', 'testostonomie');
+     $this->dbc2 = new folksoDBconnect('localhost', 'tester_dude',
+                                       'testy', 'testostonomie');
   }
 
 
@@ -52,6 +54,22 @@ class testOffolksoFBuser extends  UnitTestCase {
          $fb->useFBname('Pocahontas', true);
          $this->assertEqual($fb->lastName, 'Pocahontas',
                             'Single name not showing up as last name');
+
+         $fb->useFBname('Ronald M. Stevenson', true);
+         $this->assertEqual($fb->firstName, 'Ronald M.',
+                            'useFBname not treating multiple space names correctly');
+         $this->assertEqual($fb->lastName, 'Stevenson',
+                            'useFBname not treating multiple space names correctly');
+
+         $fb->useFBname('Ollie Olson');
+         $this->assertNotEqual('Ollie',
+                               $fb->firstName,
+                               'Conditional overwriting not working: should not have written here.');
+         $fb2   = new folksoFBuser($this->dbc2);                        
+         $fb2->useFBname('Randall Walker');
+         $this->assertEqual($fb2->firstName, 
+                            'Randall',
+                            'useFBname not working on empty user ob');
 
    }
 }//end class
