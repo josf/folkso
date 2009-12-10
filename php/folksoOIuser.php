@@ -91,13 +91,12 @@ class folksoOIuser extends folksoUser {
    }
 
    $i->sp_query(
-                sprintf("call create_user('%s', '%s', '%s', '%s', '%s', %d, '%s', '%s', '%s')",
+                sprintf("call create_user('%s', '%s', '%s', '%s', '%s', 0, '%s', '%s', '%s')",
                         $i->dbescape($this->nick),
                         $i->dbescape($this->firstName),
                         $i->dbescape($this->lastName),
                         $i->dbescape($this->email),
                         $i->dbescape($this->loginId),
-                        0,
                         $i->dbescape($this->institution),
                         $i->dbescape($this->pays),
                         $i->dbescape($this->fonction)));
