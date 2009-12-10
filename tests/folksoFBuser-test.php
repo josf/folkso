@@ -38,12 +38,20 @@ class testOffolksoFBuser extends  UnitTestCase {
          $this->assertEqual($fb->nick, 'rambo',
                             'Incorrect nick');
 
-         $fb->useFBname('Bob Henderson');
+         $fb->setFirstName('Frank');
+         $this->assertEqual('Frank', $fb->firstName,
+                            'Problem setting first name');
+
+         $fb->useFBname('Bob Henderson', TRUE);
          $this->assertEqual($fb->firstName, 'Bob',
-                            'userFBname does not produce correct first name' . $this->firstName);
+                            'userFBname does not produce correct first name' . $fb->firstName);
          $this->assertEqual($fb->lastName, 'Henderson',
                             'userFBname does nto produce correct last name' 
-                            . $this->firstName);
+                            . $fb->lastName);
+
+         $fb->useFBname('Pocahontas', true);
+         $this->assertEqual($fb->lastName, 'Pocahontas',
+                            'Single name not showing up as last name');
 
    }
 }//end class

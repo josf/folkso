@@ -80,14 +80,31 @@ class folksoFBuser extends folksoUser{
   * Separates on last space in string.
   *
   * @param $name String FB name as returned by API call
+  * @param $overwrite Bool If not null, replace current values
   */
-  public function useFBname ($name) {
+ public function useFBname ($name, $overwrite = null) {
     if (strlen($name) < 5){
       throw new Exception('Bad or insufficient FB name given as input to userFBname()');
     }
     if (strpos($name, ' ')) {
-      $this->setLastName(substr($name, strrpos($name, ' ') + 1));
-      $this->setFirstName(substr($name, 0, strrpos($name, ' ')));
+      $last = substr($name, strrpos($name, ' ') + 1);
+      $first = substr($name, 0, strrpos($name, ' '));
+    }
+    else {
+      $last = $name;
+    }
+
+    if ($overwrite) {
+      $this->setFirstName($first);
+      $this->setLastName($last);
+    }
+    else {
+      if (! $this->firstName) {
+        $this->setFirstName($first);
+      }
+      if (! $this->lastName){
+        $this->setLastName($last);
+      }
     }
   }
  
