@@ -72,6 +72,27 @@ class testOffolksoFBuser extends  UnitTestCase {
                             'useFBname not working on empty user ob');
 
    }
+
+
+   function testCreateUser() {
+     $u = new folksoFBuser($this->dbc);
+     $u->loadUser(array('nick' => 'chuckb',
+                        'firstname' => 'Charles',
+                        'lastname' => 'Baudelaire',
+                        'email' => 'cb@interflora.com',
+                        'loginid' => 99119911));
+     $this->assertIsA($u, folksoFBuser,
+                      'problem with object creation');
+
+     $this->assertTrue($u->Writeable(),
+                       'Baudelaire object is not writeable');
+     $u->writeNewUser();
+     $ex = new folksoFBuser($this->dbc2);
+     $this->assertTrue($ex->exists(99119911),
+                       'User does not seem to have been created');
+
+
+   }
 }//end class
 
 $test = &new testOffolksoFBuser();

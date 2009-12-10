@@ -75,6 +75,44 @@ class folksoFBuser extends folksoUser{
  }
 
 
+
+/**
+ * writes new user to DB. Should only be used for new users. Do not
+ * use for existing users, which will throw exceptions.
+ */
+ public function writeNewUser () {
+    if (! $this->Writeable()){
+     throw new Exception('User object is not writeable, cannot write to DB');
+   }
+
+   if ($this->exists($this->loginId)) {
+     throw new Exception('User already exists, cannot be created');
+   }
+
+   $i = new folksoDBinteract($this->dbc);
+   if ($i->db_error()) {
+     throw new Exception('DB connect error: ' . $i->error_info());
+   }
+
+   $i->sp_query(
+                sprintf("call create_user("
+                        ."'%s', '%s', '%s', '%s', '', %d, '%s', '%s', '%s')",
+                        $i->dbescape($this->nick),
+                        $i->dbescape($this->firstName),
+                        $i->dbescape($this->lastName),
+                        $i->dbescape($this->email),
+                        $i->dbescape($this->loginId),
+                        $i->dbescape($this->institution),
+                        $i->dbescape($this->pays),
+                        $i->dbescape($this->fonction)));
+
+   if ($i->result_status == 'DBERR') {
+     throw new Exception('DB query error on create FB user: ' . $i->error_info());
+   }
+ }
+
+
+
  /**
   * Fill in firstname and lastname using name provided by FB.
   * Separates on last space in string.
