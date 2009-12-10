@@ -35,6 +35,8 @@ class testOffolksoSession extends  UnitTestCase {
 
          $this->assertTrue($s->validateSid('eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee'),
                            'this should be a valid session id');
+         $this->assertFalse($s->validateSid('eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee-e'),
+                            'Non alphanumeric session id should fail');
          $this->assertTrue($s->validateSid($s->newSessionId()),
                            'a new session id should validate');
          $this->assertFalse($s->validateSid('tooshort'),

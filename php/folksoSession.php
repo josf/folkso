@@ -32,6 +32,11 @@ class folksoSession {
 
 /**
  *
+ * Makes sure a uid respects the basic format, which is:
+ *
+ * At least 5 letters, a hyphen, a group of numbers a hyphen, a second
+ * group of numbers.
+ *
  * @param $uid
  */
  public function validateUid ($uid) {
@@ -49,7 +54,8 @@ class folksoSession {
  * @param $session_id String (actually should be a hash...)
  */
  public function validateSid ($session_id) {
-   if (strlen($session_id) == 64){
+   if ((strlen($session_id) == 64) &&
+       preg_match('/^[a-z0-9]+$/', $session_id)) {
      return true;
    }
    return false;
