@@ -31,13 +31,19 @@ class testOffolksoFBuser extends  UnitTestCase {
 
          $this->assertTrue($fb->validateLoginId('123456'),
                            '123456 not validating as FB id');
-         $this->assertTrue($fb->exists('123456'),
-                           'rambo-2009-001 at 123456 not showing up');
-         $this->assertTrue($fb->userFromLogin('123456'),
+         $this->assertTrue($fb->exists('543210'),
+                           'rambo-2009-001 at 543210 not showing up');
+         $this->assertTrue($fb->userFromLogin('543210'),
                            'userFromLogin returns false');
          $this->assertEqual($fb->nick, 'rambo',
                             'Incorrect nick');
 
+         $fb->useFBname('Bob Henderson');
+         $this->assertEqual($fb->firstName, 'Bob',
+                            'userFBname does not produce correct first name' . $this->firstName);
+         $this->assertEqual($fb->lastName, 'Henderson',
+                            'userFBname does nto produce correct last name' 
+                            . $this->firstName);
 
    }
 }//end class

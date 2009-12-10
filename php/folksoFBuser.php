@@ -73,7 +73,24 @@ class folksoFBuser extends folksoUser{
      return false;
    }
  }
-  
+
+
+ /**
+  * Fill in firstname and lastname using name provided by FB.
+  * Separates on last space in string.
+  *
+  * @param $name String FB name as returned by API call
+  */
+  public function useFBname ($name) {
+    if (strlen($name) < 5){
+      throw new Exception('Bad or insufficient FB name given as input to userFBname()');
+    }
+    if (strpos($name, ' ')) {
+      $this->setLastName(substr($name, strrpos($name, ' ') + 1));
+      $this->setFirstName(substr($name, 0, strrpos($name, ' ')));
+    }
+  }
+ 
 
 }
 ?>
