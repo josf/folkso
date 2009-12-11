@@ -219,6 +219,22 @@ class folksoQuery {
     return $this->method;
   }
 
+
+/**
+ * Whether the method (from $_SERVER['REQUEST_METHOD']) is a write
+ * method (POST or DELETE, possibly PUSH) or not.
+ * 
+ * @return bool True for post, delete, etc. False for get, head.
+ */
+ public function is_write_method () {
+   if (($this->method == 'get') ||
+       ($this->method == 'head')) {
+     return false;
+   }
+   return true;
+ }
+
+
   /* This should not be publicly used anymore */
   private function params () {
     return $this->fk_params;
