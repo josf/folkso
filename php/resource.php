@@ -110,7 +110,7 @@ $srv->Respond();
  * 
  * Web parameters: HEAD + folksouri or folksoid
  */
-function isHead (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+function isHead (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
   $i = new folksoDBinteract($dbc);
   if ($i->db_error()) {
@@ -160,7 +160,7 @@ function isHead (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
  * Optional: limit
  * Optional: ean13 Includes EAN13 information if available, tagged as 'EAN13'. 
  */
-function getTagsIds (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+function getTagsIds (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
   $i = new folksoDBinteract($dbc);
 
@@ -274,7 +274,7 @@ function getTagsIds (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc
  * Optional: folksobypop (pure popularity based cloud).
  * Optional: folksobydate (date based cloud).
  */
-function tagCloudLocalPop (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+function tagCloudLocalPop (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $i = new folksoDBinteract($dbc);
   $r = new folksoResponse();
 
@@ -401,7 +401,7 @@ function tagCloudLocalPop (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnec
  * Optional parameters: urititle,
  * 
  */
-function visitPage (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+function visitPage (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $ic = new folksoIndexCache('/tmp/cachetest', 5);  
   $r = new folksoResponse();
   $page = new folksoUrl($q->res, 
@@ -460,7 +460,7 @@ function visitPage (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc)
  * Optional : newtitle
  *
  */
-function addResource (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+function addResource (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
   $i = new folksoDBinteract($dbc);
   if ($i->db_error()) {
@@ -492,7 +492,7 @@ function addResource (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $db
  * Web parameters: POST + folksores + folksotag
  * Optional : folksometa (defaults to 'normal' (1)). 
  */
-function tagResource (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+function tagResource (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
   $i = new folksoDBinteract($dbc);
   if ($i->db_error()) {
@@ -534,7 +534,7 @@ function tagResource (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $db
   return $r;
 }
 
-function unTag (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+function unTag (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
   $i = new folksoDBinteract($dbc);
   if ($i->db_error()) {
@@ -592,7 +592,7 @@ function unTag (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
 /**
  * Delete a resource and add its url to the list of excluded URL.
  */
-function rmRes (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+function rmRes (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
   $i = new folksoDBinteract($dbc);
   if ($i->db_error()) {
@@ -639,7 +639,7 @@ function rmRes (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
  *
  * POST, res, ean13
  */
-function assocEan13 (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+function assocEan13 (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
   $i = new folksoDBinteract($dbc);
   if ($i->db_error()) {
@@ -703,7 +703,7 @@ function assocEan13 (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc
 /**
  * Web params: POST, res, oldean13, newean13
  */
-function modifyEan13 (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+function modifyEan13 (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
     $r = new folksoResponse();
     $i = new folksoDBinteract($dbc);
     if ($i->db_error()) {
@@ -757,7 +757,7 @@ function modifyEan13 (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $db
 /**
  * Delete EAN13 information from a resource.
  */
-function deleteEan13 (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+function deleteEan13 (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
   $i = new folksoDBinteract($dbc);
   if ($i->db_error()) {
@@ -811,7 +811,7 @@ function deleteEan13 (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $db
  *
  * Web params: POST, note, res
  */
-function addNote (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+function addNote (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
   $i = new folksoDBinteract($dbc);
   if ($i->db_error()) {
@@ -846,7 +846,7 @@ function addNote (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
   return $r;
 }
 
-function getNotes (folksoquery $q, folksoWsseCreds $cred, folksoDBconnect $dbc){
+function getNotes (folksoquery $q, folksoDBconnect $dbc, folksoSession $fks){
   $r = new folksoResponse();
   $i = new folksoDBinteract($dbc);
   if ($i->db_error()) {
@@ -912,7 +912,7 @@ function getNotes (folksoquery $q, folksoWsseCreds $cred, folksoDBconnect $dbc){
  *
  * "note" must be a numerical note id.
  */
-function rmNote (folksoquery $q, folksoWsseCreds $cred, folksoDBconnect $dbc){
+function rmNote (folksoquery $q, folksoDBconnect $dbc, folksoSession $fks){
   $r = new folksoResponse();
   $i = new folksoDBinteract($dbc);
   if ($i->db_error()) {
@@ -946,7 +946,7 @@ function rmNote (folksoquery $q, folksoWsseCreds $cred, folksoDBconnect $dbc){
  *
  * Web params: GET, folksores, folksoean13list
  */
-function resEans (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+function resEans (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
   $i = new folksoDBinteract($dbc);
   if ($i->db_error()) {

@@ -106,7 +106,7 @@ $srv->Respond();
  * HEAD, tag
  *
  */
-function headCheckTag (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+function headCheckTag (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
   $i = new folksoDBinteract($dbc);
   if ($i->db_error()) {
@@ -150,7 +150,7 @@ function headCheckTag (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $d
  * return the display version of the tag.
  *
  */
-function getTag (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+function getTag (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
   $i = new folksoDBinteract($dbc);
   if ($i->db_error()) {
@@ -203,7 +203,7 @@ function getTag (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
  * 
  * Currently supports xhtml and xml dataformats.
  */
-function getTagResources (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+function getTagResources (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
   $i = new folksoDBinteract($dbc);
   if ($i->db_error()) {
@@ -378,7 +378,7 @@ function relatedTags (folksoQuery $q, folksoWsseCreds $cred, folksoDBConnect $db
  * POST, newtag
  *
  */
-function singlePostTag (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+function singlePostTag (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
   $i = new folksoDBinteract($dbc);
   if ($i->db_error()) {
@@ -407,7 +407,7 @@ function singlePostTag (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $
 }
 
 
-function fancyResource (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+function fancyResource (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
   $i = new folksoDBinteract($dbc);
   if ($i->db_error()) {
@@ -514,7 +514,7 @@ $querystart =
 /** 
  * GET, autotag
  */
-function autoCompleteTags (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+function autoCompleteTags (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
   $i = new folksoDBinteract($dbc);
   if ($i->db_error()) {
@@ -564,7 +564,7 @@ function autoCompleteTags (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnec
  * 
  */
 
-function tagMerge (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+function tagMerge (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
   $i = new folksoDBinteract($dbc);
   if ($i->db_error()) {
@@ -632,7 +632,7 @@ function tagMerge (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) 
  *
  * 404 on tag not found. 204 on success.
  */
-function deleteTag  (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+function deleteTag  (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
   $i = new folksoDBinteract($dbc);
   if ($i->db_error()) {
@@ -694,7 +694,7 @@ function deleteTag  (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc
  * List of tags by letter of the alphabet. Up to three letters are allowed.
  *
  */
-function byalpha (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+function byalpha (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
   $i = new folksoDBinteract($dbc);
   if ($i->db_error()) {
@@ -753,7 +753,7 @@ function byalpha (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
  * rename, newname
  * 
  */
-function renameTag (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+function renameTag (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
   $i = new folksoDBinteract($dbc);
   if ($i->db_error()) {
@@ -794,7 +794,7 @@ function renameTag (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc)
 /**
  * List of all the tags.
  */
-function allTags (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+function allTags (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
   $i = new folksoDBinteract($dbc);
   if ($i->db_error()) {
