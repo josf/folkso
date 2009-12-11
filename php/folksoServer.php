@@ -29,6 +29,7 @@ require_once('folksoQuery.php');
 require_once('folksoWsseCreds.php');
 require_once('folksoFabula.php');
 require_once('folksoResponder.php');
+require_once('folksoSession.php');
 
 class folksoServer {
 
@@ -50,6 +51,9 @@ class folksoServer {
 
   public $responseObjects = array();
   public $authorize_get_fields = array();
+  private $conf__keys = array('methods', 
+                       'access_mode','access_list', 
+                       'authorize_get_fields');
 
   /**
    * @param array $config
@@ -72,10 +76,6 @@ class folksoServer {
    * _do_ require it in an array here.
    */
   function __construct ($config) {
-    $conf_keys = array('methods', 
-                       'access_mode','access_list', 
-                       'authorize_get_fields');
-    
     // methods
     if ((array_key_exists('methods', $config)) &&
         (is_array($config['methods']))) {
@@ -102,7 +102,6 @@ class folksoServer {
         ( is_array($config['access_list']))) { // this should be an erreur instead!
       $this->clientAllowedHost = $config['access_list'];
     }
-
   }
 
   /**
@@ -112,8 +111,7 @@ class folksoServer {
    *
    */ 
   public function addResponseObj (folksoResponder $resp) { //one arg here to indicate
-    //that at least one is
-    //necessary
+    //that at least one is necessary
     $this->responseObjects[] = $resp;
   }
 
@@ -126,7 +124,7 @@ class folksoServer {
       // some kind of error
       header('HTTP/1.0 405');
       print "NOT OK. Illegal request method for this resource.";
-      return;
+     return;
     }
     
     if (!($this->validClientAddress($_SERVER['REMOTE_HOST'], 
