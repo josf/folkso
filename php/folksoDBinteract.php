@@ -345,16 +345,6 @@ class folksoDBinteract {
     }
   }
 
-  /**
-   * Allow the statement handle and the connection handle to be
-   * destroyed.
-   */
-  public function done () {
-       if ($this->result instanceof mysqli_result) {
-      $this->result->free();
-      }
-    $this->db->close();
-  }
 }
 
 ?>

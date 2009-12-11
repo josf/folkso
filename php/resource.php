@@ -147,7 +147,6 @@ function isHead (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
     $r->setOk(200, 'Resource exists');
     break;
   }
-  // $i->done();
   return $r;
 }
 
@@ -173,14 +172,12 @@ function getTagsIds (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   // check to see if resource is in db.
   if  (!$i->resourcep($q->res))  {
     if ($i->db_error()) {
-      $i->done();
       $r->dbQueryError($i->error_info());
     }
     else {
       $r->setError(404, 'Resource not found');
       $r->errorBody("Resource not present in database");
     }
-    $i->done();
     return $r;
   }
   
@@ -247,7 +244,6 @@ function getTagsIds (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
     }
     $r->t($xf->endform());
     return $r;
-    $i->done();
     break;
   default:
       $dd->activate_style('xhtml');
@@ -261,7 +257,6 @@ function getTagsIds (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
     $r->t($dd->line($row->tagdisplay));
     }
   $r->t($dd->endform());
-  $i->done();
   return $r;
 }
 
@@ -447,7 +442,6 @@ function visitPage (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
     }
     $r->setOk(200, "200 Read cache'");
     $r->t("updated db");
-    $i->done();
     } 
   else {
     $r->setOk(202, "Caching visit");
@@ -484,7 +478,6 @@ function addResource (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) 
     $r->setOk(201, "Resource added");
     $r->t('Resource added to database'); // TODO Return representation here (id, url)
   }
-  $i->done();
   return $r; 
 }
 
@@ -522,7 +515,6 @@ function tagResource (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) 
     else {
       $r->dbConnectionError($i->error_info());
     }
-    $i->done();
     return $r;
   }
   else {
@@ -531,7 +523,6 @@ function tagResource (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) 
     $r->t($query);
     $r->t("  DB says: ". $i->db->error);
   }
-  $i->done();
   return $r;
 }
 
