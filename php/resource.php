@@ -16,6 +16,7 @@ require_once('folksoTags.php');
 require_once('folksoIndexCache.php');
 require_once('folksoUrl.php');
 require_once('folksoResQuery.php');
+require_once('folksoSession.php');
 
 $srv = new folksoServer(array( 'methods' => array('POST', 'GET', 'HEAD'),
                                'access_mode' => 'ALL'));
