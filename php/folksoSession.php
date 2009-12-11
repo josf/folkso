@@ -11,6 +11,7 @@ require_once 'folksoUser.php';
 require_once 'folksoDBconnect.php';
 require_once 'folksoDBinteract.php';
 require_once 'folksoFabula.php';
+require_once 'folksoException.php';
 
   /**
    * @package Folkso
@@ -60,6 +61,23 @@ class folksoSession {
    }
    return false;
  }
+
+/**
+ * This does not initialize anything, since we might want to wait
+ * until the data is actually needed before starting a DB connection
+ * etc.
+ *
+ * @param $sid Session ID 
+ */
+ public function setSid ($sid) {
+   if (! $this->validateSid($sid)) {
+     throw new badSidException(htmlspecialchars($sid) . ' is not a valid session id');
+   }
+   else {
+     $this->sessionId = $sid;
+   }
+ }
+
 
 
   /**
