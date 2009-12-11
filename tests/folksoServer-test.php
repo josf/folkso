@@ -27,7 +27,7 @@ class testOffolksoServer extends  UnitTestCase {
 
   function testSimpleResponses () {
       $test_f = create_function('', 'return true;');
-      $act_f = create_function('', 'print "<p>Action!</p>"; return "ok";');
+      $act_f = create_function('', '$r = new folksoResponse();$r->t("<p>Action!</p>"); return $r;');
       $this->srv->addResponseObj(new folksoResponder('GET', 
                                                     array('required' => array()), 
                                                     $act_f));

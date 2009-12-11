@@ -70,14 +70,12 @@ class folksoResponder {
    * @uses method
    * @return boolean
    */
-  function activatep (folksoQuery $q, folksoWsseCreds $cred) {
+  function activatep (folksoQuery $q) {
     if (($q->method() == $this->method) &&
         ($this->param_check($q))) {
       return true;
     }
-    else {
-      return false;
-    }
+    return $false;
   }
   
   /**
@@ -149,18 +147,22 @@ class folksoResponder {
   }
 
   /**
-   * Passes t
+   * Passes the connection and query state to the responder objects.
+   *
    * @param folksoQuery $q
-   * @param folksoWsseCreds $cred (this will probably change)
    * @param folkskoDBconnect $dbc (passed in from folksoServer)
+   * @param folksoSession $fks Session data. Might be empty.
    * @return HTTP response. The return value is never used as such,
    * since the action is performed in the server.
    */
-  function Respond (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+  function Respond (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
     $aa = $this->action_func;
-    $resp =  $aa($q, $cred, $dbc); //action (on DB for example) + return document
+    $resp =  $aa($q, $dbc, $fks); //action (on DB for example) + return document
     //+ status. In fact, returned value does not
     //matter probably.
+    if (! ($resp instanceof folksoResponse)) {
+      throw new Exception('Not getting response object here');
+    }
     $resp->output();
   }
 

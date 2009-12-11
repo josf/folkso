@@ -136,47 +136,36 @@ class folksoServer {
 
     $q = new folksoQuery($_SERVER, $_GET, $_POST); 
     $realm = 'folkso';
-    /*    $cred = new folksoUserCreds( $_SERVER['PHP_AUTH_DIGEST'], 
-          $_SERVER['REQUEST_METHOD'], 
-          $realm);*/
-
-    $cred = new folksoWsseCreds($_SERVER['HTTP_X_WSSE']);
-    $cred->parse_auth_header();
-
-    //    print var_dump($cred);
-
     $loc = new folksoFabula();
-    $dbc = new folksoDBconnect($loc->db_server ? $loc->db_server : 'localhost',
-                               $loc->db_user,
-                               $loc->db_password,
-                               $loc->db_database_name ? $loc->db_database_name : 'folksonomie');
+    $dbc = $loc->locDBC();
+    $fks = new folksoSession($dbc);
 
-    if ($this->is_auth_necessary($q)) {
-      // Initial challenge
-      if (empty($_SERVER['HTTP_X_WSSE'])) {
-        header('HTTP/1.0 401 Unauthorized');
-        header('WWW-Authenticate: realm="folkso", profile="UsernameToken"');
-        die("Sorry. ". $_SERVER['HTT_X_WSSE']); // user canceled
-      }
-      else { // Check credentials
-   
-        // Did not find the user... or some other similar problem
-        if ((!$cred->validateAuth()) ||
-            (!$cred->checkUsername($cred->getUsername()))) {
-          header('HTTP/1.0 403 Forbidden'); // is this right?
-          die('Incorrect credentials. Do we know you?');
-        }
+    /**
+     * $sid: session ID
+     */
+    $sid = $_COOKIE['folksosess'] ? $_COOKIE['folksosess'] : '';
 
-        if (!$cred->Validate()) {
-          //        if ($cred->digest_data['response'] !== md5($together_uh)) {
-          header('HTTP/1.0 403 Forbidden'); // is this right?
-          die('You do not seem to be who you say you are (bad response).'. $together_uh . " a1uh " . $a1uh . "a2uh" . $a2uh);
-        }
+    /**
+     * Session ID can also be supplied as a $_GET or $_POST parameter.
+     */
+    if (empty($sid)){
+      $sid = $q->get_param('session');
+    }
+
+    try {
+      $fks->setSid($sid);
+    }
+    catch ( badSidException $e) {
+      if ($q->is_write_method) {
+        header('HTTP/1.1 403 Login required'); // redirect instead
+        header('Location: ' . $loc->loginPage());
+        exit();
       }
     }
+
+
     /* check each response object and run the response if activatep
        returns true*/
-
     $repflag = false;
     if (count($this->responseObjects) === 0) {
       trigger_error("No responseObjects available", E_USER_ERROR);
@@ -184,8 +173,8 @@ class folksoServer {
 
     /** Walking the response objects **/
     foreach ($this->responseObjects as $resp) {
-      if ($resp->activatep($q, $cred)) {
-        $resp->Respond($q, $cred, $dbc);
+      if ($resp->activatep($q)) {
+        $resp->Respond($q, $dbc, $fks);
         $repflag = true;
         break;
       }
@@ -196,6 +185,7 @@ class folksoServer {
       header('HTTP/1.1 400');
       print "Client did not make a valid query. (folksoServer)";
       // default response or error page...
+
     }
   }
 
