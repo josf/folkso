@@ -19,7 +19,7 @@ class folksoSession {
 
   public $sessionId;
   public $dbc;
-  public $loc;
+  private $loc;
 
   /**
    * @param $dbc folksoDBconnect 
