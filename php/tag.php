@@ -372,66 +372,62 @@ function relatedTags (folksoQuery $q, folksoDBConnect $dbc, folksoSession $fks) 
  */
 function singlePostTag (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
-  $i = new folksoDBinteract($dbc);
-  if ($i->db_error()) {
-    $r->dbConnectionError($i->error_info());
+  try {
+    $i = new folksoDBinteract($dbc);
+
+    $sql = 
+      "CALL new_tag('" . 
+      $i->dbescape(stripslashes($q->get_param('folksonewtag'))) . "')";
+    $i->query($sql);
+  }
+  catch (dbConnectionException $e) {
+    $r->dbConnectionError($e->getMessage());
+    return $r;
+  }
+  catch (dbQueryException $e) {
+    $r->dbQueryError($e->getMessage . $e->sqlquery);
     return $r;
   }
 
-  $sql = 
-    "CALL new_tag('" . 
-    $i->dbescape(stripslashes($q->get_param('folksonewtag'))) . "')";
-  $i->query($sql);
-
-  switch ($i->result_status) {
-  case 'DBERR':
-    $r->dbQueryError($i->error_info());
-    return $r;
-    break;
-  case 'OK':
-    $r->setOk(201, 'Tag created');
-    $row = $i->result->fetch_object();
-    $r->addHeader('X-Folksonomie-Newtag: ' . $row->tagnorm);
-    $r->t("Tag created (or already existed), id is " 
-          . $row->id . ' : ' . $q->get_param('newtag'));
+  $r->setOk(201, 'Tag created');
+  $row = $i->result->fetch_object();
+  $r->addHeader('X-Folksonomie-Newtag: ' . $row->tagnorm);
+  $r->t("Tag created (or already existed), id is " 
+        . $row->id . ' : ' . $q->get_param('newtag'));
   return $r;
-  }
 }
 
 
 function fancyResource (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
-  $i = new folksoDBinteract($dbc);
-  if ($i->db_error()) {
-    $r->dbConnectionError($i->error_info());
-    return $r;
-  }
+  try {
+    $i = new folksoDBinteract($dbc);
 
-  /*
-   * This is a bit of a hack. We are using a UNION to put the tag name
-   * in the first row of the result set, to avoid two separate
-   * queries. If columns are to be added to the main query, equivalent
-   * dummy columns should be added to the first part of the UNION.
-   */
-$querytagtitle = 
-  "SELECT tagdisplay AS title, \n\t" .
-  "id AS id, \n\t" .
-  "'dummy' AS href, \n\t" .
-  "'dummy' AS display, \n\t" .
-  "'dummy' AS tags \n".
-  "FROM tag \n\t";
-  if (is_numeric($q->tag)) {
-    $querytagtitle .= ' WHERE id = ' . $q->tag . ' ';
-  }
-  else {
-    $querytagtitle .= " WHERE tagnorm = normalize_tag('" . 
-      $i->dbescape($q->tag) . "') ";
-  }
+    /*
+     * This is a bit of a hack. We are using a UNION to put the tag name
+     * in the first row of the result set, to avoid two separate
+     * queries. If columns are to be added to the main query, equivalent
+     * dummy columns should be added to the first part of the UNION.
+     */
+    $querytagtitle = 
+      "SELECT tagdisplay AS title, \n\t" .
+      "id AS id, \n\t" .
+      "'dummy' AS href, \n\t" .
+      "'dummy' AS display, \n\t" .
+      "'dummy' AS tags \n".
+      "FROM tag \n\t";
+    if (is_numeric($q->tag)) {
+      $querytagtitle .= ' WHERE id = ' . $q->tag . ' ';
+    }
+    else {
+      $querytagtitle .= " WHERE tagnorm = normalize_tag('" . 
+        $i->dbescape($q->tag) . "') ";
+    }
 
-  $querytagtitle .= ' LIMIT 1 '; // just to be sure
+    $querytagtitle .= ' LIMIT 1 '; // just to be sure
 
-$querystart = 
-'  SELECT 
+    $querystart = 
+      '  SELECT 
   r.title AS title, 
   r.id AS id,
   r.uri_raw AS href,
