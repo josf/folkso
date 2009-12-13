@@ -13,6 +13,7 @@
 require_once('folksoTags.php');
 require_once('folksoAlpha.php');
 require_once('folksoTagQuery.php');
+require_once('folksoSession.php');
 
 /** 
  * When the tag's name or id is known, the field name "tag"
