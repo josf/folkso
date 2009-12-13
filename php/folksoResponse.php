@@ -155,6 +155,25 @@ class folksoResponse {
   }
 
   /**
+   * Basic exception handling for the most common error cases, where
+   * we simply want to return the right kind of HTTP error with the
+   * appropriate information.
+   * 
+   * @param dbException $e
+   */
+   public function handleDBexception (dbException $e) {
+     if ($e instanceof dbConnectionException) {
+       $this->dbConnectionError($e->getMessage());
+     }
+     elseif ($e instanceof dbQueryException) {
+       $this->dbQueryError($e->getMessage() . "\n\nQuery: \n" .
+                           $e->sqlquery);
+     }
+     return $this;
+   }
+  
+
+  /**
    * Returns the string for the HTTP content-type header but does not
    * set the header.
    *

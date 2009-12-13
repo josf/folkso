@@ -15,8 +15,10 @@
 class badSidException extends Exception { }
 class insufficientDataException extends Exception { }
 
-class dbConnectionException extends Exception { }
-class dbQueryException extends Exception {
+class dbException extends Exception { }
+
+class dbConnectionException extends dbException { }
+class dbQueryException extends dbException {
   public $sqlcode;
   public $sqlquery;
 
