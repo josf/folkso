@@ -11,22 +11,34 @@ class testOffolksotag extends  UnitTestCase {
   function setUp() {
     test_db_init();
     /** not using teardown because this function does a truncate
-        before starting. **/
+        before starting. This way we can look at DB after the last
+        test, too. Note that all other tests have no effect on DB
+        state at end of tests.
+    **/
+
+    $lh = 'localhost';
+    $td = 'tester_dude';
+    $ty = 'testy';
+    $tt = 'testostonomie';
+
      $this->dbc = new folksoDBconnect('localhost', 'tester_dude', 
                                       'testy', 'testostonomie');
      $this->dbc2 = new folksoDBconnect('localhost', 'tester_dude', 
                                       'testy', 'testostonomie');
      $this->dbc3 =new folksoDBconnect('localhost', 'tester_dude', 
                                       'testy', 'testostonomie');
-     $this->cred = new folksoWsseCreds('zork');
+     $this->fks = new folksoSession(new folksoDBconnect($lh, $td, $ty, $tt));
+     $this->fks2 = new folksoSession(new folksoDBconnect($lh, $td, $ty, $tt));
+     $this->fks3 = new folksoSession(new folksoDBconnect($lh, $td, $ty, $tt));
+     $this->fks4 = new folksoSession(new folksoDBconnect($lh, $td, $ty, $tt));
   }
 
    function testHeadCheck () {
      $r = headCheckTag(new folksoQuery(array(),
                                        array('folksotag' => 'tagone'),
                                        array()),
-                       $this->cred,
-                       $this->dbc);
+                       $this->dbc,
+                       $this->fks);
      $this->assertIsA($r, folksoResponse,
                       'not creating Response object');
      $this->assertEqual(200, $r->status,
@@ -41,8 +53,8 @@ class testOffolksotag extends  UnitTestCase {
      $r2 = headCheckTag(new folksoQuery(array(),
                                        array('folksotag' => 'emacs'),
                                        array()),
-                       $this->cred,
-                       $this->dbc);
+                        $this->dbc,
+                        $this->fks);
      $this->assertIsA($r2, folksoResponse,
                       'Bad resource not returning folksoResponse');
      $this->assertEqual($r2->status, 404,
@@ -54,8 +66,8 @@ class testOffolksotag extends  UnitTestCase {
      $r = getTag(new folksoQuery(array(),
                                  array('folksotag' => 'tagone'),
                                  array()),
-                 $this->cred,
-                 $this->dbc);
+                 $this->dbc,
+                 $this->fks);
      $this->assertIsA($r, folksoResponse,
                       'not creating Response object');
      $this->assertEqual(200, $r->status,
@@ -71,8 +83,8 @@ class testOffolksotag extends  UnitTestCase {
      $r = singlePostTag(new folksoQuery(array(),
                                  array('folksonewtag' => 'emacs'),
                                  array()),
-                 $this->cred,
-                 $this->dbc);
+                        $this->dbc,
+                        $this->fks);
 
      $this->assertIsA($r, folksoResponse,
                       'Problem with object creation');
@@ -82,18 +94,18 @@ class testOffolksotag extends  UnitTestCase {
      $t = getTag(new folksoQuery(array(),
                                  array('folksotag' => 'emacs'),
                                  array()),
-                 $this->cred,
                  new folksoDBconnect('localhost', 'tester_dude', 
-                                     'testy', 'testostonomie'));
+                                     'testy', 'testostonomie'),
+                 $this->fks);
 
      $this->assertEqual(200, $t->status,
                         'New tag not created: ' . $t->status . $t->status_message);
    $h = headCheckTag(new folksoQuery(array(),
                                        array('folksotag' => 'tagone'),
                                        array()),
-                       $this->cred,
                      new folksoDBconnect('localhost', 'tester_dude', 
-                                         'testy', 'testostonomie'));
+                                         'testy', 'testostonomie'),
+                     $this->fks);
 
    $this->assertEqual($h->status, 200,
                       'headcheck says the tag is still not there');
@@ -103,8 +115,8 @@ class testOffolksotag extends  UnitTestCase {
      $r = getTagResources(new folksoQuery(array(),
                                           array('folksotag' => 'tagone'),
                                           array()),
-                          $this->cred,
-                          $this->dbc);
+                          $this->dbc,
+                          $this->fks);
      $this->assertIsA($r, folksoResponse,
                       'problem w/ object creation');
      $this->assertEqual(200, $r->status,
@@ -116,8 +128,8 @@ class testOffolksotag extends  UnitTestCase {
      $rbad = getTagResources(new folksoQuery(array(),
                                           array('folksotag' => 'emacs'),
                                           array()),
-                          $this->cred,
-                          $this->dbc);
+                             $this->dbc,
+                             $this->fks2);
 
      $this->assertEqual(404, $rbad->status,
                         'bad tag should return 404');
@@ -127,8 +139,8 @@ class testOffolksotag extends  UnitTestCase {
                                            array('folksotag' => 'tagone',
                                                  'folksodatatype' => 'xml'),
                                            array()),
-                           $this->cred,
-                           $this->dbc3);
+                           $this->dbc3,
+                           $this->fks3);
      $this->assertEqual(200, $rx->status,
                         'xml request failiing');
      $xxx = new DOMDocument();
@@ -141,8 +153,8 @@ class testOffolksotag extends  UnitTestCase {
      $r = fancyResource(new folksoQuery(array(),
                                         array('folksotag' => 'tagone'),
                                         array()),
-                        $this->cred,
-                        $this->dbc);
+                        $this->dbc,
+                        $this->fks);
      $this->assertIsA($r, folksoResponse,
                       'problem w/ object creation');
      $this->assertEqual(200, $r->status,
@@ -166,8 +178,8 @@ class testOffolksotag extends  UnitTestCase {
      $r = autoCompleteTags(new folksoQuery(array(),
                                            array('folksoautotag' => 't'),
                                            array()),
-                           $this->cred,
-                           $this->dbc);
+                           $this->dbc,
+                           $this->fks);
      $this->assertIsA($r, folksoResponse,
                       'problem w/ object creation');
      $this->assertEqual(200, $r->status,
@@ -180,8 +192,8 @@ class testOffolksotag extends  UnitTestCase {
                                    array('folksotag' => 'tagone',
                                          'folksotarget' => 'tagtwo'),
                                    array()),
-                   $this->cred,
-                   $this->dbc);
+                   $this->dbc,
+                   $this->fks);
      $this->assertIsA($r, folksoResponse,
                       'Problem with object creation');
      $this->assertEqual(204, $r->status,
@@ -190,9 +202,9 @@ class testOffolksotag extends  UnitTestCase {
      $h = headCheckTag(new folksoQuery(array(),
                                        array('folksotag' => 'tagone'),
                                        array()),
-                       $this->cred,
                        new folksoDBconnect('localhost', 'tester_dude', 
-                                         'testy', 'testostonomie'));
+                                           'testy', 'testostonomie'),
+                       $this->fks2);
 
      $this->assertEqual(404, $h->status,
                         'tagone tag should not exist after merge');
@@ -200,8 +212,8 @@ class testOffolksotag extends  UnitTestCase {
                                       array('folksotag' => 'tagone',
                                             'folksotarget' => 'emacs'),
                                       array()),
-                      $this->cred,
-                      $this->dbc2);
+                      $this->dbc2,
+                      $this->fks3);
      $this->assertEqual(404, $rbad->status,
                         sprintf('fake tag should return 404: %s %s %s',
                                 $rbad->status,
@@ -215,8 +227,8 @@ class testOffolksotag extends  UnitTestCase {
      $r = deleteTag(new folksoQuery(array(),
                                     array('folksotag' => 'tagone'),
                                     array()),
-                    $this->cred, 
-                    $this->dbc);
+                    $this->dbc,
+                    $this->fks);
      $this->assertIsA($r, folksoResponse,
                       'problem with object creation');
      $this->assertEqual(204, $r->status,
@@ -229,8 +241,8 @@ class testOffolksotag extends  UnitTestCase {
      $r = byalpha(new folksoQuery(array(),
                                   array('folksobyalpha' => 'ta'),
                                   array()),
-                  $this->cred,
-                  $this->dbc);
+                  $this->dbc,
+                  $this->fks);
 
      $this->assertIsA($r, folksoResponse,
                       'problem with object creation');
@@ -241,8 +253,8 @@ class testOffolksotag extends  UnitTestCase {
      $r2 = byalpha(new folksoQuery(array(),
                                    array('folksobyalpha' => 'zor'),
                                    array()),
-                   $this->cred,
-                   $this->dbc2);
+                   $this->dbc2,
+                   $this->fks2);
      $this->assertEqual(204, 
                         $r2->status,
                         sprintf('No corresponding tags should be a 204 %s %s %s',
@@ -255,8 +267,8 @@ class testOffolksotag extends  UnitTestCase {
                                     array('folksonewname' => 'emacs',
                                           'folksotag' => 'tagone'),
                                     array()),
-                    $this->cred,
-                    $this->dbc);
+                    $this->dbc,
+                    $this->fks);
      $this->assertIsA($r, folksoResponse,
                       'Problem with object creation');
      $this->assertEqual(204, $r->status,
@@ -265,15 +277,15 @@ class testOffolksotag extends  UnitTestCase {
      $h = headCheckTag(new folksoQuery(array(),
                                        array('folksotag' => 'emacs'),
                                        array()),
-                       $this->cred,
-                       $this->dbc2);
+                       $this->dbc2,
+                       $this->fks2);
      $this->assertEqual($h->status, 200,
                         'No tag with new tag name');
      $h2 = headCheckTag(new folksoQuery(array(),
                                         array('folksotag' => 'tagone'),
                                         array()),
-                        $this->cred,
-                        $this->dbc3);
+                        $this->dbc3,
+                        $this->fks3);
      $this->assertEqual($h2->status, 404,
                         'Old tag name is still present');
    }
@@ -281,8 +293,8 @@ class testOffolksotag extends  UnitTestCase {
      $r = allTags(new folksoQuery(array(),
                                   array(),
                                   array()),
-                  $this->cred,
-                  $this->dbc);
+                  $this->dbc,
+                  $this->fks);
      $this->assertIsA($r, folksoResponse,
                       'problem with object creation');
      $this->assertEqual(200, $r->status,
