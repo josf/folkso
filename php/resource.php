@@ -805,12 +805,8 @@ function deleteEan13 (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) 
  */
 function addNote (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
+  try {
   $i = new folksoDBinteract($dbc);
-  if ($i->db_error()) {
-    $r->dbConnectionError($i->error_info());
-    return $r;
-  }
-
   $sql = 
     "INSERT INTO note ".
     "SET note = '". $i->dbescape($q->get_param("note")) . "', ".
@@ -827,14 +823,18 @@ function addNote (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   }
 
   $i->query($sql);
-  if ($i->result_status == 'DBERR') {
-    $r->dbQueryError($i->error_info());
   }
-  else {
-    $r->setOk(202, 'Note accepted');
-    $r->t( "This note will be added to the resource: " . $q->res);
-    $r->t( "\n\nText of the submitted note:\n". $q->get_param('note'));
+  catch (dbConnectionException $e) {
+    $r->dbConnectionError($e->getMessage());
+    return $r;
   }
+  catch (dbQueryException $e) {
+    $r->dbQueryError($e->getMessage() . $e->sqlquery);
+    return $r;
+  }
+  $r->setOk(202, 'Note accepted');
+  $r->t( "This note will be added to the resource: " . $q->res);
+  $r->t( "\n\nText of the submitted note:\n". $q->get_param('note'));
   return $r;
 }
 
