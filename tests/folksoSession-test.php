@@ -1,8 +1,8 @@
 <?php
 require_once('unit_tester.php');
 require_once('reporter.php');
-include('folksoTags.php');
-require('folksoSession.php');
+require_once('folksoTags.php');
+require_once('folksoSession.php');
 require('dbinit.inc');
 
 class testOffolksoSession extends  UnitTestCase {
@@ -57,9 +57,12 @@ class testOffolksoSession extends  UnitTestCase {
                            'Session is there, we should see it with check');
          $this->assertEqual($s->getUserId(), 'gustav-2009-001',
                             'Not getting user id with getUserId: ' . $s->getUserId());
+         $this->assertReference($s->userSession(),
+                                $s->userSession(),
+                                'User data is not being cached, I think');
          
          $s->killSession($sess);
-         print $sess;
+
          $this->assertFalse($s->checkSession($sess),
                             'the session should be gone now');
          $sess2 = $s->startSession('gustav-2009-001');
@@ -73,7 +76,7 @@ class testOffolksoSession extends  UnitTestCase {
 
          $this->assertEqual($u->nick, 'gustav',
                             'User nick not correctly retrieved' . $u->nick);
-         print_r( $u);
+
    }
 }//end class
 
