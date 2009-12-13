@@ -629,48 +629,49 @@ function rmRes (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
  */
 function assocEan13 (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
-  $i = new folksoDBinteract($dbc);
-  if ($i->db_error()) {
-    $r->dbConnectionError($i->error_info());
-    return $r;
-  }
+  try {
+    $i = new folksoDBinteract($dbc);
   
-  /** check **/
-  if (! ean13dataCheck($q->get_param('ean13'))) {
-    $r->setError(406, "Bad EAN13 data",
-                 "The folksoean13 field should consist of exactly 13 digits. "
-                 . $q->get_param('ean13') . " is " . strlen($q->get_param('ean13')) . " long "
-                 . is_numeric($q->get_param('ean13')) ? " and it is numeric " : " but it is not numeric " 
-                 ."\n\nPlease check your "
-                 ."data before trying again.");
+    /** check **/
+    if (! ean13dataCheck($q->get_param('ean13'))) {
+      $r->setError(406, "Bad EAN13 data",
+                   "The folksoean13 field should consist of exactly 13 digits. "
+                   . $q->get_param('ean13') . " is " . strlen($q->get_param('ean13')) . " long "
+                   . is_numeric($q->get_param('ean13')) ? " and it is numeric " : " but it is not numeric " 
+                   ."\n\nPlease check your "
+                   ."data before trying again.");
+      return $r;
+    }
+
+    if (is_numeric($q->res)) {
+      $sql = 
+        "INSERT INTO ean13 SET resource_id = " . $q->res
+        . ", ean13 = " . $q->get_param('ean13'); 
+    }
+    else {
+      $sql =
+        "INSERT INTO ean13 (ean13, resource_id) "
+        ." VALUES (" . $q->get_param('ean13') . ", "
+        ." (SELECT id FROM resource "
+        ."WHERE uri_normal = url_whack('". $i->dbescape($q->res) . "'))) ";
+    }
+
+    $i->query($sql);
+  }
+  catch (dbConnectionException $e){
+    $r->dbConnectionException($e->getMessage());
     return $r;
   }
-
-  if (is_numeric($q->res)) {
-    $sql = 
-      "INSERT INTO ean13 SET resource_id = " . $q->res
-      . ", ean13 = " . $q->get_param('ean13'); 
-  }
-  else {
-    $sql =
-      "INSERT INTO ean13 (ean13, resource_id) "
-      ." VALUES (" . $q->get_param('ean13') . ", "
-      ." (SELECT id FROM resource "
-      ."WHERE uri_normal = url_whack('". $i->dbescape($q->res) . "'))) ";
-  }
-
-  $i->query($sql);
-  if ($i->result_status == 'DBERR') {
-
-    if (($i->db->errno == 1048) || // resource_id cannot be null
-        ($i->db->errno == 1452)) { // cannot add or update a child row
+  catch (dbQueryException $e) {
+    if (($e->sqlcode == 1048) ||
+        ($e->sqlcode == 1452)) {
       $r->setError(404,
                    "Resource not found",
                    "The resource you tried to associate with a EAN13 was not" 
                    ." found in the database. \n\nPerhaps it has not yet been indexed,".
                    "  or your reference is incorrect.");
     }
-    elseif ($i->db->errno == 1062) {
+    elseif ($e->sqlcode == 1062) {
       $r->setError(409,
                    'Duplicate EAN13',
                    "This resource/EAN13 combination is already present in the database.\n\n"
@@ -680,11 +681,11 @@ function assocEan13 (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
     else {
       $r->dbQueryError($i->error_info());
     }
+    return $r;
   }
-  else {
-    $r->setOk(200, 'Added');
-    $r->t("The EAN13 information was added to a resource.");
-  }
+
+  $r->setOk(200, 'Added');
+  $r->t("The EAN13 information was added to a resource.");
   return $r;
 }
 
