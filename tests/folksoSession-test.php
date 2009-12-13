@@ -55,6 +55,9 @@ class testOffolksoSession extends  UnitTestCase {
                            'startSession() should return a valid session id');
          $this->assertTrue($s->checkSession($sess),
                            'Session is there, we should see it with check');
+         $this->assertEqual($s->getUserId(), 'gustav-2009-001',
+                            'Not getting user id with getUserId: ' . $s->getUserId());
+         
          $s->killSession($sess);
          print $sess;
          $this->assertFalse($s->checkSession($sess),
