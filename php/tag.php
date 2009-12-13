@@ -588,52 +588,55 @@ function tagMerge (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
  */
 function deleteTag  (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
-  $i = new folksoDBinteract($dbc);
-  if ($i->db_error()) {
-    $r->dbConnectionError($i->error_info());
-    return $r;
-  }
+  try {
+    $i = new folksoDBinteract($dbc);
 
-  /* Check to see if tag is there. This might not be necessary: if the
-   * tag does not exist, we just continue */
-  if (!$i->tagp($q->tag)) {
-    if ($i->db_error()) {
-      $r->dbQueryError($i->error_info());
-    }
-    else {
+    /* Check to see if tag is there. This might not be necessary: if the
+     * tag does not exist, we just continue */
+    if (!$i->tagp($q->tag)) {
       $r->setError(404, 'Could not delete - tag not found',
                    $q->tag . " does not exist in the database");
+      return $r;
     }
-    return $r;
-  }
 
-  // delete 1 : remove tagevents
-  // delete 2 : remove the tag itself
-  $delete1 = '';
-  $delete2 = "DELETE FROM tag  ";
+    // delete 1 : remove tagevents
+    // delete 2 : remove the tag itself
+    $delete1 = '';
+    $delete2 = "DELETE FROM tag  ";
 
-  if (is_numeric($q->tag)) {
-    $delete1 .= ' DELETE FROM tagevent WHERE tag_id='. $q->tag;
-    $delete2 .= ' WHERE id='. $q->tag;
-  }
-  else {
-    $delete1 .= " DELETE  "
-      ." FROM tagevent USING tag, tagevent "
-      ." where tag.id = tagevent.tag_id and "
-      ." tag.tagnorm = normalize_tag('" . $i->dbescape($q->tag) . "')";    
+    if (is_numeric($q->tag)) {
+      $delete1 .= ' DELETE FROM tagevent WHERE tag_id='. $q->tag;
+      $delete2 .= ' WHERE id='. $q->tag;
+    }
+    else {
+      $delete1 .= " DELETE  "
+        ." FROM tagevent USING tag, tagevent "
+        ." where tag.id = tagevent.tag_id and "
+        ." tag.tagnorm = normalize_tag('" . $i->dbescape($q->tag) . "')";    
 
-    $delete2 .= " WHERE tagnorm = normalize_tag('" . $i->dbescape($q->tag) . "')";
-  }
+      $delete2 .= " WHERE tagnorm = normalize_tag('" . $i->dbescape($q->tag) . "')";
+    }
 
-  $i->query($delete1); // delete tagevent
-  if ($i->result_status ==  'DBERR') {
-    $r->dbQueryError($i->error_info());
-    return $r;
+    $i->query($delete1); // delete tagevent
   }
-  $i->query($delete2); // delete tag
-  if ($i->result_status ==  'DBERR') {
+  catch (dbQueryException $e) {
     $r->setError(500, 'Database error',
-                 "Secondary delete failed ". $i->error_info());
+                 "Primary delete failed ". $e->getMessage() . " ".
+                 $e->sqlquery);
+    return $r;
+  }
+  catch (dbException $e) {
+    return $r->handleDBexception($e);
+  }
+
+  /** second delete: the tag itself **/
+  try {
+    $i->query($delete2); // delete tag
+  }
+  catch(dbQueryException $e) {
+    $r->setError(500, 'Database error',
+                 "Secondary delete failed ". $e->getMessage() . " ".
+                 $e->sqlquery);
     return $r;
   }
   $r->setOk(204, 'Tag deleted');
