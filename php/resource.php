@@ -908,11 +908,9 @@ function getNotes (folksoquery $q, folksoDBconnect $dbc, folksoSession $fks){
  */
 function rmNote (folksoquery $q, folksoDBconnect $dbc, folksoSession $fks){
   $r = new folksoResponse();
+
+  try {
   $i = new folksoDBinteract($dbc);
-  if ($i->db_error()) {
-    $r->dbConnectionError($i->error_info());
-    return $r;
-  }
 
   if (! is_numeric($q->get_param('note'))){
     $r->setError(400, 'Bad note argument',
@@ -922,15 +920,18 @@ function rmNote (folksoquery $q, folksoDBconnect $dbc, folksoSession $fks){
 
   $sql = "DELETE FROM note WHERE id = " . $q->get_param('note');
   $i->query($sql);
+  }
+  catch (dbConnectionException $e) {
+    $r->dbConnectionError($e->getMessages());
+    return $r;
+  }
+  catch (dbQueryException $e) {
+    $r->dbQueryError($e->getMessages() . $e->sqlquery);
+    return $r;
+  }
 
-  if ($i->result_status == 'DBERR'){
-    $r->setError(500, 'Database delete errors',
-                 $i->error_info());
-  }
-  else {
-    $r->setOk(200, 'Deleted');
-    $r->t( "The note " . $q->get_param('note'). " was deleted.");
-  }
+  $r->setOk(200, 'Deleted');
+  $r->t( "The note " . $q->get_param('note'). " was deleted.");
   return $r;
 }
 
