@@ -524,61 +524,57 @@ function autoCompleteTags (folksoQuery $q, folksoDBconnect $dbc, folksoSession $
 
 function tagMerge (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse(); 
-  $i = new folksoDBinteract($dbc);
-  if ($i->db_error()) {
-    $r->dbConnectionError($i->error_info());
-    return $r;
-  }
+  try {
+    $i = new folksoDBinteract($dbc);
 
-  /* build query. all the funny quote marks are there because the
-     stored procedure 'tagmerge' needs 4 arguments to distinguish
-     between numeric args and non numeric args*/
-  $source_part = '';
-  if (is_numeric($q->tag)){
-    $source_part = $q->tag . ", ''";
-  }
-  else {
-    $source_part = "'', '". $i->dbquote($q->tag) . "'";
-  }
-
-  $target_part = '';
-  if (is_numeric($q->get_param('target'))) {
-    $target_part = $q->get_param('target') . ", ''";
-  }
-  else {
-    $target_part = "'', '" . $i->dbquote($q->get_param('target')) . "'";
-  }
-  
-  $i->query("CALL TAGMERGE($source_part, $target_part)");
-  
-  if ($i->result_status == 'DBERR') {
-    $r->dbQueryError($i->error_info());
-  }
-  else {
-    $row = $i->result->fetch_object();
-    $newid = $row->newid;
-    switch ($row->status) {
-    case 'OK':
-      $r->setOk(204, 'Merge successful');
-      $r->t( $i->first_val('status'));
-      $r->addHeader('X-Folksonomie-TargetId: ' . $newid);
-      break;
-    case 'NOTARGET':
-      $r->setError(404, 'Invalid target tag', 
-                   $status .
-                   $q->get_param('target') . 
-                   " is not present in the database. Merge not accomplished.");
-      break;
-    case 'NOSOURCE':
-      $r->setError(404, 'Invalid source tag',
-                   $q->res . 
-                   " is not present in the database. Merge not accomplished.");
-      break;
-    default:
-      $r->setError(500, 'Strange server error',
-                   "fv: ". $status .
-                   'This should not have happened.' . $row->status);
+    /* build query. all the funny quote marks are there because the
+       stored procedure 'tagmerge' needs 4 arguments to distinguish
+       between numeric args and non numeric args*/
+    $source_part = '';
+    if (is_numeric($q->tag)){
+      $source_part = $q->tag . ", ''";
     }
+    else {
+      $source_part = "'', '". $i->dbquote($q->tag) . "'";
+    }
+
+    $target_part = '';
+    if (is_numeric($q->get_param('target'))) {
+      $target_part = $q->get_param('target') . ", ''";
+    }
+    else {
+      $target_part = "'', '" . $i->dbquote($q->get_param('target')) . "'";
+    }
+  
+    $i->query("CALL TAGMERGE($source_part, $target_part)");
+  }
+  catch (dbException $e) {
+    return $r->handleDBexception($e);
+  }
+
+  $row = $i->result->fetch_object();
+  $newid = $row->newid;
+  switch ($row->status) {
+  case 'OK':
+    $r->setOk(204, 'Merge successful');
+    $r->t( $i->first_val('status'));
+    $r->addHeader('X-Folksonomie-TargetId: ' . $newid);
+    break;
+  case 'NOTARGET':
+    $r->setError(404, 'Invalid target tag', 
+                 $status .
+                 $q->get_param('target') . 
+                 " is not present in the database. Merge not accomplished.");
+    break;
+  case 'NOSOURCE':
+    $r->setError(404, 'Invalid source tag',
+                 $q->res . 
+                 " is not present in the database. Merge not accomplished.");
+    break;
+  default:
+    $r->setError(500, 'Strange server error',
+                 "fv: ". $status .
+                 'This should not have happened.' . $row->status);
   }
   return $r;
 }
