@@ -113,32 +113,34 @@ $srv->Respond();
  */
 function isHead (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
-  $i = new folksoDBinteract($dbc);
-  if ($i->db_error()) {
-    $r->dbConnectionError($i->error_info());
+  try {
+    $i = new folksoDBinteract($dbc);
+
+    $query = '';
+    if (is_numeric($q->res)) {
+      $query = 
+        "SELECT id FROM resource WHERE id = " .
+        $i->dbescape($q->res);
+    }
+    else {
+      $query = "SELECT id
+           FROM resource
+           WHERE uri_normal = url_whack('" .
+        $i->dbescape($q->res) . "')";
+    }
+    $i->query($query);
+  }
+  catch (dbConnectionException $e) {
+    $r->dbConnectionError($e->getMessage());
+    return $r;
+  }
+  catch (dbQueryException $e) {
+    $r->dbQueryError($e->getMessage . $e->sqlquery);
     return $r;
   }
 
-  $query = '';
-  if (is_numeric($q->res)) {
-    $query = 
-      "SELECT id FROM resource WHERE id = " .
-      $i->dbescape($q->res);
-  }
-  else {
-    $query = "SELECT id
-           FROM resource
-           WHERE uri_normal = url_whack('" .
-      $i->dbescape($q->res) . "')";
-  }
-
-  $i->query($query);
-
   switch ($i->result_status) {
-  case 'DBERR':
-    $r->dbQueryError($i->error_info());
-    break;
-  case 'NOROWS':
+   case 'NOROWS':
     $r->setError(404, 
                  'Resource not found',
                  'Resource '. $q->res . ' not present in database');
