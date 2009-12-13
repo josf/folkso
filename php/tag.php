@@ -653,13 +653,9 @@ function deleteTag  (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
  */
 function byalpha (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
-  $i = new folksoDBinteract($dbc);
-  if ($i->db_error()) {
-    $r->dbConnectionError($i->error_info());
-    return $r;
-  }
-  
-  $alpha = substr($q->get_param('byalpha'), 0, 1);
+  try {
+    $i = new folksoDBinteract($dbc);
+    $alpha = substr($q->get_param('byalpha'), 0, 1);
 
   $al = new folksoAlpha();
   // we are not going to escape anything because only one-character
@@ -675,17 +671,15 @@ function byalpha (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
             WHERE " . $ors;
 
   $i->query($query);
-  switch ($i->result_status) {
-  case 'DBERR':
-    $r->dbQueryError($i->error_info());
-    break;
-  case 'NOROWS':
+  }
+  catch(dbException $e) {
+    return $r->handleDBexception($e);
+  }
+  if ($i->result_status == 'NOROWS') {
     $r->setOk(204, 'No matching tags');
-    break;
-  case 'OK':
+  }
+  else {
     $r->setOk(200, 'OK');
-
-    // assuming everything is ok (200)
     $df = new folksoDisplayFactory();
     $dd = $df->TagList();
     $dd->activate_style('xml');
@@ -699,7 +693,6 @@ function byalpha (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
                       '') . "\n"); // empty field because there are no metatags here
     }
     $r->t($dd->endform());
-    break;
   }
   return $r;
 }
