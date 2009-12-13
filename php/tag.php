@@ -705,17 +705,14 @@ function byalpha (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
  */
 function renameTag (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
-  $i = new folksoDBinteract($dbc);
-  if ($i->db_error()) {
-    $r->dbConnectionError($i->error_info());
-    return $r;
-  }
+  try {
+    $i = new folksoDBinteract($dbc);
 
-  if (!$i->tagp($q->tag)) {
-    $r->setError(404, 'Tag not found',
-                 'Nothing to rename. No such tag: ' . $q->tag);
-    return $r;
-  }
+    if (!$i->tagp($q->tag)) {
+      $r->setError(404, 'Tag not found',
+                   'Nothing to rename. No such tag: ' . $q->tag);
+      return $r;
+    }
 
   $query = "UPDATE tag
             SET tagdisplay = '" . 
@@ -731,14 +728,15 @@ function renameTag (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
       $i->dbescape($q->tag) . "')";
   }
   $i->query($query);
-  if ($i->result_status == 'DBERR') {
-    $r->dbQueryError($i->error_info());
   }
-  else {
-    $r->setOk(204, 'Tag renamed');
-    return $r;
+  catch( dbException $e) {
+    return $r->handleDBexception($e);
   }
+
+  $r->setOk(204, 'Tag renamed');
+  return $r;
 }
+
 
 
 /**
@@ -746,11 +744,8 @@ function renameTag (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
  */
 function allTags (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
-  $i = new folksoDBinteract($dbc);
-  if ($i->db_error()) {
-    $r->dbConnectionError($i->error_info());
-    return $r;
-  }
+  try {
+    $i = new folksoDBinteract($dbc);
 
   $query = 
     "SELECT t.tagdisplay AS display, t.id AS tagid, \n\t" .
