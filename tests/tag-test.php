@@ -174,6 +174,23 @@ class testOffolksotag extends  UnitTestCase {
 
    }
 
+   function testRelatedTags () {
+     $r = relatedTags(new folksoQuery(array(),
+                                      array('folksotag' => 'tagone'),
+                                      array()),
+                      $this->dbc,
+                      $this->fks);
+     $this->assertIsA($r, folksoResponse,
+                      'This is not my beautiful folksoResponse object');
+     $this->assertEqual($r->status, 204,
+                        'There should not be any related tags: ' . $r->status . $r->body());
+                                           
+
+
+
+   }
+
+
    function testAutoCompleteTags() {
      $r = autoCompleteTags(new folksoQuery(array(),
                                            array('folksoautotag' => 't'),

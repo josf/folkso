@@ -154,11 +154,9 @@ function headCheckTag (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks)
  */
 function getTag (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
+
+  try {
   $i = new folksoDBinteract($dbc);
-  if ($i->db_error()) {
-    $r->dbConnectionError($i->error_info());
-    return $r;
-  }
   $query = 'SELECT tagdisplay FROM tag WHERE ';
 
   if (is_numeric($q->tag)) {
@@ -168,12 +166,16 @@ function getTag (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
     $query .= "tagnorm = normalize_tag('" . $q->tag . "')";
   }
   $i->query($query);
-
-  switch ($i->result_status) {
-  case 'DBERR':
-    $r->dbQueryError($i->error_info());
+  }
+  catch (dbConnectionException $e) {
+    $r->dbConnectionError($e->getMessage());
     return $r;
-    break;
+  }
+  catch (dbQueryException $e) {
+    $r->dbQueryException($e->getMessage() . $e->sqlquery);
+    return $r;
+  }
+  switch ($i->result_status) {
   case 'NOROWS':
     $r->setError(404, 'Tag not found',
                  'The tag ' . $q->tag . ' was not found');
@@ -207,26 +209,17 @@ function getTag (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
  */
 function getTagResources (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
-  $i = new folksoDBinteract($dbc);
-  if ($i->db_error()) {
-    $r->dbConnectionError($i->error_info());
-    return $r;
-  }
+  try {
+    $i = new folksoDBinteract($dbc);
 
-  // check to see if tag exists -- can this be done with the main query instead?
-  if (!$i->tagp($q->tag)) {
-    if ($i->db_error()) {
-      $r->dbQueryError($i->error_info());
-      return $r;
-    }
-    else {
+    // check to see if tag exists -- can this be done with the main query instead?
+    if (!$i->tagp($q->tag)) {
       $r->setError(404, 'Tag not found',
                    $q->tag . " does not exist in the database");
       return $r;
     }
-  }
-    
-  $querybase = "SELECT
+  
+    $querybase = "SELECT
                  r.uri_raw AS href, r.id AS id, r.title AS title, 
                  CASE 
                    WHEN title IS NULL THEN uri_normal 
@@ -236,36 +229,42 @@ function getTagResources (folksoQuery $q, folksoDBconnect $dbc, folksoSession $f
                  JOIN tagevent ON r.id = tagevent.resource_id
                  JOIN tag ON tagevent.tag_id = tag.id ";
 
-  // tag by ID
-  if (is_numeric($q->tag)) {
-    $querybase .= 
-      "WHERE tag.id = " . 
-      $i->dbquote($q->tag);
-  } //tag by string
-  else {
-    $querybase .= 
-      "WHERE tag.tagnorm = normalize_tag('" .
-      $i->dbquote($q->tag) . "')";
-  }
+    // tag by ID
+    if (is_numeric($q->tag)) {
+      $querybase .= 
+        "WHERE tag.id = " . 
+        $i->dbescape($q->tag);
+    } //tag by string
+    else {
+      $querybase .= 
+        "WHERE tag.tagnorm = normalize_tag('" .
+        $i->dbescape($q->tag) . "')";
+    }
 
-  $querybase .= " ORDER BY r.visited DESC ";  
+    $querybase .= " ORDER BY r.visited DESC ";  
 
-  //pagination
-  if  ((!$q->is_param('page')) ||
-       ($q->get_param('page') == 1))  {
+    //pagination
+    if  ((!$q->is_param('page')) ||
+         ($q->get_param('page') == 1))  {
       $querybase .= "  LIMIT 20 ";
-  }
-  else {
+    }
+    else {
       $querybase .= "  LIMIT ". 
         $q->get_param('page') * 20 . ",20 ";
+    }
+
+    $i->query($querybase);
+  }
+  catch (dbConnectionException $e){
+    $r->dbConnectionError($e->getMessage());
+    return $r;
+  }
+  catch (dbQueryException $e){
+    $r->dbQueryError($e->getMessage() . $e->sqlquery);
+    return $r;
   }
 
-  $i->query($querybase);
   switch ($i->result_status) {
-  case 'DBERR':
-    $r->dbQueryError($i->error_info());
-    return $r;
-    break;
   case 'NOROWS':
     $r->setOk(204, 'No resources associated with  tag');
     $r->t( "No resources are currently associated with " .
@@ -301,52 +300,43 @@ function getTagResources (folksoQuery $q, folksoDBconnect $dbc, folksoSession $f
                                               'UTF-8'),*/
 
 
-function relatedTags (folksoQuery $q, folksoWsseCreds $cred, folksoDBConnect $dbc) {
-  $i = new folksoDBinteract($dbc);
-  //$r = new folksoResponse();
+function relatedTags (folksoQuery $q, folksoDBConnect $dbc, folksoSession $fks) {
+  $r = new folksoResponse();
+  try {
+    $i = new folksoDBinteract($dbc);
+    $tq = new folksoTagQuery();
+    $i->query($tq->related_tags($q->tag));
+  }
+  catch (dbConnectionException $e) {
+    $r->dbConnectionError($e->getMessage());
+    return $r;
+  }
+  catch (dbQueryException $e) {
+    $r->dbQueryException($e->getMessage . $e->sqlquery);
+    return $r;
+  }
 
-  if ($i->db_error()){
-    //$r->dbConnectionError();
-    //return $r;
-    header('HTTP/1.1 501 Database connection error');
-    die($i->error_info());
+  if ($i->rowCount < 2) {
+    $r->setOk(204, 'No related tags yet');
+    return $r;
   }
-  
-  $tq = new folksoTagQuery();
-  $i->query($tq->related_tags($q->tag));
-  switch($i->result_status){
-  case 'DBERR':
-    //$r->dbQueryError($i->error_info);
-    //return $r;
-    header('HTTP/1.1 501 Database query error');
-    die($i->error_info());
-    break;
-  case 'NOROWS':
-    //$r->setOk(204, 'No related tags yet');
-    //return $r;
-    header('HTTP/1.1 204 No related tags yet');
-    return;
-  case 'OK':
-    //$r->setOk(200, 'Related tags found');
-    header('HTTP/1.1 200 Related tags found');
-  }
+  $r->setOk(200, 'Related tags found');
   
   $df = new folksoDisplayFactory();
   $dd = $df->TagList();
   $dd->activate_style('xml');
 
-  $accum .= $dd->startform();
+  $accum = $dd->startform();
   //pop title row
   $title_row = $i->result->fetch_object();
   
   //  $accum = $dd->title($title_row->display);
   while ($row = $i->result->fetch_object()) {
-    //$r->t(
     $accum .= $dd->line($row->tagid,
-                       $row->tagnorm,
-                       $row->display,
-                       $row->popularity,
-                       '');
+                    $row->tagnorm,
+                    $row->display,
+                    $row->popularity,
+                    '');
   }
 
   $accum .= $dd->endform();
@@ -369,8 +359,8 @@ function relatedTags (folksoQuery $q, folksoWsseCreds $cred, folksoDBConnect $db
   // putting an xml type declaration into the output doc.
   $reltags = $proc->transformToXML($accum_XML);
   //  $xml = $reltags->saveXML();
-  print $reltags;
-
+  $r->t($reltags);
+  return $r;
 }
 
 

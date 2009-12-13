@@ -78,6 +78,10 @@ function test_db_init() {
     if ($i->db_error()) { 
       print "bad new tag";
     }
+    $i->sp_query("call new_tag('mysterio')"); // unknown tag
+    if ($i->db_error()) { 
+      print "bad new tag (mysterio)";
+    }
 
     foreach ($tags as $t) {
 
