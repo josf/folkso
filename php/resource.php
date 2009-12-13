@@ -486,17 +486,16 @@ function addResource (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) 
  */
 function tagResource (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
-  $i = new folksoDBinteract($dbc);
-  if ($i->db_error()) {
-    $r->dbConnectionError($i->error_info());
-    return $r;
-  }
-
-  $tag_args = argSort($q->res, $q->tag, $q->get_param('meta'), $i);
-
-  $query = "CALL tag_resource($tag_args)";
   try {
+    $i = new folksoDBinteract($dbc);
+    $tag_args = argSort($q->res, $q->tag, $q->get_param('meta'), $i);
+
+    $query = "CALL tag_resource($tag_args)";
     $i->query($query);
+  }
+  catch (dbConnectionException $e) {
+    $r->dbConnectionError($e->getMessage());
+    return $r;
   }
   catch (dbQueryException $e) {
     if ($e->sqlcode == 1048) {
@@ -521,7 +520,6 @@ function tagResource (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) 
   $r->t("Resource has been tagged");
   $r->t($query);
   $r->t("  DB says: ". $i->db->error);
-
   return $r;
 }
 
