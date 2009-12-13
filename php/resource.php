@@ -840,31 +840,34 @@ function addNote (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
 
 function getNotes (folksoquery $q, folksoDBconnect $dbc, folksoSession $fks){
   $r = new folksoResponse();
-  $i = new folksoDBinteract($dbc);
-  if ($i->db_error()) {
-    $r->dbConnectionError($i->error_info());
+  try {
+    $i = new folksoDBinteract($dbc);
+
+    $sql = 
+      "SELECT note, user_id, id \n\t".
+      "FROM note n \n\t".
+      "WHERE n.resource_id = ";
+
+    if (is_numeric($q->res)){
+      $sql .= $q->res;
+    }
+    else {
+      $sql .= 
+        "(SELECT id FROM resource r \n\t".
+        " WHERE r.uri_normal = url_whack('" .$q->res . "'))";
+    }
+    $i->query($sql);
+  }
+  catch (dbConnectionException $e){
+    $r->dbConnectionError($e->getMessages());
+    return $r;
+  }
+  catch (dbQueryException $e) {
+    $r->dbQueryError($e->getMessages() . $e->sqlquery);
     return $r;
   }
 
-  $sql = 
-    "SELECT note, user_id, id \n\t".
-    "FROM note n \n\t".
-    "WHERE n.resource_id = ";
-
-  if (is_numeric($q->res)){
-    $sql .= $q->res;
-  }
-  else {
-    $sql .= 
-      "(SELECT id FROM resource r \n\t".
-      " WHERE r.uri_normal = url_whack('" .$q->res . "'))";
-  }
-  $i->query($sql);
   switch ($i->result_status) {
-  case 'DBERR':
-    $r->dbQueryError($i->error_info());
-    return $r;
-    break;
   case 'NOROWS': 
     if ($i->resourcep($q->res)) {
       $r->setError(404, 'No notes associated with this resource',
@@ -880,10 +883,9 @@ function getNotes (folksoquery $q, folksoDBconnect $dbc, folksoSession $fks){
   case 'OK':
     $r->setOk(200, 'Notes found');
     break;
-}
+  }
 
   // assuming 200 from here on
-
   $df = new folksoDisplayFactory();
   $dd = $df->NoteList();
   $dd->activate_style('xml');
