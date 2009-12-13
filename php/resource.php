@@ -943,6 +943,7 @@ function rmNote (folksoquery $q, folksoDBconnect $dbc, folksoSession $fks){
  */
 function resEans (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
+  try {
   $i = new folksoDBinteract($dbc);
   if ($i->db_error()) {
     $r->dbConnectionError($i->error_info());
@@ -953,28 +954,33 @@ function resEans (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $sql = $rq->resEans($i->dbescape($q->res));
 
   $i->query($sql);
+  }
+  catch (dbConnectionException $e) {
+    $r->dbConnectionError($e->getMessage());
+    return $r;
+  }
+  catch (dbQueryException $e) {
+    $r->dbQueryError($e->getMessage() . $e->sqlquery);
+    return $r;
+  }
 
   switch ($i->result_status) {
-  case 'DBERR':
-    $r->dbQueryError($i->error_info());
-    break;
   case 'NOROWS':
     $r->setError(404, 'Resource not found',
                  "The requested resource is not present in the database.\n"
                  ." Maybe it  has not been indexed yet, or an erroneous identifier "
                  ." was used. ");
+    return $r;
     break;
   case 'OK':
     if ($i->result->num_rows == 1) {
       $r->setError(404, 'No EAN-13 data associated with this resource',
                    "There is no EAN-13 data yet for the resource " . $q->res . ".");
+      return $r;
     }
     else {
       $r->setOk(200, 'EAN-13 data found');
     }
-  }
-  if ($r->isError()) {
-    return $r;
   }
 
   $title_line = $i->result->fetch_object(); /**popping the title that
