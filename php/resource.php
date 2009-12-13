@@ -495,8 +495,9 @@ function tagResource (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) 
   }
 
   $tag_args = argSort($q->res, $q->tag, $q->get_param('meta'), $i);
+  $userid = $fks->getUserId();
 
-  $query = "CALL tag_resource($tag_args)";
+  $query = "CALL tag_resource('$userid', $tag_args)";
   $i->query($query);
 
   if ($i->result_status == 'DBERR') {
