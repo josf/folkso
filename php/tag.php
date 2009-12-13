@@ -831,4 +831,4 @@ function allTags (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   return $r;
 }
 
-?>
+
