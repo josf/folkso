@@ -404,48 +404,55 @@ function visitPage (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
                         $q->is_single_param('urititle') ? $q->get_param('urititle') : '' );
 
   if (!($ic->data_to_cache( serialize($page)))) {
-    trigger_error("Cannot store data in cache", E_USER_ERROR);
+    $r->setError(500, 'Internal server error: could not use cache');
+    return $r;
   }
 
-  if ($ic->cache_check()) {
-    $pages_to_parse = $ic->retreive_cache();
+  try {
+    if ($ic->cache_check()) {
+      $pages_to_parse = $ic->retreive_cache();
+      $i = new folksoDBinteract($dbc);
 
-    $i = new folksoDBinteract($dbc);
-    if ($i->db_error()) {
-      $r->dbConnectionError($i->error_info());
-      return $r; 
+      $urls = array();
+      $title = array();
+      foreach ($pages_to_parse as $raw) {
+        $item = unserialize($raw);
+        $urls[] = $i->dbescape($item->get_url());
+        $titles[] = $item->get_title();
+      }
+
+      $sql = 
+        "CALL bulk_visit('".
+        implode('&&&&&', $urls) . "', '".
+        implode('&&&&&', $titles) . "', 1)";
+
+      if (!($lfh = fopen('/tmp/folksologfile', 'a'))){
+        $r->setError(500, 'Internal server error: could not open logfile');
+      }
+      fwrite($lfh, implode("\n", $urls) . "\n");
+      fclose($lfh);
+
+      $i->query($sql);
+      if ($i->result_status == 'DBERR') {
+        $r->dbQueryError($i->error_info());
+        return $r;
+      }
+      $r->setOk(200, "200 Read cache'");
+      $r->t("updated db");
     }
-
-    $urls = array();
-    $title = array();
-    foreach ($pages_to_parse as $raw) {
-      $item = unserialize($raw);
-      $urls[] = $i->dbescape($item->get_url());
-      $titles[] = $item->get_title();
+    else {
+      $r->setOk(202, "Caching visit");
+      $r->t('Caching visit. Results will be incorporated shortly.');
     }
-
-    $sql = 
-      "CALL bulk_visit('".
-      implode('&&&&&', $urls) . "', '".
-      implode('&&&&&', $titles) . "', 1)";
-
-    if (!($lfh = fopen('/tmp/folksologfile', 'a'))){
-      trigger_error("logfile failed to open", E_USER_ERROR);
-    }
-    fwrite($lfh, implode("\n", $urls) . "\n");
-    fclose($lfh);
-
-    $i->query($sql);
-    if ($i->result_status == 'DBERR') {
-      $r->dbQueryError($i->error_info());
-      return $r;
-    }
-    $r->setOk(200, "200 Read cache'");
-    $r->t("updated db");
-    } 
-  else {
-    $r->setOk(202, "Caching visit");
-    $r->t('Caching visit. Results will be incorporated shortly.');
+  }
+  catch (dbConnectionException $e) {
+    $r->dbConnectionError($e->getMessage());
+  }
+  catch (dbQueryException $e) {
+    $r->dbQueryError($e->getMessage . $e->sqlquery);
+  }
+  catch (Exception $e) {
+    $r->setError(500, 'Internal server error');
   }
   return $r;
 }
