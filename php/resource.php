@@ -489,7 +489,7 @@ function tagResource (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) 
     $i = new folksoDBinteract($dbc);
     $tag_args = argSort($q->res, $q->tag, $q->get_param('meta'), $i);
 
-    $query = "CALL tag_resource($tag_args)";
+    $query = "CALL tag_resource('$userid', $tag_args)";
     $i->query($query);
   }
   catch (dbConnectionException $e) {

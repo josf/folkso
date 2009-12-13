@@ -23,6 +23,12 @@ class folksoSession {
   private $loc;
 
   /**
+   * When a user object is retreived, it is cached here. Subsequent
+   * calls to userSession will simply return the cached version.
+   */
+  public $user;
+
+  /**
    * @param $dbc folksoDBconnect 
    */
   function __construct(folksoDBconnect $dbc){
@@ -169,11 +175,19 @@ class folksoSession {
  }
 
  /**
-  * Load user data from session id (cookie). Retuns folksoUser obj
+  * Load user data from session id (cookie). Retuns folksoUser
+  * obj. Caches the fkUser object. We might consider a "force reload"
+  * option if there were a reason for it. This also means that if the
+  * arguments (sid) change, the data returned will not. This should
+  * not be a problem though.
   *
-  * @param $sid
+  * @param $sid Session ID.
   */
   public function userSession ($sid) {
+    if ($this->user instanceof folksoUser) {
+      return $this->user;
+    }
+
     $sid = $sid ? $sid : $this->sessionId;
     if ($this->validateSid($sid) === false) {
       return false;  // exception?
@@ -208,6 +222,13 @@ class folksoSession {
    }
   }
  
+  /**
+   * Simple wrapper around userSession, when all we actually need is the userid
+   */
+  public function getUserId ($sid = null) {
+    $u = $this->userSession($sid);
+    return $u->userid;
+  }
        
        
 }

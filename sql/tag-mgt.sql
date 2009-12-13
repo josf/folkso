@@ -135,7 +135,8 @@ DELIMITER ;
 -- exists. Especially true if this were to be used for external URIs.
 DELIMITER $$
 DROP PROCEDURE IF EXISTS tag_resource$$
-CREATE PROCEDURE tag_resource(resource_uri      VARCHAR(255),
+CREATE PROCEDURE tag_resource(userid            varchar(255),
+                              resource_uri      VARCHAR(255),
                               resource_id       INT,
                               tag_name          VARCHAR(255),
                               tag_id            INT,
@@ -202,25 +203,25 @@ IF ((existing_meta_id IS NULL) OR
 END IF;   
 
 SELECT COUNT(*)
-INTO already_tagged
-FROM tagevent t
-WHERE (t.resource_id = existing_uri)
-AND (t.tag_id = existing_tag_id)
-AND (user_id = 9999)
-LIMIT 1;
+       INTO already_tagged
+       FROM tagevent t
+       WHERE (t.resource_id = existing_uri)
+             AND (t.tag_id = existing_tag_id)
+             AND (user_id = 9999)
+       LIMIT 1;
 
 IF (already_tagged > 0) THEN
    UPDATE tagevent t
    SET meta_id = existing_meta_id
    WHERE (t.resource_id = existing_uri)
    AND (t.tag_id = existing_tag_id)
-   AND (user_id = 9999);
+   AND (user_id = userid);
 ELSE
     INSERT INTO tagevent
     SET tag_id = existing_tag_id,
         resource_id = existing_uri,
         meta_id = existing_meta_id,
-        user_id = 9999;
+        user_id = userid;
 END IF;
 
 END$$

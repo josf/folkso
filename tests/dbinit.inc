@@ -85,7 +85,7 @@ function test_db_init() {
 
     foreach ($tags as $t) {
 
-    $i->sp_query("call tag_resource('http://example.com/1', '', '$t', '', '', 1 )");
+    $i->sp_query("call tag_resource('gustav-2009-001', 'http://example.com/1', '', '$t', '', '', 1 )");
     if ($i->db_error()) { 
       print "bad tag resource<br/>";
       print $i->error_info();
