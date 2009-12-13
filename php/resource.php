@@ -271,69 +271,63 @@ function getTagsIds (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
  * Optional: folksobydate (date based cloud).
  */
 function tagCloudLocalPop (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
-  $i = new folksoDBinteract($dbc);
   $r = new folksoResponse();
 
-  if ($i->db_error()) { 
-    $r->dbConnectionError($i->error_info());
-    return $r;
-  }
+  try {
+    $i = new folksoDBinteract($dbc);
 
-  // check to see if resource is in db.
-  if  (!$i->resourcep($q->res ))  {
-    if ($i->db_error()) {
-      $r->dbQueryError($i->error_info());
-      return $r;
-    }
-    else {
+    // check to see if resource is in db.
+    if  (!$i->resourcep($q->res ))  {
       $r->setError(404, 'Resource not found');
       $r->errorBody("Resource not present in database");
       return $r;
     }
-  }
 
-  // using the "limit" parameter
-  $taglimit = 0;
-  if ($q->is_param('limit') &&
-      (is_numeric($q->get_param('limit')))) {
-    $taglimit = $q->get_param('limit');
-  }
+    // using the "limit" parameter
+    $taglimit = 0;
+    if ($q->is_param('limit') &&
+        (is_numeric($q->get_param('limit')))) {
+      $taglimit = $q->get_param('limit');
+    }
 
-  $rq = new folksoResQuery();
-  if ($q->is_param('bypop')) {
-    $sql = $rq->cloud_by_popularity($i->dbescape($q->res), 
-                                    $taglimit);
-  }
-  elseif ($q->is_param('bydate')) {
-    $sql = $rq->cloud_by_date($i->dbescape($q->res),
+    $rq = new folksoResQuery();
+    if ($q->is_param('bypop')) {
+      $sql = $rq->cloud_by_popularity($i->dbescape($q->res), 
+                                      $taglimit);
+    }
+    elseif ($q->is_param('bydate')) {
+      $sql = $rq->cloud_by_date($i->dbescape($q->res),
+                                $taglimit);
+    }
+    else {
+      $sql = $rq->basic_cloud($i->dbescape($q->res),
                               $taglimit);
-  }
-  else {
-    $sql = $rq->basic_cloud($i->dbescape($q->res),
-                            $taglimit);
-  }
-  $i->query($sql);
+    }
+    $i->query($sql);
 
-  switch ($i->result_status) {
-  case 'DBERR':
-    $r->dbQueryError();
-    $r->errorBody($i->error_info());
-    return $r;
-    break;
-  case 'NOROWS': // probably impossible now
-    $r->setOK(204, 'No tags associated with resource');
-    return $r;
-    break;
-  case 'OK':  
-    if ($i->result->num_rows == 0) { // should this be == 1 instead?
+    switch ($i->result_status) {
+    case 'NOROWS': // probably impossible now
       $r->setOK(204, 'No tags associated with resource');
       return $r;
-    } 
-    else {
-      $r->setOK(200, 'Cloud OK');
+      break;
+    case 'OK':  
+      if ($i->result->num_rows == 0) { // should this be == 1 instead?
+        $r->setOK(204, 'No tags associated with resource');
+        return $r;
+      } 
+      else {
+        $r->setOK(200, 'Cloud OK');
+      }
+      break;
     }
-    break;
   }
+  catch (dbConnectionException $e) {
+    $r->dbConnectionError($e->getMessage);
+  }
+  catch (dbQueryException $e) {
+    $r->dbQueryError($e->getMessage . $e->sqlquery);
+  }
+
 
   $df = new folksoDisplayFactory();
   $dd = $df->cloud();
@@ -376,7 +370,7 @@ function tagCloudLocalPop (folksoQuery $q, folksoDBconnect $dbc, folksoSession $
     return $r;
     break;
   default:
-    $r->setError(406, "No datatype specified");
+    $r->setError(406, "Invalid or missing specified");
     $r->errorBody(
                   "Sorry, but you did not give a datatype and we are too lazy "
                   ." right now to supply a default."
