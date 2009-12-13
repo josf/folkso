@@ -457,27 +457,25 @@ function visitPage (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
  */
 function addResource (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
-  $i = new folksoDBinteract($dbc);
-  if ($i->db_error()) {
-    $r->dbConnectionError($i->error_info());
+  try {
+    $i = new folksoDBinteract($dbc);
+    $query = 
+      "CALL url_visit('" .
+      $i->dbescape($q->res) .     "', '" .
+      $i->dbescape($q->get_param('newtitle')) . "', 500)";
+    $i->query($query);
+  }
+  catch(dbConnectionException $e) {
+    $r->dbConnectionError($e->getMessage());
+    return $r;
+  }
+  catch(dbQueryException $e) {
+    $r->dbQueryError($e->getMessage() . $e->sqlquery);
     return $r;
   }
 
-  $query = 
-    "CALL url_visit('" .
-    $i->dbescape($q->res) .     "', '" .
-    $i->dbescape($q->get_param('newtitle')) . "', 500)";
-      
-  $i->query($query);
-
-  if ($i->result_status == 'DBERR') {
-    $r->dbQueryError($i->error_info());
-    return $r;
-  }
-  else {
-    $r->setOk(201, "Resource added");
-    $r->t('Resource added to database'); // TODO Return representation here (id, url)
-  }
+  $r->setOk(201, "Resource added");
+  $r->t('Resource added to database'); // TODO Return representation here (id, url)
   return $r; 
 }
 
