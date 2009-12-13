@@ -128,6 +128,18 @@ class folksoUser {
      }
    }
 
+/**
+ * Bogus function right now to preserve functionality when not
+ * initialized as a subclass.
+ *
+ *  @param $id 
+ */
+ public function validateLoginId ($id) {
+   return true;
+ }
+
+
+
 
   /**
    * this function exists in folksoSession too. They should be identical.
