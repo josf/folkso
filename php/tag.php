@@ -755,10 +755,11 @@ function allTags (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   " ORDER BY display ";
     
   $i->query($query);
-  if ($i->result_status != 'OK') {
-    $r->dbQueryError($i->error_info());
-    return $r;
   }
+  catch (dbException $e){
+    return $r->handleDBexception($e);
+  }
+
   $r->setOk(200, 'There they are');
   $df = new folksoDisplayFactory();
   $dd = $df->TagList();
@@ -771,7 +772,7 @@ function allTags (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
                     $row->display,
                     $row->popularity,
                     ''));
-  }
+  } 
   $r->t($dd->endform());
   return $r;
 }
