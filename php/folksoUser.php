@@ -162,8 +162,11 @@ class folksoUser {
     $uid = trim($uid);
     if ($this->validateUid($uid)){
       $this->userid = $uid;
+      return $this->userid;
     }   
-    return $userid;
+    else {
+      throw new Exception('Could not set userid with the bad data we got');
+    }
   }
 
   /**
@@ -198,17 +201,6 @@ class folksoUser {
    * (typically an error message).final
    */
   public function loadUser ($params) {
-    $missing = array();
-    foreach ($this->required_fields as $field){
-      if ((! isset($params[$field])) ||
-          (empty($params[$field]))) {
-        $missing[] = $field;
-      }
-    }
-    if (count($missing) > 0) {
-      return array(false, "Missing fields: " . implode(' ', $missing));
-    }
-     
     $this->setNick($params['nick']);
     $this->setFirstName($params['firstname']);
     $this->setLastName($params['lastname']);
@@ -285,9 +277,9 @@ class folksoUser {
 
     $i->query('select rightid '
               .' from users_rights '
-              ." where userid = '" . $this->uid . "' "
+              ." where userid = '" . $i->dbescape($this->userid) . "' "
               ." and "
-              ." rightid = '" . $right . "'");
+              ." rightid = '" . $i->dbescape($right) . "'");
 
     if ($i->result_status == 'OK') {
       return true;
