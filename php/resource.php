@@ -162,52 +162,48 @@ function isHead (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
  */
 function getTagsIds (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
-  $i = new folksoDBinteract($dbc);
+  try {
+    $i = new folksoDBinteract($dbc);
 
-  if ($i->db_error()){
-    $r->dbConnectionError($i->error_info());
-    return $r;
-  }
-
-  // check to see if resource is in db.
-  if  (!$i->resourcep($q->res))  {
-    if ($i->db_error()) {
-      $r->dbQueryError($i->error_info());
-    }
-    else {
+    // check to see if resource is in db.
+    if  (!$i->resourcep($q->res))  {
       $r->setError(404, 'Resource not found');
       $r->errorBody("Resource not present in database");
+      return $r;
     }
+  
+    $limit = 0;
+    if ($q->is_param('limit') &&
+        is_numeric($q->get_param('limit'))) {
+      $limit = $q->get_param('limit');
+    }
+    $metaonly = false;
+    if ($q->is_param('metaonly')) {
+      $metaonly = true;
+    }
+
+    $include_eans = false;
+    if ($q->is_param('ean13')) {
+      $include_eans = true;
+    }
+
+    $rq = new folksoResQuery();  
+    $select = $rq->getTags($i->dbescape($q->res), 
+                           $limit, 
+                           $metaonly, 
+                           $include_eans);
+    $i->query($select);
+  }
+  catch (dbConnectionException $e) {
+    $r->dbConnectionError($e->getMessage());
     return $r;
   }
-  
-  $limit = 0;
-  if ($q->is_param('limit') &&
-      is_numeric($q->get_param('limit'))) {
-    $limit = $q->get_param('limit');
+  catch (dbQueryException $e) {
+    $r->dbQueryError($e->getMessage() . $e->sqlquery);
+    return $r;
   }
-  $metaonly = false;
-  if ($q->is_param('metaonly')) {
-    $metaonly = true;
-  }
-
-  $include_eans = false;
-  if ($q->is_param('ean13')) {
-    $include_eans = true;
-  }
-
-  $rq = new folksoResQuery();  
-  $select = $rq->getTags($i->dbescape($q->res), 
-                         $limit, 
-                         $metaonly, 
-                         $include_eans);
-  $i->query($select);
 
   switch ($i->result_status) {
-  case 'DBERR':
-    $r->dbQueryError($i->error_info());
-    return $r;
-    break;
   case 'NOROWS':
     $r->setOk(204, 'No tags associated with resource');
     return $r;
@@ -255,7 +251,7 @@ function getTagsIds (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r->t($dd->startform());
   while ( $row = $i->result->fetch_object() ) {
     $r->t($dd->line($row->tagdisplay));
-    }
+  }
   $r->t($dd->endform());
   return $r;
 }

@@ -81,7 +81,7 @@ class testOfResource extends  UnitTestCase {
      $this->assertIsA($r, folksoResponse, 
                 'getTagsIds() does not return a folksoResponse object');
      $this->assertEqual($r->status, 200, 
-                        'getTagsIds returns incorrect status');
+                        'getTagsIds returns incorrect status: ' . $r->status);
      $this->assertTrue(strlen($r->body()) > 1, 
                        'Not returning any body');
      $this->assertPattern('/tagone/',
