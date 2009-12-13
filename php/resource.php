@@ -582,11 +582,9 @@ function unTag (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
  */
 function rmRes (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
-  $i = new folksoDBinteract($dbc);
-  if ($i->db_error()) {
-    $r->dbConnectionError($i->error_info());
-    return $r;
-  }
+
+  try {
+    $i = new folksoDBinteract($dbc);
 
   // call rmres('url', id);
   $sql = "CALL rmres('";
@@ -597,16 +595,18 @@ function rmRes (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
     $sql .= $i->dbescape($q->res) . "', '')";
   }
   $i->query($sql);
-
- if ($i->result_status == 'DBERR') {
-   $r->dbQueryError($i->error_info());
- }
- else {
-   $r->setOk(200, "Resource deleted");
-   $r->t("Resource " . $q->res . " permanently deleted");
-   $r->t("This resource will not be indexed in the future.");
- }
- return $r;
+  }
+  catch (dbConnectionException $e){
+    $r->dbConnectionError($e->getMessage());
+    return $r;
+  }
+  catch (dbQueryException $e) {
+    $r->dbQueryError($e->getMessage() . $e->sqlquery);
+  }
+  $r->setOk(200, "Resource deleted");
+  $r->t("Resource " . $q->res . " permanently deleted");
+  $r->t("This resource will not be indexed in the future.");
+  return $r;
 }
 
 /**
