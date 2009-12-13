@@ -586,15 +586,15 @@ function rmRes (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   try {
     $i = new folksoDBinteract($dbc);
 
-  // call rmres('url', id);
-  $sql = "CALL rmres('";
-  if (is_numeric($q->res)) {
-    $sql .= "', ". $q->res . ")";
-  }
-  else {
-    $sql .= $i->dbescape($q->res) . "', '')";
-  }
-  $i->query($sql);
+    // call rmres('url', id);
+    $sql = "CALL rmres('";
+    if (is_numeric($q->res)) {
+      $sql .= "', ". $q->res . ")";
+    }
+    else {
+      $sql .= $i->dbescape($q->res) . "', '')";
+    }
+    $i->query($sql);
   }
   catch (dbConnectionException $e){
     $r->dbConnectionError($e->getMessage());
