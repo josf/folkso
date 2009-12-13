@@ -524,56 +524,56 @@ function tagResource (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) 
 
 function unTag (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
-  $i = new folksoDBinteract($dbc);
-  if ($i->db_error()) {
-    $r->dbConnectionError($i->error_info);
+
+  try {
+    $i = new folksoDBinteract($dbc);
+    $sql = '';
+
+    if ((is_numeric($q->tag)) &&
+        (is_numeric($q->res))) {
+      $sql = 
+        'DELETE FROM tagevent '.
+        'WHERE (tag_id = ' . $q->tag .') '.
+        'AND '.
+        '(resource_id = ' . $q->res . ') ';
+    }
+    else {
+      $query = 
+        'DELETE FROM tagevent '.
+        'USING tagevent JOIN resource r ON tagevent.resource_id = r.id '.
+        'JOIN tag t ON tagevent.tag_id = t.id ';
+
+      $where = 'WHERE';
+    
+      if (is_numeric($q->tag)) {
+        $where .= ' (tagevent.tag_id = ' . $q->tag . ') ';
+      }
+      else {
+        $where .= 
+          " (t.tagnorm = normalize_tag('". $i->dbescape($q->tag) ."')) ";
+      }
+
+      if (is_numeric($q->res)) {
+        $where .= ' AND '.
+          ' (tagevent.resource_id = ' . $q->res . ') ';
+      }
+      else {
+        $where .=  ' AND '.
+          " (r.uri_normal = url_whack('". $i->dbescape($q->res) . "')) ";
+      }
+      $sql = $query . $where;
+    }
+    $i->query($sql);
+  }
+  catch (dbConnectionException $e) {
+    $r->dbConnectionError($e->getMessage());
     return $r;
   }
-
-  $sql = '';
-
-  if ((is_numeric($q->tag)) &&
-      (is_numeric($q->res))) {
-    $sql = 
-      'DELETE FROM tagevent '.
-      'WHERE (tag_id = ' . $q->tag .') '.
-      'AND '.
-      '(resource_id = ' . $q->res . ') ';
+  catch (dbQueryException $e) {
+    $r->dbQueryError($e->getMessage . $e->sqlquery);
+    return $r;
   }
-  else {
-    $query = 
-      'DELETE FROM tagevent '.
-      'USING tagevent JOIN resource r ON tagevent.resource_id = r.id '.
-      'JOIN tag t ON tagevent.tag_id = t.id ';
-
-    $where = 'WHERE';
-    
-    if (is_numeric($q->tag)) {
-      $where .= ' (tagevent.tag_id = ' . $q->tag . ') ';
-    }
-    else {
-      $where .= 
-        " (t.tagnorm = normalize_tag('". $i->dbescape($q->tag) ."')) ";
-    }
-
-    if (is_numeric($q->res)) {
-      $where .= ' AND '.
-        ' (tagevent.resource_id = ' . $q->res . ') ';
-    }
-    else {
-      $where .=  ' AND '.
-        " (r.uri_normal = url_whack('". $i->dbescape($q->res) . "')) ";
-    }
-    $sql = $query . $where;
-  }
-  $i->query($sql);
-
-  if ($i->result_status == 'DBERR') {
-    $r->dbQueryError();
-  }
-  else {
-    $r->setOK(200, 'Deleted');
-  }
+  $r->setOK(200, 'Deleted');
   return $r;
 }
 
