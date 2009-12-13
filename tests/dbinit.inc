@@ -35,7 +35,7 @@ function test_db_init() {
   $restitles = array('one', 'two', 'three', 'four', 'five');
   $tags = array('tagone', 'tagtwo', 'tagthree', 'tagfour', 'tagfive');
 
-  $i->sp_query(
+  $i->query(
             'insert into metatag (tagnorm, tagdisplay)'
             . ' values '
             . "('normal', 'normal'), "
@@ -44,7 +44,7 @@ function test_db_init() {
             );
 
   /** fill tables **/
-  $i->sp_query("call bulk_visit('" . implode('&&&&&', $reslist) . "', '"
+  $i->query("call bulk_visit('" . implode('&&&&&', $reslist) . "', '"
             . implode('&&&&&', $restitles) . "', 5)");
 
 
@@ -99,8 +99,8 @@ function test_db_init() {
               ."('marcelp-2009-001', 'tag'), "
               ."('gustav-2009-001', 'tag')");
 
-    $i->query("insert into fb_ids (userid, fb_uid) values "
-              ." ('rambo-2009-001', 123456) ");
+    //    $i->query("insert into fb_ids (userid, fb_uid) values "
+    //              ." ('rambo-2009-001', 123456) ");
     /*    $i->query("insert into oid_urls (userid, oid_url) values "
               ." ('marcelp-2009-001', 'http://flickr.com/marcelp'), "
               ." ('gustav-2009-001', 'http://myspace.com/gustav')"); */

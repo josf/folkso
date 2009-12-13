@@ -256,7 +256,7 @@ class testOfResource extends  UnitTestCase {
                        $this->fks3
                       );
      $this->assertEqual($r3->status, 404,
-                        "Tagging unknown resource should return 404");
+                        "Tagging unknown resource should return 404: " . $r3->status);
 
      // Unknown tag
      $r4 = tagResource(new folksoQuery(array(),
@@ -427,6 +427,29 @@ class testOfResource extends  UnitTestCase {
                       new folksoDBconnect('localhost', 'tester_dude',
                                           'testy', 'testostonomie'),
                       $this->fks);
+
+     $this->assertEqual($su->status,
+                        200,
+                        'Could not associate ean13 with example/1');
+
+     $cl = getTagsIds(new folksoQuery(array(),
+                                            array('folksores' => 1,
+                                                  'folksoean13' => 1,
+                                                  'folksodatatype' => 'xml'),
+                                            array()),
+                      new folksoDBconnect('localhost', 'tester_dude',
+                                          'testy', 'testostonomie'),
+                      $this->fks2);
+
+     $this->assertPattern('/ean13/i',
+                          $cl->body(),
+                          'Did not find "ean13" in xml response');
+       
+     $this->assertPattern('/1234567890123/',
+                          $cl->body(),
+                          'Did not find ean13 data'. $cl->body());
+
+
      /** do the deed **/
      $r = modifyEan13(new folksoQuery(array(),
                                      array('folksores' => 'http://example.com/1',

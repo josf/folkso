@@ -497,32 +497,33 @@ function tagResource (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) 
   $tag_args = argSort($q->res, $q->tag, $q->get_param('meta'), $i);
 
   $query = "CALL tag_resource($tag_args)";
-  $i->query($query);
-
-  if ($i->result_status == 'DBERR') {
-    if (($i->db->errno == 1048) &&
-        (strpos($i->db->error, 'resource_id'))) {
-      $r->setError(404, 
-                   "Missing resource",
-                   "Resource ". $q->res . " has not been indexed yet.");
-    }
-    elseif (($i->db->errno == 1048) &&
-            (strpos($i->db->error, 'tag_id'))) {
-      $r->setError(404, 'Tag does not exist',
-                   "Tag ". $q->tag . " does not exist. "
-                   . $i->error_info());
+  try {
+    $i->query($query);
+  }
+  catch (dbQueryException $e) {
+    if ($e->sqlcode == 1048) {
+      if (strpos($e->getMessage(), 'resource_id')){
+        $r->setError(404, 
+                     "Missing resource",
+                     "Resource " . $q->res . " has not been indexed yet.");
+      }
+      elseif (strpos($e->getMessage(), 'tag_id')) {
+        $r->setError(404, 'Tag does not exist',
+                     "Tag ". $q->tag . " does not exist. "
+                     . $i->error_info());
+      }
     }
     else {
-      $r->dbConnectionError($i->error_info());
+      $r->dbQueryError($i->error_info());
     }
     return $r;
   }
-  else {
-    $r->setOk(200, "Tagged");
-    $r->t("Resource has been tagged");
-    $r->t($query);
-    $r->t("  DB says: ". $i->db->error);
-  }
+
+  $r->setOk(200, "Tagged");
+  $r->t("Resource has been tagged");
+  $r->t($query);
+  $r->t("  DB says: ". $i->db->error);
+
   return $r;
 }
 
@@ -729,15 +730,18 @@ function modifyEan13 (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) 
   }
   $sql .= "AND (ean13 = " . $q->get_param('oldean13') . ")";
 
-  $i->query($sql);
-  if ($i->result_status == 'DBERR') {
-    $r->dbQueryError($i->error_info());
+  try {
+    $i->query($sql);
   }
-  elseif ($i->affected_rows == 0) {
+  catch(dbQueryError $e) {
+    $r->dbQueryError($i->error_info());
+    return $r;
+  }
+
+  if ($i->affected_rows === 0) {
     $r->setError(404, 
                  'Resource/EAN13  not found',
                  "The combination resource + ean13 was not found.");
-
   }
   else {
     $r->setOk(200, 'Modified');
