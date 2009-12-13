@@ -446,23 +446,28 @@ function fancyResource (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks
   JOIN tagevent te ON r.id = te.resource_id
   JOIN tag t ON te.tag_id = t.id';
 
-//  $queryend = " LIMIT 100";
-  $querywhere = '';
-  if (is_numeric($q->tag)) {
-    $querywhere = 'WHERE t.id = ' . $q->tag . ' ';
+    //  $queryend = " LIMIT 100";
+    $querywhere = '';
+    if (is_numeric($q->tag)) {
+      $querywhere = 'WHERE t.id = ' . $q->tag . ' ';
+    }
+    else {
+      $querywhere = "WHERE t.tagnorm = normalize_tag('" . 
+        $i->dbescape($q->tag) . "') ";
+    }
+    $total_query = $querytagtitle . " UNION \n" .  $querystart . ' '  . $querywhere . ' ' . $queryend;
+    $i->query($total_query);
   }
-  else {
-    $querywhere = "WHERE t.tagnorm = normalize_tag('" . 
-      $i->dbescape($q->tag) . "') ";
+  catch (dbConnectionException $e) {
+    $r->dbConnectionError($e->getMessage());
+    return $r;
   }
-  $total_query = $querytagtitle . " UNION \n" .  $querystart . ' '  . $querywhere . ' ' . $queryend;
-  $i->query($total_query);
+  catch (dbQueryException $e){
+    $r->dbQueryError($e->getMessage() . $e->sqlquery);
+    return $r;
+  }
 
   switch ($i->result_status) {
-  case 'DBERR':
-    $r->dbQueryError($i->error_info());
-    return $r;
-    break;
   case 'NOROWS':
     $r->setOk(200, 'No resources associated with  tag');
     return $r;
