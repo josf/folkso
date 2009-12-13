@@ -509,11 +509,8 @@ function fancyResource (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks
  */
 function autoCompleteTags (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
+  try {
   $i = new folksoDBinteract($dbc);
-  if ($i->db_error()) {
-    $r->dbConnectionError($i->error_info());
-    return $r;
-  }
 
   $req = substr($q->get_param('autotag'), 0, 3);
   
@@ -522,29 +519,31 @@ function autoCompleteTags (folksoQuery $q, folksoDBconnect $dbc, folksoSession $
                         where tagdisplay like '" .
             $i->dbescape($req) .
             "%'");
-
-  switch ($i->result_status){
-  case 'DBERR':
-    $r->dbQueryError($i->error_info());
+  }
+  catch (dbConnectionException $e) {
+    $r->dbConnectionError($e->getMessage());
     return $r;
-    break;
-  case 'OK':
+  }
+  catch (dbQueryException $e) {
+    $r->dbQueryError($e->getMessage() . $e->sqlquery);
+    return $r;
+  }
+
+  if ($i->result_status == 'NOROWS') {
+    $r->setOk(204, 'No tags');
+  }
+  else {
     $r->setOk(200, 'Tags found');
     $df = new folksoDisplayFactory();
     $dd = $df->singleElementList();
     $dd->activate_style('xhtml');
-
     $r->t($dd->startform());
     while($row = $i->result->fetch_object()) {
       $r->t($dd->line($row->tagdisplay) . "\n");
     }
     $r->t($dd->endform());
-    return $r;
-    break;
-  case 'NOROWS':
-    $r->setOk(204, 'No tags');
-    return $r;
   }
+  return $r;
 }
 
 /**
@@ -558,7 +557,7 @@ function autoCompleteTags (folksoQuery $q, folksoDBconnect $dbc, folksoSession $
  */
 
 function tagMerge (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
-  $r = new folksoResponse();
+  $r = new folksoResponse(); 
   $i = new folksoDBinteract($dbc);
   if ($i->db_error()) {
     $r->dbConnectionError($i->error_info());
