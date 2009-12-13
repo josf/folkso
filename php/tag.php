@@ -117,13 +117,8 @@ function headCheckTag (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks)
             "') " . 
             " limit 1");
   }
-  catch (dbConnectionException $e) {
-    $r->dbConnectionError($e->getMessage());
-    return $r;
-  }
-  catch (dbQueryException $e) {
-    $r->dbQueryError($e->getMessage() . $e->sqlquery);
-    return $r;
+  catch (dbException $e) {
+    return $r->handleDBexception($e);
   }
 
   switch ($i->result_status) {
@@ -156,25 +151,21 @@ function getTag (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
 
   try {
-  $i = new folksoDBinteract($dbc);
-  $query = 'SELECT tagdisplay FROM tag WHERE ';
+    $i = new folksoDBinteract($dbc);
+    $query = 'SELECT tagdisplay FROM tag WHERE ';
 
-  if (is_numeric($q->tag)) {
-    $query .= 'id = ' . $q->get_param('tag');
+    if (is_numeric($q->tag)) {
+      $query .= 'id = ' . $q->get_param('tag');
+    }
+    else {
+      $query .= "tagnorm = normalize_tag('" . $q->tag . "')";
+    }
+    $i->query($query);
   }
-  else {
-    $query .= "tagnorm = normalize_tag('" . $q->tag . "')";
+  catch (dbException $e) {
+    return $r->handleDBexception($e);
   }
-  $i->query($query);
-  }
-  catch (dbConnectionException $e) {
-    $r->dbConnectionError($e->getMessage());
-    return $r;
-  }
-  catch (dbQueryException $e) {
-    $r->dbQueryException($e->getMessage() . $e->sqlquery);
-    return $r;
-  }
+
   switch ($i->result_status) {
   case 'NOROWS':
     $r->setError(404, 'Tag not found',
@@ -255,13 +246,8 @@ function getTagResources (folksoQuery $q, folksoDBconnect $dbc, folksoSession $f
 
     $i->query($querybase);
   }
-  catch (dbConnectionException $e){
-    $r->dbConnectionError($e->getMessage());
-    return $r;
-  }
-  catch (dbQueryException $e){
-    $r->dbQueryError($e->getMessage() . $e->sqlquery);
-    return $r;
+  catch (dbException $e) {
+    return $r->handleDBexception($e);
   }
 
   switch ($i->result_status) {
@@ -307,13 +293,8 @@ function relatedTags (folksoQuery $q, folksoDBConnect $dbc, folksoSession $fks) 
     $tq = new folksoTagQuery();
     $i->query($tq->related_tags($q->tag));
   }
-  catch (dbConnectionException $e) {
-    $r->dbConnectionError($e->getMessage());
-    return $r;
-  }
-  catch (dbQueryException $e) {
-    $r->dbQueryException($e->getMessage . $e->sqlquery);
-    return $r;
+  catch (dbException $e) {
+    return $r->handleDBexception($e);
   }
 
   if ($i->rowCount < 2) {
@@ -380,13 +361,8 @@ function singlePostTag (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks
       $i->dbescape(stripslashes($q->get_param('folksonewtag'))) . "')";
     $i->query($sql);
   }
-  catch (dbConnectionException $e) {
-    $r->dbConnectionError($e->getMessage());
-    return $r;
-  }
-  catch (dbQueryException $e) {
-    $r->dbQueryError($e->getMessage . $e->sqlquery);
-    return $r;
+  catch (dbException $e) {
+    return $r->handleDBexception($e);
   }
 
   $r->setOk(201, 'Tag created');
@@ -458,13 +434,8 @@ function fancyResource (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks
     $total_query = $querytagtitle . " UNION \n" .  $querystart . ' '  . $querywhere . ' ' . $queryend;
     $i->query($total_query);
   }
-  catch (dbConnectionException $e) {
-    $r->dbConnectionError($e->getMessage());
-    return $r;
-  }
-  catch (dbQueryException $e){
-    $r->dbQueryError($e->getMessage() . $e->sqlquery);
-    return $r;
+  catch (dbException $e) {
+    return $r->handleDBexception($e);
   }
 
   switch ($i->result_status) {
@@ -510,23 +481,18 @@ function fancyResource (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks
 function autoCompleteTags (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
   try {
-  $i = new folksoDBinteract($dbc);
+    $i = new folksoDBinteract($dbc);
 
-  $req = substr($q->get_param('autotag'), 0, 3);
+    $req = substr($q->get_param('autotag'), 0, 3);
   
-  $i->query("select tagdisplay
+    $i->query("select tagdisplay
                         from tag
                         where tagdisplay like '" .
-            $i->dbescape($req) .
-            "%'");
+              $i->dbescape($req) .
+              "%'");
   }
-  catch (dbConnectionException $e) {
-    $r->dbConnectionError($e->getMessage());
-    return $r;
-  }
-  catch (dbQueryException $e) {
-    $r->dbQueryError($e->getMessage() . $e->sqlquery);
-    return $r;
+  catch (dbException $e) {
+    return $r->handleDBexception($e);
   }
 
   if ($i->result_status == 'NOROWS') {
