@@ -693,44 +693,44 @@ function assocEan13 (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
  * Web params: POST, res, oldean13, newean13
  */
 function modifyEan13 (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
-    $r = new folksoResponse();
+  $r = new folksoResponse();
+
+  try {
     $i = new folksoDBinteract($dbc);
-    if ($i->db_error()) {
-      $r->dbConnectionError($i->error_info());
+  
+    if (! ean13dataCheck($q->get_param('newean13'))) {
+      $r->setError(406, 
+                   'Bad EAN13 data',
+                   "The folksoean13 fields (old and new) should consist of up to 13 "
+                   ."digits. "
+                   . $q->get_param('oldean13') . " is " . strlen($get_param('oldean13')) . " long "
+                   . "and " . $q->get_param('newean13') . " is " . strlen($get_param('newean13')) . " long "
+                   ." \n\nPlease check your data before trying again.");
       return $r;
     }
   
-  if (! ean13dataCheck($q->get_param('newean13'))) {
-    $r->setError(406, 
-                 'Bad EAN13 data',
-                 "The folksoean13 fields (old and new) should consist of up to 13 "
-                 ."digits. "
-                 . $q->get_param('oldean13') . " is " . strlen($get_param('oldean13')) . " long "
-                 . "and " . $q->get_param('newean13') . " is " . strlen($get_param('newean13')) . " long "
-                 ." \n\nPlease check your data before trying again.");
-      return $r;
-  }
-  
-  $sql = 
-    "UPDATE ean13 " 
-    ."SET ean13 = " . $i->dbescape($q->get_param('newean13'));
-  if (is_numeric($q->res)) {
-    $sql .=
-      " WHERE (resource_id = " . $i->dbescape($q->res) . ") ";
-  }
-  else {
-    $sql .= 
-      " WHERE resource_id = "
-      ."(SELECT id FROM resource WHERE "
-      ." uri_normal = url_whack('". $i->dbescape($q->res) . "'))";
-  }
-  $sql .= "AND (ean13 = " . $q->get_param('oldean13') . ")";
+    $sql = 
+      "UPDATE ean13 " 
+      ."SET ean13 = " . $i->dbescape($q->get_param('newean13'));
+    if (is_numeric($q->res)) {
+      $sql .=
+        " WHERE (resource_id = " . $i->dbescape($q->res) . ") ";
+    }
+    else {
+      $sql .= 
+        " WHERE resource_id = "
+        ."(SELECT id FROM resource WHERE "
+        ." uri_normal = url_whack('". $i->dbescape($q->res) . "'))";
+    }
+    $sql .= "AND (ean13 = " . $q->get_param('oldean13') . ")";
 
-  try {
     $i->query($sql);
   }
-  catch(dbQueryError $e) {
-    $r->dbQueryError($i->error_info());
+  catch(dbConnectionException $e) {
+    $r->dbConnectionError($e->getMessage());
+  }
+  catch(dbQueryException $e) {
+    $r->dbQueryError($e->getMessage() . $e->sqlquery);
     return $r;
   }
 
