@@ -751,48 +751,48 @@ function modifyEan13 (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) 
  */
 function deleteEan13 (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
-  $i = new folksoDBinteract($dbc);
-  if ($i->db_error()) {
-    $r->dbConnectionError($i->error_info());
-    return $r;
-  }
+  try {
+    $i = new folksoDBinteract($dbc);
 
-  if (! ean13dataCheck($q->get_param('ean13'))) {
-    $r->setError(406, 'Bad EAN13 data',
-                 "The folksoean13 field should consist of exactly 13 digits. "
-                 ."\n\nPlease check your "
-                 ."data before trying again.");
-    return $r;
-  }
+    if (! ean13dataCheck($q->get_param('ean13'))) {
+      $r->setError(406, 'Bad EAN13 data',
+                   "The folksoean13 field should consist of exactly 13 digits. "
+                   ."\n\nPlease check your "
+                   ."data before trying again.");
+      return $r;
+    }
 
-  $sql = 
-    "DELETE FROM ean13  where (ean13 = " .  $q->get_param('ean13') . " "
-    . "AND resource_id = ";
-  if (is_numeric($q->res)) {
-    $sql .=  $q->res;
-  }
-  else {
-    $sql .= 
-      "(select id from resource where uri_normal = url_whack('"
-      . $q->res 
-      . "'))";
-  }
-  $sql .= ")";
-  $i->query($sql);
-
-  if ($i->result_status == 'DBERR') {
-    $r->dbQueryError($i->error_info());
-  }
-  else {
-    if ($i->affected_rows == 0) {
-      $r->setError(404, 'Resource/EAN13 not found',
-                   "The combination resource + EAN13 could not be found. "
-                   ."Nothing was deleted.");
+    $sql = 
+      "DELETE FROM ean13  where (ean13 = " .  $q->get_param('ean13') . " "
+      . "AND resource_id = ";
+    if (is_numeric($q->res)) {
+      $sql .=  $q->res;
     }
     else {
-      $r->setOk(200, 'Deleted');
-      $r->t( "The EAN13 information was deleted");
+      $sql .= 
+        "(select id from resource where uri_normal = url_whack('"
+        . $q->res 
+        . "'))";
     }
+    $sql .= ")";
+    $i->query($sql);
+  }
+  catch (dbConnectionException $e) {
+    $r->dbConnectionError($e->getMessage());
+    return $r;
+  }
+  catch (dbQueryException $e) {
+    $r->dbQueryError($e->getMessage . $e->sqlquery);
+  }
+
+  if ($i->affected_rows == 0) {
+    $r->setError(404, 'Resource/EAN13 not found',
+                 "The combination resource + EAN13 could not be found. "
+                 ."Nothing was deleted.");
+  }
+  else {
+    $r->setOk(200, 'Deleted');
+    $r->t( "The EAN13 information was deleted");
   }
   return $r;
 }
