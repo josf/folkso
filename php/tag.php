@@ -109,27 +109,28 @@ $srv->Respond();
  */
 function headCheckTag (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
+  try {
   $i = new folksoDBinteract($dbc);
-  if ($i->db_error()) {
-    $r->dbConnectionError($i->error_info());
-    return $r;
-  }
 
   $i->query("select id from tag where tagnorm = normalize_tag('" .
             $i->dbquote($q->get_param('tag')) .
             "') " . 
             " limit 1");
-  
-  switch ($i->result_status) {
-  case 'DBERR':
-    $r->dbQueryError($i->error_info());
+  }
+  catch (dbConnectionException $e) {
+    $r->dbConnectionError($e->getMessage());
     return $r;
-    break;
+  }
+  catch (dbQueryException $e) {
+    $r->dbQueryError($e->getMessage() . $e->sqlquery);
+    return $r;
+  }
+
+  switch ($i->result_status) {
   case 'NOROWS':
     $r->setError(404, 'Tag does not exist',
                  'The tag '. $q->get_param('tag') 
                  . ' is not present in our database.');
-    return $r;
     break;
   case 'OK':
     $r->setOk(200, 'Tag exists');
@@ -138,8 +139,8 @@ function headCheckTag (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks)
       $id = $row->id;
     }
     $r->addHeader("X-Folkso-Tagid: " . $id);
-    return $r;
   }
+  return $r;
 }
 
 /** 
