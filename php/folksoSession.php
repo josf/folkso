@@ -222,6 +222,13 @@ class folksoSession {
    }
   }
  
+  /**
+   * Simple wrapper around userSession, when all we actually need is the userid
+   */
+  public function getUserId ($sid = null) {
+    $u = $this->userSession($sid);
+    return $u->userid;
+  }
        
        
 }
