@@ -210,7 +210,9 @@ class folksoUser {
     $this->setPays($params['pays']);
     $this->setFonction($params['fonction']);
     $this->setEmail($params['email']);
-    $this->setUid($params['userid']);
+    if ($params['userid']) {
+      $this->setUid($params['userid']);
+    }
 
     $this->Writeable();
     return array(true);
