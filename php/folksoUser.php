@@ -290,7 +290,11 @@ class folksoUser {
   /**
    * @param $right
    */
-  public function checkUserRight ($right) {
+  public function checkUserRight ($service, $right) {
+    if ($this->rights->checkRight($service, $right)){
+      return true;
+    }
+
     $i = new folksoDBinteract($this->dbc);
     if ($i->db_error()) {
       trigger_error("Database connection error: " .  $i->error_info(), 
