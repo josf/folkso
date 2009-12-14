@@ -50,6 +50,14 @@ class testOffolksoUser extends  UnitTestCase {
      $this->assertFalse($u->checkUserRight('ploop'),
                         'inexistant right should not validate');
    }
+
+   function testRights () {
+     $u = new folksoUser($this->dbc);
+     $this->assertIsA($u->rights, 
+                      folksoRightStore,
+                      'No fkRightStore at $u->rights');
+
+   }
 }//end class
 
 $test = &new testOffolksoUser();

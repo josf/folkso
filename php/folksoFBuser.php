@@ -65,8 +65,8 @@ class folksoFBuser extends folksoUser{
 /**
  * @param $id
  */
- public function userFromLogin ($id) {
-   if($this->userFromLogin_base($id, 'fb_users', 'fb_uid')) {
+  public function userFromLogin ($id, $service = null, $right = null) {
+    if($this->userFromLogin_base($id, 'fb_users', 'fb_uid', $service, $null)) {
      return $this;
    }
    else {
