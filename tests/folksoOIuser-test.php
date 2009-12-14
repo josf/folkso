@@ -61,7 +61,7 @@ class testOffolksoOIuser extends  UnitTestCase {
                       'Email should be considered valid');
     $this->assertTrue($u->validEmail(),
                       'Email checking of object email value not working');
-   
+    /**
     $this->assertFalse($u->validateRight('i win'),
                        'spaces in right name should not validate');
     $this->assertFalse($u->validateRight('Iwin'),
@@ -74,7 +74,7 @@ class testOffolksoOIuser extends  UnitTestCase {
 
     $this->assertFalse($u->checkUserRight('haroomph'),
                        'non existant right should return false');
-
+    **/
   }
 
 
@@ -115,7 +115,7 @@ class testOffolksoOIuser extends  UnitTestCase {
          $this->assertIsA($zork, folksoOIuser,
                           'userFromLogin should not return false');
          $this->assertTrue($gus->Writeable(),
-                           'userFromLogin does not fetch a writeable user'. print_r($gus));
+                           'userFromLogin does not fetch a writeable user' );
          $this->assertEqual($gus->userid, 'gustav-2009-001',
                             'Not retreiving userid');
          $this->assertEqual($gus->nick, 'gustav',
@@ -152,6 +152,22 @@ class testOffolksoOIuser extends  UnitTestCase {
                               'email' => 'f.celine@fn.fr'));
 
 
+   }
+
+   function testRights () {
+     $u = new folksoOIuser($this->dbc);
+     $u->userFromLogin('http://flickr.com/marcelp', 'folkso', 'tag');
+
+     $this->assertIsA($u, folksoOIuser,
+                      'Problem with object creation');
+     $this->assertEqual($u->nick, 'marcelp',
+                        'Incorrect nick with userFromLogin');
+     $this->assertTrue($u->rights->hasRights(),
+                       'RightStore is reporting empty');
+     $this->assertTrue($u->rights->checkRight('folkso', 'tag'),
+                       'checkRight via fkRightStore not working correctly');
+     $this->assertTrue($u->checkUserRight('folkso', 'tag'),
+                       'checkUserRight() not working');
    }
 }//end class
 
