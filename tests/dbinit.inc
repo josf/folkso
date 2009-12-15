@@ -107,6 +107,7 @@ function test_db_init() {
               ."('rambo-2009-001', 'create'), "
               ."('marcelp-2009-001', 'tag'), "
               ."('marcelp-2009-001', 'create'), "
+              ."('marcelp-2009-001', 'redac'), "
               ."('vicktr-2009-001', 'admin'), "
               ."('gustav-2009-001', 'tag')");
 

@@ -712,6 +712,12 @@ function assocEan13 (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
  */
 function modifyEan13 (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
+  $u = $fks->userSession(null, 'folkso', 'redac');
+  if ((! $u instanceof folksoUser) ||
+      ((! $u->checkUserRight('folkso', 'redac')) && 
+       (! $u->checkUserRight('folkso', 'admin')))){
+    return $r->unAuthorized($u);
+  }
 
   try {
     $i = new folksoDBinteract($dbc);
@@ -744,12 +750,8 @@ function modifyEan13 (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) 
 
     $i->query($sql);
   }
-  catch(dbConnectionException $e) {
-    $r->dbConnectionError($e->getMessage());
-  }
-  catch(dbQueryException $e) {
-    $r->dbQueryError($e->getMessage() . $e->sqlquery);
-    return $r;
+  catch(dbException $e) {
+    return $r->handleDBexception($e);
   }
 
   if ($i->affected_rows === 0) {
