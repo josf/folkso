@@ -592,6 +592,11 @@ function unTag (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
  */
 function rmRes (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
+  $u = $fks->userSession(null, 'folkso', 'admin');
+  if ((! $u instanceof folksoUser) ||
+      (! $u->checkUserRight('folkso', 'admin'))) {
+    return $r->unAuthorized($u);
+  }
 
   try {
     $i = new folksoDBinteract($dbc);

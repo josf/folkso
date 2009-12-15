@@ -326,6 +326,7 @@ class testOfResource extends  UnitTestCase {
    }
 
    function testRmRes() {
+
      $h1 = isHead(new folksoQuery(array(),
                                   array('folksores' => 'http://example.com/1'),
                                   array()),
@@ -334,13 +335,13 @@ class testOfResource extends  UnitTestCase {
                   $this->fks);
      $this->assertEqual($h1->status, 200,
                         'example.com/1 not present acorrding to isHead. Test pb.');
-
+     $this->fks->startSession('vicktr-2009-001', true);
      $r = rmRes(new folksoQuery(array(),
                                 array('folksores' => 'http://example.com/1'),
                                 array()),
                 new folksoDBconnect('localhost', 'tester_dude',
                                     'testy', 'testostonomie'),
-                $this->fks2);
+                $this->fks);
      $this->assertIsA($r, folksoResponse,
                       'rmRes does not return a folksoResponse object');
      $this->assertEqual($r->status, 200, 
