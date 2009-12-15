@@ -97,20 +97,29 @@ class folksoSession {
       throw new Exception('Bad userid');
     }
 
-    $i = new folksoDBinteract($this->dbc);
-    if ($i->db_error()) {
-      trigger_error("Database connection error: " .  $i->error_info(), 
-                    E_USER_ERROR);
-    }    
-    $sess = $this->newSessionId();
-    $i->query(
-              'insert into sessions '
-              .' (token, userid) '
-              ." values ('"
-              . $i->dbescape($sess) . "', '"
-              . $i->dbescape($uid) . "')"
-              );
 
+
+    $sess = $this->newSessionId($uid);
+    try {
+      $i = new folksoDBinteract($this->dbc);
+      $i->query(
+                'insert into sessions '
+                .' (token, userid) '
+                ." values ('"
+                . $i->dbescape($sess) . "', '"
+                . $i->dbescape($uid) . "')"
+                );
+    }
+    catch(dbQueryException $e) {
+      if ($e->sqlcode == 1062) { // duplicate session id, try again 
+        $i->query('insert into sessions '
+                  . ' (token, userid) '
+                  . " values ('"
+                  . $i->dbescape(hash('sha256', $uid, 'Retry')) . "', '"
+                  . $i->dbescape($uid) . "')"
+                  );
+      } // if there is a 2nd collision, we are out of luck.
+    }
     if (! $debug) {
       setcookie('folksosess', $this->sessionId, 
                 time() + 1800, '/', 
@@ -122,8 +131,8 @@ class folksoSession {
   /**
    * Erases any current session id from current object (but not from DB).
    */
-  public function newSessionId () {
-    $this->sessionId = hash('sha256', time() . 'OldSalts');
+  public function newSessionId ($uid) {
+    $this->sessionId = hash('sha256', time() . $uid . 'OldSalts');
     return $this->sessionId;
   }
 
