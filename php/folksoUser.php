@@ -6,6 +6,7 @@
    * @subpackage Tagserv
    */
 require_once('folksoTags.php');
+require_once('folksoRights.php');
 /**
  * @package Folkso
  */
@@ -286,6 +287,29 @@ class folksoUser {
    return $this;
   }
 
+/**
+ * @param 
+ */
+ public function loadAllRights () {
+   $i = new folksoDBinteract($this->dbc);
+    if ($i->db_error()) {
+      trigger_error("Database connection error: " .  $i->error_info(), 
+                    E_USER_ERROR);
+    }    
+    $i->query('select ur.rightid, r.service '
+                     .' from users_rights ur '
+                     .' join rights r on r.rightid = ur.rightid '
+                     ." where userid = '" . $i->dbescape($this->userid) . "' ");
+
+    while ($row = $i->result->fetch_object()){
+      if (! $this->rights->checkRight($row->service, $row->rightid)) {
+        $this->rights->addRight(new folksoRight($row->service,
+                                                $row->rightid));
+      }
+    }
+ }
+
+
 
   /**
    * @param $right
@@ -294,33 +318,10 @@ class folksoUser {
     if ($this->rights->checkRight($service, $right)){
       return true;
     }
-
-    $i = new folksoDBinteract($this->dbc);
-    if ($i->db_error()) {
-      trigger_error("Database connection error: " .  $i->error_info(), 
-                    E_USER_ERROR);
-    }    
-    if ($this->validateRight($right) === false) {
-      return false;
+    else {
+      $this->loadAllRights();
     }
-
-    $i->query('select rightid '
-              .' from users_rights '
-              ." where userid = '" . $i->dbescape($this->userid) . "' "
-              ." and "
-              ." rightid = '" . $i->dbescape($right) . "'");
-
-    if ($i->result_status == 'OK') {
-      return true;
-    }
-    elseif ($i->result_status == 'DBERR') {
-      trigger_error("DB error on right check: " . $i->error_info(),
-                    E_USER_WARNING);
-      return false;
-    }
-    return false;
   }
+   
 }
-   
-   
 

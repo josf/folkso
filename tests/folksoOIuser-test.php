@@ -169,6 +169,23 @@ class testOffolksoOIuser extends  UnitTestCase {
      $this->assertTrue($u->checkUserRight('folkso', 'tag'),
                        'checkUserRight() not working');
    }
+
+   function testAllRights () {
+     $u = new folksoOIuser($this->dbc);
+     $u->userFromLogin('http://flickr.com/marcelp');
+     $this->assertEqual($u->userid, 'marcelp-2009-001',
+                        'Did not load userid');
+     $u->loadAllRights();
+     $this->assertTrue($u->rights->hasRights(),
+                       'Did not load any rights at all with loadAllrights');
+     $this->assertTrue($u->checkUserRight('folkso', 'create'),
+                       'marcelp should have folkso/create');
+     $this->assertTrue($u->checkUserRight('folkso', 'tag'),
+                       'marcelp should have folkso/tag');
+     $this->assertFalse($u->checkUserRight('folkso', 'delete'),
+                        'marcelp should not have delete');
+
+   }
 }//end class
 
 $test = &new testOffolksoOIuser();
