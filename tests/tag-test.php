@@ -85,10 +85,21 @@ class testOffolksotag extends  UnitTestCase {
                                  array()),
                         $this->dbc,
                         $this->fks);
+     $this->assertEqual($r->status, 403,
+                        'Unknown user should provoke a 403 on singlePostTag:' . $r->status);
 
-     $this->assertIsA($r, folksoResponse,
+     $this->fks2->startSession('marcelp-2009-001', true);
+     $r2 = singlePostTag(new folksoQuery(array(),
+                                 array('folksonewtag' => 'emacs'),
+                                 array()),
+                        $this->dbc,
+                        $this->fks2);
+
+
+
+     $this->assertIsA($r2, folksoResponse,
                       'Problem with object creation');
-     $this->assertEqual($r->status,
+     $this->assertEqual($r2->status,
                         201,
                         'Tag creation returning error: ' . $r->status);
      $t = getTag(new folksoQuery(array(),
