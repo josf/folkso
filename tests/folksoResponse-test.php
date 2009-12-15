@@ -1,7 +1,7 @@
 <?php
 require_once('unit_tester.php');
 require_once('reporter.php');
-include('folksoTags.php');
+require('folksoTags.php');
 require_once('dbinit.inc');
 
 
@@ -92,6 +92,23 @@ class testOffolksoResponse extends  UnitTestCase {
 
   }
 
+
+  function testExceptionHandling () {
+    $r = new folksoResponse();
+    $r->handleDBexception(new dbConnectionException('Something bad happened'));
+    $r->prepareHeaders();
+    $this->assertEqual($r->status, 500,
+                       'dbConnectionException not handled correctly, no 500');
+
+    $r2 = new folksoResponse();
+    $r2->handleDBexception(new dbQueryException(234, 'select * from peeps',
+                                                'Something horrible just happened'));
+    $r2->prepareHeaders();
+    $this->assertEqual($r->status, 500,
+                       'dbQueryException not producing a 500');
+    $this->assertPattern('/peeps/', $r2->body(),
+                         'Not getting correct exception information in body for query exception');
+  }
 
   function testDB () {
     test_db_init();

@@ -227,41 +227,31 @@ class folksoUser {
    if ($this->validateLoginId($id) === false) {
      return false; // exception ? warning ?
    }
-   
-   $i = new folksoDBinteract($this->dbc);
-   if ($i->db_error()) {
-     trigger_error("Database connection error: " .  $i->error_info(), 
-                   E_USER_ERROR);
-   }
 
+   $i = new folksoDBinteract($this->dbc);
    $sql = "select "
      ." userid, last_visit, lastname, firstname, nick, email, institution, pays, fonction "
      ." from "
      ." $view "
      ." where $login_column = '" . $i->dbescape($id) . "'";
 
-  if ($service && $right){
-    $sql = "select "
-      ." v.userid, last_visit, lastname, firstname, nick, email, institution, pays, fonction, ur.rightid "
-      ." from "
-      ." $view v "
-      ." left join users_rights ur on ur.userid = v.userid "
-      ." left join rights rs on rs.rightid = ur.rightid "
-      ." where v.$login_column = '" . $i->dbescape($id) . "' "
-      ." and "
-      ." service = '" . $i->dbescape($service) . "'"
-      ." and "
-      ." rs.rightid = '" . $i->dbescape($right) . "'";
-  }
+   if ($service && $right){
+     $sql = "select "
+       ." v.userid, last_visit, lastname, firstname, nick, email, institution, pays, fonction, ur.rightid "
+       ." from "
+       ." $view v "
+       ." left join users_rights ur on ur.userid = v.userid "
+       ." left join rights rs on rs.rightid = ur.rightid "
+       ." where v.$login_column = '" . $i->dbescape($id) . "' "
+       ." and "
+       ." service = '" . $i->dbescape($service) . "'"
+       ." and "
+       ." rs.rightid = '" . $i->dbescape($right) . "'";
+   }
 
-  $i->query($sql);
+   $i->query($sql);
 
    switch ($i->result_status) {
-   case 'DBERR':
-     trigger_error('database query error ' . $i->error_info(),
-                   E_USER_ERROR);
-     return false;
-     break;
    case 'NOROWS':
      print "User not found";
      return false;
@@ -292,14 +282,10 @@ class folksoUser {
  */
  public function loadAllRights () {
    $i = new folksoDBinteract($this->dbc);
-    if ($i->db_error()) {
-      trigger_error("Database connection error: " .  $i->error_info(), 
-                    E_USER_ERROR);
-    }    
-    $i->query('select ur.rightid, r.service '
-                     .' from users_rights ur '
-                     .' join rights r on r.rightid = ur.rightid '
-                     ." where userid = '" . $i->dbescape($this->userid) . "' ");
+   $i->query('select ur.rightid, r.service '
+             .' from users_rights ur '
+             .' join rights r on r.rightid = ur.rightid '
+             ." where userid = '" . $i->dbescape($this->userid) . "' ");
 
     while ($row = $i->result->fetch_object()){
       if (! $this->rights->checkRight($row->service, $row->rightid)) {
@@ -308,8 +294,6 @@ class folksoUser {
       }
     }
  }
-
-
 
   /**
    * @param $right
@@ -320,8 +304,10 @@ class folksoUser {
     }
     else {
       $this->loadAllRights();
+      if ($this->rights->checkRight($service, $right)) {
+        return true;
+      }
     }
   }
-   
 }
 

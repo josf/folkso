@@ -7,6 +7,8 @@
    * @copyright 2008 Gnu Public Licence (GPL)
    * @subpackage Tagserv
    */
+
+require_once "folksoException.php";
   /**
    * A class for passing around database handles and connection information. 
    *
@@ -55,16 +57,25 @@ class folksoDBconnect {
     if ((!empty($this->dbx)) &&
         ($this->dbx instanceof mysqli)) {
       $this->dberr = '';
+      return $this->dbx;
     }
     else {
-      $this->dbx = new mysqli($this->host, $this->user, $this->passwd, $this->database);
-      // TODO : this should be handled by our own (future) error handling system
+      try {
+        $this->dbx = new mysqli($this->host, $this->user, 
+                                $this->passwd, $this->database);
+      }
+      catch (Exception $e) {
+        throw new dbConnectionException("Connect failed: " .
+                                        mysqli_connect_error(),
+                                        mysqli_connect_errno());
+      }
       if ( mysqli_connect_errno()) {
-        $this->dberr = die("Connect failed: %s\n". mysqli_connect_error());
-        return ''; // or should this be false?
-        }
-    }
+        throw new dbConnectionException("Connect failed: " .
+                                        mysqli_connect_error(),
+                                        mysqli_connect_errno());
+      }
     return $this->dbx;
+    }
   }
-  } //end of class
+} //end of class
 ?>

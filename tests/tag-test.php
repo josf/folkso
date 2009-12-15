@@ -174,6 +174,32 @@ class testOffolksotag extends  UnitTestCase {
 
    }
 
+   function testRelatedTags () {
+     $r = relatedTags(new folksoQuery(array(),
+                                      array('folksotag' => 'tagone'),
+                                      array()),
+                      $this->dbc,
+                      $this->fks);
+     $this->assertIsA($r, folksoResponse,
+                      'This is not my beautiful folksoResponse object');
+     $this->assertEqual($r->status, 204,
+                        'There should not be any related tags: ' . $r->status . $r->body());
+     $this->expectError();
+     $baddb = relatedTags(new folksoQuery(array(),
+                                          array('folksotag' => 'tagone'),
+                                          array()),
+                          new folksoDBconnect('localhost', 'hoohaa',
+                                              'hoohaa', 'hoohaa'),
+                          $this->fks2);
+     $this->assertIsA($baddb, folksoResponse,
+                      'Object creation problem with bad DB');
+     $this->assertEqual($baddb->status, 500,
+                        'Incorrect http status: ' . $baddb->status);
+
+
+   }
+
+
    function testAutoCompleteTags() {
      $r = autoCompleteTags(new folksoQuery(array(),
                                            array('folksoautotag' => 't'),
@@ -236,6 +262,17 @@ class testOffolksotag extends  UnitTestCase {
                                 $r->status, 
                                 $r->status_message,
                                 $r->body()));
+
+     $r2 = deleteTag(new folksoQuery(array(),
+                                     array('folksotag' => 'bullshit'),
+                                     array()),
+                     $this->dbc2,
+                     $this->fks2);
+     $this->assertIsA($r2, folksoResponse,
+                      'problem with object creation on bad tag delete');
+     $this->assertEqual($r2->status, 404,
+                        'Not getting correct status (404) on bad tag delete: '
+                        . $r2->status);
    }
    function testByAlpha(){
      $r = byalpha(new folksoQuery(array(),
