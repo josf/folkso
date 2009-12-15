@@ -826,13 +826,19 @@ function deleteEan13 (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) 
  */
 function addNote (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
+  $u = $fks->userSession(null, 'folkso', 'tag');
+  if ((! $u instanceof folksoUser) ||
+      (! $u->checkUserRight('folkso', 'tag'))) {
+    return $r->unAuthorized($u);
+  }
+
   try {
     $i = new folksoDBinteract($dbc);
     $sql = 
-      "INSERT INTO note ".
-      "SET note = '". $i->dbescape($q->get_param("note")) . "', ".
-      "user_id = 9999, " .
-      "resource_id = ";
+      "INSERT INTO note "
+      . "SET note = '". $i->dbescape($q->get_param("note")) . "', "
+      . "userid = '" . $u->userid . "', "
+      . "resource_id = ";
 
     if (is_numeric($q->res)) {
       $sql .= $q->res;
@@ -861,6 +867,12 @@ function addNote (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
 
 function getNotes (folksoquery $q, folksoDBconnect $dbc, folksoSession $fks){
   $r = new folksoResponse();
+  $u = $fks->userSession(null, 'folkso', 'redac');
+  if ((! $u instanceof folksoUser) ||
+      (! $u->checkUserRight('folkso', 'redac'))){
+    return $r->unAuthorized($u);
+  }
+
   try {
     $i = new folksoDBinteract($dbc);
 
