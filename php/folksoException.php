@@ -38,5 +38,6 @@ class dbQueryException extends dbException {
 
  }
 
+class dbSessionQueryException extends dbQueryException { }
 
 
