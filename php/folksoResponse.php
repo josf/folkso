@@ -12,6 +12,7 @@
  * 
  */
 require_once('folksoTags.php');
+require_once('folksoFabula.php');
 
 class folksoResponse {
 
@@ -21,6 +22,8 @@ class folksoResponse {
   private $body;
   public $error_body;
   public $headers;
+  public $redirect;
+  private $loc;
 
   /**
    * Special headers added before header preparation.
@@ -123,7 +126,18 @@ class folksoResponse {
   public function dbQueryError($error_info){
     $this->setError(500, "Database query error");
     $this->errorBody($error_info);
+    return $this;
   }
+
+  /**
+   * @param $user optional A folksoUser object
+   */
+   public function unAuthorized ($user = null) {
+     $this->setError(403, "Forbidden");
+     $this->setLoginRedirect();
+     return $this;
+   }
+  
 
   public function setOk ($status, $message = null){
     if (! isset($this->httpStatus[$status])){
@@ -221,6 +235,24 @@ class folksoResponse {
    $this->preheaders[] = $str;
  }
 
+ /**
+  * @param 
+  */
+ public function setRedirect ($url) {
+   $this->redirect = $url;
+ }
+ 
+ /**
+  * @param 
+  */
+  public function setLoginRedirect () {
+    if (! $this->loc instanceof folksoLocal) {
+      $this->loc = new folksoFabula();
+    }
+    $this->setRedirect($this->loc->loginPage());
+   }
+ 
+
   /**
    * Prepares an array containing the HTTP headers to be sent. 
    * 
@@ -231,6 +263,10 @@ class folksoResponse {
     $headers[] = $this->contentType();
     if (count($this->preheaders) > 0) {
       $headers = array_merge($headers, $this->preheaders);
+    }
+
+    if ($this->redirect) {
+      $headers[] = sprintf('Location: %s', $this->redirect);
     }
     
     $this->headers = $headers;
