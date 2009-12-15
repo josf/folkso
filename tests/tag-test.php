@@ -341,7 +341,18 @@ class testOffolksotag extends  UnitTestCase {
                     $this->fks);
      $this->assertIsA($r, folksoResponse,
                       'Problem with object creation');
-     $this->assertEqual(204, $r->status,
+     $this->assertEqual($r->status, 403,
+                        'Anonymous user should fail with 403: ' . $r->status);
+
+     $this->fks->startSession('vicktr-2009-001', true);
+     $r2 = renameTag(new folksoQuery(array(),
+                                    array('folksonewname' => 'emacs',
+                                          'folksotag' => 'tagone'),
+                                    array()),
+                     $this->dbc,
+                     $this->fks);
+
+     $this->assertEqual(204, $r2->status,
                         'tag rename should return 204');
      
      $h = headCheckTag(new folksoQuery(array(),
