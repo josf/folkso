@@ -929,26 +929,24 @@ function getNotes (folksoquery $q, folksoDBconnect $dbc, folksoSession $fks){
  */
 function rmNote (folksoquery $q, folksoDBconnect $dbc, folksoSession $fks){
   $r = new folksoResponse();
-
+  $u = $fks->userSession(null, 'folkso', 'redac');
+  if ((! $u instanceof folksoUser) ||
+      (! $u->checkUserRight('folkso', 'redac'))){
+    return $r->unAuthorized($u);
+  }
   try {
-  $i = new folksoDBinteract($dbc);
+    $i = new folksoDBinteract($dbc);
+    if (! is_numeric($q->get_param('note'))){
+      $r->setError(400, 'Bad note argument',
+                   $q->get_param('note') . ' is not a number');
+      return $r;
+    }
 
-  if (! is_numeric($q->get_param('note'))){
-    $r->setError(400, 'Bad note argument',
-                 $q->get_param('note') . ' is not a number');
-    return $r;
+    $sql = "DELETE FROM note WHERE id = " . $q->get_param('note');
+    $i->query($sql);
   }
-
-  $sql = "DELETE FROM note WHERE id = " . $q->get_param('note');
-  $i->query($sql);
-  }
-  catch (dbConnectionException $e) {
-    $r->dbConnectionError($e->getMessages());
-    return $r;
-  }
-  catch (dbQueryException $e) {
-    $r->dbQueryError($e->getMessages() . $e->sqlquery);
-    return $r;
+  catch (dbException $e) {
+    return $r->handleDBexception($e);
   }
 
   $r->setOk(200, 'Deleted');
