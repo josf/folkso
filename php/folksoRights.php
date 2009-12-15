@@ -50,6 +50,16 @@ class folksoRight {
     public function getService () {
       return $this->service;
     }
+
+    /**
+     * Returns the full name of the right: service + right.
+     *
+     * To be used for indexing in fkRightStore
+     */
+     public function fullName () {
+       return $this->getService() . '/' . $this->getRight();
+     }
+    
 }
 
 /**
@@ -80,21 +90,24 @@ class folksoRightStore {
     * @param folksoRight $dr
     */
     public function addRight (folksoRight $dr) {
-      if (isset($this->store[$dr->getService()])){
+      if ($this->store[$dr->fullName()] instanceof folksoRight){
         throw new Exception('Cannot add right because it is already present');
       }
-      $this->store[$dr->getService()] = $dr;
+      $this->store[$dr->fullName()] = $dr;
     }
    
+
     /**
-     * Deletes the right. Silently does nothing if right is not
-     * currently assigned.
+     * Deletes the right. Exception on missing right.
      * 
      * @param folksoRight $dr
      */
     public function removeRight (folksoRight $dr) {
-      if (isset($this->store[$dr->getService()])){
-        unset($this->store[$dr->getService()]);
+      if (isset($this->store[$dr->fullName()])){
+        unset($this->store[$dr->fullName()]);
+      }
+      else {
+        throw new Exception('Right not present, cannot be removed');
       }
     }
 
@@ -104,8 +117,8 @@ class folksoRightStore {
      * @param folksoRight $dr
      */
      public function modifyRight (folksoRight $dr) {
-       if (isset($this->store[$dr->getService()])){
-         $this->store[$dr->getService()] = $dr;
+       if (isset($this->store[$dr->fullName()])){
+         $this->store[$dr->fullName()] = $dr;
        }
        else {
          throw new Exception('Cannot modify right that has not been added');
@@ -118,8 +131,7 @@ class folksoRightStore {
       * @return Bool True if authorized, false if not.
       */
      public function checkRight ($service, $right) {
-       if (($this->store[$service] instanceof folksoRight) &&
-           ($this->store[$service]->getRight() == $right)) {
+       if ($this->store[$service . '/' . $right] instanceof folksoRight){
          return true;
        }
        return false;
@@ -135,7 +147,7 @@ class folksoRightStore {
       */
      public function getRight ($service, $right) {
        if ($this->checkRight($service, $right)) {
-         return $this->store[$service];
+         return $this->store[$service . '/' . $right];
        }
        return false;
      }
