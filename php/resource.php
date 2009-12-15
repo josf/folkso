@@ -622,8 +622,7 @@ function assocEan13 (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
   $u = $fks->userSession(null, 'folkso', 'redac');
   if ((! $u instanceof folksoUser) ||
-      ((! $u->checkUserRight('folkso', 'redac')) &&
-       (! $u->checkUserRight('folkso', 'admin')))) {
+      (! $u->checkUserRight('folkso', 'redac'))){
     return $r->unAuthorized($u);
   }
 
@@ -693,8 +692,7 @@ function modifyEan13 (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) 
   $r = new folksoResponse();
   $u = $fks->userSession(null, 'folkso', 'redac');
   if ((! $u instanceof folksoUser) ||
-      ((! $u->checkUserRight('folkso', 'redac')) && 
-       (! $u->checkUserRight('folkso', 'admin')))){
+      (! $u->checkUserRight('folkso', 'redac'))) {
     return $r->unAuthorized($u);
   }
 
