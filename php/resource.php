@@ -802,24 +802,20 @@ function deleteEan13 (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) 
     $sql .= ")";
     $i->query($sql);
   }
-  catch (dbConnectionException $e) {
-    $r->dbConnectionError($e->getMessage());
-    return $r;
-  }
-  catch (dbQueryException $e) {
-    $r->dbQueryError($e->getMessage . $e->sqlquery);
+  catch (dbException $e) {
+    return $r->handleDBexception($e);
   }
 
   if ($i->affected_rows == 0) {
-    $r->setError(404, 'Resource/EAN13 not found',
-                 "The combination resource + EAN13 could not be found. "
-                 ."Nothing was deleted.");
+    return $r->setError(404, 'Resource/EAN13 not found',
+                        "The combination resource + EAN13 could not be found. "
+                        ."Nothing was deleted.");
   }
   else {
     $r->setOk(200, 'Deleted');
     $r->t( "The EAN13 information was deleted");
+    return $r;
   }
-  return $r;
 }
 
 
