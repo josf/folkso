@@ -183,7 +183,7 @@ class folksoSession {
   *
   * @param $sid Session ID.
   */
- public function userSession ($sid, $service = null, $right = null) {
+ public function userSession ($sid = null, $service = null, $right = null) {
     if ($this->user instanceof folksoUser) {
       return $this->user;
     }
