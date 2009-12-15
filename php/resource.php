@@ -827,23 +827,23 @@ function deleteEan13 (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) 
 function addNote (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
   try {
-  $i = new folksoDBinteract($dbc);
-  $sql = 
-    "INSERT INTO note ".
-    "SET note = '". $i->dbescape($q->get_param("note")) . "', ".
-    "user_id = 9999, " .
-    "resource_id = ";
+    $i = new folksoDBinteract($dbc);
+    $sql = 
+      "INSERT INTO note ".
+      "SET note = '". $i->dbescape($q->get_param("note")) . "', ".
+      "user_id = 9999, " .
+      "resource_id = ";
 
-  if (is_numeric($q->res)) {
-    $sql .= $q->res;
-  }
-  else {
-    $sql .= 
-      "(SELECT id FROM resource  ".
-      " WHERE uri_normal = url_whack('" . $q->res . "'))";
-  }
+    if (is_numeric($q->res)) {
+      $sql .= $q->res;
+    }
+    else {
+      $sql .= 
+        "(SELECT id FROM resource  ".
+        " WHERE uri_normal = url_whack('" . $q->res . "'))";
+    }
 
-  $i->query($sql);
+    $i->query($sql);
   }
   catch (dbConnectionException $e) {
     $r->dbConnectionError($e->getMessage());
