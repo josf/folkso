@@ -130,24 +130,17 @@ function isHead (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
     }
     $i->query($query);
   }
-  catch (dbConnectionException $e) {
-    $r->dbConnectionError($e->getMessage());
-    return $r;
-  }
-  catch (dbQueryException $e) {
-    $r->dbQueryError($e->getMessage . $e->sqlquery);
-    return $r;
+  catch (dbException $e) {
+    return $r->handleDBexception($e);
   }
 
-  switch ($i->result_status) {
-   case 'NOROWS':
+  if ($i->result_status == 'NOROWS') {
     $r->setError(404, 
                  'Resource not found',
                  'Resource '. $q->res . ' not present in database');
-    break;
-  case 'OK':
+  }
+  else {
     $r->setOk(200, 'Resource exists');
-    break;
   }
   return $r;
 }
@@ -196,13 +189,8 @@ function getTagsIds (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
                            $include_eans);
     $i->query($select);
   }
-  catch (dbConnectionException $e) {
-    $r->dbConnectionError($e->getMessage());
-    return $r;
-  }
-  catch (dbQueryException $e) {
-    $r->dbQueryError($e->getMessage() . $e->sqlquery);
-    return $r;
+  catch (dbException $e) {
+    return $r->handleDBexception($e);
   }
 
   switch ($i->result_status) {
@@ -319,11 +307,8 @@ function tagCloudLocalPop (folksoQuery $q, folksoDBconnect $dbc, folksoSession $
       break;
     }
   }
-  catch (dbConnectionException $e) {
-    $r->dbConnectionError($e->getMessage);
-  }
-  catch (dbQueryException $e) {
-    $r->dbQueryError($e->getMessage . $e->sqlquery);
+  catch (dbException $e) {
+    $r->handleDBexception($e);
   }
 
 
