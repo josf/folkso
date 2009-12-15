@@ -295,8 +295,6 @@ class folksoUser {
     }
  }
 
-
-
   /**
    * @param $right
    */
@@ -306,8 +304,10 @@ class folksoUser {
     }
     else {
       $this->loadAllRights();
+      if ($this->rights->checkRight($service, $right)) {
+        return true;
+      }
     }
   }
-   
 }
 
