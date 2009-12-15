@@ -851,14 +851,10 @@ function addNote (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
 
     $i->query($sql);
   }
-  catch (dbConnectionException $e) {
-    $r->dbConnectionError($e->getMessage());
-    return $r;
+  catch (dbException $e) {
+    return $r->handleDBexception($e);
   }
-  catch (dbQueryException $e) {
-    $r->dbQueryError($e->getMessage() . $e->sqlquery);
-    return $r;
-  }
+
   $r->setOk(202, 'Note accepted');
   $r->t( "This note will be added to the resource: " . $q->res);
   $r->t( "\n\nText of the submitted note:\n". $q->get_param('note'));
@@ -891,17 +887,11 @@ function getNotes (folksoquery $q, folksoDBconnect $dbc, folksoSession $fks){
     }
     $i->query($sql);
   }
-  catch (dbConnectionException $e){
-    $r->dbConnectionError($e->getMessages());
-    return $r;
-  }
-  catch (dbQueryException $e) {
-    $r->dbQueryError($e->getMessages() . $e->sqlquery);
-    return $r;
+  catch (dbException $e){
+    return $r->handleDBexception($e);
   }
 
-  switch ($i->result_status) {
-  case 'NOROWS': 
+  if  ($i->result_status ==  'NOROWS'){
     if ($i->resourcep($q->res)) {
       $r->setError(404, 'No notes associated with this resource',
                    "No notes have been written yet. Write one if you want.");
@@ -912,11 +902,9 @@ function getNotes (folksoquery $q, folksoDBconnect $dbc, folksoSession $fks){
                    " is not present in the database");
     }
     return $r;
-    break;
-  case 'OK':
-    $r->setOk(200, 'Notes found');
-    break;
   }
+
+  $r->setOk(200, 'Notes found');
 
   // assuming 200 from here on
   $df = new folksoDisplayFactory();
