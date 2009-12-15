@@ -90,8 +90,9 @@ class folksoSession {
    * Starts session and sets cookie.
    * 
    * @param $uid String
+   * @param $debug Bool For testing we can turn off the actual setting of the cookie
    */
-  public function startSession ($uid) {
+ public function startSession ($uid, $debug = null) {
     if ($this->validateUid($uid) === false) {
       throw new Exception('Bad userid');
     }
@@ -109,13 +110,12 @@ class folksoSession {
               . $i->dbescape($sess) . "', '"
               . $i->dbescape($uid) . "')"
               );
-    if ($i->result_status == 'DBERR'){
-      //      print $i->error_info();
-      return false; // exception, errror ?
+
+    if (! $debug) {
+      setcookie('folksosess', $this->sessionId, 
+                time() + 1800, '/', 
+                $this->loc->web_domain);
     }
-    setcookie('folksosess', $this->sessionId, 
-              time() + 1800, '/', 
-              $this->loc->web_domain);
     return $this->sessionId;
   }
       
