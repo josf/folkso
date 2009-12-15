@@ -6,12 +6,20 @@ require_once('folksoSession.php');
 require('dbinit.inc');
 
 class testOffolksoSession extends  UnitTestCase {
+  public $dbc;
 
   function setUp() {
     test_db_init();
     /** not using teardown because this function does a truncate
         before starting. **/
-    
+    $this->dbc = new folksoDBconnect( 'localhost', 'tester_dude', 
+                                      'testy', 'testostonomie');
+    $this->dbc2 = new folksoDBconnect( 'localhost', 'tester_dude', 
+                                      'testy', 'testostonomie');
+    $this->dbc3 = new folksoDBconnect( 'localhost', 'tester_dude', 
+                                      'testy', 'testostonomie');
+    $this->dbc4 = new folksoDBconnect( 'localhost', 'tester_dude', 
+                                      'testy', 'testostonomie');
   }
 
    function testSession () {
@@ -76,6 +84,21 @@ class testOffolksoSession extends  UnitTestCase {
 
          $this->assertEqual($u->nick, 'gustav',
                             'User nick not correctly retrieved' . $u->nick);
+
+   }
+
+   function testRights () {
+     $s = new folksoSession($this->dbc);
+     $this->assertIsA($s, folksoSession,
+                      'No point in testing if we do not have a fkSession obj');
+     $sid = $s->startSession('marcelp-2009-001', true);
+     $u = $s->userSession($sid, 'folkso', 'tag');
+     $this->assertTrue($u, 'userSession returns false');
+     $this->assertIsA($u, folksoUser,
+                      'userSession w/ args not returning a fkUser obj');
+     $this->assertTrue($u->rights->hasRights(),
+                       'user right store is still empty');
+
 
    }
 }//end class

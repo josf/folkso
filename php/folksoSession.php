@@ -183,7 +183,7 @@ class folksoSession {
   *
   * @param $sid Session ID.
   */
-  public function userSession ($sid) {
+ public function userSession ($sid, $service = null, $right = null) {
     if ($this->user instanceof folksoUser) {
       return $this->user;
     }
@@ -194,17 +194,30 @@ class folksoSession {
     }
     
    $i = new folksoDBinteract($this->dbc);
-   if ($i->db_error()){
-     trigger_error("Database connection error: " . $i->error_info(),
-                   E_USER_ERROR);
+   $sql = '';
+   if (is_null($service) || is_null($right)){
+     $sql = 'select u.nick as nick, u.firstname as firstname, '
+       .'  u.lastname as lastname, u.email as email, u.userid  as userid'
+       .' from sessions s '
+       .' join users u on u.userid = s.userid '
+       ." where s.token = '" . $sid . "'"
+       ." and s.started > now() - 1209600 ";
    }
-   
-   $i->query('select u.nick as nick, u.firstname as firstname, '
-             .'  u.lastname as lastname, u.email as email, u.userid  as userid'
-             .' from sessions s '
-             .' join users u on u.userid = s.userid '
-             ." where s.token = '" . $sid . "'"
-             ." and s.started > now() - 1209600 ");
+   else {
+     $sql = 'select u.nick as nick, u.firstname as firstname, '
+       .'  u.lastname as lastname, u.email as email, u.userid  as userid, '
+       .' dr.rightid, dr.service '
+       .' from sessions s '
+       .' join users u on u.userid = s.userid '
+       .' left join users_rights ur on ur.userid = s.userid '
+       .' left join rights dr on dr.rightid = ur.rightid '
+       ." where s.token = '" . $i->dbescape($sid) . "' "
+       ." and dr.rightid = '" . $i->dbescape($right) . "' "
+       ." and s.started > now() - 1209600 ";
+   }
+   $this->debug = $sql;
+   $i->query($sql);
+
    if ($i->result_status == 'OK') {
      $u = new folksoUser($this->dbc);
      $res = $i->result->fetch_object();
@@ -215,6 +228,14 @@ class folksoSession {
                           'email' => $res->email,
                           'userid' => $res->userid
                           ));
+
+     if (($right && $service) &&
+         ($res->rightid == $right) &&
+         ($res->service == $service)){
+       $this->debug2 = 'we r here';
+       $u->rights->addRight(new folksoRight($res->service,
+                                            $res->rightid));
+     }
      return $u;
    }
    else {
