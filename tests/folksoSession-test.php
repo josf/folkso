@@ -101,6 +101,7 @@ class testOffolksoSession extends  UnitTestCase {
      $this->assertTrue($u->checkUserRight('folkso', 'tag'),
                        'checkUserRights() not returning true');
    }
+
 }//end class
 
 $test = &new testOffolksoSession();
