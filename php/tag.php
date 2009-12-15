@@ -573,6 +573,7 @@ function tagMerge (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
     $r->addHeader('X-Folksonomie-TargetId: ' . $newid);
     break;
   case 'NOTARGET':
+
     $r->setError(404, 'Invalid target tag', 
                  $status .
                  $q->get_param('target') . 
@@ -600,6 +601,12 @@ function tagMerge (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
  */
 function deleteTag  (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
+  $u = $fks->userSession(null, 'folkso', 'admin');
+  if ((! $u instanceof folksoUser) ||
+      (! $u->checkUserRight('folkso', 'admin'))){
+    return $r->unAuthorized($u);
+  }
+
   try {
     $i = new folksoDBinteract($dbc);
 

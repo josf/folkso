@@ -280,17 +280,27 @@ class testOffolksotag extends  UnitTestCase {
                     $this->fks);
      $this->assertIsA($r, folksoResponse,
                       'problem with object creation');
-     $this->assertEqual(204, $r->status,
+
+     $this->assertEqual($r->status, 403,
+                        'anonymous delete tag should return 403');
+     $this->fks->startSession('vicktr-2009-001', true);
+     $r2 = deleteTag(new folksoQuery(array(),
+                                     array('folksotag' => 'tagone'),
+                                     array()),
+                     $this->dbc,
+                     $this->fks);
+     
+     $this->assertEqual(204, $r2->status,
                         sprintf('deleteTag returning error %s %s %s',
-                                $r->status, 
-                                $r->status_message,
-                                $r->body()));
+                                $r2->status, 
+                                $r2->status_message,
+                                $r2->body()));
 
      $r2 = deleteTag(new folksoQuery(array(),
                                      array('folksotag' => 'bullshit'),
                                      array()),
                      $this->dbc2,
-                     $this->fks2);
+                     $this->fks);
      $this->assertIsA($r2, folksoResponse,
                       'problem with object creation on bad tag delete');
      $this->assertEqual($r2->status, 404,
