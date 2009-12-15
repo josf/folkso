@@ -45,10 +45,18 @@ class testOffolksoUser extends  UnitTestCase {
                         'Email incorrect after loadUser');
      $this->assertEqual($u->userid, 'marcelp-2009-001',
                         'userid not present: ' . $u->userid);
-     $this->assertTrue($u->checkUserRight('tag'),
+     $this->assertTrue($u->checkUserRight('folkso', 'tag'),
                        'user right fails incorrectly');
-     $this->assertFalse($u->checkUserRight('ploop'),
+     $this->assertFalse($u->checkUserRight('ploop', 'dooop'),
                         'inexistant right should not validate');
+   }
+
+   function testRights () {
+     $u = new folksoUser($this->dbc);
+     $this->assertIsA($u->rights, 
+                      folksoRightStore,
+                      'No fkRightStore at $u->rights');
+
    }
 }//end class
 

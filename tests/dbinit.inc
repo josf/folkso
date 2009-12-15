@@ -18,13 +18,24 @@ function test_db_init() {
   }
 
   print $i->error_info();
-  $user = array( 'marcelp' => 
-                 array('Marcel', 'Proust', 'marcelp@temps.eu', 
-                       0, 'http://flickr.com/marcelp'),
+  $user = array( 'marcelp' => array('Marcel', 'Proust', 'marcelp@temps.eu', 
+                                    0, 'http://flickr.com/marcelp'),
                  'gustav' => array('Gustave', 'Flaubert', 'gflaub@sentimental.edu',
                                    0, 'http://myspace.com/gustav'),
                  'rambo' => array('Arthur', 'Rimbaud', 'arthurrr@ivoire.biz',
-                                  543210, ''));
+                                  543210, ''),
+                 'vicktr' => array('Victor', 'Hugo', 'vhugo@guernsey.co.uk',
+                                   0, 'http://myspace.com/victorhugo'),
+                 'michl' => array('Michel', 'de Montaigne', 'montaigne@mairie-bordeaux.fr', 0, 'http://michlm.blogspot.com')
+                 );
+
+
+    foreach($user as $k => $v){
+      print $k;
+      $i->sp_query(sprintf("call create_user('%s', '%s', '%s', '%s', '%s', %d, '', '', '')",
+                           $k, $v[0], $v[1], $v[2], $v[4], $v[3]));
+      print $i->error_info();
+    }
 
   $reslist = array('http://example.com/1',
                    'http://example.com/2',
@@ -84,23 +95,18 @@ function test_db_init() {
     }
 
     foreach ($tags as $t) {
+      $i->sp_query("call tag_resource('gustav-2009-001', 'http://example.com/1', '', '$t', '', '', 1 )");
+      if ($i->db_error()) { 
+        print "bad tag resource<br/>";
+        print $i->error_info();
+      }
+    }
 
-    $i->sp_query("call tag_resource('gustav-2009-001', 'http://example.com/1', '', '$t', '', '', 1 )");
-    if ($i->db_error()) { 
-      print "bad tag resource<br/>";
-      print $i->error_info();
-    }
-    }
-    foreach($user as $k => $v){
-      print $k;
-      $i->sp_query(sprintf("call create_user('%s', '%s', '%s', '%s', '%s', %d, '', '', '')",
-                           $k, $v[0], $v[1], $v[2], $v[4], $v[3]));
-      print $i->error_info();
-    }
     $i->query("insert into users_rights (userid, rightid) values "
               ."('rambo-2009-001', 'tag'), "
               ."('rambo-2009-001', 'create'), "
               ."('marcelp-2009-001', 'tag'), "
+              ."('marcelp-2009-001', 'create'), "
               ."('gustav-2009-001', 'tag')");
 
     //    $i->query("insert into fb_ids (userid, fb_uid) values "

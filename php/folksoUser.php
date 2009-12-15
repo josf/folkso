@@ -6,6 +6,7 @@
    * @subpackage Tagserv
    */
 require_once('folksoTags.php');
+require_once('folksoRights.php');
 /**
  * @package Folkso
  */
@@ -35,12 +36,18 @@ class folksoUser {
   public $loginId;
   public $dbc;
 
+  /** 
+   * A folksoRightStore object
+   */
+  public $rights;
+
   private $required_fields = array('nick', 'email', 'firstname', 'lastname', 'loginid');
   private $allowed_fields = array('nick', 'email', 'firstname', 'lastname', 'userid', 'loginid', 'institution', 'pays', 'fonction');
 
 
   public function __construct (folksoDBconnect $dbc) {
     $this->dbc = $dbc;
+    $this->rights = new folksoRightStore();
   }
 
 /**
@@ -56,8 +63,6 @@ class folksoUser {
      
    }
  }
-
-
 
   public function setNick($nick) {
     $this->nick = trim(strtolower($nick));
@@ -138,9 +143,6 @@ class folksoUser {
    return true;
  }
 
-
-
-
   /**
    * this function exists in folksoSession too. They should be identical.
    *
@@ -209,7 +211,9 @@ class folksoUser {
     $this->setPays($params['pays']);
     $this->setFonction($params['fonction']);
     $this->setEmail($params['email']);
-    $this->setUid($params['userid']);
+    if ($params['userid']) {
+      $this->setUid($params['userid']);
+    }
 
     $this->Writeable();
     return array(true);
@@ -218,7 +222,8 @@ class folksoUser {
 
 
 
-  public function userFromLogin_base ($id, $view, $login_column) {
+  public function userFromLogin_base ($id, $view, $login_column, 
+                                      $service = null, $right = null) {
    if ($this->validateLoginId($id) === false) {
      return false; // exception ? warning ?
    }
@@ -229,11 +234,27 @@ class folksoUser {
                    E_USER_ERROR);
    }
 
-   $i->query("select "
-             ." userid, last_visit, lastname, firstname, nick, email, institution, pays, fonction "
-             ." from "
-             ." $view "
-             ." where $login_column = '" . $i->dbescape($id) . "'");
+   $sql = "select "
+     ." userid, last_visit, lastname, firstname, nick, email, institution, pays, fonction "
+     ." from "
+     ." $view "
+     ." where $login_column = '" . $i->dbescape($id) . "'";
+
+  if ($service && $right){
+    $sql = "select "
+      ." v.userid, last_visit, lastname, firstname, nick, email, institution, pays, fonction, ur.rightid "
+      ." from "
+      ." $view v "
+      ." left join users_rights ur on ur.userid = v.userid "
+      ." left join rights rs on rs.rightid = ur.rightid "
+      ." where v.$login_column = '" . $i->dbescape($id) . "' "
+      ." and "
+      ." service = '" . $i->dbescape($service) . "'"
+      ." and "
+      ." rs.rightid = '" . $i->dbescape($right) . "'";
+  }
+
+  $i->query($sql);
 
    switch ($i->result_status) {
    case 'DBERR':
@@ -257,53 +278,50 @@ class folksoUser {
                            'institution' => $res->institution,
                            'pays' => $res->pays,
                            'fonction' => $res->fonction));
+     if ($service &&
+         $right && 
+         ($res->rightid == $right)) {
+       $this->rights->addRight(new folksoRight($service, $res->rightid));
+     }
    }
    return $this;
   }
+
+/**
+ * @param 
+ */
+ public function loadAllRights () {
+   $i = new folksoDBinteract($this->dbc);
+    if ($i->db_error()) {
+      trigger_error("Database connection error: " .  $i->error_info(), 
+                    E_USER_ERROR);
+    }    
+    $i->query('select ur.rightid, r.service '
+                     .' from users_rights ur '
+                     .' join rights r on r.rightid = ur.rightid '
+                     ." where userid = '" . $i->dbescape($this->userid) . "' ");
+
+    while ($row = $i->result->fetch_object()){
+      if (! $this->rights->checkRight($row->service, $row->rightid)) {
+        $this->rights->addRight(new folksoRight($row->service,
+                                                $row->rightid));
+      }
+    }
+ }
+
 
 
   /**
    * @param $right
    */
-  public function checkUserRight ($right) {
-    $i = new folksoDBinteract($this->dbc);
-    if ($i->db_error()) {
-      trigger_error("Database connection error: " .  $i->error_info(), 
-                    E_USER_ERROR);
-    }    
-    if ($this->validateRight($right) === false) {
-      return false;
-    }
-
-    $i->query('select rightid '
-              .' from users_rights '
-              ." where userid = '" . $i->dbescape($this->userid) . "' "
-              ." and "
-              ." rightid = '" . $i->dbescape($right) . "'");
-
-    if ($i->result_status == 'OK') {
+  public function checkUserRight ($service, $right) {
+    if ($this->rights->checkRight($service, $right)){
       return true;
     }
-    elseif ($i->result_status == 'DBERR') {
-      trigger_error("DB error on right check: " . $i->error_info(),
-                    E_USER_WARNING);
-      return false;
+    else {
+      $this->loadAllRights();
     }
-    return false;
   }
+   
+}
 
-  /**
-   * @param $right String
-   */
-  public function validateRight ($right) {
-    if (is_string($right) && 
-        (strlen($right) > 2) &&
-        preg_match('/^[a-z_]+$/', $right)) {
-      return true;
-    }
-    return false;
-  }
-
-
-}  
-?>

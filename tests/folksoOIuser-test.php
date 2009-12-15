@@ -61,7 +61,7 @@ class testOffolksoOIuser extends  UnitTestCase {
                       'Email should be considered valid');
     $this->assertTrue($u->validEmail(),
                       'Email checking of object email value not working');
-   
+    /**
     $this->assertFalse($u->validateRight('i win'),
                        'spaces in right name should not validate');
     $this->assertFalse($u->validateRight('Iwin'),
@@ -74,7 +74,7 @@ class testOffolksoOIuser extends  UnitTestCase {
 
     $this->assertFalse($u->checkUserRight('haroomph'),
                        'non existant right should return false');
-
+    **/
   }
 
 
@@ -115,7 +115,7 @@ class testOffolksoOIuser extends  UnitTestCase {
          $this->assertIsA($zork, folksoOIuser,
                           'userFromLogin should not return false');
          $this->assertTrue($gus->Writeable(),
-                           'userFromLogin does not fetch a writeable user'. print_r($gus));
+                           'userFromLogin does not fetch a writeable user' );
          $this->assertEqual($gus->userid, 'gustav-2009-001',
                             'Not retreiving userid');
          $this->assertEqual($gus->nick, 'gustav',
@@ -151,6 +151,39 @@ class testOffolksoOIuser extends  UnitTestCase {
                               'lastname' => 'Céline',
                               'email' => 'f.celine@fn.fr'));
 
+
+   }
+
+   function testRights () {
+     $u = new folksoOIuser($this->dbc);
+     $u->userFromLogin('http://flickr.com/marcelp', 'folkso', 'tag');
+
+     $this->assertIsA($u, folksoOIuser,
+                      'Problem with object creation');
+     $this->assertEqual($u->nick, 'marcelp',
+                        'Incorrect nick with userFromLogin');
+     $this->assertTrue($u->rights->hasRights(),
+                       'RightStore is reporting empty');
+     $this->assertTrue($u->rights->checkRight('folkso', 'tag'),
+                       'checkRight via fkRightStore not working correctly');
+     $this->assertTrue($u->checkUserRight('folkso', 'tag'),
+                       'checkUserRight() not working');
+   }
+
+   function testAllRights () {
+     $u = new folksoOIuser($this->dbc);
+     $u->userFromLogin('http://flickr.com/marcelp');
+     $this->assertEqual($u->userid, 'marcelp-2009-001',
+                        'Did not load userid');
+     $u->loadAllRights();
+     $this->assertTrue($u->rights->hasRights(),
+                       'Did not load any rights at all with loadAllrights');
+     $this->assertTrue($u->checkUserRight('folkso', 'create'),
+                       'marcelp should have folkso/create');
+     $this->assertTrue($u->checkUserRight('folkso', 'tag'),
+                       'marcelp should have folkso/tag');
+     $this->assertFalse($u->checkUserRight('folkso', 'delete'),
+                        'marcelp should not have delete');
 
    }
 }//end class
