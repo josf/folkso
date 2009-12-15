@@ -225,6 +225,7 @@ class testOffolksotag extends  UnitTestCase {
    }
 
    function testTagMerge() {
+     $this->fks->startSession('rambo-2009-001', true);
      $r = tagMerge(new folksoQuery(array(),
                                    array('folksotag' => 'tagone',
                                          'folksotarget' => 'tagtwo'),
@@ -233,9 +234,20 @@ class testOffolksotag extends  UnitTestCase {
                    $this->fks);
      $this->assertIsA($r, folksoResponse,
                       'Problem with object creation');
-     $this->assertEqual(204, $r->status,
+     $this->assertEqual($r->status, 403,
+                        'Rimbaud does not get to merge tags');
+
+     $this->fks2->startSession('marcelp-2009-001', true);
+     $r2 = tagMerge(new folksoQuery(array(),
+                                    array('folksotag' => 'tagone',
+                                          'folksotarget' => 'tagtwo'),
+                                    array()),
+                    $this->dbc3,
+                    $this->fks2);
+
+     $this->assertEqual(204, $r2->status,
                         sprintf('tagmerge returns error: %d %s %s',
-                                $r->status, $r->status_message, $r->body()));
+                                $r2->status, $r2->status_message, $r2->body()));
      $h = headCheckTag(new folksoQuery(array(),
                                        array('folksotag' => 'tagone'),
                                        array()),
@@ -250,7 +262,7 @@ class testOffolksotag extends  UnitTestCase {
                                             'folksotarget' => 'emacs'),
                                       array()),
                       $this->dbc2,
-                      $this->fks3);
+                      $this->fks2);
      $this->assertEqual(404, $rbad->status,
                         sprintf('fake tag should return 404: %s %s %s',
                                 $rbad->status,

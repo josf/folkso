@@ -530,6 +530,12 @@ function autoCompleteTags (folksoQuery $q, folksoDBconnect $dbc, folksoSession $
 
 function tagMerge (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse(); 
+  $u = $fks->userSession(null, 'folkso', 'redac');
+  if ((! $u instanceof folksoUser) ||
+      (! $u->checkUserRight('folkso', 'redac'))) {
+    return $r->unAuthorized($u);
+  }
+
   try {
     $i = new folksoDBinteract($dbc);
 
