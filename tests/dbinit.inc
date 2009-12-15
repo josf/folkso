@@ -102,6 +102,7 @@ function test_db_init() {
               ."('rambo-2009-001', 'tag'), "
               ."('rambo-2009-001', 'create'), "
               ."('marcelp-2009-001', 'tag'), "
+              ."('marcelp-2009-001', 'create'), "
               ."('gustav-2009-001', 'tag')");
 
     $i->query("insert into fb_ids (userid, fb_uid) values "
