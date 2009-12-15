@@ -110,12 +110,12 @@ $srv->Respond();
 function headCheckTag (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
   try {
-  $i = new folksoDBinteract($dbc);
+    $i = new folksoDBinteract($dbc);
 
-  $i->query("select id from tag where tagnorm = normalize_tag('" .
-            $i->dbquote($q->get_param('tag')) .
-            "') " . 
-            " limit 1");
+    $i->query("select id from tag where tagnorm = normalize_tag('" .
+              $i->dbquote($q->get_param('tag')) .
+              "') " . 
+              " limit 1");
   }
   catch (dbException $e) {
     return $r->handleDBexception($e);
@@ -282,8 +282,8 @@ function getTagResources (folksoQuery $q, folksoDBconnect $dbc, folksoSession $f
   return $r;
 }
 /*                           html_entity_decode(strip_tags($row->display), 
-                                              ENT_NOQUOTES, 
-                                              'UTF-8'),*/
+                             ENT_NOQUOTES, 
+                             'UTF-8'),*/
 
 
 function relatedTags (folksoQuery $q, folksoDBConnect $dbc, folksoSession $fks) {
@@ -314,10 +314,10 @@ function relatedTags (folksoQuery $q, folksoDBConnect $dbc, folksoSession $fks) 
   //  $accum = $dd->title($title_row->display);
   while ($row = $i->result->fetch_object()) {
     $accum .= $dd->line($row->tagid,
-                    $row->tagnorm,
-                    $row->display,
-                    $row->popularity,
-                    '');
+                        $row->tagnorm,
+                        $row->display,
+                        $row->popularity,
+                        '');
   }
 
   $accum .= $dd->endform();
@@ -334,8 +334,8 @@ function relatedTags (folksoQuery $q, folksoDBConnect $dbc, folksoSession $fks) 
   $proc = new XsltProcessor();
   $proc->importStylesheet($xsl);
   $proc->setParameter('', 
-                    'tagviewbase',
-                    $loc->server_web_path . 'tagview.php?tag=');
+                      'tagviewbase',
+                      $loc->server_web_path . 'tagview.php?tag=');
   // by using transformToXML instead of transformToDoc, we avoid
   // putting an xml type declaration into the output doc.
   $reltags = $proc->transformToXML($accum_XML);
@@ -465,9 +465,9 @@ function fancyResource (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks
 
   while ($row = $i->result->fetch_object()) {
     $r->t( $dd->line( $row->id,
-                     htmlspecialchars($row->href, ENT_COMPAT, 'UTF-8'),
-                     html_entity_decode(strip_tags($row->display), ENT_NOQUOTES, 'UTF-8'),
-                     htmlspecialchars($row->tags, ENT_COMPAT, 'UTF-8')
+                      htmlspecialchars($row->href, ENT_COMPAT, 'UTF-8'),
+                      html_entity_decode(strip_tags($row->display), ENT_NOQUOTES, 'UTF-8'),
+                      htmlspecialchars($row->tags, ENT_COMPAT, 'UTF-8')
                       )); // inner quotes supplied by sql
   }
   $r->t( $dd->endform());
@@ -657,20 +657,20 @@ function byalpha (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
     $i = new folksoDBinteract($dbc);
     $alpha = substr($q->get_param('byalpha'), 0, 1);
 
-  $al = new folksoAlpha();
-  // we are not going to escape anything because only one-character
-  // strings are allowed.
-  $ors = $al->SQLgroup($al->lettergroup($alpha), "tagnorm"); 
+    $al = new folksoAlpha();
+    // we are not going to escape anything because only one-character
+    // strings are allowed.
+    $ors = $al->SQLgroup($al->lettergroup($alpha), "tagnorm"); 
 
-  $query = 
-    "SELECT id, tagdisplay, tagnorm, \n".
-    "(SELECT COUNT(*) \n".
-    "FROM tagevent te  \n".
-    "WHERE te.tag_id = tag.id) AS popularity
+    $query = 
+      "SELECT id, tagdisplay, tagnorm, \n".
+      "(SELECT COUNT(*) \n".
+      "FROM tagevent te  \n".
+      "WHERE te.tag_id = tag.id) AS popularity
             FROM tag
             WHERE " . $ors;
 
-  $i->query($query);
+    $i->query($query);
   }
   catch(dbException $e) {
     return $r->handleDBexception($e);
@@ -714,20 +714,20 @@ function renameTag (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
       return $r;
     }
 
-  $query = "UPDATE tag
+    $query = "UPDATE tag
             SET tagdisplay = '" . 
-    $i->dbescape($q->get_param('newname')) . "', " .
-    "tagnorm = normalize_tag('" . $i->dbescape($q->get_param('newname')) . "') ".
-    "where ";
+      $i->dbescape($q->get_param('newname')) . "', " .
+      "tagnorm = normalize_tag('" . $i->dbescape($q->get_param('newname')) . "') ".
+      "where ";
 
-  if (is_numeric($q->tag)) {
-    $query .= " id = " . $q->tag;
-  }
-  else {
-    $query .= " tagnorm = normalize_tag('" . 
-      $i->dbescape($q->tag) . "')";
-  }
-  $i->query($query);
+    if (is_numeric($q->tag)) {
+      $query .= " id = " . $q->tag;
+    }
+    else {
+      $query .= " tagnorm = normalize_tag('" . 
+        $i->dbescape($q->tag) . "')";
+    }
+    $i->query($query);
   }
   catch( dbException $e) {
     return $r->handleDBexception($e);
@@ -747,14 +747,14 @@ function allTags (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   try {
     $i = new folksoDBinteract($dbc);
 
-  $query = 
-    "SELECT t.tagdisplay AS display, t.id AS tagid, \n\t" .
-    "t.tagnorm AS tagnorm, \n\t".
-    "(SELECT COUNT(*) FROM tagevent te WHERE te.tag_id = t.id) AS popularity \n".
-    "FROM tag t \n".
-  " ORDER BY display ";
+    $query = 
+      "SELECT t.tagdisplay AS display, t.id AS tagid, \n\t" .
+      "t.tagnorm AS tagnorm, \n\t".
+      "(SELECT COUNT(*) FROM tagevent te WHERE te.tag_id = t.id) AS popularity \n".
+      "FROM tag t \n".
+      " ORDER BY display ";
     
-  $i->query($query);
+    $i->query($query);
   }
   catch (dbException $e){
     return $r->handleDBexception($e);
