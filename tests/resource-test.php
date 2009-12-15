@@ -528,7 +528,7 @@ class testOfResource extends  UnitTestCase {
                                      array()),
                      new folksoDBconnect('localhost', 'tester_dude',
                                          'testy', 'testostonomie'),
-                      $this->fks2);
+                      $this->fks);
 
      $this->assertIsA($r, folksoResponse,
                       'not returning folksoReponse object');

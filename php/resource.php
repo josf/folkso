@@ -771,9 +771,14 @@ function modifyEan13 (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) 
  */
 function deleteEan13 (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
+  $u = $fks->userSession(null, 'folkso', 'redac');
+  if ((! $u instanceof folksoUser) ||
+      (! $u->checkUserRight('folkso', 'redac'))) {
+    return $r->unAuthorized($u);
+  }
+
   try {
     $i = new folksoDBinteract($dbc);
-
     if (! ean13dataCheck($q->get_param('ean13'))) {
       $r->setError(406, 'Bad EAN13 data',
                    "The folksoean13 field should consist of exactly 13 digits. "
