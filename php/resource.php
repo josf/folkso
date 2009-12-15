@@ -437,14 +437,8 @@ function visitPage (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
       $r->t('Caching visit. Results will be incorporated shortly.');
     }
   }
-  catch (dbConnectionException $e) {
-    $r->dbConnectionError($e->getMessage());
-  }
-  catch (dbQueryException $e) {
-    $r->dbQueryError($e->getMessage . $e->sqlquery);
-  }
-  catch (Exception $e) {
-    $r->setError(500, 'Internal server error');
+  catch (dbException $e) {
+    return $r->handleDBexception($e);
   }
   return $r;
 }
