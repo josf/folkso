@@ -368,6 +368,7 @@ class testOfResource extends  UnitTestCase {
                       'Problem with object creation');
      $this->assertEqual($r->status, 404,
                         'Should not be any ean13 data yet');
+     $this->fks2->startSession('marcelp-2009-001', true);
      $r2 = assocEan13(new folksoQuery(array(),
                                 array('folksores' => 'http://example.com/1',
                                       'folksoean13' => '1234567890123'),
@@ -375,7 +376,7 @@ class testOfResource extends  UnitTestCase {
                 new folksoDBconnect('localhost', 'tester_dude',
                                     'testy', 'testostonomie'),
                       $this->fks2);
-
+     $this->fks3->startSession('marcelp-2009-001', true);
      $r2bis = assocEan13(new folksoQuery(array(),
                                 array('folksores' => 'http://example.com/2',
                                       'folksoean13' => '1234567890123'),
@@ -415,6 +416,7 @@ class testOfResource extends  UnitTestCase {
 
 
    function testAssocEan13 () {
+     $this->fks->startSession('marcelp-2009-001', true);
      $r = assocEan13(new folksoQuery(array(),
                                      array('folksores' => 'http://example.com/1',
                                       'folksoean13' => '1234567890123'),
@@ -446,6 +448,7 @@ class testOfResource extends  UnitTestCase {
 
    function testModify() {
      /** setup oldean **/
+     $this->fks->startSession('marcelp-2009-001', true);
      $su = assocEan13(new folksoQuery(array(),
                                 array('folksores' => 'http://example.com/1',
                                       'folksoean13' => '1234567890123'),
@@ -510,6 +513,7 @@ class testOfResource extends  UnitTestCase {
 
    function testDeleteEan13 () {
      /** setup oldean **/
+     $this->fks->startSession('marcelp-2009-001', true);
      $su = assocEan13(new folksoQuery(array(),
                                 array('folksores' => 'http://example.com/1',
                                       'folksoean13' => '1234567890123'),

@@ -641,9 +641,15 @@ function rmRes (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
  */
 function assocEan13 (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
+  $u = $fks->userSession(null, 'folkso', 'redac');
+  if ((! $u instanceof folksoUser) ||
+      ((! $u->checkUserRight('folkso', 'redac')) &&
+       (! $u->checkUserRight('folkso', 'admin')))) {
+    return $r->unAuthorized($u);
+  }
+
   try {
     $i = new folksoDBinteract($dbc);
-  
     /** check **/
     if (! ean13dataCheck($q->get_param('ean13'))) {
       $r->setError(406, "Bad EAN13 data",
