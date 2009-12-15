@@ -524,13 +524,17 @@ function tagResource (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) 
 
   $r->setOk(200, "Tagged");
   $r->t("Resource has been tagged");
-  $r->t($query);
-  $r->t("  DB says: ". $i->db->error);
+
   return $r;
 }
 
 function unTag (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
+  $u = $fks->userSession(null, 'folkso', 'tag');
+  if ((! $u instanceof folksoUser) ||
+      (! $u->checkUserRight('folkso', 'tag'))){
+    return $r->unAuthorized($u);
+  }
 
   try {
     $i = new folksoDBinteract($dbc);
@@ -539,10 +543,12 @@ function unTag (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
     if ((is_numeric($q->tag)) &&
         (is_numeric($q->res))) {
       $sql = 
-        'DELETE FROM tagevent '.
-        'WHERE (tag_id = ' . $q->tag .') '.
-        'AND '.
-        '(resource_id = ' . $q->res . ') ';
+        'DELETE FROM tagevent '
+        .'WHERE (tag_id = ' . $q->tag .') '
+        .'AND '
+        .'(resource_id = ' . $q->res . ') '
+        . ' and '
+        . "(userid = '" . $u->userid . "')";
     }
     else {
       $query = 
@@ -568,6 +574,8 @@ function unTag (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
         $where .=  ' AND '.
           " (r.uri_normal = url_whack('". $i->dbescape($q->res) . "')) ";
       }
+      $where .= " and (tagevent.userid = '" . $u->userid . "')";
+
       $sql = $query . $where;
     }
     $i->query($sql);

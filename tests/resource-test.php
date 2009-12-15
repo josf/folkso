@@ -298,6 +298,7 @@ class testOfResource extends  UnitTestCase {
    }
 
    function testUnTag () {
+     $sid = $this->fks->startSession('gustav-2009-001', true);
      $r = unTag(new folksoQuery(array(),
                                 array('folksores' => 'http://example.com/1',
                                       'folksotag' => 'tagone',
@@ -310,7 +311,7 @@ class testOfResource extends  UnitTestCase {
      $this->assertIsA($r, folksoResponse,
                       'unTag not return a folksoResponse object');
      $this->assertEqual($r->status, 200,
-                        'Error code on unTag request');
+                        'Error code on unTag request: ' . $r->status);
      $h = getTagsIds(new folksoQuery(array(),
                                      array('folksores' => 'http://example.com/1'),
                                      array()),
