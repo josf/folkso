@@ -223,6 +223,11 @@ class testOfResource extends  UnitTestCase {
    }
 
    function testTagResource() {
+     $sid = $this->fks->startSession('marcelp-2009-001', true);
+     $this->assertTrue($this->fks->validateSid($sid),
+                       'Producing invalid sid');
+     $this->assertTrue($this->fks->checkSession($sid),
+                       'Session not considered valid');
      $r = tagResource(new folksoQuery(array(),
                                       array('folksores' => 'http://example.com/4',
                                             'folksotag' => 'tagone'),
@@ -253,7 +258,7 @@ class testOfResource extends  UnitTestCase {
                                       array()),
                       new folksoDBconnect('localhost', 'tester_dude',
                                           'testy', 'testostonomie'),
-                       $this->fks3
+                       $this->fks
                       );
      $this->assertEqual($r3->status, 404,
                         "Tagging unknown resource should return 404: " . $r3->status);
@@ -265,14 +270,33 @@ class testOfResource extends  UnitTestCase {
                                        array()),
                        new folksoDBconnect('localhost', 'tester_dude',
                                            'testy', 'testostonomie'),
-                       $this->fks4
+                       $this->fks
                        );
      $this->assertEqual($r4->status, 404,
                         "Tagging with unknown tag should return 404");
      $this->assertEqual($r4->statusMessage,
                         "Tag does not exist",
                         "Bad tag not appearing as such");
+
    }
+
+   function testTagResourceAgain () {
+     $sid = $this->fks->startSession('michl-2009-001', true);
+     $this->assertTrue($this->fks->validateSid($sid),
+                       'Invalid sid');
+     $r = tagResource(new folksoQuery(array(),
+                                      array('folksores' => 'http://example.com/1',
+                                            'folksotag' => 'tagtwo'),
+                                      array()),
+                      $this->dbc,
+                      $this->fks);
+     $this->assertIsA($r, folksoResponse,
+                      'Not even getting a response object back');
+     $this->assertEqual($r->status, 403,
+                        'Not getting 403 back on unauthorized user');
+
+   }
+
    function testUnTag () {
      $r = unTag(new folksoQuery(array(),
                                 array('folksores' => 'http://example.com/1',

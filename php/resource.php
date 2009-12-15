@@ -485,6 +485,12 @@ function addResource (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) 
  */
 function tagResource (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
+  $u = $fks->userSession(null, 'folkso', 'tag');
+  if ((! $u instanceof folksoUser) ||
+      (! $u->checkUserRight('folkso', 'tag'))) {
+    return $r->unAuthorized($u);
+  }
+
   try {
     $i = new folksoDBinteract($dbc);
     $tag_args = argSort($q->res, $q->tag, $q->get_param('meta'), $i);
