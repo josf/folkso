@@ -580,13 +580,8 @@ function unTag (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
     }
     $i->query($sql);
   }
-  catch (dbConnectionException $e) {
-    $r->dbConnectionError($e->getMessage());
-    return $r;
-  }
-  catch (dbQueryException $e) {
-    $r->dbQueryError($e->getMessage . $e->sqlquery);
-    return $r;
+  catch (dbException $e){
+    return $r->handleDBexception($e);
   }
   $r->setOK(200, 'Deleted');
   return $r;
@@ -611,13 +606,10 @@ function rmRes (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
     }
     $i->query($sql);
   }
-  catch (dbConnectionException $e){
-    $r->dbConnectionError($e->getMessage());
-    return $r;
+  catch (dbException $e){
+    return $r->handleDBexception($e);
   }
-  catch (dbQueryException $e) {
-    $r->dbQueryError($e->getMessage() . $e->sqlquery);
-  }
+
   $r->setOk(200, "Resource deleted");
   $r->t("Resource " . $q->res . " permanently deleted");
   $r->t("This resource will not be indexed in the future.");
