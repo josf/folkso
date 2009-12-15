@@ -98,8 +98,8 @@ class testOffolksoSession extends  UnitTestCase {
                       'userSession w/ args not returning a fkUser obj');
      $this->assertTrue($u->rights->hasRights(),
                        'user right store is still empty');
-
-
+     $this->assertTrue($u->checkUserRight('folkso', 'tag'),
+                       'checkUserRights() not returning true');
    }
 }//end class
 
