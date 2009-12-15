@@ -67,12 +67,19 @@ class folksoRight {
  */
 class folksoRightStore {
   private $store;
+  public $aliases;
+  private $loc;
 
   /**
    *
    */
    public function __construct () {
-     $store = array();
+     $this->store = array();
+     $this->aliases = array('folkso/create' => array('folkso/redac', 'folkso/admin'),
+                            'folkso/delete' => array('folkso/redac', 'folkso/admin'),
+                            'folkso/tagdelete' => array('folkso/admin'),
+                            'folkso/redac' => array('folkso/admin')
+                            );
    }
    
    /**
@@ -134,8 +141,14 @@ class folksoRightStore {
        if ($this->store[$service . '/' . $right] instanceof folksoRight){
          return true;
        }
+       elseif ($this->getAliases($service, $right))
+         foreach ($this->getAliases($service, $right) as $alias) {
+           if ($this->store[$alias] instanceof folksoRight) {
+             return true;
+           }
+         }
        return false;
-      }
+       }
 
      /**
       * Like checkRight() but returns a folksoRight object when
@@ -150,5 +163,17 @@ class folksoRightStore {
          return $this->store[$service . '/' . $right];
        }
        return false;
+     }
+
+     /**
+      * @param $service String
+      * @param $right String
+      */
+     public function getAliases ($service, $right) {
+       $fullname = $service . '/' . $right;
+       if (! is_array($this->aliases[$fullname])){
+         return false;
+       }
+       return $this->aliases[$fullname];
      }
 }

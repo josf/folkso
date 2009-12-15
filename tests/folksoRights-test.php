@@ -1,9 +1,9 @@
 <?php
 require_once('unit_tester.php');
 require_once('reporter.php');
-require('folksoTags.php');
-require('folksoRights.php');
-require('dbinit.inc');
+require_once('folksoTags.php');
+require_once('folksoRights.php');
+require_once('dbinit.inc');
 
 class testOffolksoRights extends  UnitTestCase {
  
@@ -48,6 +48,18 @@ class testOffolksoRights extends  UnitTestCase {
      $this->assertIsA($st->getRight('folkso', 'delete'),
                       folksoRight,
                       'getRight does not return fkRight object');
+   }
+
+   function testAliases () {
+     $st = new folksoRightStore();
+     $dr = new folksoRight('folkso', 'redac');
+     $st->addRight($dr);
+     $this->assertTrue($st->checkRight('folkso', 'create'),
+                       'redac to create alias does not work');
+     $this->assertTrue(is_array($st->aliases['folkso/create']),
+                       'folkso/create not found in alias table');
+
+
    }
 }//end class
 
