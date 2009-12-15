@@ -112,15 +112,18 @@ class folksoResponse {
     if ($representation){
       $this->errorBody($representation);
     }
+    return $this;
   }
 
   public function dbError($status = 500, $message = null){
     $this->setError($status, $message ? $message : 'Database error');
+    return $this;
   }
 
   public function dbConnectionError($error_info){
     $this->setError(500, "Database connection error");
     $this->errorBody($error_info);
+    return $this;
   }
 
   public function dbQueryError($error_info){
