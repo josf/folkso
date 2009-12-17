@@ -47,7 +47,8 @@ function getMyTags (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks){
               .' join tagevent te on t.id = te.tag_id '
               ." where te.userid = '%s' "
               .' group by t.tagnorm '
-              .' order by tagtime ',
+              .' order by tagtime '
+              .' limit 50',
               $i->dbescape($u->userid));
     $i->query($sql);
   }
