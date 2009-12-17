@@ -151,6 +151,31 @@ class folksoDisplayFactory {
     return $obj;
   }
 
+
+  /**
+   * Simpler than TagList: norm, display, count
+   */
+   public function simpleTagList ($default_style = null) {
+     $obj = new folksoDataDisplay(
+                                  array('type' => 'xml',
+                                        'start' => '<?xml version="1.0"?>' .
+                                        "\n<taglist>\n",
+                                        'end' => '</taglist>',
+                                        'lineformat' => 
+                                        "<tag>\n\t"
+                                        ."<numid>>XXX</numid>\n\t"
+                                        ."<tagnorm>XXX</tagnorm>\n\t"
+                                        ."<link>XXX</link>\n\t"
+                                        ."<display>XXX</display>\n\t"
+                                        ."<count>XXX</count>\n"
+                                        ."</tag>\n",
+                                        'argsperline' => 5));
+     if ($default_style) {
+       $obj->activate_style($default_style);
+     }
+     return $obj;
+   }
+  
   //
 
   public function ResourceList () {
