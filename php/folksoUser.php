@@ -277,6 +277,32 @@ class folksoUser {
    return $this;
   }
 
+  /**
+   * Slight different from the subclass versions of exists(). Takes
+   * userid as argument rather than login id.
+   *
+   * @param $id userid
+   */
+   public function exists ($id = null) {
+     $id = $id ? $id : $this->userid;
+     if ($this->validateUid($id) === false) {
+       return false; // should we warn?
+     }
+
+     $i = new folksoDBinteract($this->dbc);
+     $i->query("select userid  "
+               . " from users"
+               . " where userid = '" . $i->dbescape($id) . "' " 
+               ." limit 1 ");
+     if ($i->result_status = 'OK') {
+       $this->setUid($id);
+       return true;
+     }
+     return false;
+   }
+  
+
+
 /**
  * @param 
  */
@@ -294,6 +320,7 @@ class folksoUser {
       }
     }
  }
+
 
   /**
    * @param $right

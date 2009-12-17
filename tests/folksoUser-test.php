@@ -58,6 +58,13 @@ class testOffolksoUser extends  UnitTestCase {
                       'No fkRightStore at $u->rights');
 
    }
+
+   function testExists() {
+     $u = new folksoUser($this->dbc);
+     $this->assertTrue($u->exists('marcelp-2009-001'));
+     $this->assertEqual($u->userid, 'marcelp-2009-001');
+
+   }
 }//end class
 
 $test = &new testOffolksoUser();
