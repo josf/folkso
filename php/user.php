@@ -41,11 +41,12 @@ function getMyTags (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks){
     $i = new folksoDBinteract($dbc);
     $sql = 
       sprintf(
-              '  select t.tagnorm, t.id, t.tagdisplay, count(te.tag_id) as cnt'
+              '  select t.tagnorm, t.id, t.tagdisplay, count(te.tag_id) as cnt, tagtime'
               .' from tag t '
               .' join tagevent te on t.id = te.tag_id '
               ." where te.userid = '%s' "
-              .' group by t.tagnorm ',
+              .' group by t.tagnorm '
+              .' order by tagtime ',
               $i->dbescape($u->userid));
     $i->query($sql);
   }
