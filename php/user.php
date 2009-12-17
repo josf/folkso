@@ -74,3 +74,65 @@ function getMyTags (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks){
   $r->t($disp->endform());
   return $r;
 }
+
+/**
+ *
+ * 
+ */
+function getUserResByTag (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
+  $r = new folksoResponse();
+
+  try {
+    $u = $fks->userSession(null);
+    if ((! $u instanceof folksoUser) &&
+        (! $q->is_param('user'))){
+      return $r->setError(404, 'No user');
+    }
+    elseif ($q->is_param('user')) { 
+      $u = new folksoUser($dbc); // we create a user object anyway
+      $u->setUid($q->get_param('user'));
+    } 
+
+  /* if the uid is bad, the error will be caught. if the user does not
+     exists, results will just be empty  */
+
+    $i = new folksoDBinteract($dbc);
+    $uq = new folksoUserQuery();
+    $sql = $uq->resourcesByTag($q->tag, $u->userid);
+    $i->query($sql);
+
+    /* these are inside the try block because exists() hits the DB */
+    if ($i->rowCount == 0) {
+      if (isset($u->nick) ||
+          ($u->exists)) {
+        return $r->setOk(204, 'User has no resources with this tag');
+      }
+      else {
+        return $r->setError(404, 'Unknown user');
+      }
+    }
+  }
+  catch (dbException $e){
+    return $r->handleDBexception($e);
+  }
+  catch (badUseridException $e) {
+    return $r->handleDBexception($e);
+  }
+
+  $r->setOk(200, 'Found');
+  $df = new folksoDisplayFactory();
+  $dd = $df->ResourceList('xml');
+  $r->t($dd->startform());
+  while ($row = $i->result->fetch_object()) {
+    $r->t($dd->line($row->id,
+                    htmlspecialchars($row->uri_raw),
+                    htmlspecialchars($row->title)
+                    ));
+  }
+  $r->t($dd->endform());
+  return $r;
+}
+
+
+
+
