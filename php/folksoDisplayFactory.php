@@ -178,7 +178,7 @@ class folksoDisplayFactory {
   
   //
 
-  public function ResourceList () {
+  public function ResourceList ($default_style = null) {
     $obj = new folksoDataDisplay(
                                  array('type' => 'xhtml',
                                        'start' => '<ul class="resourcelist">',
@@ -202,6 +202,9 @@ class folksoDisplayFactory {
                                        "\t<title>XXX</title>\n" .
                                        '</resource>',
                                        'argsperline' => 3));
+    if ($default_style) {
+      $obj->activate_style($default_style);
+    }
     return $obj;
   }
 
