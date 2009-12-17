@@ -191,6 +191,7 @@ class folksoSession {
   * not be a problem though.
   *
   * @param $sid Session ID.
+  * @return folksoUser obj or false if user not found
   */
  public function userSession ($sid = null, $service = null, $right = null) {
     if ($this->user instanceof folksoUser) {
