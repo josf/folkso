@@ -191,6 +191,21 @@ class folksoResponse {
    }
   
 
+   /**
+    * @param userException $e
+    */
+    public function handleUserException (userException $e) {
+      if ($e instanceof badUseridException) {
+        $this->setError(403, 'Invalid user',
+                        $e->getMessage());
+      }
+      else {
+        $this->setError(500, 'Unknown user problem',
+                        $e->getMessage());
+      }
+    }
+   
+
   /**
    * Returns the string for the HTTP content-type header but does not
    * set the header.

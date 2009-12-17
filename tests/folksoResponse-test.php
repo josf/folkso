@@ -108,6 +108,12 @@ class testOffolksoResponse extends  UnitTestCase {
                        'dbQueryException not producing a 500');
     $this->assertPattern('/peeps/', $r2->body(),
                          'Not getting correct exception information in body for query exception');
+
+    $r3 = new folksoResponse();
+    $r3->handleUserException(new badUseridException('Who are you?'));
+    $this->assertEqual($r3->status, 403,
+                       'Bad userid not returning 403');
+
   }
 
   function testDB () {

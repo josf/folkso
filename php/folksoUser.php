@@ -167,7 +167,7 @@ class folksoUser {
       return $this->userid;
     }   
     else {
-      throw new Exception('Could not set userid with the bad data we got');
+      throw new badUseridException('Could not set userid with the bad data we got');
     }
   }
 
