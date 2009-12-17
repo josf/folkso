@@ -53,11 +53,9 @@ class folksoFBuser extends folksoUser{
                . " where fb_uid = " . $i->dbescape($id) );
 
      if ($i->result_status == 'OK') {
+       $row = $i->result->fetch_object();
+       $this->setUid($row->userid);
        return true;
-     }
-     elseif ($i->result_status == 'DBERR'){
-       trigger_error('query error ' . $i->error_info(),
-                     E_USER_ERROR);
      }
      return false;
    }
