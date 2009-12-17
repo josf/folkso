@@ -16,6 +16,7 @@ require_once('folksoIndexCache.php');
 require_once('folksoUrl.php');
 require_once('folksoSession.php');
 require_once('folksoUser.php');
+require_once('folksoUserQuery.php');
 
 $srv = new folksoServer(array( 'methods' => array('POST', 'GET', 'HEAD'),
                                'access_mode' => 'ALL'));
@@ -63,7 +64,7 @@ function getMyTags (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks){
   $df = new folksoDisplayFactory();
   $disp = $df->simpleTagList('xml');
   $r->t($disp->startform());
-  while ($i->result->fetch_object()) {
+  while ($row = $i->result->fetch_object()) {
     $link = new folksoTagLink($row->tagnorm);
     $r->t($disp->line(htmlspecialchars($row->id),
                       htmlspecialchars($row->tagnorm),
