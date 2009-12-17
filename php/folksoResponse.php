@@ -151,6 +151,7 @@ class folksoResponse {
     $this->status = $status;
     $this->statusMessage = 
       $message ? $message : $this->httpStatus[$status];
+    return $this;
   }
 
   /**
