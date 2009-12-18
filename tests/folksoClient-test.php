@@ -10,7 +10,7 @@ class testOffolksoClient extends  UnitTestCase {
 
 
   function testConstruction () {
-    $this->cl = new folksoClient('localhost', '/tag.php', 'GET');
+    $this->cl = new folksoClient('localhost', 'tag.php', 'GET');
     $this->assertTrue($this->cl instanceof folksoClient);
     $this->assertEqual($this->cl->method, 'GET');
 
@@ -71,55 +71,6 @@ class testOffolksoClient extends  UnitTestCase {
 
 }
 
-print "starting here>>";
-    print http_digest_parse('Digest username="guest", realm="Restricted area", nonce="481e29a45ed2a", uri="/phpexamp.php", response="ef83bc4581ca2ff2b7eefba5f87d4aaf", opaque="cdce8a5c95a1427d74df7acbf41c9ce0", qop=auth, nc=00000001, cnonce="b0c4985b224014dc"');    
-print "yo";
-
-
-
-
-// function to parse the http auth header
-function http_digest_parse($txt)
-{
-    // protect against missing data
-    $needed_parts = array('nonce'=>1, 'nc'=>1, 'cnonce'=>1, 'qop'=>1, 'username'=>1, 'uri'=>1, 'response'=>1);
-    $data = array();
-
-    $raw = explode(',', $txt);
-    $auth = array();
-    foreach ($raw as $rr) {
-      $key = '';
-      $val = '';
-
-      $rr = trim($rr);
-      if(strpos($rr,'=') !== false) {
-        $lhs = substr($rr,0,strpos($rr,'='));
-        $rhs = substr($rr,strpos($rr,'=')+1);
-        $lhs = trim($lhs);
-        $rhs = trim($rhs);
-
-        if ((substr($rhs, 0, 1) == substr($rhs, -1, 1)) &&
-            ((substr($rhs, 0, 1) == '"') ||
-             (substr($rhs, 0, 1) == "'"))) {
-          $val = substr($rhs, 1, (strlen($rhs) - 2));
-        }
-        else {
-          $val = $rhs;
-        }
-
-        // avoiding the 'Digest firstparam="' part
-        if (strpos($lhs, ' ') !== false) {
-          $key = $lhs;
-        }
-        else {
-          $key = substr($lhs, (strpos($lhs, ' ') + 1));
-        }
-        $auth[$key] = $val;
-      }
-    }
-    return implode('|', $auth);
-}
-      
 
 $test = &new testOffolksoClient();
 $test->run(new HtmlReporter());

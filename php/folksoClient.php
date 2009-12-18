@@ -114,6 +114,17 @@ class folksoClient {
     return  $result;
   }
 
+
+  public function assemble_url ($host, $path) { 
+    if (substr($path, 0, 1) == '/') {
+      $path = substr($path, 1);
+    }
+    if (substr($host, -1) == '/') {
+      $host = substr($host, 0, strlen($host) -1);
+    }
+    return $host . '/' . $path;
+  }
+
   /**
    * Returns the appropriate request string depending on method and
    * the different fields involved. Mostly this is a problem for GETs
@@ -121,7 +132,7 @@ class folksoClient {
    *
    */
   function build_req () {
-    $uri = $this->host . '/'. $this->path;
+    $uri = $this->assemble_url($this->host, $this->path);
     $get = '';
     if (strtolower($this->method) == 'get') {
       /* add '?' */
