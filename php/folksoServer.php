@@ -143,26 +143,18 @@ class folksoServer {
     /**
      * $sid: session ID
      */
-    $sid = $_COOKIE['folksosess'] ? $_COOKIE['folksosess'] : '';
-
-    /**
-     * Session ID can also be supplied as a $_GET or $_POST parameter.
-     */
-    if (empty($sid)){
-      $sid = $q->get_param('session');
-    }
+    $sid = $_COOKIE['folksosess'] ? $_COOKIE['folksosess'] : $q->get_param('session');;
 
     try {
       $fks->setSid($sid);
     }
     catch ( badSidException $e) {
-      if ($q->is_write_method) {
+      if ($q->is_write_method()) {
         header('HTTP/1.1 403 Login required'); // redirect instead
         header('Location: ' . $loc->loginPage());
         exit();
       }
     }
-
 
     /* check each response object and run the response if activatep
        returns true*/
