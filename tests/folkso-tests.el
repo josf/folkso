@@ -19,17 +19,20 @@
 (setq fktest-tags
       '((number . "8170")
         (poesie . "poésie")
-        (communication . "communication")))
+        (communication . "communication")
+        (gustav . "gustav-2009-001")))
 
 
-(defun fk-build-tag-get (base key &rest apairs)
+(defun fk-build-get (base key usecases &rest apairs)
   (let ((res-and-base (concat 
-                       base "tag.php?folksotag=" (cdr (assoc key fktest-tags)))))
+                       base (cdr (assoc key fktest-tags)))))
     (if (null apairs)
         res-and-base
       (concat res-and-base 
               (loop for pair in apairs concat 
                     (concat "&" (car pair) "=" (cdr pair)))))))
+
+
 
 
 ;; basic xml get
@@ -47,6 +50,16 @@
 (switch-to-buffer (url-retrieve-synchronously
  (fk-build-tag-get
   "http://localhost/" 'number '("folksorelated" . "1"))))
+
+(switch-to-buffer (url-retrieve-synchronously
+                   (fk-build-get "http://localhost/user.php?folksouid="
+                                 'gustav
+                                 '((gustav . "gustav-2009-001"))
+                                 '("folksogetmytags" . "1")
+                                 '("folksodatatype" . "json"))))
+
+(switch-to-buffer (url-retrieve-synchronously
+                   "http://localhost/user.php?folksouid=gustav-2009-001&folksogetmytags=1&folksodatatype=json"))
 
 (switch-to-buffer (url-retrieve-synchronously
                    (fk-build-resource-get
@@ -67,6 +80,9 @@
                     'poesie
                     '("folksofancy" . "1")
                     '("folksodatatype" . "xml"))))
+
+(switch-to-buffer (url-retrieve-synchronously
+
                     
 
 (url-retrieve-synchronously "http://www.fabula.org/tags/resource.php?folksores=http://www.fabula.org/actualites/article23682.php&folksodatatype=html")
