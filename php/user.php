@@ -32,10 +32,16 @@ $srv->Respond();
  */
 function getMyTags (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks){
   $r = new folksoResponse();
-  $u = $fks->userSession(null);
-  if (! $u instanceof folksoUser){
-    return $r->unAuthorized($u); // add message about logging in?
+  $u = $fks->userSession();
+  if (! $u instanceof folksoUser) {
+    if (! $q->is_param('uid')){
+      return $r->unAuthorized($u); // add message about logging in?
+    }
+    else {
+      $userid = $q->get_param('uid');
+    }
   }
+  $userid = $userid ? $userid : $u->userid;
 
   try {
     $i = new folksoDBinteract($dbc);
@@ -48,7 +54,7 @@ function getMyTags (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks){
               .' group by t.tagnorm '
               .' order by tagtime '
               .' limit 50',
-              $i->dbescape($u->userid));
+              $i->dbescape($userid));
     $i->query($sql);
   }
   catch(dbException $e) {
