@@ -11,6 +11,7 @@
 
 
 require_once('folksoDataDisplay.php');
+require_once('folksoDataJson.php');
 
   /**
    * @package Folkso
@@ -64,6 +65,17 @@ class folksoDisplayFactory {
     return $xml;
 
   }
+
+  /**
+   * Returns a new JSON data display object. This is just a wrapper
+   * function for the folksoDataJson constructor. 
+   *
+   * @param $args The keys that will be used by the line() method
+   */
+   public function json ($args) {
+     return new folksoDataJson($args);
+   }
+  
 
   public function standardTextList ($argnum) {
     $txt = array('type' => 'text',

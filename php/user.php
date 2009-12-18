@@ -63,7 +63,13 @@ function getMyTags (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks){
   $r->setOk(200, 'Tags found');
 
   $df = new folksoDisplayFactory();
-  $disp = $df->simpleTagList('xml');
+  if ($q->content_type() == 'json') {
+    $disp = $df->json(array('resid', 'tagnorm', 'link', 'tagdisplay', 'count'));
+  }
+  else {
+    $disp = $df->simpleTagList('xml');
+  }
+
   $r->t($disp->startform());
   while ($row = $i->result->fetch_object()) {
     $link = new folksoTagLink($row->tagnorm);

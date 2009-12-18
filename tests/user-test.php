@@ -51,6 +51,29 @@ class testOfuser extends  UnitTestCase {
 
    }
 
+   function testGetMyTagsJson () {
+     $this->fks->startSession('gustav-2009-001', true);
+     $r = getMyTags(new folksoQuery(array(),
+                                    array('folksodatatype' => 'json'),
+                                    array()),
+                    $this->dbc,
+                    $this->fks);
+
+     $this->assertIsA($r, folksoResponse,
+                      'Not getting response object back');
+     $this->assertEqual($r->status, 200,         
+                        'Not getting 200: ' . $r->status);
+     $this->assertNotEqual($r->status, 204,
+                           'Getting no data back (204)');
+     $dec = json_decode($r->body());
+     $this->assertNotNull($dec,
+                          'failed to decode json, getting false');
+     $this->assertTrue(is_array($dec),
+                       'decoded json is not an array');
+     $this->assertTrue(isset($dec[0]->resid),
+                       'No resid in decoded json');
+   }
+
    function testGetUserResByTag() {
      $this->fks->startSession('gustav-2009-001', true);
      $r = getUserResByTag(new folksoQuery(array(),
@@ -85,6 +108,8 @@ class testOfuser extends  UnitTestCase {
                         'Unknown tag should throw 404');
 
    }
+
+   
 }//end class
 
 $test = &new testOfuser();
