@@ -22,10 +22,9 @@ $srv = new folksoServer(array( 'methods' => array('POST', 'GET', 'HEAD'),
                                'access_mode' => 'ALL'));
 
 $srv->addResponseObj(new folksoResponder('get',
-                                         array('required' => array('uid')),
+                                         array('required' => array('getmytags')),
                                          'getMyTags'));
                                                
-
 $srv->Respond();
 
 /**
