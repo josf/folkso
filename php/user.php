@@ -101,7 +101,9 @@ function getUserResByTag (folksoQuery $q, folksoDBconnect $dbc, folksoSession $f
     } 
 
   /* if the uid is bad, the error will be caught. if the user does not
-     exists, results will just be empty  */
+     exist, results will just be empty. Note that we consider this
+     information to be public: we are not checking the identity of the
+     user */
 
     $i = new folksoDBinteract($dbc);
     $uq = new folksoUserQuery();
