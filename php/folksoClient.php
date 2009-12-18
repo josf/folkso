@@ -26,10 +26,10 @@ class folksoClient {
   var $query_code;
 
   /**
-   * Arguments: HOST, URI, METHOD. URI means the local part of the
-   * URI. Right now we assume that it starts with a leading slash,
-   * though that should probably be fixed.
    *
+   * @param $host String URL of webserver, or 'localhost'
+   * @param $path String Local part of url 
+   * @param $method String HTTP method (GET, POST, possibly others)
    */
   function __construct ($host, $path, $method) {
     $this->host = $host;
