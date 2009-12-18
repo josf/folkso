@@ -77,12 +77,13 @@ class folksoClient {
     $this->getfields .=  "$key=$val";
   }
   /**
-   * Datastyle indicators (html, xml, etc.) should be very short,
-   * probably one character (h = html, x = xml, etc.)
+   * Datastyle indicators (html, xml, etc.) should be short: (html,
+   * xml, etc.) The datastyle arg will be passed as a parameter (not
+   * Content_Type)
    *
    */
   function set_datastyle ($str) {
-    if (strlen($str) > 3) { 
+    if (strlen($str) > 4) { 
       $str = substr($str, 0, 3);
     }
     $this->datastyle = $str;
