@@ -147,7 +147,7 @@ class folksoClient {
         $get .= '&';
       }
       if (strlen($this->datastyle) > 0) {
-        $get .= 'folksodatastyle=' . $this->datastyle;
+        $get .= 'folksodatatype=' . $this->datastyle;
       }
       return $uri . $get;
     }
