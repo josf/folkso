@@ -40,20 +40,21 @@ $cl = new folksoClient('localhost',
 print $cl->method;
 
 $cl->set_getfields(array('folksouid' => $u->userid,
-                         'folksomytags' => 1)
+                         'folksogetmytags' => 1)
                    );
-print_r( $cl->build_req());
+
 $cl->set_datastyle('json');
+print_r( $cl->build_req());
 $result = $cl->execute();
 
-if ($cl->query_resultcode == 200) {
-  $message = 'w00t ' . $result;;
+if ($cl->query_resultcode() == 200) {
+  $message = 'w00t ' . $result;
 }
-elseif ($cl->query_resultcode == 204) {
+elseif ($cl->query_resultcode() == 204) {
   $message = "L'utilisateur n'a pas encore de tags";
 }
 else {
-  $message = "Erreur " . $cl->query_resultcode . ' ' . $result . 'how bout that';
+  $message = "Erreur rescode" . $cl->query_resultcode() . ':: ' . $result . 'how bout that';
 }
 
 
