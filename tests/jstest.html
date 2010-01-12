@@ -3,17 +3,26 @@
 <html>
 <head>
 <title>folkso javascript testing page (using qunit)</title>
+<script type="text/bogus" id="template">
+<![CDATA[
+<p>Yo! <%= this.name %></p>
+]]>
+</script>
 
 <script type="text/javascript" src="/jquery-1.3.2.js"></script>
 <script type="text/javascript" src="/qunit.js"></script>
 <script type="text/javascript" src="folkso-qunit.js"></script>
+<script type="text/javascript" src="jquery.jqote.js"></script>
 <link rel="stylesheet" type="text/css" href="/qunit.css"></link>
 </head>
 <body>
+
 <h1 id="qunit-header">folkso Qunit tests</h1>
  <h2 id="qunit-banner"></h2>
  <h2 id="qunit-userAgent"></h2>
  <ol id="qunit-tests"></ol>
+
+<div id="template-test"></div>
 
 </body>
 </html>
