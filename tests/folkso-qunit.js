@@ -31,11 +31,43 @@ $(document).ready(function() {
                                   "jQuery.jqote is not a function");
                                ok(typeof templ.jqote({name: 'Zork'}) == "object",
                                   "jqote not returning an object");
+                               var lvt = templ.jqote({name: 'Vonk'});
                                $(templ.jqote({name: 'Zork'}))
                                    .appendTo($("#template-test"));
                                var re = /Yo.*Zork/;
                                ok(re.test($("#template-test").text()),
                                   "Not getting correct template output in DOM");
+
+                           });
+
+                       test("jQote hack: not using a bogus script element", function()
+                           {
+                               expect(8);
+                               var templ = $("<p>Hoohaa <,= this.name ,></p>");
+
+                               ok(typeof templ.jqote == "function",
+                                  "No jqote function here");
+                               var re1 = /Hoohaa/;
+                               ok(re1.test(templ.html()),
+                                  "Did not find template text in template");
+
+                               var re2 = /<,/;
+                               ok(re2.test(templ.html()),
+                                  "Did not find <, in template");
+
+                               var temptest = $("#jqote-hack");
+                               equal(temptest.length,
+                                     1,
+                                     "jqote-hack element not found");
+
+                               templ.jqote({name: "testperson"}, ",")
+                                   .appendTo(temptest);
+
+                               var re = /Hoohaa.*testperson/;
+                               ok(re.test(temptest.text()),
+                                  "Incorrect template output when not using bogus script element");
+                               
+
                            });
 });
 
