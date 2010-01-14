@@ -37,9 +37,30 @@ $(document).ready(function() {
                                var re = /Yo.*Zork/;
                                ok(re.test($("#template-test").text()),
                                   "Not getting correct template output in DOM");
-
                            });
+                      test("jqote with tag template", function () 
+                           {
+                               expect(4);
+                               var templ = $("#simpletag"); 
 
+                               // found template?
+                               equals(templ.length, 
+                                      1,
+                                      "Incorrect number of templates found, should be 1, not " + templ.length);
+                               $(templ.jqote({tagnorm: "taggage",
+                                            display: "Taggage",
+                                            id: 1243})).appendTo($("#template-test"));
+                               var testr = /taggage/;
+                               ok(testr.test($("#template-test").html()),
+                                  "Did not find tagnorm value  in #template-test");
+                               var testr2 = />Taggage</;
+                               ok(testr.test($("#template-test").html()),
+                                  "Did not find display value in #template-test");
+
+                               var testr3 = /I am a tag/;
+                               ok(testr.test($("#template-test").html()),
+                                  "Did not find template boilerplate in #template-test");
+                           });
                                
 
 
