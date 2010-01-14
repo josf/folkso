@@ -36,8 +36,16 @@
           */
          init: function(config) {
              for (var prop in config) {
+
+                 // here we check for jQuery selectors (yes, this is
+                 // crude) and activate them
+                 var reg = /^#/;
                  if (fK.attrs[prop]) {
-                     fK.cf[prop] = config[prop];
+                     if (reg.test(config[prop])) {
+                         fK.cf[prop] = $(config[prop]);
+                     } else {
+                         fK.cf[prop] = config[prop];
+                     }
                  }
              }
          },
@@ -54,7 +62,7 @@
              var resdata = { display: display,
                              url: url,
                              id: id};
-             var item = fK.simpleResTemplate.jqote({
+             var item = fK.cf.simpleResTemplate.jqote({
                                                        display: display,
                                                        url: url,
                                                        id: id});

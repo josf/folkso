@@ -40,7 +40,7 @@ $(document).ready(function() {
                            });
                       test("jqote with tag template", function () 
                            {
-                               expect(4);
+                               expect(7);
                                var templ = $("#simpletag"); 
 
                                // found template?
@@ -74,11 +74,38 @@ $(document).ready(function() {
 
                                ok(typeof fK.init == "function",
                                   "fK.init should be a function");
-                               fK.init({hoohaa: "bob", postTagUrl: "http://example.com"});
+                               fK.init({hoohaa: "bob", 
+                                        postTagUrl: "http://example.com",
+                                        simpleResTemplate: "#simpleres"});
+
+                               ok(fK.cf.simpleResTemplate,
+                                  "simpleResTemplate not showing up");
+
+                               ok(typeof fK.cf.simpleResTemplate == "object",
+                                  "fK.cf.simpleResTemplate should be an object, not a "
+                                  + typeof fK.cf.simpleResTemplate);
+
+                               equal(fK.cf.simpleResTemplate.length,
+                                     1,
+                                     "Not finding simpleResTemplate from initialization");
                                equal(fK.cf.postTagUrl,
                                      "http://example.com",
                                      "fK.cf.postTagUrl should be initalized as "
                                      + "http://example.com and not " + fK.cf.postTagUrl);
+                           });
+
+                      module("folksonomie.js template activation");
+                      test("simpleres", function()
+                           {
+                               expect(1);
+                               fK.init({simpleResTemplate: "#simpleres"});
+                               fK.simpleres($("#template-test"),
+                                            "Folksonomie rocks",
+                                            "http://example.com",
+                                            55);
+                               var re1 = /rocks/;
+                               ok(re1.test($("#template-test").html()),
+                                  "Not finding \"rocks\" in #template-test");
                            });
 
 });
