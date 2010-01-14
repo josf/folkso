@@ -14,7 +14,7 @@
 (function() {
      var fK = window.fK = {
 
-         /*
+         /**
           * Setup all the other functions based on user input
           * 
           * config should look like:
@@ -35,25 +35,42 @@
           * 
           */
          init: function(config) {
-             
+             for (var prop in config) {
+                 if (fK.attrs[prop]) {
+                     fK.cf[prop] = config[prop];
+                 }
+             }
          },
-         /*
-          * 
+         attrs: {simpleResTemplate: 'jQuery id of the template element', 
+                 simpleTagTemplate: 'jQuery id of the template element',
+                 getTagUrl: 'url', getResUrl: 'url', 
+                 postTagUrl: 'url', postResUrl: 'userLevel'},
+         cf: {},
+         /**
+          * @target {jQuery} Element that the new element will be appended to
           */
-         simpleres: function(display, url, id) 
+         simpleres: function(target, display, url, id) 
          {
+             var resdata = { display: display,
+                             url: url,
+                             id: id};
              var item = fK.simpleResTemplate.jqote({
                                                        display: display,
                                                        url: url,
                                                        id: id});
+             item.data(resdata);
+             target.append(item);
              // setup commands here (event listeners assigned to selectors)
          },
+         /**
+          * @target {jQuery} Element that the new element will be appended to
+          */
          simpletag: function( display, tagnorm, id) 
          {
-             var item = fK.simpleTagTemplate.jqote({
-                                                       display: display,
-                                                       tagnorm: tagnorm,
-                                                       id: id });
+             var tagdata = { display: display,
+                             tagnorm: tagnorm,
+                             id: id};
+             var item = fK.simpleTagTemplate.jqote(tagdata);
              // setup commands here (event listeners assigned to selectors)
              // assign data (tag id etc.) to containing element
          },

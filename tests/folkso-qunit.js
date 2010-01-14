@@ -62,7 +62,24 @@ $(document).ready(function() {
                                   "Did not find template boilerplate in #template-test");
                            });
                                
+                      module("folksonomie.js intialization");
+                      test("Basic init", function() 
+                           {
+                               expect(4);
+                               ok(fK,
+                                  "fK is undefined apparently");
 
+                               ok(typeof fK == "object",
+                                  "fK should be an object");
+
+                               ok(typeof fK.init == "function",
+                                  "fK.init should be a function");
+                               fK.init({hoohaa: "bob", postTagUrl: "http://example.com"});
+                               equal(fK.cf.postTagUrl,
+                                     "http://example.com",
+                                     "fK.cf.postTagUrl should be initalized as "
+                                     + "http://example.com and not " + fK.cf.postTagUrl);
+                           });
 
 });
 
