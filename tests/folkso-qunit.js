@@ -76,6 +76,9 @@ $(document).ready(function() {
                                var testr4 = /Examples for all/;
                                ok(testr4.test($("#restarget").html()),
                                   "Did not find resource title data in #restarget");
+
+                               /* cleanup */
+                               $("#restarget").html("");
                                
                            });
                                
@@ -114,7 +117,7 @@ $(document).ready(function() {
                       module("folksonomie.js template activation");
                       test("simpleres", function()
                            {
-                               expect(1);
+                               expect(3);
                                fK.init({simpleResTemplate: "#simpleres"});
                                fK.simpleres($("#restarget"),
                                             "Folksonomie rocks",
@@ -123,6 +126,65 @@ $(document).ready(function() {
                                var re1 = /rocks/;
                                ok(re1.test($("#restarget").html()),
                                   "Not finding \"rocks\" in #restarget");
+
+                               var re2 = /Resource/;
+                               ok(re2.test($("#restarget").html()),
+                                  "Not finding template boilerplate in #restarget");
+
+                               var re3 = /example\.com/;
+                               ok(re3.test($("#restarget").html()),
+                                  "Not finding url in #restarget");
+                           });
+                      test("simpletag", function()
+                           {
+                               expect(2);
+                               fK.init({simpleTagTemplate: "#simpletag"});
+                               fK.simpletag($("#restarget"),
+                                            "Taggage",
+                                            "taggage",
+                                            65);
+                               ok(/Taggage/.test($("#restarget").html()),
+                                  "Tag display not showing up");
+                               ok(/taggage/.test($("#restarget").html()),
+                                  "tagnorm not showing up");
+                           });
+                      test("Storing data in tag/res DOM elements", function()
+                           {
+                               expect(8);
+
+                               var bog = $("<p class=\"bogus\">Stuff</p>");
+                               bog.data("stuff", {things: "stuff"});
+
+                               equal(bog.data("stuff").things, "stuff",
+                                     "Deep problem with getting data back on bogus test case");
+                               $("#restarget").append(bog);
+                               var newbog = $("#restarget").find("p.bogus");
+
+                               equal($(newbog).data("stuff").things, "stuff",
+                                     "Attached element has no data");
+
+                               var res = $("#restarget").find("p.simpleres"),
+                               tag = $("#restarget").find(".atag");
+                               tag.data("test", 55);
+                               tag.data("test2", {some: "thing", else: "no"});
+
+                               equal(tag.length, 1, "Not finding p.simpletag");
+                               equal(res.length, 1, "Not finding p.simpleres");
+
+                               equal(tag.data("test"), 55,
+                                     "Basic data retreival not working (testcase)");
+                               equal(tag.data("test2").some, "thing",
+                                     "Retreival of object not working");
+
+                               var tagdata = tag.data("fKtag");
+
+                               ok(typeof tagdata == "object",
+                                  "Should get object back from .data retreival");
+                               equal(tagdata.id,
+                                     65,
+                                     "Did not correctly retrieve .data for tag "
+                                     + "expected 65, got " + $(tag[0]).data("fKtag").id);
+
                            });
 
 });

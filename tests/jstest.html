@@ -10,14 +10,18 @@
 </script>
 <script type="text/bogus"  id="simpletag">
 <![CDATA[
-<p>I am a tag: <a href= "<%= this.tagnorm %>"><%= this.display %></a>
+<p class="simpletag">
+  I am a tag: <a href= "<%= this.tagnorm %>"><%= this.display %></a>
   <a href="/untag?<%= this.tagnorm || this.id %>"></a></p>
 ]]>
 </script>
 
+
+
 <script type="text/bogus" id="simpleres">
 <![CDATA[
-<p>Resource: <a href="<%= this.url %>"><%= this.display %></a>
+<p class="simpleres">
+  Resource: <a href="<%= this.url %>"><%= this.display %></a>
   <a href="/dropres?<%= this.url || this.id %>">drop</a></p>
 ]]>
 </script>

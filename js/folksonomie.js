@@ -53,7 +53,12 @@
                  simpleTagTemplate: 'jQuery id of the template element',
                  getTagUrl: 'url', getResUrl: 'url', 
                  postTagUrl: 'url', postResUrl: 'userLevel'},
+
+         /**
+          * Config information set on init.
+          */
          cf: {},
+
          /**
           * @target {jQuery} Element that the new element will be appended to
           */
@@ -64,7 +69,7 @@
                              id: id};
              fK.cf.simpleResTemplate.jqote({ display: display,
                                              url: url,
-                                             id: id}).appendTo("#restarget");
+                                             id: id}).appendTo(target);
           //   item.data(resdata);
 //             target.append(item);
              // setup commands here (event listeners assigned to selectors)
@@ -72,16 +77,23 @@
          /**
           * @target {jQuery} Element that the new element will be appended to
           */
-         simpletag: function( display, tagnorm, id) 
+         simpletag: function(target, display, tagnorm, id) 
          {
              var tagdata = { display: display,
                              tagnorm: tagnorm,
                              id: id};
-             var item = fK.simpleTagTemplate.jqote(tagdata);
+             var newtag = fK.cf.simpleTagTemplate.jqote(tagdata);
+             var wrapper = $("<div class=\"atag\">");
+             newtag.appendTo(wrapper);
+             wrapper.data("fKtag", tagdata);
+             alert(wrapper.html());
+             target.append(wrapper);
+
              // setup commands here (event listeners assigned to selectors)
              // assign data (tag id etc.) to containing element
          },
-         /*
+
+         /**
           * Internal functions (not really "private" I guess, but users shouldn't 
           * be using them 
           */
