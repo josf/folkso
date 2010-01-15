@@ -60,12 +60,29 @@ $(document).ready(function() {
                                var testr3 = /I am a tag/;
                                ok(testr.test($("#template-test").html()),
                                   "Did not find template boilerplate in #template-test");
+
+                               var t2 = $("#simpleres");
+                               equals(t2.length, 1,
+                                      "Incorrect number of res templates found, should "
+                                      + " be 1, not " + t2.length);
+                               
+                               equals($("#restarget").length, 1,
+                                      "Did not find #restarget");
+
+                               $(t2.jqote({url: "http://example.com",
+                                         display: "Examples for all",
+                                         id: 12355})).appendTo($("#restarget"));
+
+                               var testr4 = /Examples for all/;
+                               ok(testr4.test($("#restarget").html()),
+                                  "Did not find resource title data in #restarget");
+                               
                            });
                                
                       module("folksonomie.js intialization");
                       test("Basic init", function() 
                            {
-                               expect(4);
+                               expect(7);
                                ok(fK,
                                   "fK is undefined apparently");
 
@@ -99,13 +116,13 @@ $(document).ready(function() {
                            {
                                expect(1);
                                fK.init({simpleResTemplate: "#simpleres"});
-                               fK.simpleres($("#template-test"),
+                               fK.simpleres($("#restarget"),
                                             "Folksonomie rocks",
                                             "http://example.com",
                                             55);
                                var re1 = /rocks/;
-                               ok(re1.test($("#template-test").html()),
-                                  "Not finding \"rocks\" in #template-test");
+                               ok(re1.test($("#restarget").html()),
+                                  "Not finding \"rocks\" in #restarget");
                            });
 
 });

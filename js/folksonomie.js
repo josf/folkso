@@ -62,12 +62,11 @@
              var resdata = { display: display,
                              url: url,
                              id: id};
-             var item = fK.cf.simpleResTemplate.jqote({
-                                                       display: display,
-                                                       url: url,
-                                                       id: id});
-             item.data(resdata);
-             target.append(item);
+             fK.cf.simpleResTemplate.jqote({ display: display,
+                                             url: url,
+                                             id: id}).appendTo("#restarget");
+          //   item.data(resdata);
+//             target.append(item);
              // setup commands here (event listeners assigned to selectors)
          },
          /**

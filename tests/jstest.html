@@ -15,6 +15,12 @@
 ]]>
 </script>
 
+<script type="text/bogus" id="simpleres">
+<![CDATA[
+<p>Resource: <a href="<%= this.url %>"><%= this.display %></a>
+  <a href="/dropres?<%= this.url || this.id %>">drop</a></p>
+]]>
+</script>
 
 <script type="text/javascript" src="/jquery-1.3.2.js"></script>
 <script type="text/javascript" src="/qunit.js"></script>
@@ -32,7 +38,7 @@
  <ol id="qunit-tests"></ol>
 
 <div id="template-test"></div>
-<div id="jqote-hack"></div>
+<div id="restarget">hah</div>
 </div>
 </body>
 </html>
