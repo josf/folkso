@@ -150,7 +150,7 @@ $(document).ready(function() {
                            });
                       test("Storing data in tag/res DOM elements", function()
                            {
-                               expect(8);
+                               expect(9);
 
                                var bog = $("<p class=\"bogus\">Stuff</p>");
                                bog.data("stuff", {things: "stuff"});
@@ -163,7 +163,7 @@ $(document).ready(function() {
                                equal($(newbog).data("stuff").things, "stuff",
                                      "Attached element has no data");
 
-                               var res = $("#restarget").find("p.simpleres"),
+                               var res = $("#restarget").find("div.ares"),
                                tag = $("#restarget").find(".atag");
                                tag.data("test", 55);
                                tag.data("test2", {some: "thing", else: "no"});
@@ -184,6 +184,10 @@ $(document).ready(function() {
                                      65,
                                      "Did not correctly retrieve .data for tag "
                                      + "expected 65, got " + $(tag[0]).data("fKtag").id);
+                               
+                               equal(res.data("fKres").id,
+                                     55,
+                                     "Incorrect id in resource data");
 
                            });
 
