@@ -129,6 +129,30 @@
              resevents: function() 
              {
 
+             },
+             /**
+              * Returns a function that removes a resource from a user's list of
+              *  tagged resources. 
+              * 
+              * @param cred Optional (Usually the browser cookie should suffice, 
+              * might be useful for testing.
+              */
+             dropres_f: function(res, cred) {
+                 return function() 
+                 {
+                     var payload = {folksores: res};
+                     if (cred) payload.folksosession = cred;
+                                   
+                     $.ajax({
+                                url: fK.cf.postResUrl,
+                                type: 'delete',
+                                data: payload,
+                                error: function(xhr,msg){ alert(msg); },
+                                success: remove_res
+
+                                
+                            });
+                 };
              }
              
          }
