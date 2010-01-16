@@ -105,8 +105,16 @@
              var newtag = fK.cf.simpleTagTemplate.jqote(tagdata);
              var wrapper = $(fK.cf.tagwrap || "<div class=\"atag\">");
 
+             // we keep a link back to what will be the DOM element
+             tagdata.element = wrapper;
+
              newtag.appendTo(wrapper);
              wrapper.data("fKtag", tagdata);
+             
+
+             // crude version 
+             // droptag_react returns a function for .click
+             wrapper.find("a.droptag").click(fK.fn.droptag_react.call(tagdata));
 
              // setup commands here (event listeners assigned to selectors)
              // assign data (tag id etc.) to containing element
@@ -118,18 +126,41 @@
           * Internal functions (not really "private" I guess, but users shouldn't 
           * be using them 
           */
-         fk: {
-             /*
-              * Assign handler functions to appropriate elements 
+         fn: {
+             /**
+              * Prepares a function to be associated with droptag events
               */
-             tagevents: function() 
-             {
-
+             droptag_react: function() {
+                 var funcs = {}, tdata = this;
+                 return function()
+                 {
+                     funcs.displaySuccess = function(){ tdata.element.remove(); };
+                     funcs.error403 = function(xhr, msg) { alert("Better login, dude"); };
+                     funcs.error404 = function(xhr, msg) { alert("Sorry, no tag"); };
+                     funcs.errorOther = function(xhr, msg) { alert("Wierd error"); };
+                     funcs.doIt = function() 
+                     {$.ajax({
+                                 url: fK.cf.postResUrl,
+                                 type: 'delete', 
+                                 data: {folksotag: tdata.tagnorm || tdata.id },
+                                 success: displaySuccess,
+                                 error: function(xhr, msg) 
+                                 {
+                                     if (xhr.status == 403) {
+                                         funcs.error403(xhr, msg);
+                                     }
+                                     else if (xhr.status == 404) {
+                                         funcs.error404(xhr, msg);
+                                     }
+                                     else {
+                                         funcs.errorOther(xhr, msg);
+                                     }
+                                 }
+                     }); }; 
+                     funcs.doIt();
+                 };
              },
-             resevents: function() 
-             {
 
-             },
              /**
               * Returns a function that removes a resource from a user's list of
               *  tagged resources. 
@@ -144,9 +175,9 @@
                      if (cred) payload.folksosession = cred;
                                    
                      $.ajax({
-                                url: fK.cf.postResUrl,
-                                type: 'delete',
-                                data: payload,
+                                
+                                
+                                
                                 error: function(xhr,msg){ alert(msg); },
                                 success: remove_res
 
