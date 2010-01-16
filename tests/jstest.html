@@ -1,6 +1,6 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" 
                     "http://www.w3.org/TR/html4/loose.dtd">
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title>folkso javascript testing page (using qunit)</title>
 <script type="text/bogus" id="template">
@@ -12,7 +12,7 @@
 <![CDATA[
 <p class="simpletag">
   I am a tag: <a href= "<%= this.tagnorm %>"><%= this.display %></a>
-  <a href="/untag?<%= this.tagnorm || this.id %>"></a></p>
+  <a class="untag" href="/untag?<%= this.tagnorm || this.id %>"></a></p>
 ]]>
 </script>
 
@@ -22,7 +22,7 @@
 <![CDATA[
 <p class="simpleres">
   Resource: <a href="<%= this.url %>"><%= this.display %></a>
-  <a href="/dropres?<%= this.url || this.id %>">drop</a></p>
+  <a class="dropres" href="/dropres?<%= this.url || this.id %>">drop</a></p>
 ]]>
 </script>
 
@@ -43,6 +43,6 @@
 
 <div id="template-test"></div>
 <div id="restarget">hah</div>
-</div>
+
 </body>
 </html>
