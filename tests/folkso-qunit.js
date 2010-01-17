@@ -166,7 +166,7 @@ $(document).ready(function() {
                                var res = $("#restarget").find("div.ares"),
                                tag = $("#restarget").find(".atag");
                                tag.data("test", 55);
-                               tag.data("test2", {some: "thing", else: "no"});
+                               tag.data("test2", {some: "thing", elste: "no"});
 
                                equal(tag.length, 1, "Not finding p.simpletag");
                                equal(res.length, 1, "Not finding p.simpleres");
@@ -189,6 +189,16 @@ $(document).ready(function() {
                                      55,
                                      "Incorrect id in resource data");
 
+                           });
+                      module("Basic event stuff");
+                      test("droptag_react (without ajax)", function() 
+                           {
+                               expect(1);
+                               var dr = fK.fn.droptag_react({tagnorm: 'zook',
+                                                             display: 'Zook',
+                                                             id: 12});
+                               ok(typeof dr == "function",
+                                  "droptag_react not returning function");
                            });
 
 });

@@ -114,7 +114,8 @@
 
              // crude version 
              // droptag_react returns a function for .click
-             wrapper.find("a.droptag").click(fK.fn.droptag_react.call(tagdata));
+             var func = fK.fn.droptag_react(tagdata);
+             wrapper.find("a.droptag").click(func);
 
              // setup commands here (event listeners assigned to selectors)
              // assign data (tag id etc.) to containing element
@@ -128,36 +129,44 @@
           */
          fn: {
              /**
-              * Prepares a function to be associated with droptag events
+              * 
+              */
+             ajaxBasic: function(url, type, data, success, error) 
+             {
+                 $.ajax({url: url, type: type, data: data, success: success, error: error});
+             },
+
+             /**
+              * Prepares then executes a function to be associated with droptag events
               */
              droptag_react: function() {
-                 var funcs = {}, tdata = this;
-                 return function()
+                 var funcs = {}, tdata = arguments[0];
+                 
+                 return function(ev)
                  {
+                     ev.preventDefault();
                      funcs.displaySuccess = function(){ tdata.element.remove(); };
                      funcs.error403 = function(xhr, msg) { alert("Better login, dude"); };
                      funcs.error404 = function(xhr, msg) { alert("Sorry, no tag"); };
                      funcs.errorOther = function(xhr, msg) { alert("Wierd error"); };
-                     funcs.doIt = function() 
-                     {$.ajax({
-                                 url: fK.cf.postResUrl,
-                                 type: 'delete', 
-                                 data: {folksotag: tdata.tagnorm || tdata.id },
-                                 success: displaySuccess,
-                                 error: function(xhr, msg) 
-                                 {
-                                     if (xhr.status == 403) {
-                                         funcs.error403(xhr, msg);
-                                     }
-                                     else if (xhr.status == 404) {
-                                         funcs.error404(xhr, msg);
-                                     }
-                                     else {
-                                         funcs.errorOther(xhr, msg);
-                                     }
-                                 }
-                     }); }; 
-                     funcs.doIt();
+                     (function() 
+                      {$.ajax({
+                                  url: fK.cf.postResUrl,
+                                  type: 'delete', 
+                                  data: {folksotag: tdata.tagnorm || tdata.id },
+                                  success: funcs.displaySuccess,
+                                  error: function(xhr, msg) 
+                                  {
+                                      switch(xhr.status) {
+                                      case 403:
+                                          funcs.error403(xhr, msg); break;
+                                      case 404: 
+                                          funcs.error404(xhr, msg); break;
+                                      default:
+                                          funcs.errorOther(xhr, msg); break;
+                                      }
+                                  }
+                              }); })(); 
                  };
              },
 
