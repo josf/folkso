@@ -135,14 +135,17 @@
               * the last  must have an "errorcode" value (ie. fn.errorcode = 404).
               * 
               */
-             errorChoose: function(fn, num) {
-                 var errno = arguments[arguments.length];
-                 for (var i = 1; i < arguments.length - 2; i++) {
-                     if (arguments[i].errorcode == errno) {
-                         return arguments[i]();
+             errorChoose: function(fn) {
+                 var lastFn = arguments[arguments.length - 1],
+                     fns = Array.prototype.slice.call(arguments, 0, -1);
+                 return function(errno) {
+                     for (var i = 0; i < fns.length; i++) {
+                     if (fns[i].errorcode == errno) {
+                         return fns[i]();
                      }
-                 }
-                 return arguments[arguments.length - 2]();
+                     }
+                     return lastFn();
+                 };
              },
              /**
               * 

@@ -218,6 +218,30 @@ $(document).ready(function() {
                                                              id: 12});
                                ok(typeof dr == "function",
                                   "droptag_react not returning function");
+
+                           });
+
+                      test("Error function composing", function()
+                           {
+                               expect(4);
+                               var f1 = function() { return 1; };
+                               f1.errorcode = 404;
+                               var f2 = function() { return 2; };
+                               f2.errorcode = 500;
+                               var f3 = function() { return 3; }; //default
+
+                               var efunk = fK.fn.errorChoose(f1, f2, f3);
+                               ok(efunk,
+                                  "efunk not defined: no function returned");
+                               equal(efunk(500),
+                                     2,
+                                     "Incorrect result from error choosing function");
+                               equal(efunk(200),
+                                     3,
+                                     "Default error function not being called");
+                               equal(efunk(404),
+                                     1,
+                                     "First error function not being called");
                            });
 
 });
