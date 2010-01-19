@@ -11,6 +11,7 @@
  * 
  */
 
+
 (function() {
      var fK = window.fK = {
 
@@ -129,44 +130,56 @@
           */
          fn: {
              /**
+              * Takes any number of functions as arguments. Last argument must  be
+              * an integer corresponding to an HTTP error code. Each function except 
+              * the last  must have an "errorcode" value (ie. fn.errorcode = 404).
+              * 
+              */
+             errorChoose: function(fn, num) {
+                 var errno = arguments[arguments.length];
+                 for (var i = 1; i < arguments.length - 2; i++) {
+                     if (arguments[i].errorcode == errno) {
+                         return arguments[i]();
+                     }
+                 }
+                 return arguments[arguments.length - 2]();
+             },
+             /**
               * 
               */
              ajaxBasic: function(url, type, data, success, error) 
              {
                  $.ajax({url: url, type: type, data: data, success: success, error: error});
              },
-
+             deleteBase: function() {
+               return fK.fn.ajaxBasic.partial(fK.cf.postResUrl, "delete", _ , _);
+             },
              /**
               * Prepares then executes a function to be associated with droptag events
               */
              droptag_react: function() {
                  var funcs = {}, tdata = arguments[0];
-                 
-                 return function(ev)
-                 {
+                 funcs.displaySuccess = function(){ tdata.element.remove(); };
+                 funcs.error403 = function(xhr, msg) { alert("Better login, dude"); };
+                 funcs.error404 = function(xhr, msg) { alert("Sorry, no tag"); };
+                 funcs.errorOther = function(xhr, msg) { alert("Wierd error"); };
+                 return function(ev) 
+                 { 
                      ev.preventDefault();
-                     funcs.displaySuccess = function(){ tdata.element.remove(); };
-                     funcs.error403 = function(xhr, msg) { alert("Better login, dude"); };
-                     funcs.error404 = function(xhr, msg) { alert("Sorry, no tag"); };
-                     funcs.errorOther = function(xhr, msg) { alert("Wierd error"); };
-                     (function() 
-                      {$.ajax({
-                                  url: fK.cf.postResUrl,
-                                  type: 'delete', 
-                                  data: {folksotag: tdata.tagnorm || tdata.id },
-                                  success: funcs.displaySuccess,
-                                  error: function(xhr, msg) 
-                                  {
-                                      switch(xhr.status) {
-                                      case 403:
-                                          funcs.error403(xhr, msg); break;
-                                      case 404: 
-                                          funcs.error404(xhr, msg); break;
-                                      default:
-                                          funcs.errorOther(xhr, msg); break;
-                                      }
-                                  }
-                              }); })(); 
+                     fK.fn.deleteBase(
+                         {folksotag: tdata.tagnorm || tdata.id },
+                         funcs.displaySuccesss,
+                         function(xhr, msg) 
+                         {
+                             switch(xhr.status) {
+                             case 403:
+                                 funcs.error403(xhr, msg); break;
+                             case 404: 
+                                 funcs.error404(xhr, msg); break;
+                             default:
+                                 funcs.errorOther(xhr, msg); break;
+                             }
+                         });
                  };
              },
 

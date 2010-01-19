@@ -15,6 +15,25 @@ $(document).ready(function() {
                                       1,
                                       "Expected length of 1 for qunit-header jQuery object, got " + qhead.length);
                           });
+
+                      module("Trying Functional.js");
+                      test("Simple Functional", function()
+                           {
+                               expect(2);
+                               ok(Functional,
+                                  "No 'Functional' object");
+                               function zork() {
+                                   var donothing;
+                                   return 1;
+                               }
+                               // not using Functional.install: installing all of
+                               // Functional breaks jQuery
+                               ok(typeof zork.partial == "function",
+                                  "No partial in prototype");
+
+                           });
+
+
                       module("Trying jqote");
 
                       test("Basic jqote", function()
