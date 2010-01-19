@@ -67,6 +67,7 @@
                  simpleTagTemplate: 'jQuery id of the template element',
                  getTagUrl: 'url', getResUrl: 'url', 
                  postTagUrl: 'url', postResUrl: 'userLevel',
+                 getUserUrl: 'url',
                  simpleTagWrap: 'html string for element creation',
                  simpleResWrap: 'html string for element creation'
                 },
