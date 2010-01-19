@@ -6,7 +6,7 @@
    *
    * @package Folkso
    * @author Joseph Fahey
-   * @copyright 2008 Gnu Public Licence (GPL)
+   * @copyright 2009-2010 Gnu Public Licence (GPL)
    * @subpackage Tagserv
    */
 
@@ -22,13 +22,13 @@ $srv = new folksoServer(array( 'methods' => array('POST', 'GET', 'HEAD'),
                                'access_mode' => 'ALL'));
 
 $srv->addResponseObj(new folksoResponder('get',
-                                         array('required' => array('getmytags')),
+                                         array('required' => array('mytags')),
                                          'getMyTags'));
                                                
 $srv->Respond();
 
 /**
- * Just a list of tags
+ * Just a list of tags. Need to add offset parameters.
  */
 function getMyTags (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks){
   $r = new folksoResponse();
