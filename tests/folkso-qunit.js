@@ -153,11 +153,18 @@ $(document).ready(function() {
                                var re3 = /example\.com/;
                                ok(re3.test($("#restarget").html()),
                                   "Not finding url in #restarget");
+
                            });
                       test("simpletag", function()
                            {
-                               expect(2);
-                               fK.init({simpleTagTemplate: "#simpletag"});
+                               expect(7);
+                               fK.init({simpleTagTemplate: "#simpletag",
+                                        postTagUrl: "http://localhost/tag.php",
+                                        getTagUrl: "http://localhost/tag.php",
+                                        postResUrl: "http://localhost/resource.php",
+                                        getResUrl: "http://localhost/resource.php",
+                                        getUserUrl: "http://localhost/user.php"
+                                       });
                                fK.simpletag($("#restarget"),
                                             "Taggage",
                                             "taggage",
@@ -166,6 +173,17 @@ $(document).ready(function() {
                                   "Tag display not showing up");
                                ok(/taggage/.test($("#restarget").html()),
                                   "tagnorm not showing up");
+                               ok(/tag\.php/.test(fK.cf.getTagUrl),
+                                  "Incorrect value for getTagUrl");
+                               ok(/tag\.php/.test(fK.cf.postTagUrl),
+                                  "Incorrect value for postTagUrl");
+                               ok(/resource\.php/.test(fK.cf.getResUrl),
+                                  "Incorrect value for getResUrl");
+                               ok(/resource\.php/.test(fK.cf.postResUrl),
+                                  "Incorrect value for postResUrl");
+                               ok(/user\.php/.test(fK.cf.getUserUrl),
+                                  "Incorrect value for getUserUrl");
+
                            });
                       test("Storing data in tag/res DOM elements", function()
                            {
@@ -212,12 +230,21 @@ $(document).ready(function() {
                       module("Basic event stuff");
                       test("droptag_react (without ajax)", function() 
                            {
-                               expect(1);
+                               expect(2);
+                               var button = $($("#restarget").find(".droptag")[0]);
                                var dr = fK.fn.droptag_react({tagnorm: 'zook',
                                                              display: 'Zook',
-                                                             id: 12});
+                                                             id: 12,
+                                                             element: button});
+                               button.click(dr);
                                ok(typeof dr == "function",
                                   "droptag_react not returning function");
+
+                               equal(dr.length, 1,
+                                     "droptag_react should return a function taking 1 arg");
+
+
+
 
                            });
 

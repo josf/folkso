@@ -151,39 +151,55 @@
              /**
               * 
               */
-             ajaxBasic: function(url, type, data, success, error) 
-             {
-                 $.ajax({url: url, type: type, data: data, success: success, error: error});
+             tagGetObject: function(data, success, error) {
+                 return { url: fK.cf.getTagUrl, type: "get",
+                          data: data, success: success, error: error };
              },
-             deleteBase: function() {
-               return fK.fn.ajaxBasic.partial(fK.cf.postResUrl, "delete", _ , _);
+             tagPostObject: function(data, success, error) {
+               return {  url: fK.cf.postTagUrl, type: "post",
+                         data: data, success: success, error: error };
              },
+             tagDeleteObject: function (data, success, error) {
+                 return {url: fK.cf.postTagUrl, type: "delete",
+                         data: data, success: success, error: error};
+             },
+             resGetObject: function(data, success, error) {
+                 return { url: fK.cf.getResUrl, type: "get", 
+                          data: data, success: success, error: error };
+             },
+             resPostObject: function (data, success, error) {
+                 return {url: fK.cf.postResUrl, type: "post",
+                         data: data, success: success, error: error};
+             },
+             resDeleteObject: function (data, success, error) {
+                 return {url: fK.cf.postResUrl, type: "delete",
+                         data: data, success: success, error: error};
+             },
+
              /**
-              * Prepares then executes a function to be associated with droptag events
+              * Returns a function to be associated with droptag events
               */
              droptag_react: function() {
                  var funcs = {}, tdata = arguments[0];
                  funcs.displaySuccess = function(){ tdata.element.remove(); };
                  funcs.error403 = function(xhr, msg) { alert("Better login, dude"); };
+                 funcs.error403.errorcode = 403;
                  funcs.error404 = function(xhr, msg) { alert("Sorry, no tag"); };
+                 funcs.error404.errorcode = 404;
                  funcs.errorOther = function(xhr, msg) { alert("Wierd error"); };
+                 
+                 var ajOb = fK.fn.tagDeleteObject(
+                     {folksotag: tdata.tagnorm || tdata.id},
+                     funcs.displaySuccess,
+                     fK.fn.errorChoose(funcs.error403, 
+                                       funcs.error404, 
+                                       funcs.errorOther));
+                                                   
                  return function(ev) 
                  { 
                      ev.preventDefault();
-                     fK.fn.deleteBase(
-                         {folksotag: tdata.tagnorm || tdata.id },
-                         funcs.displaySuccesss,
-                         function(xhr, msg) 
-                         {
-                             switch(xhr.status) {
-                             case 403:
-                                 funcs.error403(xhr, msg); break;
-                             case 404: 
-                                 funcs.error404(xhr, msg); break;
-                             default:
-                                 funcs.errorOther(xhr, msg); break;
-                             }
-                         });
+                     // consider attaching funcs to the DOM here (via $(this))
+                     $.ajax(ajOb);
                  };
              },
 
