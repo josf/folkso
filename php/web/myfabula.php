@@ -49,7 +49,7 @@ print_r( $cl->build_req());
 $result = $cl->execute();
 
 if ($cl->query_resultcode() == 200) {
-  $message = 'w00t ' . $result;
+  $message = 'w00t ';
 }
 elseif ($cl->query_resultcode() == 204) {
   $message = "L'utilisateur n'a pas encore de tags";
@@ -72,17 +72,17 @@ else {
     </script>
     <script type="text/javascript" src="js/jquery.autocomplete.js">
     </script>
-  
+  <script type="text/javascript" src="folksonomie.js"></script>
    <script type="text/javascript">
 <?php
-  print 'var fk = fk || {};
-         var fk.myfab = fk.myfab || {};
-         fk.myfab = ' . $result . ';'
+  print 'var fK = fK || {};
+         fK.data = fK.data || {};
+         fK.data.myfab = ' . $result . ';'
 ?>
 </script>
 </head>
 <body>
-  
+  <h1>Bienvenue ! </h1>
        <?php print 'Voici le message : ' . $message ?>           
                          
 
