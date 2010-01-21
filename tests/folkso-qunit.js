@@ -243,9 +243,6 @@ $(document).ready(function() {
                                equal(dr.length, 1,
                                      "droptag_react should return a function taking 1 arg");
 
-
-
-
                            });
 
                       test("Error function composing", function()
