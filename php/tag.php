@@ -663,6 +663,37 @@ function deleteTag  (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
 }
 
 /**
+ * Delete all of a user's tag events marked with a given tag. For the
+ * user, the tag "disappears" from her tags. Resources disappear too,
+ * unless they are tagged with another tag.
+ */
+function userDeleteTag (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks){
+  $r = new folksoResponse();
+  $u = $fks->userSession();
+  if (! $u instanceof folksoUser) { // user must exist if object does... seriously
+    return $r->unAuthorized($u);
+  }
+
+  try {
+    $i = new folksoDBinteract($dbc);
+    if (!$i->tagp($q->tag)) {
+      $r->setError(404, 'Could not delete - tag not found',
+                   $q->tag . " does not exist in the database");
+      return $r;
+    }
+
+    $tq = new folksoTagQuery();
+    $i->query($tq->userDeleteTag($q->tag, $u->uid));
+
+  }
+  catch (dbException $e) {
+    $r->handleDBexception($e); return $r;
+  }
+  $r->setOk(204, 'Tag deleted from users tags');
+  return $r;
+}
+
+/**
  * byalpha
  *
  * GET, folksoalpha
