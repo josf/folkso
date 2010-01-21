@@ -23,7 +23,7 @@
         (gustav . "gustav-2009-001")))
 
 
-(defun fk-build-get (base key usecases &rest apairs)
+(defun fk-build-get (base key &rest apairs)
   (let ((res-and-base (concat 
                        base (cdr (assoc key fktest-tags)))))
     (if (null apairs)
@@ -80,6 +80,14 @@
                     'poesie
                     '("folksofancy" . "1")
                     '("folksodatatype" . "xml"))))
+
+(switch-to-buffer (url-retrieve-synchronously
+                   (fk-build-get "http://localhost/user.php?folksouser=" 
+                                 'gustav
+                                 '("folksomytags" . "1")
+                                 '("folksosession" . "fb382640769de5c8ae22bdec22835c1c56f3be214a59da9b1beebc836764b559"))))
+                                 
+                                 
 
 (switch-to-buffer (url-retrieve-synchronously
 
