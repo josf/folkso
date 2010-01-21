@@ -27,6 +27,7 @@ if ($_COOKIE['folksosess']) {
 else { // warning, dev only!!!!!
   $fks->startSession('gustav-2009-001');
 }
+
 $u = $fks->userSession();
 if (! $u instanceof folksoUser) {
   print "Error not a logged user";
@@ -40,7 +41,7 @@ $cl = new folksoClient('localhost',
 print $cl->method;
 
 $cl->set_getfields(array('folksouid' => $u->userid,
-                         'folksogetmytags' => 1)
+                         'folksomytags' => 1)
                    );
 
 $cl->set_datastyle('json');
