@@ -68,11 +68,13 @@ else {
 <meta http-equiv="Content-Language" content="fr-FR"/>
   <title>Mon (ma) Fabula</title>
 
-    <script type="text/javascript" src="js/jquery.js">
+    <script type="text/javascript" src="jquery-1.3.2.js">
     </script>
     <script type="text/javascript" src="js/jquery.autocomplete.js">
     </script>
+<script type="text/javascript" src="jquery.jqote.js"></script>
   <script type="text/javascript" src="folksonomie.js"></script>
+  <script type="text/javascript" src="myfabula.js"></script>
    <script type="text/javascript">
 <?php
   print 'var fK = fK || {};
@@ -80,12 +82,24 @@ else {
          fK.data.myfab = ' . $result . ';'
 ?>
 </script>
+
+<!-- templates -->
+
+<script type="text/bogus" id="tagitem">
+<![CDATA[
+         <p class="simpletag">Tag: 
+         <a href="tag.php?folksotag=<%= this.tagnorm %>"><%= this.display %></a>
+         <a class="droptag" href="tag.php?folksodelete=1&folksotag=<%= this.tagnorm %>">
+          x</a></p>
+]]>
+</script>
+
 </head>
 <body>
   <h1>Bienvenue ! </h1>
        <?php print 'Voici le message : ' . $message ?>           
                          
-
+<div id="tagholder"> <h2>Vos tags</h2></div>
 </body>
 </html>
 
