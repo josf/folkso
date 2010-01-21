@@ -4,11 +4,13 @@
  * 
  * JS specific to the myfabula.php page.
  * 
- * Requires jQuery and folksonomie.js
+ * Requires jQuery and folksonomie.js. They should be loaded first.
  * 
  * 
  * 
  */
+
+
 
 $(document).ready(function()
                   {
@@ -17,19 +19,33 @@ $(document).ready(function()
                                getResUrl: 'http://localhost/resource.php',
                                postTagUrl: 'http://localhost/tag.php',
                                postResUrl: 'http://localhost/resource.php',
-                              simpleTagTemplate: "#tagitem"});
+                               simpleTagTemplate: "#tagitem"});
 
-                      var tagholder = $("#tagholder");
-                      if (fK.data.myfab) {
-                          for (var i = 0; i < fK.data.myfab.length; ++i){
-                              fK.simpletag(tagholder, 
-                                           fK.data.myfab[i].tagdisplay,
-                                           fK.data.myfab[i].tagnorm,
-                                          fK.data.myfab[i].resid);
-
-                          }
-                      }
-
+                      fK.myfab.fn.taglistFromData($("#tagholder"),
+                                                  fK.data.myfab);
 
 
                   }); // end document.ready
+
+(function() {
+     var myfab = window.fK.myfab = {
+       fn: {  
+           /**
+            * Immediately appends the new elements 
+            * 
+            * @param target {jQuery} Where the new objects will be appended.
+            */
+           taglistFromData: function(target, json) {
+               var data = json || fK.data.myfab;
+               if (data) {
+                   for (var i = 0; i < data.length; ++i){
+                       fK.simpletag(target, 
+                                    fK.data.myfab[i].tagdisplay,
+                                    fK.data.myfab[i].tagnorm,
+                                    fK.data.myfab[i].resid);
+                   }
+               }               
+           }
+       }
+     };
+ })();
