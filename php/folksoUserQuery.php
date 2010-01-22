@@ -28,7 +28,7 @@ class folksoUserQuery  {
      $a = array(
                 array('type' => 'common',
                       'sql' =>
-                      " select r.id, r.title, r.uri_raw, te.tagtime "
+                      " select r.id, r.uri_raw, r.title, te.tagtime "
                       ." from resource r \n"
                       ." join tagevent te on r.id = te.resource_id \n"),
                 array('type' => 'notnum',

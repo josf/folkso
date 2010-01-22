@@ -117,10 +117,10 @@ function getUserResByTag (folksoQuery $q, folksoDBconnect $dbc, folksoSession $f
     /* these are inside the try block because exists() hits the DB */
     if ($i->rowCount == 0) {
       if (isset($u->nick) ||
-          ($u->exists)) {
+          ($u->exists())) {
         return $r->setOk(204, 'User has no resources with this tag');
       }
-      else {
+      else { // no longer necessary
         return $r->setError(404, 'Unknown user');
       }
     }
@@ -134,7 +134,13 @@ function getUserResByTag (folksoQuery $q, folksoDBconnect $dbc, folksoSession $f
 
   $r->setOk(200, 'Found');
   $df = new folksoDisplayFactory();
-  $dd = $df->ResourceList('xml');
+  if ($q->content_type() == 'json') {
+    $dd = new folksoDataJson('resid', 'url', 'title');
+  }
+  else {
+    $dd = $df->ResourceList('xml');
+  }
+
   $r->t($dd->startform());
   while ($row = $i->result->fetch_object()) {
     $r->t($dd->line($row->id,
