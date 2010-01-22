@@ -30,7 +30,7 @@ class testOfuser extends  UnitTestCase {
   }
 
    function testGetMyTags () {
-     $this->fks->startSession('gustav-2009-001', true);
+     $this->fks->startSession('gustav-2010-001', true);
      $r = getMyTags(new folksoQuery(array(),
                                     array(),
                                     array()),
@@ -52,7 +52,7 @@ class testOfuser extends  UnitTestCase {
    }
 
    function testGetMyTagsJson () {
-     $this->fks->startSession('gustav-2009-001', true);
+     $this->fks->startSession('gustav-2010-001', true);
      $r = getMyTags(new folksoQuery(array(),
                                     array('folksodatatype' => 'json'),
                                     array()),
@@ -75,7 +75,7 @@ class testOfuser extends  UnitTestCase {
    }
 
    function testGetUserResByTag() {
-     $this->fks->startSession('gustav-2009-001', true);
+     $this->fks->startSession('gustav-2010-001', true);
      $r = getUserResByTag(new folksoQuery(array(),
                                           array('folksotag' => 'tagone'),
                                           array()),

@@ -20,8 +20,8 @@ class testOffolksoUser extends  UnitTestCase {
 
    function testUser () {
      $u = new folksoUser($this->dbc);
-     $u->setUid('marcelp-2009-001');
-     $this->assertEqual($u->userid, 'marcelp-2009-001',
+     $u->setUid('marcelp-2010-001');
+     $this->assertEqual($u->userid, 'marcelp-2010-001',
                         'Bad or missing userid from setUid: ' . $u->userid);
 
      $u->setEmail('bob@warp.com');
@@ -36,14 +36,14 @@ class testOffolksoUser extends  UnitTestCase {
                          'firstname' => 'Marcel',
                          'lastname' => 'Proust',
                          'email' => 'marcelp@temps.eu',
-                         'userid' => 'marcelp-2009-001'));
+                         'userid' => 'marcelp-2010-001'));
      $this->assertIsA($u, folksoUser,
                       'problem with object creation');
      $this->assertEqual($u->nick, 'marcelp',
                         'missing data in user object');
      $this->assertEqual($u->email, 'marcelp@temps.eu',
                         'Email incorrect after loadUser');
-     $this->assertEqual($u->userid, 'marcelp-2009-001',
+     $this->assertEqual($u->userid, 'marcelp-2010-001',
                         'userid not present: ' . $u->userid);
      $this->assertTrue($u->checkUserRight('folkso', 'tag'),
                        'user right fails incorrectly');
@@ -61,8 +61,8 @@ class testOffolksoUser extends  UnitTestCase {
 
    function testExists() {
      $u = new folksoUser($this->dbc);
-     $this->assertTrue($u->exists('marcelp-2009-001'));
-     $this->assertEqual($u->userid, 'marcelp-2009-001');
+     $this->assertTrue($u->exists('marcelp-2010-001'));
+     $this->assertEqual($u->userid, 'marcelp-2010-001');
 
    }
 }//end class
