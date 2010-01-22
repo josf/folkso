@@ -166,8 +166,8 @@ class folksoServer {
     /** Walking the response objects **/
     foreach ($this->responseObjects as $resp) {
       if ($resp->activatep($q)) {
-        $resp->Respond($q, $dbc, $fks);
         $repflag = true;
+        $resp->Respond($q, $dbc, $fks);
         break;
       }
     }
