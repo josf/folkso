@@ -698,6 +698,7 @@ function deleteTag  (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
  * Delete all of a user's tag events marked with a given tag. For the
  * user, the tag "disappears" from her tags. Resources disappear too,
  * unless they are tagged with another tag.
+ *
  */
 function userDeleteTag (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks){
   $r = new folksoResponse();
@@ -715,11 +716,13 @@ function userDeleteTag (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks
     }
 
     $tq = new folksoTagQuery();
-    $i->query($tq->userDeleteTag($q->tag, $u->uid));
-
+    $sql = $tq->userDeleteTag($q->tag, $u->userid);
+    print "<p><pre>". $sql .  "</pre></p>";
+    $i->query($sql);
   }
   catch (dbException $e) {
-    $r->handleDBexception($e); return $r;
+    $r->handleDBexception($e); 
+    return $r;
   }
   $r->setOk(204, 'Tag deleted from users tags');
   return $r;
