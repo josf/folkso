@@ -223,7 +223,7 @@ class testOfResource extends  UnitTestCase {
    }
 
    function testTagResource() {
-     $sid = $this->fks->startSession('marcelp-2009-001', true);
+     $sid = $this->fks->startSession('marcelp-2010-001', true);
      $this->assertTrue($this->fks->validateSid($sid),
                        'Producing invalid sid');
      $this->assertTrue($this->fks->checkSession($sid),
@@ -281,7 +281,7 @@ class testOfResource extends  UnitTestCase {
    }
 
    function testTagResourceAgain () {
-     $sid = $this->fks->startSession('michl-2009-001', true);
+     $sid = $this->fks->startSession('michl-2010-001', true);
      $this->assertTrue($this->fks->validateSid($sid),
                        'Invalid sid');
      $r = tagResource(new folksoQuery(array(),
@@ -298,7 +298,7 @@ class testOfResource extends  UnitTestCase {
    }
 
    function testUnTag () {
-     $sid = $this->fks->startSession('gustav-2009-001', true);
+     $sid = $this->fks->startSession('gustav-2010-001', true);
      $r = unTag(new folksoQuery(array(),
                                 array('folksores' => 'http://example.com/1',
                                       'folksotag' => 'tagone',
@@ -335,7 +335,7 @@ class testOfResource extends  UnitTestCase {
                   $this->fks);
      $this->assertEqual($h1->status, 200,
                         'example.com/1 not present acorrding to isHead. Test pb.');
-     $this->fks->startSession('vicktr-2009-001', true);
+     $this->fks->startSession('vicktr-2010-001', true);
      $r = rmRes(new folksoQuery(array(),
                                 array('folksores' => 'http://example.com/1'),
                                 array()),
@@ -368,7 +368,7 @@ class testOfResource extends  UnitTestCase {
                       'Problem with object creation');
      $this->assertEqual($r->status, 404,
                         'Should not be any ean13 data yet');
-     $this->fks2->startSession('marcelp-2009-001', true);
+     $this->fks2->startSession('marcelp-2010-001', true);
      $r2 = assocEan13(new folksoQuery(array(),
                                 array('folksores' => 'http://example.com/1',
                                       'folksoean13' => '1234567890123'),
@@ -376,7 +376,7 @@ class testOfResource extends  UnitTestCase {
                 new folksoDBconnect('localhost', 'tester_dude',
                                     'testy', 'testostonomie'),
                       $this->fks2);
-     $this->fks3->startSession('marcelp-2009-001', true);
+     $this->fks3->startSession('marcelp-2010-001', true);
      $r2bis = assocEan13(new folksoQuery(array(),
                                 array('folksores' => 'http://example.com/2',
                                       'folksoean13' => '1234567890123'),
@@ -416,7 +416,7 @@ class testOfResource extends  UnitTestCase {
 
 
    function testAssocEan13 () {
-     $this->fks->startSession('marcelp-2009-001', true);
+     $this->fks->startSession('marcelp-2010-001', true);
      $r = assocEan13(new folksoQuery(array(),
                                      array('folksores' => 'http://example.com/1',
                                       'folksoean13' => '1234567890123'),
@@ -448,7 +448,7 @@ class testOfResource extends  UnitTestCase {
 
    function testModify() {
      /** setup oldean **/
-     $this->fks->startSession('marcelp-2009-001', true);
+     $this->fks->startSession('marcelp-2010-001', true);
      $su = assocEan13(new folksoQuery(array(),
                                 array('folksores' => 'http://example.com/1',
                                       'folksoean13' => '1234567890123'),
@@ -513,7 +513,7 @@ class testOfResource extends  UnitTestCase {
 
    function testDeleteEan13 () {
      /** setup oldean **/
-     $this->fks->startSession('marcelp-2009-001', true);
+     $this->fks->startSession('marcelp-2010-001', true);
      $su = assocEan13(new folksoQuery(array(),
                                 array('folksores' => 'http://example.com/1',
                                       'folksoean13' => '1234567890123'),

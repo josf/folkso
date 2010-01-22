@@ -13,9 +13,9 @@ function test_db_init() {
   $i = new folksoDBinteract($dbc);
   
   /** start over **/
-  foreach ($tables as $tab) {
-    $i->query("truncate table $tab");
-  }
+   foreach ($tables as $tab) {
+     $i->query("truncate table $tab");
+   }
 
   print $i->error_info();
   $user = array( 'marcelp' => array('Marcel', 'Proust', 'marcelp@temps.eu', 
@@ -95,7 +95,7 @@ function test_db_init() {
     }
 
     foreach ($tags as $t) {
-      $i->sp_query("call tag_resource('gustav-2009-001', 'http://example.com/1', '', '$t', '', '', 1 )");
+      $i->sp_query("call tag_resource('gustav-2010-001', 'http://example.com/1', '', '$t', '', '', 1 )");
       if ($i->db_error()) { 
         print "bad tag resource<br/>";
         print $i->error_info();
@@ -103,21 +103,21 @@ function test_db_init() {
     }
 
     $i->query("insert into users_rights (userid, rightid) values "
-              ."('rambo-2009-001', 'tag'), "
-              ."('rambo-2009-001', 'create'), "
-              ."('marcelp-2009-001', 'tag'), "
-              ."('marcelp-2009-001', 'create'), "
-              ."('marcelp-2009-001', 'redac'), "
-              ."('vicktr-2009-001', 'admin'), "
-              ."('gustav-2009-001', 'tag')");
+              ."('rambo-2010-001', 'tag'), "
+              ."('rambo-2010-001', 'create'), "
+              ."('marcelp-2010-001', 'tag'), "
+              ."('marcelp-2010-001', 'create'), "
+              ."('marcelp-2010-001', 'redac'), "
+              ."('vicktr-2010-001', 'admin'), "
+              ."('gustav-2010-001', 'tag')");
 
 
 
     //    $i->query("insert into fb_ids (userid, fb_uid) values "
-    //              ." ('rambo-2009-001', 123456) ");
+    //              ." ('rambo-2010-001', 123456) ");
     /*    $i->query("insert into oid_urls (userid, oid_url) values "
-              ." ('marcelp-2009-001', 'http://flickr.com/marcelp'), "
-              ." ('gustav-2009-001', 'http://myspace.com/gustav')"); */
+              ." ('marcelp-2010-001', 'http://flickr.com/marcelp'), "
+              ." ('gustav-2010-001', 'http://myspace.com/gustav')"); */
 
 }
 
