@@ -104,12 +104,10 @@ function getUserResByTag (folksoQuery $q, folksoDBconnect $dbc, folksoSession $f
     elseif ($q->is_param('user')) { 
       $u = new folksoUser($dbc); // we create a user object anyway
       $u->setUid($q->get_param('user'));
+      if (! $u->exists($q->get_param('user'))) {
+        return $r->setError(404, 'Missing or invalid user');
+      }
     } 
-
-  /* if the uid is bad, the error will be caught. if the user does not
-     exist, results will just be empty. Note that we consider this
-     information to be public: we are not checking the identity of the
-     user */
 
     $i = new folksoDBinteract($dbc);
     $uq = new folksoUserQuery();
@@ -131,7 +129,7 @@ function getUserResByTag (folksoQuery $q, folksoDBconnect $dbc, folksoSession $f
     return $r->handleDBexception($e);
   }
   catch (badUseridException $e) {
-    return $r->handleDBexception($e);
+    return $r->handleDBexception($e); // TODO: update this with new class
   }
 
   $r->setOk(200, 'Found');
