@@ -26,7 +26,13 @@ class folksoDataJson extends folksoDataDisplay {
    * @param $linetemplate Array List of field names to be used with line(). 
    */
   public function __construct($linetemplate){
-    $this->linetemplate = $linetemplate;
+    if (is_array($linetemplate)) {
+      $this->linetemplate = $linetemplate;
+    }
+    else {
+      $this->linetemplate = func_get_args();
+    }
+    $this->type = 'json';
   }
   
   public function activate_style ($type) {}
@@ -34,11 +40,14 @@ class folksoDataJson extends folksoDataDisplay {
   
   public function line ($firstarg) {
     $args = func_get_args();
-    
+    print_r($this->linetemplate);
     if (count($args) > count($this->linetemplate)) {
-      trigger_error('Argument mismatch (JSON): not enough args.',
+      trigger_error('Argument mismatch (JSON): not enough args. Args: '
+                    . implode(' ', $args) 
+                    . " template: "
+                    . implode(' ', $this->linetemplate),
                     E_USER_WARNING);
-      $useargs = array_slice($args, 0, count($linetemplate));
+      $useargs = array_slice($args, 0, count($this->linetemplate));
       $usetemplate = $this->linetemplate;
     }
     elseif (count($this->linetemplate) > count($args)) {
@@ -48,6 +57,7 @@ class folksoDataJson extends folksoDataDisplay {
     else {
       $usetemplate = $this->linetemplate;
       $useargs = $args;
+      
     }
     $ret = json_encode(array_combine($usetemplate, $useargs));
     if (is_null($ret)) {
