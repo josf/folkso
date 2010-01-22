@@ -60,6 +60,19 @@ class testOffolksotag extends  UnitTestCase {
      $this->assertEqual($r2->status, 404,
                         'Not getting 404 for incorrect tag');
 
+     $this->fks3->startSession('gustav-2010-001', true);
+     $r3 = headCheckTag(new folksoQuery(array(), 
+                                        array('folksotag' => 'tagtwo',
+                                              'folksousertag' => '1'),
+                                        array()),
+                        $this->dbc3,
+                        $this->fks3);
+     $this->assertEqual($r3->status, 200,
+                        'User tag option should return 200 here: ' . $r3->status 
+                        . " " . $r3->statusMessage);
+
+
+
    }
 
    function testGetTag() {
