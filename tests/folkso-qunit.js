@@ -163,7 +163,8 @@ $(document).ready(function() {
                                         getTagUrl: "http://localhost/tag.php",
                                         postResUrl: "http://localhost/resource.php",
                                         getResUrl: "http://localhost/resource.php",
-                                        getUserUrl: "http://localhost/user.php"
+                                        getUserUrl: "http://localhost/user.php",
+                                        simpleResWrap: "<li class=\"res\">"
                                        });
                                fK.simpletag($("#restarget"),
                                             "Taggage",
@@ -266,6 +267,34 @@ $(document).ready(function() {
                                equal(efunk(404),
                                      1,
                                      "First error function not being called");
+                           });
+
+                      test("displayJsonResList", function() 
+                           {
+                               expect(3);
+                               var bogusTdata = {element: $("#stuff"),
+                                                 title: "The title",
+                                                 url: "http://url.com",
+                                                 resid: 1234};
+                               ok(typeof fK.fn.displayJsonResList(bogusTdata) == "function",
+                                  "displayJsonResList() should return a function");
+
+                               var tdata = {element: $("#reslistholder")},
+                               json = [
+                                   {title: "Hey", url: "http://example.com/huh",
+                                    resid: 1234},
+                                   {title: "What?", url: "http://example.com/what",
+                                    resid: 4321}
+                               ];
+                               var newf = fK.fn.displayJsonResList(tdata);
+                               newf(json);
+                               
+                               var first = $("#reslistholder").html();
+                               ok(/Hey/.test(first),
+                                  "Not finding title in list generated from json");
+                               ok(/example.com\/huh/.test(first),
+                                  "Not finding url in list generated from json");
+
                            });
 
 });

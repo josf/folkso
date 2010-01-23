@@ -175,6 +175,10 @@
                  return {url: fK.cf.postResUrl, type: "delete",
                          data: data, success: success, error: error};
              },
+             userGetObject: function (data, success, error) {
+                 return {url: fK.cf.getUserUrl, type: "get",
+                         data: data, success: success, error: error };
+             },
 
              /**
               * Returns a function to be associated with droptag events
@@ -203,6 +207,36 @@
                  };
              },
 
+
+             expandtag_react: function() {
+                 var tdata = arguments[0],
+                 displaySuccess = fK.fn.displayJsonResList(tdata),
+                 errorOther = function(xhr, msg) {alert("More wierdness"); };
+
+                 var ajOb = fK.fn.userGetObject(
+                     {folksores: tdata.url || tdata.resid},
+                     displaySuccess,
+                     fK.fn.errorChoose(errorOther)
+                 ); //add more here!
+                      
+                 return function(ev)
+                 {
+                     ev.preventDefault();
+                     $.ajax(ajOb);
+                 };
+             },
+             /**
+              * @return Returns a function taking one argument.
+              */
+             displayJsonResList: function() {
+                 var tdata = arguments[0];
+                 return function (json) {
+                     for (var i = 0; i < json.length; ++i) {
+                             fK.simpleres(tdata.element, json[i].title, 
+                                             json[i].url, json[i].resid);
+                     }
+                 };
+             },
              /**
               * Returns a function that removes a resource from a user's list of
               *  tagged resources. 
