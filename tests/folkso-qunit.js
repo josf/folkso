@@ -269,6 +269,7 @@ $(document).ready(function() {
                                      "First error function not being called");
                            });
 
+                      module("tag expansion");
                       test("displayJsonResList", function() 
                            {
                                expect(3);
@@ -297,6 +298,14 @@ $(document).ready(function() {
 
                            });
 
+                      test("basic expand tag event stuff", function()
+                           {
+                               expect(1);
+                               ok(typeof fK.fn.expandtag_react(
+                                      {url: "z", resid: 123, title: "xyz"}
+                                  ) == 'function',
+                                  "expandtag_react should return a function");
+                           });
 });
 
 
