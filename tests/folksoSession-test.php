@@ -32,7 +32,7 @@ class testOffolksoSession extends  UnitTestCase {
                           'DBconnection object is not there');
 
 
-         $this->assertTrue(strlen($s->newSessionId()) == 64,
+         $this->assertTrue(strlen($s->newSessionId('zorkdork-2289-002')) == 64,
                            'session id not long enough (want 64 chars');
          $this->assertTrue($s->validateUid('zork-000-124'),
                            'zork-000-124 should validate as uid.');
@@ -45,7 +45,7 @@ class testOffolksoSession extends  UnitTestCase {
                            'this should be a valid session id');
          $this->assertFalse($s->validateSid('eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee-e'),
                             'Non alphanumeric session id should fail');
-         $this->assertTrue($s->validateSid($s->newSessionId()),
+         $this->assertTrue($s->validateSid($s->newSessionId('zoopfest-1776-010')),
                            'a new session id should validate');
          $this->assertFalse($s->validateSid('tooshort'),
                             'a short session id should not validate');
@@ -91,11 +91,13 @@ class testOffolksoSession extends  UnitTestCase {
      $s = new folksoSession($this->dbc);
      $this->assertIsA($s, folksoSession,
                       'No point in testing if we do not have a fkSession obj');
-     $sid = $s->startSession('marcelp-2009-001', true);
+     $sid = $s->startSession('marcelp-2010-001', true);
      $u = $s->userSession($sid, 'folkso', 'tag');
      $this->assertTrue($u, 'userSession returns false');
      $this->assertIsA($u, folksoUser,
                       'userSession w/ args not returning a fkUser obj');
+     $this->assertIsA($u->rights, folksoRightStore,
+                      '$u->rights should be a folksoRightStore object');
      $this->assertTrue($u->rights->hasRights(),
                        'user right store is still empty');
      $this->assertTrue($u->checkUserRight('folkso', 'tag'),
