@@ -12,7 +12,8 @@
 <![CDATA[
 <p class="simpletag">
   I am a tag: <a href= "<%= this.tagnorm %>"><%= this.display %></a>
-  <a class="droptag" href="/untag?<%= this.tagnorm || this.id %>">x</a></p>
+  <a class="droptag" href="/untag?<%= this.tagnorm || this.id  %>">x</a>
+  <a class="expandtag" href="#">expand</a><ul class="tag_resources"></ul></p>
 ]]>
 </script>
 
@@ -22,7 +23,7 @@
 <![CDATA[
 <p class="simpleres">
   Resource: <a href="<%= this.url %>"><%= this.display %></a>
-  <a class="dropres" href="/dropres?<%= this.url || this.id %>">drop</a></p>
+  <a class="dropres" href="#">drop</a></p>
 ]]>
 </script>
 
