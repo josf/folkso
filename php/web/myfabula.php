@@ -89,10 +89,19 @@ else {
 <![CDATA[
          <p class="simpletag">Tag: 
          <a href="tag.php?folksotag=<%= this.tagnorm %>"><%= this.display %></a>
+         <a class="expandtag" href="#">voir</a>
          <a class="droptag" href="tag.php?folksodelete=1&folksotag=<%= this.tagnorm %>">
           x</a></p>
 ]]>
 </script>
+<script type="text/bogus" id="resitem">
+<![CDATA[
+         <a class="restitle" href="<%= this.url %>">><%= this.title %></a>
+         <a class="resurl" href="<%= this.url %>"><%= this.url %></a>
+         <a class="untag" href="#">x</a>
+]]>
+</script>
+
 
 </head>
 <body>
@@ -100,6 +109,7 @@ else {
   <?php //print 'Voici le message : ' . $message ?>           
                          
 <div id="tagholder"> <h2>Vos tags</h2></div>
+
 </body>
 </html>
 
