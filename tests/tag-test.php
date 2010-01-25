@@ -60,6 +60,19 @@ class testOffolksotag extends  UnitTestCase {
      $this->assertEqual($r2->status, 404,
                         'Not getting 404 for incorrect tag');
 
+     $this->fks3->startSession('gustav-2010-001', true);
+     $r3 = headCheckTag(new folksoQuery(array(), 
+                                        array('folksotag' => 'tagtwo',
+                                              'folksousertag' => '1'),
+                                        array()),
+                        $this->dbc3,
+                        $this->fks3);
+     $this->assertEqual($r3->status, 200,
+                        'User tag option should return 200 here: ' . $r3->status 
+                        . " " . $r3->statusMessage);
+
+
+
    }
 
    function testGetTag() {
@@ -88,7 +101,7 @@ class testOffolksotag extends  UnitTestCase {
      $this->assertEqual($r->status, 403,
                         'Unknown user should provoke a 403 on singlePostTag:' . $r->status);
 
-     $this->fks2->startSession('marcelp-2009-001', true);
+     $this->fks2->startSession('marcelp-2010-001', true);
      $r2 = singlePostTag(new folksoQuery(array(),
                                  array('folksonewtag' => 'emacs'),
                                  array()),
@@ -225,7 +238,7 @@ class testOffolksotag extends  UnitTestCase {
    }
 
    function testTagMerge() {
-     $this->fks->startSession('rambo-2009-001', true);
+     $this->fks->startSession('rambo-2010-001', true);
      $r = tagMerge(new folksoQuery(array(),
                                    array('folksotag' => 'tagone',
                                          'folksotarget' => 'tagtwo'),
@@ -237,7 +250,7 @@ class testOffolksotag extends  UnitTestCase {
      $this->assertEqual($r->status, 403,
                         'Rimbaud does not get to merge tags');
 
-     $this->fks2->startSession('marcelp-2009-001', true);
+     $this->fks2->startSession('marcelp-2010-001', true);
      $r2 = tagMerge(new folksoQuery(array(),
                                     array('folksotag' => 'tagone',
                                           'folksotarget' => 'tagtwo'),
@@ -283,7 +296,7 @@ class testOffolksotag extends  UnitTestCase {
 
      $this->assertEqual($r->status, 403,
                         'anonymous delete tag should return 403');
-     $this->fks->startSession('vicktr-2009-001', true);
+     $this->fks->startSession('vicktr-2010-001', true);
      $r2 = deleteTag(new folksoQuery(array(),
                                      array('folksotag' => 'tagone'),
                                      array()),
@@ -306,6 +319,37 @@ class testOffolksotag extends  UnitTestCase {
      $this->assertEqual($r2->status, 404,
                         'Not getting correct status (404) on bad tag delete: '
                         . $r2->status);
+   }
+
+
+   function testUserDeleteTag() {
+     $r = userDeleteTag(new folksoQuery(array(),
+                                        array('folksotag' => 'tagone'),
+                                        array()),
+                        $this->dbc,
+                        $this->fks);
+     $this->assertEqual($r->status, 403,
+                        'Unknown user should provoke 403: ' . $r->status);
+     $this->fks2->startSession('gustav-2010-001', true);
+     $r2 = userDeleteTag(new folksoQuery(array(),
+                                         array('folksotag' => 'tagone'),
+                                         array()),
+                         $this->dbc2,
+                         $this->fks2);
+     $this->assertEqual($r2->status, 204,
+                        'Successful user tag delete should return 204: ' . $r2->status);
+     $r3 = headCheckTag(new folksoQuery(array(), 
+                                         array('folksotag' => 'tagone',
+                                               'folksousertag' => '1'),
+                                         array()),
+                        $this->dbc3,
+                        $this->fks2);
+     $this->assertEqual($r3->status, 404,
+                        "Tag should have been removed from user's tags. "
+                        ." headCheckTag should return 404 here, not: " 
+                        . $r3->status . " " . $r3->statusMessage);
+                                         
+                                        
    }
    function testByAlpha(){
      $r = byalpha(new folksoQuery(array(),
@@ -344,13 +388,13 @@ class testOffolksotag extends  UnitTestCase {
      $this->assertEqual($r->status, 403,
                         'Anonymous user should fail with 403: ' . $r->status);
 
-     $this->fks->startSession('vicktr-2009-001', true);
+     $this->fks2->startSession('vicktr-2010-001', true);
      $r2 = renameTag(new folksoQuery(array(),
                                     array('folksonewname' => 'emacs',
                                           'folksotag' => 'tagone'),
                                     array()),
                      $this->dbc,
-                     $this->fks);
+                     $this->fks2);
 
      $this->assertEqual(204, $r2->status,
                         'tag rename should return 204');

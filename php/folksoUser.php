@@ -50,20 +50,6 @@ class folksoUser {
     $this->rights = new folksoRightStore();
   }
 
-/**
- * @param $id
- */
- public function initializeUser ($id) {
-   if ($this->Writeable === false) {
-     return false;
-   }
-   $id = $id ? $id : $this->loginId;
-   
-   if (substr($id, 0, 7) == 'http://') {
-     
-   }
- }
-
   public function setNick($nick) {
     $this->nick = trim(strtolower($nick));
   }

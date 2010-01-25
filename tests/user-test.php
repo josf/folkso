@@ -30,7 +30,7 @@ class testOfuser extends  UnitTestCase {
   }
 
    function testGetMyTags () {
-     $this->fks->startSession('gustav-2009-001', true);
+     $this->fks->startSession('gustav-2010-001', true);
      $r = getMyTags(new folksoQuery(array(),
                                     array(),
                                     array()),
@@ -52,7 +52,7 @@ class testOfuser extends  UnitTestCase {
    }
 
    function testGetMyTagsJson () {
-     $this->fks->startSession('gustav-2009-001', true);
+     $this->fks->startSession('gustav-2010-001', true);
      $r = getMyTags(new folksoQuery(array(),
                                     array('folksodatatype' => 'json'),
                                     array()),
@@ -75,7 +75,7 @@ class testOfuser extends  UnitTestCase {
    }
 
    function testGetUserResByTag() {
-     $this->fks->startSession('gustav-2009-001', true);
+     $this->fks->startSession('gustav-2010-001', true);
      $r = getUserResByTag(new folksoQuery(array(),
                                           array('folksotag' => 'tagone'),
                                           array()),
@@ -89,14 +89,15 @@ class testOfuser extends  UnitTestCase {
                            'No data found for user resources by tag');
      $this->assertNotEqual($r->status, 500,
                            'Should not get this error: ' . $r->body());
+     $this->assertPattern('/example\.com/', $r->body(),
+                          'Not finding url in response');
      $xxx = new DOMDocument();
      $this->assertTrue($xxx->loadXML($r->body()),
                        'xml failed to load');
-     $this->assertPattern('/example\.com/', $r->body(),
-                          'Not finding url in response');
+
      /** not implemented yet **/
-     $this->assertPattern('/tagone/', $r->body(),
-                          'Not finding tag in response: ' . $r->body());
+     /*     $this->assertPattern('/tagone/', $r->body(),
+            'Not finding tag in response: ' . $r->body());*/
      $r2 = getUserResByTag(new folksoQuery(array(),
                                            array('folksotag' => 'emacs'),
                                            array()),
@@ -104,8 +105,21 @@ class testOfuser extends  UnitTestCase {
                            $this->fks);
      $this->assertIsA($r2, folksoResponse,
                       'Not getting fkResponse this time');
-     $this->assertEqual($r2->status, 404,
-                        'Unknown tag should throw 404');
+     $this->assertEqual($r2->status, 204,
+                        'Unknown tag should throw 204: ' . $r2->status);
+
+     /** JSON output **/
+     $this->fks2->startSession('gustav-2010-001', true);
+     $r3 = getUserResByTag(new folksoQuery(array(),
+                                           array('folksotag' => 'tagone',
+                                                 'folksodatatype' => 'json'),
+                                           array()),
+                           $this->dbc3,
+                           $this->fks2);
+     $this->assertEqual($r3->status, 200,
+                        "json query should return 200, not: " . $r3->status 
+                        . " " . $r3->statusMessage);
+     
 
    }
 

@@ -177,7 +177,7 @@ class folksoQuery {
    * Check if string is one of the basic request datatypes.
    */
   private function is_valid_datatype ($str) {
-    $valid_types = array('xml', 'html', 'text');
+    $valid_types = array('xml', 'html', 'text', 'json');
     if (in_array($str, $valid_types)) {
       return true;
     }

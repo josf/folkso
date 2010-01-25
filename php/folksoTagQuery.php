@@ -82,6 +82,35 @@ class folksoTagQuery {
                 );
      return $this->qb->build($a, $tag, array());
    }
+
+   /**
+    *
+    */
+   public function userDeleteTag ($tag, $user) {
+     $a = array( 
+                array('type' => 'common',
+                      'sql' => 
+                      ' delete from tagevent '),
+                array('type' => 'isnum',
+                      'sql' =>
+                      ' where tag_id = <<<x>>>'),
+                array('type' => 'notnum',
+                      'sql' =>
+                      " using tag t, tagevent "
+                      ." where "
+                      ." t.id = tagevent.tag_id "
+                      ." and "
+                      ." t.tagnorm = normalize_tag('<<<x>>>')"),
+                array('type' => 'common',
+                      'sql' => 
+                      ' and '
+                      ." tagevent.userid = '<<<luser>>>'")
+                 );
+
+     return $this->qb->build($a, 
+                             $tag, 
+                             array('luser' => array('value' => $user)));
+   }
   
 
 }

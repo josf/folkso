@@ -100,6 +100,9 @@ $srv->Respond();
 /**
  * checkTag (Test and Do) : given a string, checks if that tag is
  * already present in the database.
+ *
+ * with 'usertag' (ie. folksousertag) option, checks against a user's
+ * tags only. In this case, a numeric id will be accepted.
  * 
  * If the tag exists, returns 200 and sets an 'X-Folkso-Tagid' header
  * with the numeric id.
@@ -111,11 +114,40 @@ function headCheckTag (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks)
   $r = new folksoResponse();
   try {
     $i = new folksoDBinteract($dbc);
+    if ($q->is_param('usertag')) {
+      $u = $fks->userSession();
+      if (! $u instanceof folksoUser) {
+        $r->setError(404, "Missing or unknown user", "No user was specified");
+        return $r;
+      }
 
-    $i->query("select id from tag where tagnorm = normalize_tag('" .
-              $i->dbquote($q->get_param('tag')) .
-              "') " . 
-              " limit 1");
+      if (is_numeric($q->tag)) {
+      $sql = 
+        "select tag_id from tagevent "
+        ." where tag_id = " . $i->dbescape($q->tag)
+        ." and "
+        ." userid = '" . $i->dbescape($u->uid) . "'"
+        ." limit 1";
+      
+      }
+      else {
+        $sql = 
+          "select tag_id "
+          ." from tagevent te "
+          ." join tag t on t.id = te.tag_id "
+          ." where t.tagnorm = normalize_tag('" . $i->dbescape($q->tag) . "')"
+          ." and "
+          ." te.userid = '" . $i->dbescape($u->userid) . "'"
+          ." limit 1";
+      }
+    }
+    else {  // standard case, no user stuff
+      $sql = 
+        "select id from tag where tagnorm = normalize_tag('" .
+        $i->dbescape($q->tag) . "') " 
+        . " limit 1";
+    }
+    $i->query($sql);
   }
   catch (dbException $e) {
     return $r->handleDBexception($e);
@@ -124,19 +156,19 @@ function headCheckTag (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks)
   switch ($i->result_status) {
   case 'NOROWS':
     $r->setError(404, 'Tag does not exist',
-                 'The tag '. $q->get_param('tag') 
-                 . ' is not present in our database.');
+                 'The tag '. $q->tag . ' is not present in our database.');
     break;
   case 'OK':
     $r->setOk(200, 'Tag exists');
-    $id = 0;
-    while ($row = $i->result->fetch_object()) {
-      $id = $row->id;
-    }
+    $row = $i->result->fetch_object();
+    $id = $row->id;
     $r->addHeader("X-Folkso-Tagid: " . $id);
-  }
+    break;
+    }
   return $r;
 }
+
+
 
 /** 
  *  GET
@@ -659,6 +691,40 @@ function deleteTag  (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
     return $r;
   }
   $r->setOk(204, 'Tag deleted');
+  return $r;
+}
+
+/**
+ * Delete all of a user's tag events marked with a given tag. For the
+ * user, the tag "disappears" from her tags. Resources disappear too,
+ * unless they are tagged with another tag.
+ *
+ */
+function userDeleteTag (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks){
+  $r = new folksoResponse();
+  $u = $fks->userSession();
+  if (! $u instanceof folksoUser) { // user must exist if object does... seriously
+    return $r->unAuthorized($u);
+  }
+
+  try {
+    $i = new folksoDBinteract($dbc);
+    if (!$i->tagp($q->tag)) {
+      $r->setError(404, 'Could not delete - tag not found',
+                   $q->tag . " does not exist in the database");
+      return $r;
+    }
+
+    $tq = new folksoTagQuery();
+    $sql = $tq->userDeleteTag($q->tag, $u->userid);
+    print "<p><pre>". $sql .  "</pre></p>";
+    $i->query($sql);
+  }
+  catch (dbException $e) {
+    $r->handleDBexception($e); 
+    return $r;
+  }
+  $r->setOk(204, 'Tag deleted from users tags');
   return $r;
 }
 

@@ -73,7 +73,12 @@ class folksoDisplayFactory {
    * @param $args The keys that will be used by the line() method
    */
    public function json ($args) {
-     return new folksoDataJson($args);
+     if (is_array($args)) {
+         return new folksoDataJson($args);
+       }
+       else {
+         return new folksoDataJson(func_get_args());
+       }
    }
   
 
@@ -219,6 +224,7 @@ class folksoDisplayFactory {
     }
     return $obj;
   }
+
 
   /**
    * Resource list with lots of data.

@@ -104,12 +104,10 @@ function getUserResByTag (folksoQuery $q, folksoDBconnect $dbc, folksoSession $f
     elseif ($q->is_param('user')) { 
       $u = new folksoUser($dbc); // we create a user object anyway
       $u->setUid($q->get_param('user'));
+      if (! $u->exists($q->get_param('user'))) {
+        return $r->setError(404, 'Missing or invalid user');
+      }
     } 
-
-  /* if the uid is bad, the error will be caught. if the user does not
-     exist, results will just be empty. Note that we consider this
-     information to be public: we are not checking the identity of the
-     user */
 
     $i = new folksoDBinteract($dbc);
     $uq = new folksoUserQuery();
@@ -119,10 +117,10 @@ function getUserResByTag (folksoQuery $q, folksoDBconnect $dbc, folksoSession $f
     /* these are inside the try block because exists() hits the DB */
     if ($i->rowCount == 0) {
       if (isset($u->nick) ||
-          ($u->exists)) {
+          ($u->exists())) {
         return $r->setOk(204, 'User has no resources with this tag');
       }
-      else {
+      else { // no longer necessary
         return $r->setError(404, 'Unknown user');
       }
     }
@@ -131,12 +129,18 @@ function getUserResByTag (folksoQuery $q, folksoDBconnect $dbc, folksoSession $f
     return $r->handleDBexception($e);
   }
   catch (badUseridException $e) {
-    return $r->handleDBexception($e);
+    return $r->handleDBexception($e); // TODO: update this with new class
   }
 
   $r->setOk(200, 'Found');
   $df = new folksoDisplayFactory();
-  $dd = $df->ResourceList('xml');
+  if ($q->content_type() == 'json') {
+    $dd = new folksoDataJson('resid', 'url', 'title');
+  }
+  else {
+    $dd = $df->ResourceList('xml');
+  }
+
   $r->t($dd->startform());
   while ($row = $i->result->fetch_object()) {
     $r->t($dd->line($row->id,
