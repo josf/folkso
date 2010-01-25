@@ -306,7 +306,16 @@ $(document).ready(function() {
                                   ) == 'function',
                                   "expandtag_react should return a function");
                            });
-});
+
+                      test("resource delete - basic stuff", function()
+                           {
+                               expect(1);
+                               ok(typeof fK.fn.dropres_react == "function",
+                                  "dropres_react not returning a function");
+                           });
+
+                  });
 
 
-     
+
+
