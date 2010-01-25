@@ -103,7 +103,12 @@
              fK.cf.simpleResTemplate
                  .jqote(resdata)
                  .appendTo(wrapper);
+
+             var dropresfn = fK.ufn.dropres_react ? 
+                 fK.ufn.dropres_react(resdata) : fK.fn.dropres_react(resdata);
+
              wrapper.data("fKres", resdata);
+             wrapper.find("a.dropres").click(dropresfn);
 
              //   item.data(resdata);
              //             target.append(item);
