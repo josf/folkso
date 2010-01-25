@@ -126,15 +126,13 @@
 
              newtag.appendTo(wrapper);
              wrapper.data("fKtag", tagdata);
-             
 
-             // crude version 
-             // droptag_react returns a function for .click
-             var func = fK.fn.droptag_react(tagdata);
-             wrapper.find("a.droptag").click(func);
+             var 
+             droptagfn = fK.fn.droptag_react(tagdata),
+             expandtagfn = fK.fn.expandtag_react(tagdata);
 
-             // setup commands here (event listeners assigned to selectors)
-             // assign data (tag id etc.) to containing element
+             wrapper.find("a.droptag").click(droptagfn);
+             wrapper.find("a.expandtag").click(expandtagfn);
 
              target.append(wrapper);
          },
@@ -223,7 +221,8 @@
 
 
              expandtag_react: function() {
-                 var tdata = arguments[0],
+                 var 
+                 tdata = arguments[0],
                  displaySuccess = fK.fn.displayJsonResList(tdata),
                  errorOther = function(xhr, msg) {alert("More wierdness"); };
 
@@ -258,24 +257,23 @@
               * @param cred Optional (Usually the browser cookie should suffice, 
               * might be useful for testing.
               */
-             dropres_f: function(res, cred) {
-                 return function() 
-                 {
-                     var payload = {folksores: res};
-                     if (cred) payload.folksosession = cred;
-                                   
-                     $.ajax({
-                                
-                                
-                                
-                                error: function(xhr,msg){ alert(msg); },
-                                success: remove_res
+             dropres_react: function() {
+                 var 
+                 resdata = arguments[0],
+                 displaySuccess = function() { resdata.element.remove(); },
+                 errorOther = function(xhr, msg) { alert("Could not remove resource");};
+                 
+                 var ajOb = fK.fn.resDeleteObject(
+                     {folksores: resdata.url || resdata.resid,
+                      folksouserdelete: "1"},
+                     displaySuccess,
+                     errorOther);
 
-                                
-                            });
+                 return function(ev) {
+                     ev.preventDefault();
+                     $.ajax(ajOb);
                  };
              }
-             
          }
      };
      
