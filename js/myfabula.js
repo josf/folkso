@@ -19,7 +19,9 @@ $(document).ready(function()
                                getResUrl: 'http://localhost/resource.php',
                                postTagUrl: 'http://localhost/tag.php',
                                postResUrl: 'http://localhost/resource.php',
-                               simpleTagTemplate: "#tagitem"});
+                               simpleTagTemplate: "#tagitem",
+                               simpleResTemplate: "#resitem",
+                               simpleResWrap: "<li class=\"res\">"});
 
                       fK.myfab.fn.taglistFromData($("#tagholder"),
                                                   fK.data.myfab);
@@ -28,6 +30,9 @@ $(document).ready(function()
                   }); // end document.ready
 
 (function() {
+     /*
+      * the myfab part of the fK namespace should only be used for this page.
+      */
      var myfab = window.fK.myfab = {
        fn: {  
            /**
