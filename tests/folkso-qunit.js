@@ -313,7 +313,6 @@ $(document).ready(function() {
                                ok(typeof fK.fn.dropres_react == "function",
                                   "dropres_react not returning a function");
                            });
-
                   });
 
 
