@@ -18,7 +18,7 @@ require_once('folksoUrl.php');
 require_once('folksoResQuery.php');
 require_once('folksoSession.php');
 
-$srv = new folksoServer(array( 'methods' => array('POST', 'GET', 'HEAD'),
+$srv = new folksoServer(array( 'methods' => array('POST', 'GET', 'HEAD', 'DELETE'),
                                'access_mode' => 'ALL'));
 $srv->addResponseObj(new folksoResponder('head', 
                                         array('required' => array('res')),
