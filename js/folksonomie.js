@@ -74,8 +74,22 @@
 
          /**
           * Config information set on init.
+          * 
+          * Other scripts could use this for their data, maybe.
           */
          cf: {},
+
+         /**
+          * The ufn "namespace" is for functions to be defined in other scripts, 
+          * ie. page specific functions that override some of functions in the 
+          * fK.fn "namespace".
+          * 
+          * Be warned: if you put anything beside functions in this namespace, 
+          * there will be trouble. Functions will test for existence of functions 
+          * here, but will not check to see if the variables are indeed functions. 
+          * So just put functions here, nothing else.
+          */
+         ufn: {},
 
          /**
           * @target {jQuery} Element that the new element will be appended to
