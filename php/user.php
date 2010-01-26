@@ -24,6 +24,9 @@ $srv = new folksoServer(array( 'methods' => array('POST', 'GET', 'HEAD', 'DELETE
 $srv->addResponseObj(new folksoResponder('get',
                                          array('required' => array('mytags')),
                                          'getMyTags'));
+$srv->addResponseObj(new folksoResponder('get',
+                                         array('required' => array('tag')),
+                                         'getUserResByTag'));
                                                
 $srv->Respond();
 

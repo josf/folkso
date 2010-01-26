@@ -40,7 +40,6 @@ class folksoDataJson extends folksoDataDisplay {
   
   public function line ($firstarg) {
     $args = func_get_args();
-    print_r($this->linetemplate);
     if (count($args) > count($this->linetemplate)) {
       trigger_error('Argument mismatch (JSON): not enough args. Args: '
                     . implode(' ', $args) 

@@ -197,6 +197,7 @@ class folksoQuery {
                      'html' => 'html',
                      'xhtml' => 'html',
                      'xhtml-xml' => 'html',
+                     'json' => 'json',
                      'text' => 'text');
     foreach ($parts as $accept) {
       $acc = $accept; // default is to keep the whole thing, just in case.
