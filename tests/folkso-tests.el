@@ -20,7 +20,7 @@
       '((number . "8170")
         (poesie . "poésie")
         (communication . "communication")
-        (gustav . "gustav-2009-001")))
+        (gustav . "gustav-2010-001")))
 
 
 (defun fk-build-get (base key &rest apairs)
@@ -54,8 +54,14 @@
 (switch-to-buffer (url-retrieve-synchronously
                    (fk-build-get "http://localhost/user.php?folksouid="
                                  'gustav
-                                 '((gustav . "gustav-2009-001"))
-                                 '("folksogetmytags" . "1")
+                                 '("gustav" . "gustav-2010-001")
+                                 '("folksomytags" . "1")
+                                 '("folksodatatype" . "json"))))
+
+(switch-to-buffer (url-retrieve-synchronously
+                   (fk-build-get "http://localhost/tag.php?folksouid="
+                                 'gustav
+                                 '("folksotag" . "tagone")
                                  '("folksodatatype" . "json"))))
 
 (switch-to-buffer (url-retrieve-synchronously
