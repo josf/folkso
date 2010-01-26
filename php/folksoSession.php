@@ -94,10 +94,8 @@ class folksoSession {
    */
  public function startSession ($uid, $debug = null) {
     if ($this->validateUid($uid) === false) {
-      throw new Exception('Bad userid');
+      throw new Exception('Missing userid');
     }
-
-
 
     $sess = $this->newSessionId($uid);
     try {

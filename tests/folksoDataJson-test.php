@@ -2,8 +2,8 @@
 require_once('unit_tester.php');
 require_once('reporter.php');
 require_once('folksoTags.php');
-require('folksoDataJson.php');
-require('dbinit.inc');
+require_once('folksoDataJson.php');
+require_once('dbinit.inc');
 
 class testOffolksoDataJson extends  UnitTestCase {
  
