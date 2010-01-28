@@ -116,6 +116,13 @@
              target.append(wrapper);
          },
          /**
+          * Classes and actions: 
+          * 
+          * ul.tag_resources => list of resources (filled via ajax)
+          * a.droptag => erase this tag (from this users tags)
+          * a.expandtag => see the resources (via ajax)
+          * a.hidereslist => hide the resources
+          * 
           * @target {jQuery} Element that the new element will be appended to
           */
          simpletag: function(target, display, tagnorm, id) 
