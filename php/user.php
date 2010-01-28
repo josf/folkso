@@ -101,13 +101,13 @@ function getUserResByTag (folksoQuery $q, folksoDBconnect $dbc, folksoSession $f
   try {
     $u = $fks->userSession(null);
     if ((! $u instanceof folksoUser) &&
-        (! $q->is_param('user'))){
+        (! $q->is_param('uid'))){
       return $r->setError(404, 'No user');
     }
-    elseif ($q->is_param('user')) { 
+    elseif ($q->is_param('uid')) { 
       $u = new folksoUser($dbc); // we create a user object anyway
-      $u->setUid($q->get_param('user'));
-      if (! $u->exists($q->get_param('user'))) {
+      $u->setUid($q->get_param('uid'));
+      if (! $u->exists($q->get_param('uid'))) {
         return $r->setError(404, 'Missing or invalid user');
       }
     } 
