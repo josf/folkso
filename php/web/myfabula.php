@@ -24,8 +24,9 @@ $fks = new folksoSession($test_dbc);
 if ($_COOKIE['folksosess']) {
   $fks->setSid($_COOKIE['folksosess']);
 }
-else { // warning, dev only!!!!!
-  $fks->startSession('gustav-2009-001');
+
+if (! $fks->checkSession($fks->sessionId)) {
+  $fks->startSession('gustav-2010-001');
 }
 
 $u = $fks->userSession();
