@@ -88,16 +88,19 @@ else {
 
 <!-- templates -->
 
+<!-- TAG template -->
 <script type="text/bogus" id="tagitem">
 <![CDATA[
 
          <a href="tag.php?folksotag=<%= this.tagnorm %>"><%= this.display %></a>
-         <a class="expandtag" href="#">voir</a>
+         <a class="expandtag" href="#">voir</a> <a href="#" class="hidereslist">cacher</a>
          <a class="droptag" href="tag.php?folksodelete=1&folksotag=<%= this.tagnorm %>">
           x</a>
          <ul class="tag_resources"></ul>
 ]]>
 </script>
+
+<!-- RESOURCE template -->
 <script type="text/bogus" id="resitem">
 <![CDATA[
          <a class="restitle" href="<%= this.url %>"><%= this.title %></a>

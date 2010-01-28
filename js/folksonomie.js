@@ -138,8 +138,12 @@
              droptagfn = fK.fn.droptag_react(tagdata),
              expandtagfn = fK.fn.expandtag_react(tagdata, resUL);
 
-             wrapper.find("a.droptag").click(droptagfn);
-             wrapper.find("a.expandtag").click(expandtagfn);
+             $("a.droptag", wrapper).click(droptagfn);
+             $("a.expandtag", wrapper).click(expandtagfn);
+             $("a.hidereslist", wrapper).click(function(ev) 
+                                               { ev.preventDefault();
+                                                 resUL.hide();
+                                               });
 
              target.append(wrapper);
          },
