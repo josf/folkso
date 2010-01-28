@@ -235,7 +235,7 @@
                  var 
                  tdata = arguments[0],
                  target = arguments[1],
-                 displaySuccess = fK.fn.displayJsonResList(tdata, target),
+                 displaySuccess = fK.fn.displayJsonResList(target),
                  errorOther = function(xhr, msg) {alert("More wierdness" + tdata.tagnorm); };
 
                  var ajOb = fK.fn.userGetObject(
@@ -249,14 +249,19 @@
                  return function(ev)
                  {
                      ev.preventDefault();
-                     $.ajax(ajOb);
+                     if ($("li", target).length > 0) {
+                         target.show();
+                     }
+                     else {
+                         $.ajax(ajOb);
+                     }
                  };
              },
              /**
               * @return Returns a function taking one argument.
               */
              displayJsonResList: function() {
-                 var tdata = arguments[0], target = arguments[1];
+                 var target = arguments[0];
                  return function (json) {
                      for (var i = 0; i < json.length; ++i) {
                              fK.simpleres(target, json[i].title, 

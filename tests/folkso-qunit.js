@@ -278,8 +278,7 @@ $(document).ready(function() {
                                                  url: "http://url.com",
                                                  resid: 1234},
                                bogusTarget = $("<ul>");
-                               ok(typeof fK.fn.displayJsonResList(bogusTdata, 
-                                                                  bogusTarget) == "function",
+                               ok(typeof fK.fn.displayJsonResList(bogusTarget) == "function",
                                   "displayJsonResList() should return a function");
 
                                var tdata = {element: $("#reslistholder")},
@@ -289,7 +288,7 @@ $(document).ready(function() {
                                    {title: "What?", url: "http://example.com/what",
                                     resid: 4321}
                                ];
-                               var newf = fK.fn.displayJsonResList(tdata, $("#reslistholder"));
+                               var newf = fK.fn.displayJsonResList($("#reslistholder"));
                                newf(json);
                                
                                var first = $("#reslistholder").html();
