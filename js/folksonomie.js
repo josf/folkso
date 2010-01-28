@@ -196,7 +196,7 @@
              },
              userGetObject: function (data, success, error) {
                  return {url: fK.cf.getUserUrl, type: "get",
-                         data: data, success: success, error: error };
+                         data: data, cache: false, dataType: "json", success: success, error: error };
              },
 
              /**
