@@ -65,7 +65,14 @@
                                  '("folksodatatype" . "json"))))
 
 (switch-to-buffer (url-retrieve-synchronously
-                   "http://localhost/user.php?folksouid=gustav-2009-001&folksogetmytags=1&folksodatatype=json"))
+                   (fk-build-get "http://localhost/user.php?folksouid="
+                                 'gustav
+                                 '("folksotag" . "tagone")
+                                 '("folksosess" . "bcfebee8a0f77b1f371d8fffd20102ea48a413a903f5c05bb965836ddc5b5177")
+                                 '("folksodatatype" . "json"))))
+
+(switch-to-buffer (url-retrieve-synchronously
+                   "http://localhost/user.php?folksouid=gustav-2010-001&folksomytags=1&folksodatatype=json"))
 
 (switch-to-buffer (url-retrieve-synchronously
                    (fk-build-resource-get
