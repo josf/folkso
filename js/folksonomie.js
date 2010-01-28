@@ -287,13 +287,17 @@
                  var 
                  resdata = arguments[0],
                  displaySuccess = function() { resdata.element.remove(); },
+                 error204 = function(xhr, msg) { alert("You do not have this tag"); },
                  errorOther = function(xhr, msg) { alert("Could not remove resource");};
                  
+                 error204.errorcode = 204;
+
                  var ajOb = fK.fn.resDeleteObject(
                      {folksores: resdata.url || resdata.resid,
                       folksouserdelete: "1"},
                      displaySuccess,
-                     errorOther);
+                     fK.fn.errorChoose(error204, errorOther)
+                 );
 
                  return function(ev) {
                      ev.preventDefault();
