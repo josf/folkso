@@ -120,21 +120,23 @@
           */
          simpletag: function(target, display, tagnorm, id) 
          {
-             var tagdata = { display: display,
-                             tagnorm: tagnorm,
-                             id: id};
-             var newtag = fK.cf.simpleTagTemplate.jqote(tagdata);
-             var wrapper = $(fK.cf.tagwrap || "<div class=\"atag\">");
+             var 
+             tagdata = { display: display,
+                         tagnorm: tagnorm,
+                         id: id},
+             newtag = fK.cf.simpleTagTemplate.jqote(tagdata),
+             wrapper = $(fK.cf.tagwrap || "<div class=\"atag\">");
 
              // we keep a link back to what will be the DOM element
              tagdata.element = wrapper;
 
              newtag.appendTo(wrapper);
              wrapper.data("fKtag", tagdata);
+             var resUL = $(".tag_resources", wrapper);
 
              var 
              droptagfn = fK.fn.droptag_react(tagdata),
-             expandtagfn = fK.fn.expandtag_react(tagdata);
+             expandtagfn = fK.fn.expandtag_react(tagdata, resUL);
 
              wrapper.find("a.droptag").click(droptagfn);
              wrapper.find("a.expandtag").click(expandtagfn);
@@ -228,11 +230,14 @@
              expandtag_react: function() {
                  var 
                  tdata = arguments[0],
-                 displaySuccess = fK.fn.displayJsonResList(tdata),
-                 errorOther = function(xhr, msg) {alert("More wierdness"); };
+                 target = arguments[1],
+                 displaySuccess = fK.fn.displayJsonResList(tdata, target),
+                 errorOther = function(xhr, msg) {alert("More wierdness" + tdata.tagnorm); };
 
                  var ajOb = fK.fn.userGetObject(
-                     {folksores: tdata.url || tdata.resid},
+                     {folksotag: tdata.tagnorm || tdata.id,
+                      folksouid: "gustav-2010-001",
+                      folksodatatype: "json"},
                      displaySuccess,
                      fK.fn.errorChoose(errorOther)
                  ); //add more here!
@@ -247,10 +252,10 @@
               * @return Returns a function taking one argument.
               */
              displayJsonResList: function() {
-                 var tdata = arguments[0];
+                 var tdata = arguments[0], target = arguments[1];
                  return function (json) {
                      for (var i = 0; i < json.length; ++i) {
-                             fK.simpleres(tdata.element, json[i].title, 
+                             fK.simpleres(target, json[i].title, 
                                              json[i].url, json[i].resid);
                      }
                  };
