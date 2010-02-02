@@ -14,6 +14,9 @@ require_once('folksoAdmin.php');
 require_once('folksoUser.php');
 require_once('folksoSession.php');
 require_once('folksoClient.php');
+require_once("fdent/fab_info.inc");
+require_once("folksoFBuser.php");
+require_once("fdent/common.php");
 
 $loc = new folksoFabula();
 //$dbc = $loc->locDBC();
@@ -26,9 +29,30 @@ if ($_COOKIE['folksosess']) {
 }
 
 if (! $fks->checkSession($fks->sessionId)) {
+  // debug only
   $fks->startSession('gustav-2010-001');
+
+  // FB
+  $fbsec = fdent_fbSecret();
+  $fb = new Facebook($fbsec['api_key'], $fbsec['secret']);
+  $el = new FabElements();
+
+  $fb_uid = $fb->get_loggedin_user();
+  $fkS = new folksoSession($dbc); // session not started yet! 
+  $fbu = new folksoFBuser($dbc);
+
+  $name = $fb->api_client->users_getInfo($fb_uid, 'name');
+
+  if ($fb_uid && $fbu->exists($fb_uid)) {
+      $fbu->userFromLogin($fb_uid);
+      $fkS->startSession($fbu->userid);
+      /* we are good to go */
+  }
 }
 
+if ($fbu instanceof folksoUser) {
+  $u = $fbu;
+}
 $u = $fks->userSession();
 if (! $u instanceof folksoUser) {
   print "Error not a logged user";
@@ -59,8 +83,6 @@ else {
   $message = "Erreur rescode" . $cl->query_resultcode() . ':: ' . $result . 'how bout that';
 }
 
-
-
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -80,7 +102,7 @@ else {
 <?php
   print 'var fK = fK || {};
          fK.data = fK.data || {};
-         fK.data.myfab = ' . $result . ';'
+         fK.data.myfab = ' . $result . ';';
   
   ?>//
  <?php $message ?>
@@ -116,6 +138,24 @@ else {
   <?php //print 'Voici le message : ' . $message ?>           
                          
 <div id="tagholder"> <h2>Vos tags</h2></div>
+
+<div id="loginbox">
+<h2>Log in</h2>
+
+  print $el->fbInit(); print $el->fbLogButton();  
+                  if (! $u instanceof folksoUser) {
+                    print $el->OIform('', 'try.php');
+
+  }
+<?php 
+
+
+
+
+
+
+?>
+</div>
 
 </body>
 </html>
