@@ -464,9 +464,8 @@ function addResource (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) 
  */
 function tagResource (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
-  $u = $fks->userSession(null, 'folkso', 'tag');
-  if ((! $u instanceof folksoUser) ||
-      (! $u->checkUserRight('folkso', 'tag'))) {
+  $u = $fks->userSession(); // we do not check for rights because all users can tag
+  if (! $u instanceof folksoUser) {
     return $r->unAuthorized($u);
   }
 
