@@ -151,7 +151,7 @@ class folksoServer {
     catch ( badSidException $e) {
       if ($q->is_write_method()) {
         header('HTTP/1.1 403 Login required'); // redirect instead
-        header('Location: ' . $loc->loginPage());
+        //        header('Location: ' . $loc->loginPage());
         exit();
       }
     }

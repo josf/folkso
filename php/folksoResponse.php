@@ -137,7 +137,7 @@ class folksoResponse {
    */
    public function unAuthorized ($user = null) {
      $this->setError(403, "Forbidden");
-     $this->setLoginRedirect();
+     //     $this->setLoginRedirect();
      return $this;
    }
   
