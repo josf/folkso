@@ -17,25 +17,29 @@ require_once('folksoClient.php');
 require_once("fdent/fab_info.inc");
 require_once("folksoFBuser.php");
 require_once("fdent/common.php");
+require_once "facebook.php";
+require_once "fdent/fabelements.inc";
 
 $loc = new folksoFabula();
 //$dbc = $loc->locDBC();
-$test_dbc = new folksoDBconnect('localhost', 'tester_dude', 
+$dbc = new folksoDBconnect('localhost', 'tester_dude', 
                                 'testy', 'testostonomie');
-$fks = new folksoSession($test_dbc);
+$fks = new folksoSession($dbc);
+$el = new FabElements();
 
 if ($_COOKIE['folksosess']) {
   $fks->setSid($_COOKIE['folksosess']);
 }
 
-if (! $fks->checkSession($fks->sessionId)) {
+if (! $fks->sessionId
+   || (! $fks->checkSession($fks->sessionId))) {
   // debug only
   $fks->startSession('gustav-2010-001');
 
   // FB
   $fbsec = fdent_fbSecret();
   $fb = new Facebook($fbsec['api_key'], $fbsec['secret']);
-  $el = new FabElements();
+
 
   $fb_uid = $fb->get_loggedin_user();
   $fkS = new folksoSession($dbc); // session not started yet! 
