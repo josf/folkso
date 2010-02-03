@@ -140,19 +140,19 @@ else {
 <body>
   <h1>Bienvenue ! </h1>
   <?php //print 'Voici le message : ' . $message ?>           
-                         
+<div id="#oidlist"></div>                         
 <div id="tagholder"> <h2>Vos tags</h2></div>
 
 <div id="loginbox">
 <h2>Log in</h2>
 
-  print $el->fbInit(); print $el->fbLogButton();  
-                  if (! $u instanceof folksoUser) {
-                    print $el->OIform('', 'try.php');
-
-  }
 <?php 
 
+  print $el->fbInit(); 
+  print $el->fbLogButton();  
+  if (! $u instanceof folksoUser) {
+    print $el->OIform('', 'try.php');
+  }
 
 
 
