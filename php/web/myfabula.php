@@ -95,14 +95,14 @@ else {
 <meta http-equiv="Content-Language" content="fr-FR"/>
   <title>Mon (ma) Fabula</title>
 
-    <script type="text/javascript" src="jquery-1.3.2.js">
-    </script>
-    <script type="text/javascript" src="js/jquery.autocomplete.js">
-    </script>
+<script type="text/javascript" src="jquery-1.3.2.js"></script>
+<script type="text/javascript" src="js/jquery.autocomplete.js"> </script>
 <script type="text/javascript" src="jquery.jqote.js"></script>
-  <script type="text/javascript" src="folksonomie.js"></script>
-  <script type="text/javascript" src="myfabula.js"></script>
-   <script type="text/javascript">
+<script type="text/javascript" src="folksonomie.js"></script>
+<script type="text/javascript" src="faboid.js"></script>
+<script type="text/javascript" src="myfabula.js"></script>
+
+<script type="text/javascript">
 <?php
   print 'var fK = fK || {};
          fK.data = fK.data || {};
