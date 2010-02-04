@@ -137,10 +137,11 @@ else {
 
 
 </head>
+
 <body>
   <h1>Bienvenue ! </h1>
-  <?php //print 'Voici le message : ' . $message ?>           
-<div id="#oidlist"></div>                         
+
+<div id="oidlist"></div>            
 <div id="tagholder"> <h2>Vos tags</h2></div>
 
 <div id="loginbox">
