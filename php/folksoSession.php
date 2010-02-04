@@ -163,6 +163,25 @@ class folksoSession {
    }
  }
 
+
+  /**
+   * Returns false if $fks->sessionId is missing. Otherwise is a thin
+   * wrapper around $fks->checkSession().
+   * 
+   * @return Boolean True if session is valid, false otherwise 
+   */
+   public function status () {
+     if (! $this->sessionId) {
+       return false;
+     }
+
+     if ($this->checkSession($this->sessionId)) {
+       return true;
+     }
+     return false;
+   }
+  
+
 /**
  * @param $session_id (optional)
  */

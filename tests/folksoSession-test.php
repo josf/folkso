@@ -26,6 +26,7 @@ class testOffolksoSession extends  UnitTestCase {
          $s   = new folksoSession(
                                   new folksoDBconnect( 'localhost', 'tester_dude', 
                                                       'testy', 'testostonomie'));
+
          $this->assertIsA($s, folksoSession,
                                'object creation failed');
          $this->assertIsA($s->dbc, folksoDBconnect,
@@ -47,33 +48,37 @@ class testOffolksoSession extends  UnitTestCase {
                             'Non alphanumeric session id should fail');
          $this->assertTrue($s->validateSid($s->newSessionId('zoopfest-1776-010')),
                            'a new session id should validate');
+
          $this->assertFalse($s->validateSid('tooshort'),
                             'a short session id should not validate');
                                       
-         $this->expectException();
-         $this->assertFalse($s->startSession('zork-ù**-volvp zZkr'),
-                            'bad uid should prevent session from starting');
+         //         $this->expectException();
+
+         /*         $this->assertFalse($s->startSession('zork-ù**-volvp zZkr'),
+                    'bad uid should prevent session from starting');*/
+
          $this->assertFalse($s->checkSession('eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee'),
                             'nonexistant session should not check true');
 
-         $sess = $s->startSession('gustav-2009-001');
+         $sess = $s->startSession('gustav-2010-001', true);
          $this->assertTrue($sess,
                            'This session should work');
          $this->assertTrue($s->validateSid($sess),
                            'startSession() should return a valid session id');
          $this->assertTrue($s->checkSession($sess),
                            'Session is there, we should see it with check');
-         $this->assertEqual($s->getUserId(), 'gustav-2009-001',
+
+         $this->assertTrue($s->status(),
+                           "status() method should return true for valid session");
+         $this->assertEqual($s->getUserId(), 'gustav-2010-001',
                             'Not getting user id with getUserId: ' . $s->getUserId());
-         $this->assertReference($s->userSession(),
-                                $s->userSession(),
-                                'User data is not being cached, I think');
+
          
          $s->killSession($sess);
 
          $this->assertFalse($s->checkSession($sess),
                             'the session should be gone now');
-         $sess2 = $s->startSession('gustav-2009-001');
+         $sess2 = $s->startSession('gustav-2010-001', true);
          $this->assertTrue($sess2,
                            'session creation failed');
          $this->assertTrue($s->checkSession($sess2),
