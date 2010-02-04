@@ -23,9 +23,14 @@ $(document).ready(function()
                                simpleResTemplate: "#resitem",
                                simpleResWrap: "<li class=\"res\">"});
 
+                      fK.oid.logopath = "/logos/";
                       fK.myfab.fn.taglistFromData($("#tagholder"),
                                                   fK.data.myfab);
 
+                      if (fK.myfab.loginStatus) {
+                          $("#oidlist").hide();
+                      }
+                      $("#oidlist").append(fK.oid.providerList());
 
                   }); // end document.ready
 

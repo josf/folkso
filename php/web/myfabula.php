@@ -107,7 +107,7 @@ else {
   print 'var fK = fK || {};
          fK.data = fK.data || {};
          fK.data.myfab = ' . $result . ';';
-if ($fks->status) {
+if ($fks->status()) {
   print "fK.myfab.loginStatus = true;";
 }
 else {
@@ -144,7 +144,7 @@ else {
 </head>
 
 <body>
-  <h1>Bienvenue ! </h1>
+  <h1>Bienvenue <?php echo $u->firstName ?> !</h1>
 
 <div id="oidlist"></div>            
 <div id="tagholder"> <h2>Vos tags</h2></div>
