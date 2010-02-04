@@ -107,7 +107,12 @@ else {
   print 'var fK = fK || {};
          fK.data = fK.data || {};
          fK.data.myfab = ' . $result . ';';
-  
+if ($fks->status) {
+  print "fK.myfab.loginStatus = true;";
+}
+else {
+  print "fK.myfab.loginStatus = false;";
+}
   ?>//
  <?php $message ?>
 </script>
