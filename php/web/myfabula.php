@@ -162,7 +162,7 @@ else {
   print $el->fbInit(); 
   print $el->fbLogButton();  
   if (! $u instanceof folksoUser) {
-    print $el->OIform('', 'try.php');
+    //    print $el->OIform('', 'try.php');
   }
 
 ?>
