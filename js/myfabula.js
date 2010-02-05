@@ -23,6 +23,48 @@ $(document).ready(function()
                                simpleResTemplate: "#resitem",
                                simpleResWrap: "<li class=\"res\">"});
 
+
+                      fK.ufn.hooks.displayJsonResList = function(target) 
+                      {
+                          var scrollContainer = target.parent(), tmr;
+                          scrollContainer.show();
+                          
+                          $(".scrollback", scrollContainer)
+                              .mousedown(function(ev) {
+                                             ev.preventDefault();
+                                             fK.fn.rewind1(target);
+                                             tmr = setInterval(function()
+                                                               {
+                                                                   fK.fn.rewind1(target);
+                                                               },
+                                                               200);
+                                     })
+                              .mouseup(function(ev)
+                                       {
+                                           ev.preventDefault(); clearInterval(tmr);
+                                       })
+                          .click(function(ev){ ev.preventDefault(); });
+
+                          $(".scrollforward", scrollContainer)
+                              .mousedown(function(ev) 
+                                         {
+                                             ev.preventDefault();
+                                             fK.fn.advance1(target);
+                                             tmr = setInterval(function()
+                                                               {
+                                                                   fK.fn.advance1(target);
+                                                               },
+                                                               200);
+                                     })
+                              .mouseup(function(ev)
+                                       {
+                                           ev.preventDefault();
+                                           clearInterval(tmr);
+                                       })
+                              .click(function(ev) { ev.preventDefault(); });
+                          
+                      };
+
                       fK.myfab.taglistFromData($("#tagholder"),
                                                    fK.data.myfab);
 
