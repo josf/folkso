@@ -41,10 +41,49 @@ function test_db_init() {
                    'http://example.com/2',
                    'http://example.com/3',
                    'http://example.com/4',
-                   'http://example.com/5');
+                   'http://example.com/5'
+                   );
+
+  $dynreslist = array('http://dynamic.example.com/1' => 
+                      array('dyn1', 'dyn2', 'dyn3', 'dyn4'),
+                      'http://dynamic.example.com/2' => array('dyn1', 'dyn8', 'dyn7'),
+                      'http://dynamic.example.com/3' => array('dyn1', 'dyn2', 'dyn5'),
+                      'http://dynamic.example.com/4' => 
+                      array('dyn1', 'dyn4', 'dyn5', 'dyn6', 'dyn7'),
+                      'http://dynamic.example.com/5' => 
+                      array('dyn1', 'dyn2', 'dyn6', 'dyn7', 'dyn8', 'dyn3'),
+                      'http://dynamic.example.com/6' => 
+                      array('dyn1', 'dyn4', 'dyn6', 'dyn8'),
+                      'http://dynamic.example.com/7' => array('dyn1', 'dyn8'),
+                      'http://dynamic.example.com/8' => 
+                      array('dyn1', 'dyn3', 'dyn5', 'dyn7', 'dyn8'),
+                      'http://dynamic.example.com/9' => 
+                      array('dyn1', 'dyn3', 'dyn5', 'dyn6', 'dyn8'),
+                      'http://dynamic.example.com/10' => 
+                      array('dyn1', 'dyn2', 'dyn5', 'dyn8'),
+                      'http://dynamic.example.com/11' =>
+                      array('dyn1', 'dyn3', 'dyn5', 'dyn6', 'dyn8'),
+                      'http://dynamic.example.com/12' =>
+                      array('dyn1', 'dyn3', 'dyn5', 'dyn6', 'dyn8'),
+                      'http://dynamic.example.com/13' => array('dyn1'),
+                      'http://dynamic.example.com/14' => 
+                      array('dyn1', 'dyn2', 'dyn3', 'dyn4', 'dyn5', 'dyn6', 'dyn7', 'dyn8'),
+                      'http://dynamic.example.com/15' => array('dyn1', 'dyn8'),
+                      'http://dynamic.example.com/16' => array('dyn1'),
+                      'http://dynamic.example.com/17' => array('dyn1'),
+                      'http://dynamic.example.com/18' => array('dyn1'),
+                      'http://dynamic.example.com/19' => array('dyn1'),
+                      'http://dynamic.example.com/20' => array('dyn1'),
+                      'http://dynamic.example.com/21' => array('dyn1'),
+                      'http://dynamic.example.com/22' => array('dyn1'),
+                      'http://dynamic.example.com/23' => array('dyn1'),
+                      'http://dynamic.example.com/24' => array('dyn1'));
 
   $restitles = array('one', 'two', 'three', 'four', 'five');
   $tags = array('tagone', 'tagtwo', 'tagthree', 'tagfour', 'tagfive');
+
+  $dyntags = array('dyn1', 'dyn2', 'dyn3', 'dyn4', 'dyn5', 'dyn6', 'dyn7', 'dyn8');
+  $dynrestitles = array('A page, a page', 'Fun with resources', 'Something to look at', 'OMG!', 'WTF!', 'How bout that?', 'Can you imagine?', 'No I cannot imagine at all', 'That just bowls me over', 'What are you talking about?', 'This should not be wrong', 'But it is', 'Well that is not my problem', 'That is what you say', 'No, that is what you say', 'Well too bad', 'Sometimes there are just errors', 'I know', 'That is the way it goes', 'There you are', 'Well?', 'Harumph', 'Heck', 'Fudge', 'Enough already?', 'Not sure', 'Pretty sure', 'Getting there', 'Almost');
 
   $i->query(
             'insert into metatag (tagnorm, tagdisplay)'
@@ -58,6 +97,8 @@ function test_db_init() {
   $i->query("call bulk_visit('" . implode('&&&&&', $reslist) . "', '"
             . implode('&&&&&', $restitles) . "', 5)");
 
+  $i->query("call bulk_visit('" . implode('&&&&&', array_keys($dynreslist)) . "', '"
+            . implode('&&&&&', array_slice($dynrestitles, 0, count($dynreslist))) . "', 5)");
 
   if ($i->db_error()) {
     print "Bulk " .  $i->error_info();
@@ -94,11 +135,28 @@ function test_db_init() {
       print "bad new tag (mysterio)";
     }
 
+    foreach ($dyntags as $dt) {
+      $i->sp_query("call new_tag('$dt')");
+      if ($i->db_error()) {
+        print "bad new tag $dt";
+      }
+    }
+
     foreach ($tags as $t) {
       $i->sp_query("call tag_resource('gustav-2010-001', 'http://example.com/1', '', '$t', '', '', 1 )");
       if ($i->db_error()) { 
         print "bad tag resource<br/>";
         print $i->error_info();
+      }
+    }
+
+    foreach ($dynreslist as $dres => $dtags) {
+      foreach ($dtags as $dyno) {
+        $i->sp_query("call tag_resource('gustav-2010-001', '$dres', '', '$dyno', '', '', 1)");
+        if ($i->db_error()) {
+          print "bad dynamic tag resource<br/>";
+          print $i->error_info();
+        }
       }
     }
 
