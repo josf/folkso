@@ -127,7 +127,11 @@ else {
          <a class="expandtag" href="#">voir</a> <a href="#" class="hidereslist">cacher</a>
          <a class="droptag" href="tag.php?folksodelete=1&folksotag=<%= this.tagnorm %>">
           x</a>
+         <div class="tag_resources_container">
+         <a href="#" class="scrollback">up</a>
          <ul class="tag_resources"></ul>
+         <a href="#" class="scrollforward">down</a>
+         </div>
 ]]>
 </script>
 
@@ -140,7 +144,10 @@ else {
 ]]>
 </script>
 
+<style type="text/css">
+  div.tag_resources_container { display: none; }
 
+</style>
 </head>
 
 <body>
