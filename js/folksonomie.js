@@ -94,8 +94,13 @@
           * there will be trouble. Functions will test for existence of functions 
           * here, but will not check to see if the variables are indeed functions. 
           * So just put functions here, nothing else.
+          * 
+          * The only exception is the "hooks" sub-object, which should contain 
+          * only functions.
           */
-         ufn: {},
+         ufn: { 
+             hooks: {} 
+         },
 
          /**
           * @target {jQuery} Element that the new element will be appended to
