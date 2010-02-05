@@ -100,13 +100,11 @@ else {
   fK.data = fK.data || {};
 fK.data.myfab =  
   <?php if ($result) {
-  print '"' . $result . '"';
+  print   $result . ';' ;
   }
 else {
-  print 'null';
+  print 'null;';
 }
-print ';';
-
 if ($fks->status()) {
   print "fK.myfab.loginStatus = true;";
 }
