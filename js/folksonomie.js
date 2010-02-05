@@ -268,6 +268,7 @@
                  {
                      ev.preventDefault();
                      if ($("li", target).length > 0) {
+                         target.parent().show();
                          target.show();
                      }
                      else {
