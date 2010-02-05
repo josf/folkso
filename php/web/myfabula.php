@@ -58,23 +58,16 @@ if ($fbu instanceof folksoUser) {
   $u = $fbu;
 }
 $u = $fks->userSession();
-if (! $u instanceof folksoUser) {
-  print "Error not a logged user";
-  //  header('Location: ' . $loc->loginPage());
-  exit();
-}
 
 $cl = new folksoClient('localhost', 
                        $loc->server_web_path . 'user.php',
                        'GET');
-print $cl->method;
-
 $cl->set_getfields(array('folksouid' => $u->userid,
                          'folksomytags' => 1)
                    );
 
 $cl->set_datastyle('json');
-print_r( $cl->build_req());
+//print_r( $cl->build_req());
 $result = $cl->execute();
 
 if ($cl->query_resultcode() == 200) {
@@ -103,10 +96,17 @@ else {
 <script type="text/javascript" src="myfabula.js"></script>
 
 <script type="text/javascript">
-<?php
-  print 'var fK = fK || {};
-         fK.data = fK.data || {};
-         fK.data.myfab = ' . $result . ';';
+  var fK = fK || {};
+  fK.data = fK.data || {};
+fK.data.myfab =  
+  <?php if ($result) {
+  print '"' . $result . '"';
+  }
+else {
+  print 'null';
+}
+print ';';
+
 if ($fks->status()) {
   print "fK.myfab.loginStatus = true;";
 }
@@ -146,7 +146,7 @@ else {
 <body>
   <h1>Bienvenue <?php echo $u->firstName ?> !</h1>
 
-<div id="oidlist"></div>            
+
 <div id="tagholder"> <h2>Vos tags</h2></div>
 
 <div id="loginbox">
@@ -160,11 +160,8 @@ else {
     print $el->OIform('', 'try.php');
   }
 
-
-
-
-
 ?>
+<div id="oidlist"></div>
 </div>
 
 </body>
