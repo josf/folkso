@@ -276,53 +276,62 @@
                  };
              },
              /**
+              * 
+              * Sets "reslist", "starting" and "ending" in the target's $().data
+              * 
               * @param target {jQuery}
               * @return Returns a function taking one argument.
+              * 
               */
              displayJsonResList: function() {
                  var target = arguments[0];
                  return function (json) {
                      target.data("reslist", json);
                      target.data("starting", 0);
-                     for (var i = 0; i < fK.cf.tagListMax && i < json.length; i++) {
+                     for (var i = 0; (i < fK.cf.tagListMax) && (i < json.length); i++) {
                          fK.simpleres(target, json[i].title, 
                                       json[i].url, json[i].resid);
                      }
                      if (json.length > fK.cf.tagListMax) {
-                         target.data("ending", fK.cf.tagListMax);
+                         target.data("ending", fK.cf.tagListMax - 1);
                      }
                      else {
-                         target.data("ending", json.length);    
+                         target.data("ending", json.length - 1);    
+                     }
+                     if (fK.ufn.hooks.displayJsonResList) {
+                         fK.ufn.hooks.displayJsonResList(target);
                      }
                  };
              },
              /**
               * Scroll forward through a list 
+              * 
+              * @param ul {jQuery} The element we are scrolling inside of
+              * @param endFn {function} (Optional) Function to be called when 
+              * we can no longer scroll forward
               */
-             advance1: function(ul)
+             advance1: function(ul, endFn)
              {
                  // do something if we don't have data?
                  var json = ul.data("reslist"), start = ul.data("starting"), 
                  end = ul.data("ending");
 
-                 if (($("li", ul).length == json.length) ||
-                     (json.length == end)){
+                 if (($("li:visible", ul).length == json.length) ||
+                     (json.length == end + 1)){
+                     if (endFn) {
+                         endFn();
+                     }
                      return;
                  }
-                 
-                 if ($("li:visible", ul).length > 0) {
-                    $("li:visible:first", ul).hide();
-                 }
 
-                 if (end < $("li", ul).length){
-                    alert("end is " + end + " and listlength is " + $("li", ul).length);
+                 if (end + 1 < $("li", ul).length){
                      $("li", ul).eq(end).show();
                  }
                  else {
                      fK.simpleres(ul, json[end + 1].title, json[end + 1].url,
                                   json[end + 1].resid);
                  }
-
+                 $("li:visible:first", ul).hide();
                  ul.data("ending", end + 1);
                  ul.data("starting", start + 1);
              },
