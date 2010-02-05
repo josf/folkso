@@ -291,6 +291,9 @@
                      }
                  };
              },
+             /**
+              * Scroll forward through a list 
+              */
              advance1: function(ul)
              {
                  // do something if we don't have data?
@@ -302,17 +305,29 @@
                      return;
                  }
                  
-                 
                  if ($("li:visible", ul).length > 0) {
                     $("li:visible:first", ul).hide();
                  }
-                 fK.simpleres(ul, json[end + 1].title, json[end + 1].url,
-                              json[end + 1].resid);
+
+                 if (end < $("li", ul).length){
+                    alert("end is " + end + " and listlength is " + $("li", ul).length);
+                     $("li", ul).eq(end).show();
+                 }
+                 else {
+                     fK.simpleres(ul, json[end + 1].title, json[end + 1].url,
+                                  json[end + 1].resid);
+                 }
+
                  ul.data("ending", end + 1);
                  ul.data("starting", start + 1);
              },
+             /**
+              * Scroll backwards
+              * 
+              */
              rewind1: function(ul)
              {
+
                  var json = ul.data("reslist"), start = ul.data("starting"), 
                  end = ul.data("ending");
 

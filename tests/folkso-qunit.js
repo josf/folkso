@@ -375,18 +375,26 @@ $(document).ready(function() {
                                ok($("li", "#reslistholder").eq(1).is(":hidden"),
                                   "2nd element should be hidden");
 
-
+                               // rewind
                                fK.fn.rewind1($("#reslistholder"));
                                equal($("li:visible", "#reslistholder").length, 10,
                                      "There should always be 10 visible elements");
                                ok($("li", "#reslistholder").eq(1).is(":visible"),
                                   "2nd list element should be visible");
-
-
                                equal( $("li:hidden", "#reslistholder").length, 2,
                                       "there is one last not hidden");
                                ok($("li", "#reslistholder").eq(11).is(":hidden"),
                                   "12th (index 11) list element should be hidden");
+
+                               // advance again (should be making
+                               // visible, not building new elements
+                               fK.fn.advance1($("#reslistholder"));
+                               equal($("li:visible", "#reslistholder").length, 10,
+                                     "Still just 10 visible elements");
+                               equal($("li", "#reslistholder").length, 12,
+                                     "Should still only be 12 elements total");
+                               // means we did not make any extra new ones
+
 
                            });
 
