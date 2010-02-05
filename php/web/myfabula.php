@@ -34,7 +34,7 @@ if ($_COOKIE['folksosess']) {
 if (! $fks->sessionId
    || (! $fks->checkSession($fks->sessionId))) {
   // debug only
-  $fks->startSession('gustav-2010-001');
+    $fks->startSession('gustav-2010-001');
 
   // FB
   $fbsec = fdent_fbSecret();
