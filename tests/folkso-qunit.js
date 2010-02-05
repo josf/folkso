@@ -14,7 +14,29 @@ $(document).ready(function() {
                                equals(qhead.length,
                                       1,
                                       "Expected length of 1 for qunit-header jQuery object, got " + qhead.length);
+
                           });
+
+                      test("Checking hide and :hidden", function()
+                           { 
+                               expect(7);
+                               equal($(".ardvark").length, 1,
+                                     "Found the usual ardvark");
+                               equal($(".ardvark:hidden").length, 0,
+                                       "Should find nothing because nothing hidden");
+                               $(".ardvark").hide();
+                               equal($(".ardvark:hidden").length, 1,
+                                     "Should find the hidden ardvark here");
+                               equal($("p:hidden").length, 1,
+                                     "The paragraph should be hidden too");
+                               equal($("p:not(:hidden)").length, 0,
+                                     "There aren't any non-hidden paragraphs out there");
+                               $(".ardvark").show();
+                               equal($(".ardvark:hidden").length, 0,
+                                     "Ardvark should be back now");
+                               equal($(".ardvark:not(:hidden)").length, 1,
+                                       "Ardvar is :not hidden");
+                           });
 
                       module("Trying Functional.js");
                       test("Simple Functional", function()
@@ -272,7 +294,36 @@ $(document).ready(function() {
                       module("tag expansion");
                       test("displayJsonResList", function() 
                            {
-                               expect(3);
+
+                               var longJson = 
+                                   [
+                                       {"resid":"6","url":"http:\/\/dynamic.example.com\/1","title":"A page, a page"}
+                                       ,{"resid":"19","url":"http:\/\/dynamic.example.com\/14","title":"That is what you say"}
+                                       ,{"resid":"20","url":"http:\/\/dynamic.example.com\/15","title":"No, that is what you say"}
+                                       ,{"resid":"21","url":"http:\/\/dynamic.example.com\/16","title":"Well too bad"}
+                                       ,{"resid":"22","url":"http:\/\/dynamic.example.com\/17","title":"Sometimes there are just errors"}
+                                       ,{"resid":"23","url":"http:\/\/dynamic.example.com\/18","title":"I know"}
+                                       ,{"resid":"24","url":"http:\/\/dynamic.example.com\/19","title":"That is the way it goes"}
+                                       ,{"resid":"25","url":"http:\/\/dynamic.example.com\/20","title":"There you are"}
+                                       ,{"resid":"26","url":"http:\/\/dynamic.example.com\/21","title":"Well?"}
+                                       ,{"resid":"27","url":"http:\/\/dynamic.example.com\/22","title":"Harumph"}
+                                       ,{"resid":"28","url":"http:\/\/dynamic.example.com\/23","title":"Heck"}
+                                       ,{"resid":"18","url":"http:\/\/dynamic.example.com\/13","title":"Well that is not my problem"}
+                                       ,{"resid":"17","url":"http:\/\/dynamic.example.com\/12","title":"But it is"}
+                                       ,{"resid":"7","url":"http:\/\/dynamic.example.com\/2","title":"Fun with resources"}
+                                       ,{"resid":"8","url":"http:\/\/dynamic.example.com\/3","title":"Something to look at"}
+                                       ,{"resid":"9","url":"http:\/\/dynamic.example.com\/4","title":"OMG!"}
+                                       ,{"resid":"10","url":"http:\/\/dynamic.example.com\/5","title":"WTF!"}
+                                       ,{"resid":"11","url":"http:\/\/dynamic.example.com\/6","title":"How bout that?"}
+                                       ,{"resid":"12","url":"http:\/\/dynamic.example.com\/7","title":"Can you imagine?"}
+                                       ,{"resid":"13","url":"http:\/\/dynamic.example.com\/8","title":"No I cannot imagine at all"}
+                                       ,{"resid":"14","url":"http:\/\/dynamic.example.com\/9","title":"That just bowls me over"}
+                                       ,{"resid":"15","url":"http:\/\/dynamic.example.com\/10","title":"What are you talking about?"}
+                                       ,{"resid":"16","url":"http:\/\/dynamic.example.com\/11","title":"This should not be wrong"}
+                                       ,{"resid":"29","url":"http:\/\/dynamic.example.com\/24","title":"Fudge"}
+                                   ];
+
+
                                var bogusTdata = {element: $("#stuff"),
                                                  title: "The title",
                                                  url: "http://url.com",
@@ -296,6 +347,46 @@ $(document).ready(function() {
                                   "Not finding title in list generated from json");
                                ok(/example.com\/huh/.test(first),
                                   "Not finding url in list generated from json");
+
+                               $("#reslistholder").children().remove();
+                               ok($("li", "#reslistholder").length == 0,
+                                  "reslistholder should be empty for the next test");
+
+                               newf(longJson);
+                               equal($("li", "#reslistholder").length, 10,
+                                     "Should be exactly ten list elements here");
+
+                               equal($("#reslistholder").data("starting"), 0, 
+                                     "reslistholder-data-starting should be 0");
+                               equal($("#reslistholder").data("ending"), 10,
+                                     "reslistholder-data-ending should be 10 here");
+
+                               fK.fn.advance1($("#reslistholder"));
+//                               $("li:first", "#reslistholder").hide();
+                               equal($("li", "#reslistholder").length, 11,
+                                     "advance1 did not add an li element");
+                               equal($("li:hidden", "#reslistholder").length, 1,
+                                     "there should be exactly 1 hidden element here");
+                               ok($("li:first", "#reslistholder").is(":hidden"),
+                                  "First element should be hidden");
+                               
+                               // advance once more
+                               fK.fn.advance1($("#reslistholder")); 
+                               ok($("li", "#reslistholder").eq(1).is(":hidden"),
+                                  "2nd element should be hidden");
+
+
+                               fK.fn.rewind1($("#reslistholder"));
+                               equal($("li:visible", "#reslistholder").length, 10,
+                                     "There should always be 10 visible elements");
+                               ok($("li", "#reslistholder").eq(1).is(":visible"),
+                                  "2nd list element should be visible");
+
+
+                               equal( $("li:hidden", "#reslistholder").length, 2,
+                                      "there is one last not hidden");
+                               ok($("li", "#reslistholder").eq(11).is(":hidden"),
+                                  "12th (index 11) list element should be hidden");
 
                            });
 

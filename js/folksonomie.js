@@ -77,7 +77,13 @@
           * 
           * Other scripts could use this for their data, maybe.
           */
-         cf: {},
+         cf: {
+             /**
+              * Maximum number of tags to show in a tag list before proposing to s
+              * scroll.
+              */
+             tagListMax: 10
+         },
 
          /**
           * The ufn "namespace" is for functions to be defined in other scripts, 
@@ -265,17 +271,69 @@
                  };
              },
              /**
+              * @param target {jQuery}
               * @return Returns a function taking one argument.
               */
              displayJsonResList: function() {
                  var target = arguments[0];
                  return function (json) {
-                     for (var i = 0; i < json.length; ++i) {
-                             fK.simpleres(target, json[i].title, 
-                                             json[i].url, json[i].resid);
+                     target.data("reslist", json);
+                     target.data("starting", 0);
+                     for (var i = 0; i < fK.cf.tagListMax && i < json.length; i++) {
+                         fK.simpleres(target, json[i].title, 
+                                      json[i].url, json[i].resid);
+                     }
+                     if (json.length > fK.cf.tagListMax) {
+                         target.data("ending", fK.cf.tagListMax);
+                     }
+                     else {
+                         target.data("ending", json.length);    
                      }
                  };
              },
+             advance1: function(ul)
+             {
+                 // do something if we don't have data?
+                 var json = ul.data("reslist"), start = ul.data("starting"), 
+                 end = ul.data("ending");
+
+                 if (($("li", ul).length == json.length) ||
+                     (json.length == end)){
+                     return;
+                 }
+                 
+                 
+                 if ($("li:visible", ul).length > 0) {
+                    $("li:visible:first", ul).hide();
+                 }
+                 fK.simpleres(ul, json[end + 1].title, json[end + 1].url,
+                              json[end + 1].resid);
+                 ul.data("ending", end + 1);
+                 ul.data("starting", start + 1);
+             },
+             rewind1: function(ul)
+             {
+                 var json = ul.data("reslist"), start = ul.data("starting"), 
+                 end = ul.data("ending");
+
+                 if (start == 0) {
+                     return;
+                 }
+                 var lis = $("li", ul), firstNotHidden;
+                 for (var i = 0; i < lis.length; i++) {
+                         if (lis.eq(i).is(":visible")) {
+                             firstNotHidden = i; i = lis.length;
+                         }
+                 }
+                 
+//                 if (firstNotHidden == 0) return; // should not be necessary...
+                 lis.eq(firstNotHidden - 1).show();
+                 $("li:visible:last", ul).hide();
+                 
+                 ul.data("ending", end - 1);
+                 ul.data("starting", start - 1);
+             },
+                 
              /**
               * Returns a function that removes a resource from a user's list of
               *  tagged resources. 
@@ -304,6 +362,7 @@
                      $.ajax(ajOb);
                  };
              }
+             
          }
      };
      
