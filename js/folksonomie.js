@@ -326,7 +326,7 @@
                  }
 
                  if (end + 1 < $("li", ul).length){
-                     $("li", ul).eq(end).show();
+                     $("li", ul).eq(end + 1).show();
                  }
                  else {
                      fK.simpleres(ul, json[end + 1].title, json[end + 1].url,

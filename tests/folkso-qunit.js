@@ -358,15 +358,19 @@ $(document).ready(function() {
 
                                equal($("#reslistholder").data("starting"), 0, 
                                      "reslistholder-data-starting should be 0");
-                               equal($("#reslistholder").data("ending"), 10,
+                               equal($("#reslistholder").data("ending"), 9,
                                      "reslistholder-data-ending should be 10 here");
 
+
+                               // advance 1: 
                                fK.fn.advance1($("#reslistholder"));
 //                               $("li:first", "#reslistholder").hide();
                                equal($("li", "#reslistholder").length, 11,
                                      "advance1 did not add an li element");
                                equal($("li:hidden", "#reslistholder").length, 1,
                                      "there should be exactly 1 hidden element here");
+                               equal($("li:visible", "#reslistholder").length, 10, 
+                                     "should still have exactly 10 visible items here");
                                ok($("li:first", "#reslistholder").is(":hidden"),
                                   "First element should be hidden");
                                
@@ -374,11 +378,13 @@ $(document).ready(function() {
                                fK.fn.advance1($("#reslistholder")); 
                                ok($("li", "#reslistholder").eq(1).is(":hidden"),
                                   "2nd element should be hidden");
+                               equal($("li:visible", "#reslistholder").length, 10, 
+                                     "Advance2: should still have exactly 10 visible items here");
 
                                // rewind
                                fK.fn.rewind1($("#reslistholder"));
                                equal($("li:visible", "#reslistholder").length, 10,
-                                     "There should always be 10 visible elements");
+                                     "Rewind 1: There should always be 10 visible elements");
                                ok($("li", "#reslistholder").eq(1).is(":visible"),
                                   "2nd list element should be visible");
                                equal( $("li:hidden", "#reslistholder").length, 2,
