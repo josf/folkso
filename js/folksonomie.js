@@ -340,13 +340,16 @@
               * Scroll backwards
               * 
               */
-             rewind1: function(ul)
+             rewind1: function(ul, endFn)
              {
 
                  var json = ul.data("reslist"), start = ul.data("starting"), 
                  end = ul.data("ending");
 
                  if (start == 0) {
+                     if (endFn) {
+                         endFn();
+                     }
                      return;
                  }
                  var lis = $("li", ul), firstNotHidden;

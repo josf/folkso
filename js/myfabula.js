@@ -28,14 +28,17 @@ $(document).ready(function()
                       {
                           var scrollContainer = target.parent(), tmr;
                           scrollContainer.show();
-                          
+                          var stopTmr = function() { clearInterval(tmr); };                          
+
                           $(".scrollback", scrollContainer)
                               .mousedown(function(ev) {
                                              ev.preventDefault();
                                              fK.fn.rewind1(target);
                                              tmr = setInterval(function()
                                                                {
-                                                                   fK.fn.rewind1(target);
+                                                                   fK.fn.rewind1(
+                                                                       target,
+                                                                       stopTmr);
                                                                },
                                                                200);
                                      })
@@ -52,7 +55,9 @@ $(document).ready(function()
                                              fK.fn.advance1(target);
                                              tmr = setInterval(function()
                                                                {
-                                                                   fK.fn.advance1(target);
+                                                                   fK.fn.advance1(
+                                                                       target,
+                                                                       stopTmr);
                                                                },
                                                                200);
                                      })
