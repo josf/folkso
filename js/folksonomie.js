@@ -258,12 +258,12 @@
 
                  var ajOb = fK.fn.userGetObject(
                      {folksotag: tdata.tagnorm || tdata.id,
-                      folksouid: "gustav-2010-001",
+//                      folksouid: "gustav-2010-001",
                       folksodatatype: "json"},
                      displaySuccess,
                      fK.fn.errorChoose(errorOther)
                  ); //add more here!
-                      
+
                  return function(ev)
                  {
                      ev.preventDefault();
