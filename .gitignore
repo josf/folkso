@@ -40,3 +40,7 @@ folksologfile
 /php/#folksoTagdata.php#
 /php/.#folksoTagdata.php
 /sql/#res-mgt.sql#
+/php/web/GPATH
+/php/web/GRTAGS
+/php/web/GSYMS
+/php/web/GTAGS
