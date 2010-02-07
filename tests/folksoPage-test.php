@@ -3,8 +3,19 @@ require_once('unit_tester.php');
 require_once('reporter.php');
 
 require_once('folksoPage.php');
+require_once "folksoSession.php";
+require_once "folksoUser.php";
+require_once "dbinit.inc";
 
 class testOffolksoPage extends  UnitTestCase {
+
+  function setUp () {
+    test_db_init();
+     $this->dbc = new folksoDBconnect('localhost', 'tester_dude', 
+                                      'testy', 'testostonomie');
+     $this->dbc2 = new folksoDBconnect('localhost', 'tester_dude',
+                                       'testy', 'testostonomie');
+  }
 
   function testBasicTests () {
     $page = new folksoPage();
@@ -17,14 +28,21 @@ class testOffolksoPage extends  UnitTestCase {
 
   function testKeyword_list () {
     $page = new folksoPage(26663);
-    $this->assertIsA($page, folksoPage);
-    $this->assertEqual($page->url, 26663);
-    $this->assertTrue(is_string($page->keyword_list()));
-    $this->assertTrue(is_string($page->basic_cloud()));
+    $this->assertIsA($page, folksoPage, "Page creation from number failed");
+    $this->assertEqual($page->url, 26663, 
+                       "Page url property  incorrect w/ number url");
+    
+    /*    Tests disabled because they depend on external data 
+          $this->assertTrue(is_string($page->keyword_list()));
+          $this->assertTrue(is_string($page->basic_cloud())); */
   }
 
   function testMetas () {
     $page = new folksoPage(26663);
+
+    /**
+       These should be tested in the PageDataMeta tests.
+
     $page->pdata->prepareMetaData();
     $this->assertIsA($page->pdata->mt, folksoPageDataMeta);
     $this->assertTrue((is_string($page->keyword_list()) &&
@@ -36,24 +54,28 @@ class testOffolksoPage extends  UnitTestCase {
     $this->assertIsA($page->pdata->ptags, folksoPageTags);
     $this->assertIsA($page->pdata->ptags, folksoTagdata); // inheritance works!
 
+    **/
 
     $p2 = new folksoPage('http://fabula.org/actu_meta_test.php');
+    $this->assertIsA($p2, folksoPage, "Failed to create fKPage object from real url");
     $p3 = new folksoPage(38065);
-    $p2->pdata->prepareMetaData();
-    $p3->pdata->prepareMetaData();
-    $this->assertIsA($p2->pdata, folksoPageData);
+    $this->assertIsA($p3, folksoPage, "Failed to create fkPage object from number");
+    /*    $p2->pdata->prepareMetaData();
+          $p3->pdata->prepareMetaData();
+    $this->assertIsA($p2->pdata, folksoPageData, 
+                     "Failed to create pageData object using prepareMetaData");
     $this->assertIsA($p2->pdata->mt, folksoPageDataMeta);
     $this->assertIsA($p2->pdata->ptags, folksoPageTags);
     $this->assertTrue($p2->pdata->ptags->is_valid(), 
                       "Valid request for page tags?");
     $this->assertIsA($p2->pdata->ptags->xml_DOM(), DOMDocument);
     $this->assertTrue(is_string($p2->pdata->ptags->xml));
+
     // url
 
-    print $p2->pdata->ptags->xml;
 
     // id
-    $this->assertTrue(is_string($p2->pdata->mt->meta_textlist()));
+    //    $this->assertTrue(is_string($p2->pdata->mt->meta_textlist()));
     $this->assertTrue($p3->pdata->ptags->is_valid(), 
                       "Valid request for page tags?");
     $this->assertEqual($p3->pdata->ptags->xml,
@@ -62,27 +84,35 @@ class testOffolksoPage extends  UnitTestCase {
     $this->assertTrue(is_string($p2->keyword_list()), 
                                 "keyword_list() returns string?");
     $this->assertEqual($p2->keyword_list(), $p3->keyword_list());
-    $this->assertEqual($p2->pdata->mt->meta_keywords(),
+        $this->assertEqual($p2->pdata->mt->meta_keywords(),
                        $p3->pdata->mt->meta_keywords());
     $this->assertTrue(strlen($p2->keyword_list()) > 5);
     $this->assertPattern('/<meta/', $p2->meta_keywords());
-
+    **/
   }
 
   function testTagRes () {
     $page = new folksoPage(5775);
     $this->assertIsA($page, folksoPage);
     $this->assertEqual($page->url, 5775);
-    $html = $page->TagResources();
+
+
+
+           $html = $page->TagResources();
     $this->assertIsA($page->tr, folksoTagRes);
+
+    /**     Should be tested in TagResources-test
     $this->assertTrue($page->tr->is_valid());
     $this->assertTrue(strlen($html) > 100);
+    **/
   }
 
 
   function testClouds () {
     $page = new folksoPage('fabula.org/actualites/article20927.php');
     $this->assertIsA($page, folksoPage);
+
+    /** tests disabled: depend on external data
     $cloud = $page->basic_cloud();
     $this->assertTrue(is_string($cloud));
     $this->assertTrue(strlen($cloud) > 200);
@@ -109,7 +139,7 @@ class testOffolksoPage extends  UnitTestCase {
 
     $this->assertNotEqual($cloud, $cl2);    
     $this->assertNotEqual($cl2, $cl3);
-
+    */
 
   }
 
@@ -117,24 +147,34 @@ class testOffolksoPage extends  UnitTestCase {
     $page = new folksoPage(38065);
     $this->assertIsA($page, folksoPage);
     $dc = $page->ean13_dc_identifier();
-    $this->assertTrue(is_string($dc));
-    $this->assertPattern('/<meta\s+/', $dc);
+    /*    $this->assertTrue(is_string($dc));
+          $this->assertPattern('/<meta\s+/', $dc);*/
 
     $page2 = new folksoPage('http://fabula.org/actu_meta_test.php');
     $dc2 = $page2->ean13_dc_identifier();
-    $this->assertTrue(is_string($dc2));
-    $this->assertPattern('/<meta\s+/', $dc2);
+    /*    $this->assertTrue(is_string($dc2));
+          $this->assertPattern('/<meta\s+/', $dc2);*/
 
-    print "<pre>" . $dc2 . "</pre>";
   }
 
   function testRelatedTags () {
     $page = new folksoPage(38065);
+
+    /** External data dependant
     $this->assertTrue(is_string($page->RelatedTags(8170)),
                       'RelatedTags method does not return string');
     $this->assertPattern('/cloudclass/',
                          $page->RelatedTags(8170),
                          'RelatedTags does not produce a tag cloud');
+
+    **/
+  }
+
+
+
+  function testSessionInit () {
+    $page = 1;
+
   }
 
 }//end class
