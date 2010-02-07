@@ -130,6 +130,8 @@ class folksoClient {
    * the different fields involved. Mostly this is a problem for GETs
    * since all the fields are part of the URI.
    *
+   * There could be a problem w/ DELETE and with POST that have params
+   * in the URI.
    */
   function build_req () {
     $uri = $this->assemble_url($this->host, $this->path);
