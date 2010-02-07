@@ -515,6 +515,14 @@ class folksoPage {
    }
   
 
+   /**
+    * Convience access to folksoLocal->javascript_path
+    */
+    public function javascript_path () {
+      return $this->loc->javascript_path;
+    }
+   
+
 
 }
 
