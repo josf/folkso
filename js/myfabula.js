@@ -13,12 +13,13 @@
 
 $(document).ready(function()
                   {
-
-                      fK.init({getUserUrl: 'http://localhost/user.php',
-                               getTagUrl: 'http://localhost/tag.php',
-                               getResUrl: 'http://localhost/resource.php',
-                               postTagUrl: 'http://localhost/tag.php',
-                               postResUrl: 'http://localhost/resource.php',
+                      var hostAndPath = 'http://localhost/';
+                      // var hostAndPath = 'http://www.fabula.org/tags/';
+                      fK.init({getUserUrl: hostAndPath + 'user.php',
+                               getTagUrl:  hostAndPath + 'tag.php',
+                               getResUrl: hostAndPath + 'resource.php',
+                               postTagUrl: hostAndPath + 'tag.php',
+                               postResUrl: hostAndPath + 'resource.php',
                                simpleTagTemplate: "#tagitem",
                                simpleResTemplate: "#resitem",
                                simpleResWrap: "<li class=\"res\">"});
