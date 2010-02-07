@@ -21,9 +21,9 @@ require_once "facebook.php";
 require_once "fdent/fabelements.inc";
 
 $loc = new folksoFabula();
-//$dbc = $loc->locDBC();
-$dbc = new folksoDBconnect('localhost', 'tester_dude', 
-                                'testy', 'testostonomie');
+$dbc = $loc->locDBC();
+//$dbc = new folksoDBconnect('localhost', 'tester_dude', 
+//                                'testy', 'testostonomie');
 $fks = new folksoSession($dbc);
 $el = new FabElements();
 
@@ -34,7 +34,7 @@ if ($_COOKIE['folksosess']) {
 if (! $fks->sessionId
    || (! $fks->checkSession($fks->sessionId))) {
   // debug only
-    $fks->startSession('gustav-2010-001');
+  //    $fks->startSession('gustav-2010-001');
 
   // FB
   $fbsec = fdent_fbSecret();
@@ -59,7 +59,7 @@ if ($fbu instanceof folksoUser) {
 }
 $u = $fks->userSession();
 
-$cl = new folksoClient('localhost', 
+$cl = new folksoClient($loc->web_url,
                        $loc->server_web_path . 'user.php',
                        'GET');
 $cl->set_getfields(array('folksouid' => $u->userid,
@@ -67,7 +67,7 @@ $cl->set_getfields(array('folksouid' => $u->userid,
                    );
 
 $cl->set_datastyle('json');
-//print_r( $cl->build_req());
+print_r( $cl->build_req());
 $result = $cl->execute();
 
 if ($cl->query_resultcode() == 200) {
@@ -87,13 +87,18 @@ else {
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <meta http-equiv="Content-Language" content="fr-FR"/>
   <title>Mon (ma) Fabula</title>
-
-<script type="text/javascript" src="jquery-1.3.2.js"></script>
-<script type="text/javascript" src="js/jquery.autocomplete.js"> </script>
-<script type="text/javascript" src="jquery.jqote.js"></script>
-<script type="text/javascript" src="folksonomie.js"></script>
-<script type="text/javascript" src="faboid.js"></script>
-<script type="text/javascript" src="myfabula.js"></script>
+<script type="text/javascript"
+        src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.1/jquery.js"></script>
+<script type="text/javascript" 
+        src="<?php echo $loc->javascript_path ?>js/jquery.autocomplete.js"> </script>
+<script type="text/javascript" 
+        src="<?php echo $loc->javascript_path ?>jquery.jqote.js"></script>
+<script type="text/javascript" 
+        src="<?php echo $loc->javascript_path ?>folksonomie.js"></script>
+<script type="text/javascript" 
+        src="<?php echo $loc->javascript_path ?>faboid.js"></script>
+<script type="text/javascript" 
+        src="<?php echo $loc->javascript_path ?>myfabula.js"></script>
 
 <script type="text/javascript">
   var fK = fK || {};
