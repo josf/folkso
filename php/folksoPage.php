@@ -65,13 +65,31 @@ class folksoPage {
    * list of resources.
    */
   public $title;
+
+  /**
+   * folksoDBconnect object
+   */
+  public $dbc;
+
+  /**
+   * folksoSession object
+   */
+  public $session;
+
+  /**
+   * folksoUser object
+   */
+  public $user;
+
+
   /**
    * @param $url string optional, defaults to ''.  
+   * @param $cookie_arg string optional For testing, supplying arbitrary cookie
    *
    * For most purposes (besides testing) there is no need to use this
    * parameter. If empty, the URL of the current page is used.
    */
-  public function __construct($url = '') {
+  public function __construct($url = '', $cookie_arg = null) {
     $this->loc = new folksoFabula();
     if ($url) {
       $this->url = $url;
@@ -80,7 +98,65 @@ class folksoPage {
       $this->url = $this->curPageURL();
     }
     $this->pdata = new folksoPageData($this->url);
+    
+    $cookie = $_COOKIE['folksosess'] ? $_COOKIE['folksosess'] : $cookie_arg;
+    if ($cookie) {
+      $this->dbc = $this->loc->locDBC();
+      $this->session = new folksoSession($this->dbc);
+
+      if ($this->session->validateSid($cookie)) {
+        $this->session->setSid($cookie);
+        if ($this->session->status()) {
+          $this->user = $this->session->userSession();
+        }
+      }
+    }
   }
+
+
+  /**
+   * @param $content
+   */
+   public function jsHolder ($content) {
+     $begin = '<script type="text/javascript">';
+     $end = '</script>';
+     if (is_string($content) && (strlen($content) > 0)) {
+       return $begin . $content . $end;
+     }
+     elseif (is_array($content)) {
+       return $begin . implode("\n", $content) . $end;
+     }
+     return false;
+   }
+  
+
+   /**
+    * Returns javascript string to indicate current login status to
+    * folksonomie.js
+    *
+    * @param $var String optional The variable to use instead of fK.myfab.loginsStatus
+    */
+    public function fKjsLoginState ($var = null) {
+      $varname = $var ? $var : 'fK.myfab.loginStatus';
+      if ($this->user) {
+        return $varname . " = true;";
+      }
+      return $varname . " = false;";
+    }
+   
+
+    /**
+     * @param 
+     */
+     public function tagbox () {
+       return '<div id="folksocontrol">'
+         . '<a href="#" class="fkLoginButton">Login</a>'
+         . '<input type="text" class="fkTaginput" length="20"></input>'
+         . '<a href="#" class="fkTagbutton"></a>'
+         . '</div>';
+    
+     }
+    
 
   /**
    * Wrapper function for producing the contents of a <meta> keyword

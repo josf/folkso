@@ -173,7 +173,40 @@ class testOffolksoPage extends  UnitTestCase {
 
 
   function testSessionInit () {
-    $page = 1;
+    $s = new folksoSession($this->dbc);
+    $s->startSession('gustav-2010-001', true);
+    $page = new folksoPage('http://bogus.example.com', $s->sessionId);
+    $this->assertIsA($page, folksoPage,
+                     "Object construction with session id failed");
+    $this->assertIsA($page->session, folksoSession,
+                     "No session object created on fkPage construction");
+    $this->assertEqual($page->user->userid, 'gustav-2010-001',
+                       "Not retrieving the correct userid");
+
+  }
+
+  function testJsOutput() {
+    $page = new folksoPage('http://bogus.yow');
+    $this->assertFalse($page->jsHolder(""), "Empty content should return false");
+    $this->assertTrue(is_string($page->jsHolder("stuff")), "Should return string");
+    $this->assertTrue(is_string($page->jsHolder(array("stuff", "more stuff"))),
+                      "even with array, should output string");
+    $this->assertPattern('/CDATA/', $page->jsHolder("stuff"),
+                         "Not finding CDATA in jsHolder output");
+  }
+
+  function testJsLoginStatus () {
+
+    $page = new folksoPage('http://bogus.yow');
+
+    $this->assertPattern('/false/', $page->fKjsLoginState(),
+                         "Not getting 'false' as login state for uninitialized session");
+
+    $s = new folksoSession($this->dbc);
+    $s->startSession('gustav-2010-001', true);
+    $page2 = new folksoPage('http://bogus.example.com', $s->sessionId);
+    $this->assertPattern('/true/', $page2->fKjsLoginState(),
+                         "Not getting 'true' as login state for initialized session");
 
   }
 
