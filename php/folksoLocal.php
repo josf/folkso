@@ -92,6 +92,11 @@ abstract class folksoLocal {
   public $loginPage;
 
   /**
+   * Where the scripts are.
+   */
+  public $javascript_path;
+
+  /**
    * Simple setter function. 
    * 
    * @params string $path : the path part of the uri for your
