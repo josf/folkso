@@ -33,11 +33,16 @@
                     (concat "&" (car pair) "=" (cdr pair)))))))
 
 
+(defun fk-run-req (url)
+  (switch-to-buffer (url-retrieve-synchronously url)))
+
 
 
 ;; basic xml get
 (url-retrieve-synchronously
- "http://www.fabula.org/tags/resource.php?folksores=http://www.fabula.org/actualites/article13644.php&folksodatatype=xml") 
+ "http://www.fabula.org/tags/resource.php?folksores=http://www.fabula.org/actualites/article13644.php&folksodatatype=xml")
+
+(url-retrieve-synchronously "http://localhost/user.php?_=1265366823256&folksotag=dyn1&folksouid=gustav-2010-001&folksodatatype=json")
 
 (url-retrieve-synchronously
  (fk-build-resource-get
@@ -73,6 +78,8 @@
 
 (switch-to-buffer (url-retrieve-synchronously
                    "http://localhost/user.php?folksouid=gustav-2010-001&folksomytags=1&folksodatatype=json"))
+
+(fk-run-req "http://www.fabula.org/tags/user.php?folksouid=jfahey-2009-001&folksomytags=1&folksodatatype=json")
 
 (switch-to-buffer (url-retrieve-synchronously
                    (fk-build-resource-get
