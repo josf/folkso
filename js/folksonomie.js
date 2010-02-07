@@ -63,6 +63,10 @@
                  }
              }
          },
+         /**
+          * Different scripts may need to set this variable. True of false.
+          */
+         loginStatus: false,
          attrs: {simpleResTemplate: 'jQuery id of the template element', 
                  simpleTagTemplate: 'jQuery id of the template element',
                  getTagUrl: 'url', getResUrl: 'url', 
