@@ -150,9 +150,9 @@ class folksoPage {
      */
      public function tagbox () {
        return '<div id="folksocontrol">'
-         . '<a href="#" class="fkLoginButton">Login</a>'
-         . '<input type="text" class="fkTaginput" length="20"></input>'
-         . '<a href="#" class="fkTagbutton"></a>'
+         . '<a href="#" class="fKLoginButton">Login</a>'
+         . '<input type="text" class="fKTaginput" length="20"></input>'
+         . '<a href="#" class="fKTagbutton"></a>'
          . '</div>';
     
      }
