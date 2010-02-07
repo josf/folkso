@@ -1,6 +1,7 @@
 <?php
 
 require_once "folksoPage.php";
+require_once "fdent/fabelements.inc";
 
 $fp = new folksoPage();
 
@@ -21,12 +22,43 @@ $fp = new folksoPage();
   print $fp->jsHolder($fp->fKjsLoginState('fK.loginState'));
 ?>
 
+<script type="text/javascript">
+
+  function setupLogin () {
+  return function (ev) {
+    ev.preventDefault();
+    $(this).parent().append( fK.oid.providerList() );
+  }
+}
+
+  $(document).ready(function()
+                    {
+                      fK.oid.logopath = "/logos/";
+                      // setup according to login state
+                      fK.cf.container = $("#folksocontrol");
+                      if (fK.loginState) {
+                        $(".fKLoginButton", fK.cf.container).hide();
+                      }
+                      else {
+                        $(".fKTagbutton", fK.cf.container).hide();
+                        $("input.fKTaginput", fK.cf.container).hide();
+                        $(".fKLoginButton", fK.cf.container).click(setupLogin());
+                      }
+
+                    });
+
+
+
+</script>
+
 </head>
 <body>
 <h1>Test des fonctions</h1>
 <?php
 
 print $fp->tagbox();
+
+
 
 ?>
 
