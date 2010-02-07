@@ -118,8 +118,8 @@ class folksoPage {
    * @param $content
    */
    public function jsHolder ($content) {
-     $begin = '<script type="text/javascript">';
-     $end = '</script>';
+     $begin = '<script type="text/javascript">' . "\n";
+     $end = "\n" . '</script>';
      if (is_string($content) && (strlen($content) > 0)) {
        return $begin . $content . $end;
      }
