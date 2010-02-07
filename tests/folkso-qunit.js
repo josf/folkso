@@ -401,6 +401,10 @@ $(document).ready(function() {
                                      "Should still only be 12 elements total");
                                // means we did not make any extra new ones
 
+                               var shortJson = longJson.slice(0, 6);
+                               equal(shortJson.length, 6,
+                                     "Our shortJson test object should be 6 long");
+
 
                            });
 
