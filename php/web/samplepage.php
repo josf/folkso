@@ -83,8 +83,6 @@ if (! $fks->sessionId
                         }
                       }
 
-      
-
                       window.handleOpenIDResponse = function (openid_args){
                         alert("Incoming!");
                         $("#bucket").html("Verifying OpenID response");
@@ -95,8 +93,6 @@ if (! $fks->sessionId
                               $("#bucket").html(msg);
                             }});
                       };
-
-
 
                       // setup according to login state
                       fK.cf.container = $("#folksocontrol");
