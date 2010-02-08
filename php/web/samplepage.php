@@ -69,26 +69,46 @@ if (! $fks->sessionId
 
 <script type="text/javascript">
 
-  function setupLogin () {
-  return function (ev) {
-    ev.preventDefault();
-    $(this).parent().append( fK.oid.providerList() );
-  }
-}
+
 
   $(document).ready(function()
                     {
-                      fK.oid.logopath = "/logos/";
+                      fK.oid.logopath = "/tags/logos/";
+                      fK.oid.oidpath = "/tags/fdent/";
+
+                      function setupLogin () {
+                        return function (ev) {
+                          ev.preventDefault();
+                          $(this).parent().append( fK.oid.providerList() );
+                        }
+                      }
+
+      
+
+                      window.handleOpenIDResponse = function (openid_args){
+                        alert("Incoming!");
+                        $("#bucket").html("Verifying OpenID response");
+                        $.ajax({type: "get",
+                              url: fK.oid.oidpath + "oid_popup_end.php",
+                              data: openid_args,
+                              success: function(msg) {
+                              $("#bucket").html(msg);
+                            }});
+                      };
+
+
+
                       // setup according to login state
                       fK.cf.container = $("#folksocontrol");
 
                         $('body').bind('loggedIn',
                                        function() {
                                          $("#fbkillbox", fK.cf.container).hide();
-                                         $(".fKTagbutton", fK.cf.container).show();
+                                         $(".fKTagbutton").show();
                                          $(".fKTaginput", fK.cf.container).show();
                                          $(".fKLoginButton", fK.cf.container).hide();
                                          $("fb:login-button").hide();
+                                         $("ul.provider_list").hide();
                                        });
 
                           
@@ -98,13 +118,12 @@ if (! $fks->sessionId
                       }
                       else {
                         $(".fKTagbutton", fK.cf.container).hide();
-                        $("input.fKTaginput", fK.cf.container).hide();
-                        $(".fKLoginButton", fK.cf.container).click(setupLogin());
+                        $("input.fKTaginput").hide();
+                        $(".fKLoginButton").click(setupLogin());
+
+                        /* Sets up event handler: $("body").bind("loggedIn") */
                         fK.fn.pollFolksoCookie();
-
-
                       }
-
 
                     });
 
