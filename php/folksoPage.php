@@ -152,7 +152,7 @@ class folksoPage {
        return '<div id="folksocontrol">'
          . '<a href="#" class="fKLoginButton">Login</a>'
          . '<input type="text" class="fKTaginput" length="20"></input>'
-         . '<a href="#" class="fKTagbutton"></a>'
+         . '<a href="#" class="fKTagbutton">Tagger</a>'
          . '</div>';
     
      }
