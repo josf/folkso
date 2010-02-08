@@ -96,6 +96,15 @@ abstract class folksoLocal {
    */
   public $javascript_path;
 
+
+  public $snippets;
+
+
+  public function __construct () {
+    $this->snippets = array();
+  }
+
+
   /**
    * Simple setter function. 
    * 
@@ -118,6 +127,7 @@ abstract class folksoLocal {
     return $this->server_web_path;
   }
 
+  
   public function WebPathJS() { 
     $return = 
       "\n/** defined in folksoLocal.php **/\n"
