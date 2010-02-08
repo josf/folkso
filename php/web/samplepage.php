@@ -13,8 +13,9 @@ $fp = new folksoPage();
 $el = new fabelements();
 $loc = new folksoFabula();
 
-$dbc = new folksoDBconnect('localhost', 'tester_dude', 
-                                'testy', 'testostonomie');
+/*$dbc = new folksoDBconnect('localhost', 'tester_dude', 
+  'testy', 'testostonomie');*/
+$dbc = $loc->locDBC();
 $fks = new folksoSession($dbc);
 
 if ($_COOKIE['folksosess']) {
