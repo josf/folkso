@@ -2,8 +2,48 @@
 
 require_once "folksoPage.php";
 require_once "fdent/fabelements.inc";
+require_once "fdent/common.php";
+require_once "fdent/fab_info.inc";
+require_once "facebook.php";
+require_once "folksoSession.php";
+require_once "folksoFabula.php";
+require_once "folksoFBuser.php";
 
 $fp = new folksoPage();
+$el = new fabelements();
+$loc = new folksoFabula();
+
+$dbc = new folksoDBconnect('localhost', 'tester_dude', 
+                                'testy', 'testostonomie');
+$fks = new folksoSession($dbc);
+
+if ($_COOKIE['folksosess']) {
+  $fks->setSid($_COOKIE['folksosess']);
+}
+
+if (! $fks->sessionId
+   || (! $fks->checkSession($fks->sessionId))) {
+  // debug only
+  //    $fks->startSession('gustav-2010-001');
+
+  // FB
+  $fbsec = fdent_fbSecret();
+  $fb = new Facebook($fbsec['api_key'], $fbsec['secret']);
+
+
+  $fb_uid = $fb->get_loggedin_user();
+  $fbu = new folksoFBuser($dbc);
+
+  $name = $fb->api_client->users_getInfo($fb_uid, 'name');
+
+  if ($fb_uid && $fbu->exists($fb_uid)) {
+      $fbu->userFromLogin($fb_uid);
+      $fks->startSession($fbu->userid);
+      /* we are good to go */
+  }
+}
+
+
 
 ?>
 <html>
@@ -41,7 +81,9 @@ $fp = new folksoPage();
                       // setup according to login state
                       fK.cf.container = $("#folksocontrol");
                       if (fK.loginState) {
-                        $(".fKLoginButton", fK.cf.container).hide();
+                        $("#fbkillbox", fK.cf.container).hide();
+                        $(".fbconnect_login_button, .FBConnectButton, .FB_login_button")
+                          .hide();
                       }
                       else {
                         $(".fKTagbutton", fK.cf.container).hide();
@@ -62,9 +104,13 @@ $fp = new folksoPage();
 
 print $fp->tagbox();
 
-
-
 ?>
+<div id="fbkillbox">
+<?php
+print $el->fbInit(); 
+print $el->fbLogButton();
+?>
+</div>
 
 </body>
 </html>
