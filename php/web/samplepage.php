@@ -81,7 +81,7 @@ if (! $fks->sessionId
                       fK.oid.logopath = "/logos/";
                       // setup according to login state
                       fK.cf.container = $("#folksocontrol");
-                      if (fK.loginState) {
+                      if (fK.loginStatus) {
                         $("#fbkillbox", fK.cf.container).hide();
                       }
                       else {
@@ -89,9 +89,10 @@ if (! $fks->sessionId
                         $("input.fKTaginput", fK.cf.container).hide();
                         $(".fKLoginButton", fK.cf.container).click(setupLogin());
 
-                        fK.loggedIn.push(function() {
+                        fK.onLoggedIn.push(function() {
                             $("#fbkillbox", fK.cf.container).hide();
                             alert("Hey, you logged in!");
+                            $(".fbconnect_login_button").hide();
                           });
                         fK.fn.pollFolksoCookie();
                       }
