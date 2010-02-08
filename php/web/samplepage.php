@@ -13,8 +13,9 @@ $fp = new folksoPage();
 $el = new fabelements();
 $loc = new folksoFabula();
 
-$dbc = new folksoDBconnect('localhost', 'tester_dude', 
-                                'testy', 'testostonomie');
+/*$dbc = new folksoDBconnect('localhost', 'tester_dude', 
+  'testy', 'testostonomie');*/
+$dbc = $loc->locDBC();
 $fks = new folksoSession($dbc);
 
 if ($_COOKIE['folksosess']) {
@@ -88,11 +89,12 @@ if (! $fks->sessionId
                         $("input.fKTaginput", fK.cf.container).hide();
                         $(".fKLoginButton", fK.cf.container).click(setupLogin());
 
-                        fK.loggedIn.push(function() {
+                        fK.onLoggedIn.push(function() {
                             $("#fbkillbox", fK.cf.container).hide();
                             alert("Hey, you logged in!");
                             $(".fKTaggbutton", fK.cf.container).show();
                             $(".fKTaginput", fK.cf.container).show();
+                            $(".fbconnect_login_button").hide();
                           });
                         fK.fn.pollFolksoCookie();
                       }
