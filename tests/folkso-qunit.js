@@ -423,7 +423,35 @@ $(document).ready(function() {
                                ok(typeof fK.fn.dropres_react == "function",
                                   "dropres_react not returning a function");
                            });
+
+                      module("Login status");
+                      test("pollFolksoCookie", function()
+                           {
+                               fK.fn.pollFolksoCookie();
+                               
+                               /* Test disabled because only works if you manually remove cookie first      
+                         ok(! /folksosess/.test(document.cookie),
+                                  "Cookie should not be set yet"); */
+                               ok(! fK.loginStatus,
+                                  "fK.loginStatus should be false here");
+                           });
+                      asyncTest("Going to add the cookie", function()
+                                {
+                                    document.cookie = document.cookie + "folksosess=stuffyouowant";
+                                    ok(! fK.loginStatus,
+                                       "fK.loginStatus should still be false here");
+                                    setTimeout(
+                                        function() {
+                                            ok(/folksosess/.test(document.cookie),
+                                               "cookie should be set now");
+                                            ok(fK.loginStatus,
+                                               "fK.loginStatus should have been set to true");
+                                            start();
+                                        }, 2000);
+                                });
+
                   });
+
 
 
 

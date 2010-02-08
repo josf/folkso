@@ -67,6 +67,12 @@
           * Different scripts may need to set this variable. True of false.
           */
          loginStatus: false,
+         /**
+          * An array of functions to be run when the user is logged in
+          * (ie. loginStatus goes from false to true. These will _not_
+          *  be run when the user is logged in from the beginning.
+          */
+         onLoggedIn: [],
          attrs: {simpleResTemplate: 'jQuery id of the template element', 
                  simpleTagTemplate: 'jQuery id of the template element',
                  getTagUrl: 'url', getResUrl: 'url', 
@@ -398,8 +404,36 @@
                      ev.preventDefault();
                      $.ajax(ajOb);
                  };
+             },
+
+             /**
+              * This function allows us to listen for the addition of
+              * a folksosess cookie. Specifically, this might happen via 
+              * a facebook login.
+              */
+             pollFolksoCookie: function () 
+             {
+                 $('body').bind('loggedIn', function() { 
+                                    fK.loginStatus = true; 
+                                    if (fK.onLoggedIn.length > 0) {
+                                        for (var i = 0; i < fK.onLoggedIn.length; i++) {
+                                            fK.onLoggedIn[i]();
+                                        } 
+                                    }
+                                });
+                 $('body').bind('loggedOut', function() {fK.loginStatus = false; });
+
+                 var poller = 
+                     setInterval(function() 
+                                 {
+                                     if (/folksosess/.test(document.cookie)) {
+                                         $('body').trigger('loggedIn');
+                                         clearInterval(poller);
+                                     }
+                                 },
+                                 500);
+
              }
-             
          }
      };
      
