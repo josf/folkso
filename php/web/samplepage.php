@@ -73,6 +73,9 @@ if (! $fks->sessionId
 
   $(document).ready(function()
                     {
+                      var hostAndPath = 'http://www.fabula.org/tags/';
+                      fK.init({autocompleteUrl: hostAndPath + 'tagcomplete.php'});
+
                       fK.oid.logopath = "/tags/logos/";
                       fK.oid.oidpath = "/tags/fdent/";
 
@@ -119,14 +122,16 @@ if (! $fks->sessionId
 
                         /* Sets up event handler: $("body").bind("loggedIn") */
                         fK.fn.pollFolksoCookie();
-                      }
 
+                      }
+                      alert(fK.cf.autocompleteUrl);
+                      $("input.fKTaginput", fK.cf.container).autocomplete(fK.cf.autocompleteUrl);
                     });
 
 
 
 </script>
-
+<link rel="stylesheet" href="/tags/js/jquery.autocomplete.css"></link>
 </head>
 <body>
 <h1>Test des fonctions</h1>
