@@ -80,7 +80,7 @@ if (! $fks->sessionId
                       fK.oid.logopath = "/logos/";
                       // setup according to login state
                       fK.cf.container = $("#folksocontrol");
-                      if (fK.loginState) {
+                      if (fK.loginStatus) {
                         $("#fbkillbox", fK.cf.container).hide();
                       }
                       else {
@@ -91,6 +91,8 @@ if (! $fks->sessionId
                         fK.loggedIn.push(function() {
                             $("#fbkillbox", fK.cf.container).hide();
                             alert("Hey, you logged in!");
+                            $(".fKTaggbutton", fK.cf.container).show();
+                            $(".fKTaginput", fK.cf.container).show();
                           });
                         fK.fn.pollFolksoCookie();
                       }
