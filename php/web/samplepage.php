@@ -81,23 +81,30 @@ if (! $fks->sessionId
                       fK.oid.logopath = "/logos/";
                       // setup according to login state
                       fK.cf.container = $("#folksocontrol");
+
+                        $('body').bind('loggedIn',
+                                       function() {
+                                         $("#fbkillbox", fK.cf.container).hide();
+                                         $(".fKTagbutton", fK.cf.container).show();
+                                         $(".fKTaginput", fK.cf.container).show();
+                                         $(".fKLoginButton", fK.cf.container).hide();
+                                         $("fb:login-button").hide();
+                                       });
+
+                          
                       if (fK.loginStatus) {
                         $("#fbkillbox", fK.cf.container).hide();
+                        $(".fKLoginButton", fK.cf.container).hide();
                       }
                       else {
                         $(".fKTagbutton", fK.cf.container).hide();
                         $("input.fKTaginput", fK.cf.container).hide();
                         $(".fKLoginButton", fK.cf.container).click(setupLogin());
-
-                        fK.onLoggedIn.push(function() {
-                            $("#fbkillbox", fK.cf.container).hide();
-                            alert("Hey, you logged in!");
-                            $(".fKTaggbutton", fK.cf.container).show();
-                            $(".fKTaginput", fK.cf.container).show();
-                            $(".fbconnect_login_button").hide();
-                          });
                         fK.fn.pollFolksoCookie();
+
+
                       }
+
 
                     });
 
