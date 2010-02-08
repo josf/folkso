@@ -398,8 +398,29 @@
                      ev.preventDefault();
                      $.ajax(ajOb);
                  };
+             },
+
+             /**
+              * This function allows us to listen for the addition of
+              * a folksosess cookie. Specifically, this might happen via 
+              * a facebook login.
+              */
+             pollFolksoCookie: function () 
+             {
+                 $('body').bind('loggedIn', function() { fK.loginStatus = true; });
+                 $('body').bind('loggedOut', function() {fK.loginStatus = false; });
+
+                 var poller = 
+                     setInterval(function() 
+                                 {
+                                     if (/folksosess/.test(document.cookie)) {
+                                         $('body').trigger('loggedIn');
+                                         clearInterval(poller);
+                                     }
+                                 },
+                                 500);
+
              }
-             
          }
      };
      
