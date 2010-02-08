@@ -157,6 +157,15 @@ class folksoPage {
     
      }
     
+     /**
+      * Access to facebook connect code (javascript and xml), if this
+      * variable exists in fKLocal->snippets->facebookLoginCode
+      */
+     public function facebookLoginCode() {
+       if ($this->loc->snippets['facebookLoginCode']) {
+         return $this->loc->snippets['facebookLoginCode'];
+       }
+     }
 
   /**
    * Wrapper function for producing the contents of a <meta> keyword
