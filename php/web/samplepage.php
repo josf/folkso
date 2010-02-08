@@ -64,7 +64,7 @@ if (! $fks->sessionId
   src="<?php print $fp->javascript_path() ?>faboid.js"></script>
 
 <?php // outputs a <script> elememnt
-  print $fp->jsHolder($fp->fKjsLoginState('fK.loginState'));
+  print $fp->jsHolder($fp->fKjsLoginState('fK.loginStatus'));
 ?>
 
 <script type="text/javascript">
