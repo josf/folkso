@@ -82,13 +82,17 @@ if (! $fks->sessionId
                       fK.cf.container = $("#folksocontrol");
                       if (fK.loginState) {
                         $("#fbkillbox", fK.cf.container).hide();
-                        $(".fbconnect_login_button, .FBConnectButton, .FB_login_button")
-                          .hide();
                       }
                       else {
                         $(".fKTagbutton", fK.cf.container).hide();
                         $("input.fKTaginput", fK.cf.container).hide();
                         $(".fKLoginButton", fK.cf.container).click(setupLogin());
+
+                        fK.loggedIn.push(function() {
+                            $("#fbkillbox", fK.cf.container).hide();
+                            alert("Hey, you logged in!");
+                          });
+                        fK.fn.pollFolksoCookie();
                       }
 
                     });
@@ -107,8 +111,7 @@ print $fp->tagbox();
 ?>
 <div id="fbkillbox">
 <?php
-print $el->fbInit(); 
-print $el->fbLogButton();
+    print $fp->facebookLoginCode();
 ?>
 </div>
 
