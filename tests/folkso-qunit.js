@@ -250,6 +250,57 @@ $(document).ready(function() {
                                      "Incorrect id in resource data");
 
                            });
+                      module("Ajax object builders");
+                      test("tagGetObject", function() 
+                           {
+                               expect(6);
+                               var thing = 
+                                   fK.fn.tagGetObject({ 
+                                                          folksothis: "a", folksothat: "b" },
+                                                      function() { return 1; },
+                                                      function() { return 2; });
+                               ok(thing.data, "Data object is missing");
+                               equal(thing.data.folksothis, "a",
+                                     "Incorrect data back, expecting 'a'");
+                               ok($.isFunction(thing.success), 
+                                  "success should be a function");
+                               ok($.isFunction(thing.error),
+                                  "error should be a function");
+                               ok(thing.url, "Url should be present");
+                               ok(thing.type, "type should be present");
+                           });
+
+
+                      test("resPostObject", function()
+                           {
+
+                               expect(7);
+                               var
+                               suck = function() { return 1; },
+                               fail = function() { return 2; },
+                               thing = 
+                                   fK.fn.resPostObject({
+                                                           folksothis: "a",
+                                                           folksothat: "b"
+                                                       },
+                                                       suck,
+                                                       fail);
+
+                               ok(thing.data, "Data object is missing");
+                               equal(thing.data.folksothis, "a",
+                                     "Incorrect data back, expecting 'a'");
+                               ok($.isFunction(thing.success), 
+                                  "success should be a function");
+                               ok($.isFunction(thing.error),
+                                  "error should be a function");
+                               ok(thing.url, "Url should be present");
+                               ok(thing.type, "type should be present");
+
+                               equal(thing.url, "http://localhost/resource.php",
+                                     "Incorrect url set");
+
+                           });
+
                       module("Basic event stuff");
                       test("droptag_react (without ajax)", function() 
                            {
@@ -277,6 +328,24 @@ $(document).ready(function() {
                               ok(typeof tagit == "function",
                                  "tagres_react not returning function");
                           });
+
+                      /* setup ajax call  */
+                      var ibox = $("<input type=\"text\">"),
+                      target = $("<ul>"),
+                      tagbutton = $("<a href=\"#\">");
+
+                      ibox.val("tagone");
+                      tagbutton.click(fK.fn.tagres_react(ibox, target));
+
+/*                      asyncTest("tagres_react (with server)", 1, function()
+                           {
+                               tagbutton.trigger("click");
+                               ok(/tagone/.test(target.html()),
+                                  "Did not find 'tagone' in target list");
+                               start();
+                           });*/
+                               
+
 
                       test("Error function composing", function()
                            {
