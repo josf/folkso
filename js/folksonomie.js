@@ -406,6 +406,44 @@
                  };
              },
 
+             tagres_react: function() {
+                 var 
+                 tagbox = arguments[0],
+                 target = arguments[1],
+                 url = arguments[2] || window.location;
+
+                 return function(ev) {
+                     ev.preventDefault();
+                     if (tagbox.val().length < 2) {
+                         alert("Il faut choisir un tag d'abord"); return;
+                     }
+                     var tag = tagbox.val(),
+                     onSuccess = function() { target.append("<li>" + tag + "</li>"); },
+                     error404 = function(xhr, msg)
+                     {
+                         if (/Tag does not exist/i.test(xhr.statusText)) {
+                             alert("Le tag '" + tag + "' n'existe pas encore");    
+                         }
+                         else { 
+                             alert("Erreur : cette page n'est pas encore indexée");
+                         }
+                     },
+                     error403 = function(xhr, msg) { alert("Loggez-vous"); },
+                     errorOther = function(xhr, msg) { 
+                         alert("Erreur: " + xhr.statusText); 
+                     };
+                     error404.errorcode = 404; error403.errorcode = 403;
+                     
+                     $.ajax(fK.fn.resPostObject({folksotag: tag, 
+                                                 folksores: url },
+                                                onSuccess,
+                                                fK.fn.errorChoose(error404, 
+                                                                  error403,
+                                                                  errorOther)));
+                 };
+             },
+
+
              /**
               * This function allows us to listen for the addition of
               * a folksosess cookie. Specifically, this might happen via 
