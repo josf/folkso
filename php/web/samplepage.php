@@ -134,7 +134,14 @@ if (! $fks->sessionId
 <link rel="stylesheet" href="/tags/js/jquery.autocomplete.css"></link>
 </head>
 <body>
-<h1>Test des fonctions</h1>
+<h1>Test des fonctions  </h1>
+<div id="bloc_orange" style="padding-top: 0pt; padding-bottom: 0pt;">
+  <b class="niftycorners"><h3>Mots clés: </h3></b>
+  <div class="tagcloud">
+  <?php print $fp->basic_cloud(); ?>
+  </b>
+  </div>
+  </div>
 <?php
 
 print $fp->tagbox();
