@@ -11,6 +11,7 @@ require_once 'folksoUser.php';
 require_once 'folksoDBconnect.php';
 require_once 'folksoDBinteract.php';
 require_once 'folksoFabula.php';
+require_once 'folksoException.php';
 
   /**
    * @package Folkso
@@ -19,7 +20,13 @@ class folksoSession {
 
   public $sessionId;
   public $dbc;
-  public $loc;
+  private $loc;
+
+  /**
+   * When a user object is retreived, it is cached here. Subsequent
+   * calls to userSession will simply return the cached version.
+   */
+  public $user;
 
   /**
    * @param $dbc folksoDBconnect 
@@ -61,45 +68,69 @@ class folksoSession {
    return false;
  }
 
+/**
+ * This does not initialize anything, since we might want to wait
+ * until the data is actually needed before starting a DB connection
+ * etc.
+ *
+ * @param $sid Session ID 
+ */
+ public function setSid ($sid) {
+   if (! $this->validateSid($sid)) {
+     throw new badSidException(htmlspecialchars($sid) . ' is not a valid session id');
+   }
+   else {
+     $this->sessionId = $sid;
+   }
+ }
+
+
 
   /**
    * Starts session and sets cookie.
    * 
    * @param $uid String
+   * @param $debug Bool For testing we can turn off the actual setting of the cookie
    */
-  public function startSession ($uid) {
+ public function startSession ($uid, $debug = null) {
     if ($this->validateUid($uid) === false) {
-      throw new Exception('Bad userid');
+      throw new Exception('Missing userid');
     }
 
-    $i = new folksoDBinteract($this->dbc);
-    if ($i->db_error()) {
-      trigger_error("Database connection error: " .  $i->error_info(), 
-                    E_USER_ERROR);
-    }    
-    $sess = $this->newSessionId();
-    $i->query(
-              'insert into sessions '
-              .' (token, userid) '
-              ." values ('"
-              . $i->dbescape($sess) . "', '"
-              . $i->dbescape($uid) . "')"
-              );
-    if ($i->result_status == 'DBERR'){
-      //      print $i->error_info();
-      return false; // exception, errror ?
+    $sess = $this->newSessionId($uid);
+    try {
+      $i = new folksoDBinteract($this->dbc);
+      $i->query(
+                'insert into sessions '
+                .' (token, userid) '
+                ." values ('"
+                . $i->dbescape($sess) . "', '"
+                . $i->dbescape($uid) . "')"
+                );
     }
-    setcookie('folksosess', $this->sessionId, 
-              time() + 1800, '/', 
-              $this->loc->web_domain);
+    catch(dbQueryException $e) {
+      if ($e->sqlcode == 1062) { // duplicate session id, try again 
+        $i->query('insert into sessions '
+                  . ' (token, userid) '
+                  . " values ('"
+                  . $i->dbescape(hash('sha256', $uid, 'Retry')) . "', '"
+                  . $i->dbescape($uid) . "')"
+                  );
+      } // if there is a 2nd collision, we are out of luck.
+    }
+    if (! $debug) {
+      setcookie('folksosess', $this->sessionId, 
+                time() + 1800, '/', 
+                $this->loc->web_domain);
+    }
     return $this->sessionId;
   }
       
   /**
    * Erases any current session id from current object (but not from DB).
    */
-  public function newSessionId () {
-    $this->sessionId = hash('sha256', time() . 'OldSalts');
+  public function newSessionId ($uid) {
+    $this->sessionId = hash('sha256', time() . $uid . 'OldSalts');
     return $this->sessionId;
   }
 
@@ -151,28 +182,50 @@ class folksoSession {
  }
 
  /**
-  * Load user data from session id (cookie). Retuns folksoUser obj
+  * Load user data from session id (cookie). Retuns folksoUser
+  * obj. Caches the fkUser object. We might consider a "force reload"
+  * option if there were a reason for it. This also means that if the
+  * arguments (sid) change, the data returned will not. This should
+  * not be a problem though.
   *
-  * @param $sid
+  * @param $sid Session ID.
+  * @return folksoUser obj or false if user not found
   */
-  public function userSession ($sid) {
+ public function userSession ($sid = null, $service = null, $right = null) {
+    if ($this->user instanceof folksoUser) {
+      return $this->user;
+    }
+
     $sid = $sid ? $sid : $this->sessionId;
     if ($this->validateSid($sid) === false) {
       return false;  // exception?
     }
     
    $i = new folksoDBinteract($this->dbc);
-   if ($i->db_error()){
-     trigger_error("Database connection error: " . $i->error_info(),
-                   E_USER_ERROR);
+   $sql = '';
+   if (is_null($service) || is_null($right)){
+     $sql = 'select u.nick as nick, u.firstname as firstname, '
+       .'  u.lastname as lastname, u.email as email, u.userid  as userid'
+       .' from sessions s '
+       .' join users u on u.userid = s.userid '
+       ." where s.token = '" . $sid . "'"
+       ." and s.started > now() - 1209600 ";
    }
-   
-   $i->query('select u.nick as nick, u.firstname as firstname, '
-             .'  u.lastname as lastname, u.email as email, u.userid  as userid'
-             .' from sessions s '
-             .' join users u on u.userid = s.userid '
-             ." where s.token = '" . $sid . "'"
-             ." and s.started > now() - 1209600 ");
+   else {
+     $sql = 'select u.nick as nick, u.firstname as firstname, '
+       .'  u.lastname as lastname, u.email as email, u.userid  as userid, '
+       .' dr.rightid, dr.service '
+       .' from sessions s '
+       .' join users u on u.userid = s.userid '
+       .' left join users_rights ur on ur.userid = s.userid '
+       .' left join rights dr on dr.rightid = ur.rightid '
+       ." where s.token = '" . $i->dbescape($sid) . "' "
+       ." and dr.rightid = '" . $i->dbescape($right) . "' "
+       ." and s.started > now() - 1209600 ";
+   }
+   $this->debug = $sql;
+   $i->query($sql);
+
    if ($i->result_status == 'OK') {
      $u = new folksoUser($this->dbc);
      $res = $i->result->fetch_object();
@@ -183,6 +236,14 @@ class folksoSession {
                           'email' => $res->email,
                           'userid' => $res->userid
                           ));
+
+     if (($right && $service) &&
+         ($res->rightid == $right) &&
+         ($res->service == $service)){
+       $this->debug2 = 'we r here';
+       $u->rights->addRight(new folksoRight($res->service,
+                                            $res->rightid));
+     }
      return $u;
    }
    else {
@@ -190,6 +251,13 @@ class folksoSession {
    }
   }
  
+  /**
+   * Simple wrapper around userSession, when all we actually need is the userid
+   */
+  public function getUserId ($sid = null) {
+    $u = $this->userSession($sid);
+    return $u->userid;
+  }
        
        
 }

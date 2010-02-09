@@ -81,12 +81,12 @@ class folksoDBinteract {
     $this->result_array = array();
     $this->db = $dbc->db_obj();
     $this->db->set_charset('utf8');
-        if ( mysqli_connect_errno()) {
+    if ( mysqli_connect_errno()) {
       //      $this->connect_error = 
-        die(sprintf("Connect failed: %s Error code: %s", 
-                    mysqli_connect_error(), 
-                    mysqli_connect_errno()));
-        } 
+      throw new dbConnectionException("Connect failed: ".
+                                      mysqli_connect_error(),
+                                      mysqli_connect_errno());
+    } 
   }
 
   /**
@@ -136,13 +136,21 @@ class folksoDBinteract {
     $this->first_val = ''; // reset first_val for new query (just in case).
     $this->result = $this->db->query($query);
     $this->affected_rows = $this->db->affected_rows;
-    $this->rowCount = $this->result->num_rows;
+
+    /** some SQL operations do not return result sets. In this case we bail. **/
+    if ($this->result instanceof MySQLi_Result) {
+
+      $this->rowCount = $this->result->num_rows;
+    }
 
     if ($this->db->errno <> 0) {
-      $this->query_error = sprintf("Query error: %s Error code: %d Query: %s", 
+      /*      $this->query_error = sprintf("Query error: %s Error code: %d Query: %s", 
                                    $this->db->error, 
                                    $this->db->errno, $query);
-      $this->result_status = 'DBERR';
+                                   $this->result_status = 'DBERR';*/
+      throw new dbQueryException($this->db->errno, 
+                                 $query,
+                                 $this->db->error);
       return;
     }
     elseif ($this->result->num_rows == 0) {
@@ -151,6 +159,13 @@ class folksoDBinteract {
     else {
       $this->result_status = 'OK';
     }
+
+    /*    if (is_null($this->result) ||
+        (! $this->result instanceof MySQLi_Result)) {
+      return; // should maybe warn...
+      }*/
+
+
   }
   /**
    * Multiquery compatible version of query(). Should especially be
@@ -184,7 +199,14 @@ class folksoDBinteract {
       $this->query_error = sprintf("Query error: %s Error code: %d Query: %s", 
                                    $this->db->error, 
                                    $this->db->errno, $query);
-      $this->result_status = 'DBERR';
+      throw new dbQueryException($this->db->errno,
+                                 $query,
+                                 $this->db->error);
+      /*ù      $this->result_status = 'DBERR';
+        return;*/
+    }
+
+    if (! $this->result instanceof MySQLi_Result) {
       return;
     }
 
@@ -236,13 +258,9 @@ class folksoDBinteract {
     $this->presult = $this->db->query($select);
 
     if ($this->db->errno <> 0) {
-      $this->query_error = sprintf('Query error: %s Error code: %d Query: %s',
-                                   $this->db->error,
-                                   $this->db->errno,
-                                   $select);
-      // not setting result status because that probably will never be
-      // tested in this case
-        }
+      throw new dbQueryException($this->db->error . ' ' . $query,
+                                 $this->db->errno);
+    }
     if ($this->presult->num_rows > 0) {
       $this->presult->free();
       return true;
@@ -276,6 +294,12 @@ class folksoDBinteract {
         "')
                  LIMIT 1";
     }
+
+    if ($this->db->errno <> 0) {
+      throw new dbQueryException($this->db->error . ' ' . $query,
+                                 $this->db->errno);
+    }
+
     $this->presult = $this->db->query($select);
     if ($this->presult->num_rows > 0) {
       $this->presult->free();
@@ -345,16 +369,6 @@ class folksoDBinteract {
     }
   }
 
-  /**
-   * Allow the statement handle and the connection handle to be
-   * destroyed.
-   */
-  public function done () {
-       if ($this->result instanceof mysqli_result) {
-      $this->result->free();
-      }
-    $this->db->close();
-  }
 }
 
 ?>

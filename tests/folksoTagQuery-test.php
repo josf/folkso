@@ -20,6 +20,17 @@ class testOffolksoTagQuery extends  UnitTestCase {
     $this->assertPattern("/tagnorm <> normalize_tag\('bobness'\)/",
                          $tq->related_tags('bobness'));
    }
+
+  function testUDeleteTag() {
+    $tq = new folksoTagQuery();
+    $this->assertPattern('/stuff/',
+                         $tq->userDeleteTag('stuff', 'gustav-001-2001'));
+    $this->assertPattern('/\'gustav/',
+                         $tq->userDeleteTag('stuff', 'gustav-001-2001'));
+    $this->assertPattern('/1984/',
+                         $tq->userDeleteTag(1984, 'gustav-001-2001'));
+
+  }
 }//end class
 
 $test = &new testOffolksoTagQuery();

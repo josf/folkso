@@ -11,6 +11,7 @@
 
 
 require_once('folksoDataDisplay.php');
+require_once('folksoDataJson.php');
 
   /**
    * @package Folkso
@@ -64,6 +65,22 @@ class folksoDisplayFactory {
     return $xml;
 
   }
+
+  /**
+   * Returns a new JSON data display object. This is just a wrapper
+   * function for the folksoDataJson constructor. 
+   *
+   * @param $args The keys that will be used by the line() method
+   */
+   public function json ($args) {
+     if (is_array($args)) {
+         return new folksoDataJson($args);
+       }
+       else {
+         return new folksoDataJson(func_get_args());
+       }
+   }
+  
 
   public function standardTextList ($argnum) {
     $txt = array('type' => 'text',
@@ -151,9 +168,34 @@ class folksoDisplayFactory {
     return $obj;
   }
 
+
+  /**
+   * Simpler than TagList: norm, display, count
+   */
+   public function simpleTagList ($default_style = null) {
+     $obj = new folksoDataDisplay(
+                                  array('type' => 'xml',
+                                        'start' => '<?xml version="1.0"?>' .
+                                        "\n<taglist>\n",
+                                        'end' => '</taglist>',
+                                        'lineformat' => 
+                                        "<tag>\n\t"
+                                        ."<numid>>XXX</numid>\n\t"
+                                        ."<tagnorm>XXX</tagnorm>\n\t"
+                                        ."<link>XXX</link>\n\t"
+                                        ."<display>XXX</display>\n\t"
+                                        ."<count>XXX</count>\n"
+                                        ."</tag>\n",
+                                        'argsperline' => 5));
+     if ($default_style) {
+       $obj->activate_style($default_style);
+     }
+     return $obj;
+   }
+  
   //
 
-  public function ResourceList () {
+  public function ResourceList ($default_style = null) {
     $obj = new folksoDataDisplay(
                                  array('type' => 'xhtml',
                                        'start' => '<ul class="resourcelist">',
@@ -177,8 +219,12 @@ class folksoDisplayFactory {
                                        "\t<title>XXX</title>\n" .
                                        '</resource>',
                                        'argsperline' => 3));
+    if ($default_style) {
+      $obj->activate_style($default_style);
+    }
     return $obj;
   }
+
 
   /**
    * Resource list with lots of data.

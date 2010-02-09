@@ -86,6 +86,12 @@ abstract class folksoLocal {
   public $visit_valid_useragents;
 
   /**
+   * Target for redirects. Do not use this variable for redirects, use
+   * the loginPage() method instead to include a return path.
+   */
+  public $loginPage;
+
+  /**
    * Simple setter function. 
    * 
    * @params string $path : the path part of the uri for your
@@ -157,7 +163,41 @@ abstract class folksoLocal {
                                  $this->db_database_name);
    
     }
-   
+    /**
+     * Provides target for login redirect. Depending on the data
+     * provided by $loginPage, tries to guess the correct URL.
+     * 
+     * Destination string part not implemented yet.
+     *
+     * @param $dest String Return URL (where to go after login)
+     * @return String formatted url for login redirects
+     */
+     public function loginPage ($dest = null) {
+       if (empty($this->loginPage)) {
+         throw new insufficientDataException('Missing login page information in system');
+       }
+
+       $dest_part = '';
+       if ($dest) {
+         $dest_part = '?dest=' . $dest;
+       }         
+
+       if (substr($this->loginPage, 0, 4) == 'http') {
+         return $this->loginPage;
+       }
+       elseif (strpos($this->loginPage, '/') !== false) {
+           if (substr($this->loginPage, 0, 1) == '/')  {
+             return $this->web_url . $this->loginPage;
+           }
+           else {
+             return $this->web_url . '/' . $this->loginPage;
+           }
+         }
+       else {
+         return $this->web_url . '/' . $this->get_server_web_path() . $this->loginPage;
+       } 
+     }
+    
   
   }
 ?>

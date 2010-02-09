@@ -1,17 +1,25 @@
 <?php
 require_once('unit_tester.php');
 require_once('reporter.php');
-include('folksoTags.php');
-require('folksoSession.php');
+require_once('folksoTags.php');
+require_once('folksoSession.php');
 require('dbinit.inc');
 
 class testOffolksoSession extends  UnitTestCase {
+  public $dbc;
 
   function setUp() {
     test_db_init();
     /** not using teardown because this function does a truncate
         before starting. **/
-    
+    $this->dbc = new folksoDBconnect( 'localhost', 'tester_dude', 
+                                      'testy', 'testostonomie');
+    $this->dbc2 = new folksoDBconnect( 'localhost', 'tester_dude', 
+                                      'testy', 'testostonomie');
+    $this->dbc3 = new folksoDBconnect( 'localhost', 'tester_dude', 
+                                      'testy', 'testostonomie');
+    $this->dbc4 = new folksoDBconnect( 'localhost', 'tester_dude', 
+                                      'testy', 'testostonomie');
   }
 
    function testSession () {
@@ -24,7 +32,7 @@ class testOffolksoSession extends  UnitTestCase {
                           'DBconnection object is not there');
 
 
-         $this->assertTrue(strlen($s->newSessionId()) == 64,
+         $this->assertTrue(strlen($s->newSessionId('zorkdork-2289-002')) == 64,
                            'session id not long enough (want 64 chars');
          $this->assertTrue($s->validateUid('zork-000-124'),
                            'zork-000-124 should validate as uid.');
@@ -37,7 +45,7 @@ class testOffolksoSession extends  UnitTestCase {
                            'this should be a valid session id');
          $this->assertFalse($s->validateSid('eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee-e'),
                             'Non alphanumeric session id should fail');
-         $this->assertTrue($s->validateSid($s->newSessionId()),
+         $this->assertTrue($s->validateSid($s->newSessionId('zoopfest-1776-010')),
                            'a new session id should validate');
          $this->assertFalse($s->validateSid('tooshort'),
                             'a short session id should not validate');
@@ -55,8 +63,14 @@ class testOffolksoSession extends  UnitTestCase {
                            'startSession() should return a valid session id');
          $this->assertTrue($s->checkSession($sess),
                            'Session is there, we should see it with check');
+         $this->assertEqual($s->getUserId(), 'gustav-2009-001',
+                            'Not getting user id with getUserId: ' . $s->getUserId());
+         $this->assertReference($s->userSession(),
+                                $s->userSession(),
+                                'User data is not being cached, I think');
+         
          $s->killSession($sess);
-         print $sess;
+
          $this->assertFalse($s->checkSession($sess),
                             'the session should be gone now');
          $sess2 = $s->startSession('gustav-2009-001');
@@ -70,8 +84,26 @@ class testOffolksoSession extends  UnitTestCase {
 
          $this->assertEqual($u->nick, 'gustav',
                             'User nick not correctly retrieved' . $u->nick);
-         print_r( $u);
+
    }
+
+   function testRights () {
+     $s = new folksoSession($this->dbc);
+     $this->assertIsA($s, folksoSession,
+                      'No point in testing if we do not have a fkSession obj');
+     $sid = $s->startSession('marcelp-2010-001', true);
+     $u = $s->userSession($sid, 'folkso', 'tag');
+     $this->assertTrue($u, 'userSession returns false');
+     $this->assertIsA($u, folksoUser,
+                      'userSession w/ args not returning a fkUser obj');
+     $this->assertIsA($u->rights, folksoRightStore,
+                      '$u->rights should be a folksoRightStore object');
+     $this->assertTrue($u->rights->hasRights(),
+                       'user right store is still empty');
+     $this->assertTrue($u->checkUserRight('folkso', 'tag'),
+                       'checkUserRights() not returning true');
+   }
+
 }//end class
 
 $test = &new testOffolksoSession();

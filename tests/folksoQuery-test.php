@@ -75,6 +75,27 @@ class testOffolksoQuery extends  UnitTestCase {
 
   }
 
+  function testMethodStuff () {
+    $q = new folksoQuery(array('REQUEST_METHOD' => 'GET'),
+                         array('folksores' => 1234),
+                         array());
+    $this->assertIsA($q, folksoQuery,
+                     'Problem with object creation');
+    $this->assertEqual($q->method(), 'get',
+                       'Reporting incorrect method');
+    $this->assertFalse($q->is_write_method,
+                       'is_write_method should report false on GET');
+    $qq = new folksoQuery(array('REQUEST_METHOD' => 'POST'),
+                          array('folksostuff' => 'hoohoa'),
+                          array());
+    $this->assertEqual($qq->method(), 'post',
+                       'Reporting incorrect method, should be post');
+    $this->assertTrue($qq->is_write_method(),
+                      'Is write method should say true on POST');
+
+
+  }
+
   function message($message) {
 
   }

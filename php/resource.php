@@ -16,6 +16,7 @@ require_once('folksoTags.php');
 require_once('folksoIndexCache.php');
 require_once('folksoUrl.php');
 require_once('folksoResQuery.php');
+require_once('folksoSession.php');
 
 $srv = new folksoServer(array( 'methods' => array('POST', 'GET', 'HEAD'),
                                'access_mode' => 'ALL'));
@@ -110,43 +111,37 @@ $srv->Respond();
  * 
  * Web parameters: HEAD + folksouri or folksoid
  */
-function isHead (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+function isHead (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
-  $i = new folksoDBinteract($dbc);
-  if ($i->db_error()) {
-    $r->dbConnectionError($i->error_info());
-    return $r;
-  }
+  try {
+    $i = new folksoDBinteract($dbc);
 
-  $query = '';
-  if (is_numeric($q->res)) {
-    $query = 
-      "SELECT id FROM resource WHERE id = " .
-      $i->dbescape($q->res);
-  }
-  else {
-    $query = "SELECT id
+    $query = '';
+    if (is_numeric($q->res)) {
+      $query = 
+        "SELECT id FROM resource WHERE id = " .
+        $i->dbescape($q->res);
+    }
+    else {
+      $query = "SELECT id
            FROM resource
            WHERE uri_normal = url_whack('" .
-      $i->dbescape($q->res) . "')";
+        $i->dbescape($q->res) . "')";
+    }
+    $i->query($query);
+  }
+  catch (dbException $e) {
+    return $r->handleDBexception($e);
   }
 
-  $i->query($query);
-
-  switch ($i->result_status) {
-  case 'DBERR':
-    $r->dbQueryError($i->error_info());
-    break;
-  case 'NOROWS':
+  if ($i->result_status == 'NOROWS') {
     $r->setError(404, 
                  'Resource not found',
                  'Resource '. $q->res . ' not present in database');
-    break;
-  case 'OK':
-    $r->setOk(200, 'Resource exists');
-    break;
   }
-  // $i->done();
+  else {
+    $r->setOk(200, 'Resource exists');
+  }
   return $r;
 }
 
@@ -160,56 +155,45 @@ function isHead (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
  * Optional: limit
  * Optional: ean13 Includes EAN13 information if available, tagged as 'EAN13'. 
  */
-function getTagsIds (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+function getTagsIds (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
-  $i = new folksoDBinteract($dbc);
+  try {
+    $i = new folksoDBinteract($dbc);
 
-  if ($i->db_error()){
-    $r->dbConnectionError($i->error_info());
-    return $r;
-  }
-
-  // check to see if resource is in db.
-  if  (!$i->resourcep($q->res))  {
-    if ($i->db_error()) {
-      $i->done();
-      $r->dbQueryError($i->error_info());
-    }
-    else {
+    // check to see if resource is in db.
+    if  (!$i->resourcep($q->res))  {
       $r->setError(404, 'Resource not found');
       $r->errorBody("Resource not present in database");
+      return $r;
     }
-    $i->done();
-    return $r;
-  }
   
-  $limit = 0;
-  if ($q->is_param('limit') &&
-      is_numeric($q->get_param('limit'))) {
-    $limit = $q->get_param('limit');
-  }
-  $metaonly = false;
-  if ($q->is_param('metaonly')) {
-    $metaonly = true;
-  }
+    $limit = 0;
+    if ($q->is_param('limit') &&
+        is_numeric($q->get_param('limit'))) {
+      $limit = $q->get_param('limit');
+    }
+    $metaonly = false;
+    if ($q->is_param('metaonly')) {
+      $metaonly = true;
+    }
 
-  $include_eans = false;
-  if ($q->is_param('ean13')) {
-    $include_eans = true;
-  }
+    $include_eans = false;
+    if ($q->is_param('ean13')) {
+      $include_eans = true;
+    }
 
-  $rq = new folksoResQuery();  
-  $select = $rq->getTags($i->dbescape($q->res), 
-                         $limit, 
-                         $metaonly, 
-                         $include_eans);
-  $i->query($select);
+    $rq = new folksoResQuery();  
+    $select = $rq->getTags($i->dbescape($q->res), 
+                           $limit, 
+                           $metaonly, 
+                           $include_eans);
+    $i->query($select);
+  }
+  catch (dbException $e) {
+    return $r->handleDBexception($e);
+  }
 
   switch ($i->result_status) {
-  case 'DBERR':
-    $r->dbQueryError($i->error_info());
-    return $r;
-    break;
   case 'NOROWS':
     $r->setOk(204, 'No tags associated with resource');
     return $r;
@@ -246,7 +230,6 @@ function getTagsIds (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc
     }
     $r->t($xf->endform());
     return $r;
-    $i->done();
     break;
   default:
       $dd->activate_style('xhtml');
@@ -258,9 +241,8 @@ function getTagsIds (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc
   $r->t($dd->startform());
   while ( $row = $i->result->fetch_object() ) {
     $r->t($dd->line($row->tagdisplay));
-    }
+  }
   $r->t($dd->endform());
-  $i->done();
   return $r;
 }
 
@@ -274,70 +256,61 @@ function getTagsIds (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc
  * Optional: folksobypop (pure popularity based cloud).
  * Optional: folksobydate (date based cloud).
  */
-function tagCloudLocalPop (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
-  $i = new folksoDBinteract($dbc);
+function tagCloudLocalPop (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
 
-  if ($i->db_error()) { 
-    $r->dbConnectionError($i->error_info());
-    return $r;
-  }
+  try {
+    $i = new folksoDBinteract($dbc);
 
-  // check to see if resource is in db.
-  if  (!$i->resourcep($q->res ))  {
-    if ($i->db_error()) {
-      $r->dbQueryError($i->error_info());
-      return $r;
-    }
-    else {
+    // check to see if resource is in db.
+    if  (!$i->resourcep($q->res ))  {
       $r->setError(404, 'Resource not found');
       $r->errorBody("Resource not present in database");
       return $r;
     }
-  }
 
-  // using the "limit" parameter
-  $taglimit = 0;
-  if ($q->is_param('limit') &&
-      (is_numeric($q->get_param('limit')))) {
-    $taglimit = $q->get_param('limit');
-  }
+    // using the "limit" parameter
+    $taglimit = 0;
+    if ($q->is_param('limit') &&
+        (is_numeric($q->get_param('limit')))) {
+      $taglimit = $q->get_param('limit');
+    }
 
-  $rq = new folksoResQuery();
-  if ($q->is_param('bypop')) {
-    $sql = $rq->cloud_by_popularity($i->dbescape($q->res), 
-                                    $taglimit);
-  }
-  elseif ($q->is_param('bydate')) {
-    $sql = $rq->cloud_by_date($i->dbescape($q->res),
+    $rq = new folksoResQuery();
+    if ($q->is_param('bypop')) {
+      $sql = $rq->cloud_by_popularity($i->dbescape($q->res), 
+                                      $taglimit);
+    }
+    elseif ($q->is_param('bydate')) {
+      $sql = $rq->cloud_by_date($i->dbescape($q->res),
+                                $taglimit);
+    }
+    else {
+      $sql = $rq->basic_cloud($i->dbescape($q->res),
                               $taglimit);
-  }
-  else {
-    $sql = $rq->basic_cloud($i->dbescape($q->res),
-                            $taglimit);
-  }
-  $i->query($sql);
+    }
+    $i->query($sql);
 
-  switch ($i->result_status) {
-  case 'DBERR':
-    $r->dbQueryError();
-    $r->errorBody($i->error_info());
-    return $r;
-    break;
-  case 'NOROWS': // probably impossible now
-    $r->setOK(204, 'No tags associated with resource');
-    return $r;
-    break;
-  case 'OK':  
-    if ($i->result->num_rows == 0) { // should this be == 1 instead?
+    switch ($i->result_status) {
+    case 'NOROWS': // probably impossible now
       $r->setOK(204, 'No tags associated with resource');
       return $r;
-    } 
-    else {
-      $r->setOK(200, 'Cloud OK');
+      break;
+    case 'OK':  
+      if ($i->result->num_rows == 0) { // should this be == 1 instead?
+        $r->setOK(204, 'No tags associated with resource');
+        return $r;
+      } 
+      else {
+        $r->setOK(200, 'Cloud OK');
+      }
+      break;
     }
-    break;
   }
+  catch (dbException $e) {
+    $r->handleDBexception($e);
+  }
+
 
   $df = new folksoDisplayFactory();
   $dd = $df->cloud();
@@ -380,7 +353,7 @@ function tagCloudLocalPop (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnec
     return $r;
     break;
   default:
-    $r->setError(406, "No datatype specified");
+    $r->setError(406, "Invalid or missing specified");
     $r->errorBody(
                   "Sorry, but you did not give a datatype and we are too lazy "
                   ." right now to supply a default."
@@ -401,56 +374,56 @@ function tagCloudLocalPop (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnec
  * Optional parameters: urititle,
  * 
  */
-function visitPage (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+function visitPage (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $ic = new folksoIndexCache('/tmp/cachetest', 5);  
   $r = new folksoResponse();
   $page = new folksoUrl($q->res, 
                         $q->is_single_param('urititle') ? $q->get_param('urititle') : '' );
 
   if (!($ic->data_to_cache( serialize($page)))) {
-    trigger_error("Cannot store data in cache", E_USER_ERROR);
+    $r->setError(500, 'Internal server error: could not use cache');
+    return $r;
   }
 
-  if ($ic->cache_check()) {
-    $pages_to_parse = $ic->retreive_cache();
+  try {
+    if ($ic->cache_check()) {
+      $pages_to_parse = $ic->retreive_cache();
+      $i = new folksoDBinteract($dbc);
 
-    $i = new folksoDBinteract($dbc);
-    if ($i->db_error()) {
-      $r->dbConnectionError($i->error_info());
-      return $r; 
+      $urls = array();
+      $title = array();
+      foreach ($pages_to_parse as $raw) {
+        $item = unserialize($raw);
+        $urls[] = $i->dbescape($item->get_url());
+        $titles[] = $item->get_title();
+      }
+
+      $sql = 
+        "CALL bulk_visit('".
+        implode('&&&&&', $urls) . "', '".
+        implode('&&&&&', $titles) . "', 1)";
+
+      if (!($lfh = fopen('/tmp/folksologfile', 'a'))){
+        $r->setError(500, 'Internal server error: could not open logfile');
+      }
+      fwrite($lfh, implode("\n", $urls) . "\n");
+      fclose($lfh);
+
+      $i->query($sql);
+      if ($i->result_status == 'DBERR') {
+        $r->dbQueryError($i->error_info());
+        return $r;
+      }
+      $r->setOk(200, "200 Read cache'");
+      $r->t("updated db");
     }
-
-    $urls = array();
-    $title = array();
-    foreach ($pages_to_parse as $raw) {
-      $item = unserialize($raw);
-      $urls[] = $i->dbescape($item->get_url());
-      $titles[] = $item->get_title();
+    else {
+      $r->setOk(202, "Caching visit");
+      $r->t('Caching visit. Results will be incorporated shortly.');
     }
-
-    $sql = 
-      "CALL bulk_visit('".
-      implode('&&&&&', $urls) . "', '".
-      implode('&&&&&', $titles) . "', 1)";
-
-    if (!($lfh = fopen('/tmp/folksologfile', 'a'))){
-      trigger_error("logfile failed to open", E_USER_ERROR);
-    }
-    fwrite($lfh, implode("\n", $urls) . "\n");
-    fclose($lfh);
-
-    $i->query($sql);
-    if ($i->result_status == 'DBERR') {
-      $r->dbQueryError($i->error_info());
-      return $r;
-    }
-    $r->setOk(200, "200 Read cache'");
-    $r->t("updated db");
-    $i->done();
-    } 
-  else {
-    $r->setOk(202, "Caching visit");
-    $r->t('Caching visit. Results will be incorporated shortly.');
+  }
+  catch (dbException $e) {
+    return $r->handleDBexception($e);
   }
   return $r;
 }
@@ -460,30 +433,27 @@ function visitPage (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc)
  * Optional : newtitle
  *
  */
-function addResource (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+function addResource (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
-  $i = new folksoDBinteract($dbc);
-  if ($i->db_error()) {
-    $r->dbConnectionError($i->error_info());
+  try {
+    $i = new folksoDBinteract($dbc);
+    $query = 
+      "CALL url_visit('" .
+      $i->dbescape($q->res) .     "', '" .
+      $i->dbescape($q->get_param('newtitle')) . "', 500)";
+    $i->query($query);
+  }
+  catch(dbConnectionException $e) {
+    $r->dbConnectionError($e->getMessage());
+    return $r;
+  }
+  catch(dbQueryException $e) {
+    $r->dbQueryError($e->getMessage() . $e->sqlquery);
     return $r;
   }
 
-  $query = 
-    "CALL url_visit('" .
-    $i->dbescape($q->res) .     "', '" .
-    $i->dbescape($q->get_param('newtitle')) . "', 500)";
-      
-  $i->query($query);
-
-  if ($i->result_status == 'DBERR') {
-    $r->dbQueryError($i->error_info());
-    return $r;
-  }
-  else {
-    $r->setOk(201, "Resource added");
-    $r->t('Resource added to database'); // TODO Return representation here (id, url)
-  }
-  $i->done();
+  $r->setOk(201, "Resource added");
+  $r->t('Resource added to database'); // TODO Return representation here (id, url)
   return $r; 
 }
 
@@ -492,133 +462,142 @@ function addResource (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $db
  * Web parameters: POST + folksores + folksotag
  * Optional : folksometa (defaults to 'normal' (1)). 
  */
-function tagResource (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+function tagResource (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
-  $i = new folksoDBinteract($dbc);
-  if ($i->db_error()) {
-    $r->dbConnectionError($i->error_info());
-    return $r;
+  $u = $fks->userSession(null, 'folkso', 'tag');
+  if ((! $u instanceof folksoUser) ||
+      (! $u->checkUserRight('folkso', 'tag'))) {
+    return $r->unAuthorized($u);
   }
 
-  $tag_args = argSort($q->res, $q->tag, $q->get_param('meta'), $i);
+  try {
+    $i = new folksoDBinteract($dbc);
+    $tag_args = argSort($q->res, $q->tag, $q->get_param('meta'), $i);
 
-  $query = "CALL tag_resource($tag_args)";
-  $i->query($query);
-
-  if ($i->result_status == 'DBERR') {
-    if (($i->db->errno == 1048) &&
-        (strpos($i->db->error, 'resource_id'))) {
-      $r->setError(404, 
-                   "Missing resource",
-                   "Resource ". $q->res . " has not been indexed yet.");
-    }
-    elseif (($i->db->errno == 1048) &&
-            (strpos($i->db->error, 'tag_id'))) {
-      $r->setError(404, 'Tag does not exist',
-                   "Tag ". $q->tag . " does not exist. "
-                   . $i->error_info());
+    $query = sprintf("CALL tag_resource('%s', %s)",
+                     $u->userid, $tag_args);
+    $i->query($query);
+  }
+  catch (dbConnectionException $e) {
+    $r->dbConnectionError($e->getMessage());
+    return $r;
+  }
+  catch (dbQueryException $e) {
+    if ($e->sqlcode == 1048) {
+      if (strpos($e->getMessage(), 'resource_id')){
+        $r->setError(404, 
+                     "Missing resource",
+                     "Resource " . $q->res . " has not been indexed yet.");
+      }
+      elseif (strpos($e->getMessage(), 'tag_id')) {
+        $r->setError(404, 'Tag does not exist',
+                     "Tag ". $q->tag . " does not exist. "
+                     . $i->error_info());
+      }
     }
     else {
-      $r->dbConnectionError($i->error_info());
+      $r->dbQueryError($i->error_info());
     }
-    $i->done();
     return $r;
   }
-  else {
-    $r->setOk(200, "Tagged");
-    $r->t("Resource has been tagged");
-    $r->t($query);
-    $r->t("  DB says: ". $i->db->error);
-  }
-  $i->done();
+
+  $r->setOk(200, "Tagged");
+  $r->t("Resource has been tagged");
+
   return $r;
 }
 
-function unTag (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+function unTag (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
-  $i = new folksoDBinteract($dbc);
-  if ($i->db_error()) {
-    $r->dbConnectionError($i->error_info);
-    return $r;
+  $u = $fks->userSession(null, 'folkso', 'tag');
+  if ((! $u instanceof folksoUser) ||
+      (! $u->checkUserRight('folkso', 'tag'))){
+    return $r->unAuthorized($u);
   }
 
-  $sql = '';
+  try {
+    $i = new folksoDBinteract($dbc);
+    $sql = '';
 
-  if ((is_numeric($q->tag)) &&
-      (is_numeric($q->res))) {
-    $sql = 
-      'DELETE FROM tagevent '.
-      'WHERE (tag_id = ' . $q->tag .') '.
-      'AND '.
-      '(resource_id = ' . $q->res . ') ';
-  }
-  else {
-    $query = 
-      'DELETE FROM tagevent '.
-      'USING tagevent JOIN resource r ON tagevent.resource_id = r.id '.
-      'JOIN tag t ON tagevent.tag_id = t.id ';
+    if ((is_numeric($q->tag)) &&
+        (is_numeric($q->res))) {
+      $sql = 
+        'DELETE FROM tagevent '
+        .'WHERE (tag_id = ' . $q->tag .') '
+        .'AND '
+        .'(resource_id = ' . $q->res . ') '
+        . ' and '
+        . "(userid = '" . $u->userid . "')";
+    }
+    else {
+      $query = 
+        'DELETE FROM tagevent '.
+        'USING tagevent JOIN resource r ON tagevent.resource_id = r.id '.
+        'JOIN tag t ON tagevent.tag_id = t.id ';
 
-    $where = 'WHERE';
+      $where = 'WHERE';
     
-    if (is_numeric($q->tag)) {
-      $where .= ' (tagevent.tag_id = ' . $q->tag . ') ';
-    }
-    else {
-      $where .= 
-        " (t.tagnorm = normalize_tag('". $i->dbescape($q->tag) ."')) ";
-    }
+      if (is_numeric($q->tag)) {
+        $where .= ' (tagevent.tag_id = ' . $q->tag . ') ';
+      }
+      else {
+        $where .= 
+          " (t.tagnorm = normalize_tag('". $i->dbescape($q->tag) ."')) ";
+      }
 
-    if (is_numeric($q->res)) {
-      $where .= ' AND '.
-        ' (tagevent.resource_id = ' . $q->res . ') ';
-    }
-    else {
-      $where .=  ' AND '.
-        " (r.uri_normal = url_whack('". $i->dbescape($q->res) . "')) ";
-    }
-    $sql = $query . $where;
-  }
-  $i->query($sql);
+      if (is_numeric($q->res)) {
+        $where .= ' AND '.
+          ' (tagevent.resource_id = ' . $q->res . ') ';
+      }
+      else {
+        $where .=  ' AND '.
+          " (r.uri_normal = url_whack('". $i->dbescape($q->res) . "')) ";
+      }
+      $where .= " and (tagevent.userid = '" . $u->userid . "')";
 
-  if ($i->result_status == 'DBERR') {
-    $r->dbQueryError();
+      $sql = $query . $where;
+    }
+    $i->query($sql);
   }
-  else {
-    $r->setOK(200, 'Deleted');
+  catch (dbException $e){
+    return $r->handleDBexception($e);
   }
+  $r->setOK(200, 'Deleted');
   return $r;
 }
 
 /**
  * Delete a resource and add its url to the list of excluded URL.
  */
-function rmRes (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+function rmRes (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
-  $i = new folksoDBinteract($dbc);
-  if ($i->db_error()) {
-    $r->dbConnectionError($i->error_info());
-    return $r;
+  $u = $fks->userSession(null, 'folkso', 'admin');
+  if ((! $u instanceof folksoUser) ||
+      (! $u->checkUserRight('folkso', 'admin'))) {
+    return $r->unAuthorized($u);
   }
 
-  // call rmres('url', id);
-  $sql = "CALL rmres('";
-  if (is_numeric($q->res)) {
-    $sql .= "', ". $q->res . ")";
-  }
-  else {
-    $sql .= $i->dbescape($q->res) . "', '')";
-  }
-  $i->query($sql);
+  try {
+    $i = new folksoDBinteract($dbc);
 
- if ($i->result_status == 'DBERR') {
-   $r->dbQueryError($i->error_info());
- }
- else {
-   $r->setOk(200, "Resource deleted");
-   $r->t("Resource " . $q->res . " permanently deleted");
-   $r->t("This resource will not be indexed in the future.");
- }
- return $r;
+    // call rmres('url', id);
+    $sql = "CALL rmres('";
+    if (is_numeric($q->res)) {
+      $sql .= "', ". $q->res . ")";
+    }
+    else {
+      $sql .= $i->dbescape($q->res) . "', '')";
+    }
+    $i->query($sql);
+  }
+  catch (dbException $e){
+    return $r->handleDBexception($e);
+  }
+
+  $r->setOk(200, "Resource deleted");
+  $r->t("Resource " . $q->res . " permanently deleted");
+  $r->t("This resource will not be indexed in the future.");
+  return $r;
 }
 
 /**
@@ -639,50 +618,56 @@ function rmRes (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
  *
  * POST, res, ean13
  */
-function assocEan13 (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+function assocEan13 (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
-  $i = new folksoDBinteract($dbc);
-  if ($i->db_error()) {
-    $r->dbConnectionError($i->error_info());
+  $u = $fks->userSession(null, 'folkso', 'redac');
+  if ((! $u instanceof folksoUser) ||
+      (! $u->checkUserRight('folkso', 'redac'))){
+    return $r->unAuthorized($u);
+  }
+
+  try {
+    $i = new folksoDBinteract($dbc);
+    /** check **/
+    if (! ean13dataCheck($q->get_param('ean13'))) {
+      $r->setError(406, "Bad EAN13 data",
+                   "The folksoean13 field should consist of exactly 13 digits. "
+                   . $q->get_param('ean13') . " is " . strlen($q->get_param('ean13')) . " long "
+                   . is_numeric($q->get_param('ean13')) ? " and it is numeric " : " but it is not numeric " 
+                   ."\n\nPlease check your "
+                   ."data before trying again.");
+      return $r;
+    }
+
+    if (is_numeric($q->res)) {
+      $sql = 
+        "INSERT INTO ean13 SET resource_id = " . $q->res
+        . ", ean13 = " . $q->get_param('ean13'); 
+    }
+    else {
+      $sql =
+        "INSERT INTO ean13 (ean13, resource_id) "
+        ." VALUES (" . $q->get_param('ean13') . ", "
+        ." (SELECT id FROM resource "
+        ."WHERE uri_normal = url_whack('". $i->dbescape($q->res) . "'))) ";
+    }
+
+    $i->query($sql);
+  }
+  catch (dbConnectionException $e){
+    $r->dbConnectionException($e->getMessage());
     return $r;
   }
-  
-  /** check **/
-  if (! ean13dataCheck($q->get_param('ean13'))) {
-    $r->setError(406, "Bad EAN13 data",
-                 "The folksoean13 field should consist of exactly 13 digits. "
-                 . $q->get_param('ean13') . " is " . strlen($q->get_param('ean13')) . " long "
-                 . is_numeric($q->get_param('ean13')) ? " and it is numeric " : " but it is not numeric " 
-                 ."\n\nPlease check your "
-                 ."data before trying again.");
-    return $r;
-  }
-
-  if (is_numeric($q->res)) {
-    $sql = 
-      "INSERT INTO ean13 SET resource_id = " . $q->res
-      . ", ean13 = " . $q->get_param('ean13'); 
-  }
-  else {
-    $sql =
-      "INSERT INTO ean13 (ean13, resource_id) "
-      ." VALUES (" . $q->get_param('ean13') . ", "
-      ." (SELECT id FROM resource "
-      ."WHERE uri_normal = url_whack('". $i->dbescape($q->res) . "'))) ";
-  }
-
-  $i->query($sql);
-  if ($i->result_status == 'DBERR') {
-
-    if (($i->db->errno == 1048) || // resource_id cannot be null
-        ($i->db->errno == 1452)) { // cannot add or update a child row
+  catch (dbQueryException $e) {
+    if (($e->sqlcode == 1048) ||
+        ($e->sqlcode == 1452)) {
       $r->setError(404,
                    "Resource not found",
                    "The resource you tried to associate with a EAN13 was not" 
                    ." found in the database. \n\nPerhaps it has not yet been indexed,".
                    "  or your reference is incorrect.");
     }
-    elseif ($i->db->errno == 1062) {
+    elseif ($e->sqlcode == 1062) {
       $r->setError(409,
                    'Duplicate EAN13',
                    "This resource/EAN13 combination is already present in the database.\n\n"
@@ -692,60 +677,64 @@ function assocEan13 (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc
     else {
       $r->dbQueryError($i->error_info());
     }
+    return $r;
   }
-  else {
-    $r->setOk(200, 'Added');
-    $r->t("The EAN13 information was added to a resource.");
-  }
+
+  $r->setOk(200, 'Added');
+  $r->t("The EAN13 information was added to a resource.");
   return $r;
 }
 
 /**
  * Web params: POST, res, oldean13, newean13
  */
-function modifyEan13 (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
-    $r = new folksoResponse();
+function modifyEan13 (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
+  $r = new folksoResponse();
+  $u = $fks->userSession(null, 'folkso', 'redac');
+  if ((! $u instanceof folksoUser) ||
+      (! $u->checkUserRight('folkso', 'redac'))) {
+    return $r->unAuthorized($u);
+  }
+
+  try {
     $i = new folksoDBinteract($dbc);
-    if ($i->db_error()) {
-      $r->dbConnectionError($i->error_info());
+  
+    if (! ean13dataCheck($q->get_param('newean13'))) {
+      $r->setError(406, 
+                   'Bad EAN13 data',
+                   "The folksoean13 fields (old and new) should consist of up to 13 "
+                   ."digits. "
+                   . $q->get_param('oldean13') . " is " . strlen($get_param('oldean13')) . " long "
+                   . "and " . $q->get_param('newean13') . " is " . strlen($get_param('newean13')) . " long "
+                   ." \n\nPlease check your data before trying again.");
       return $r;
     }
   
-  if (! ean13dataCheck($q->get_param('newean13'))) {
-    $r->setError(406, 
-                 'Bad EAN13 data',
-                 "The folksoean13 fields (old and new) should consist of up to 13 "
-                 ."digits. "
-                 . $q->get_param('oldean13') . " is " . strlen($get_param('oldean13')) . " long "
-                 . "and " . $q->get_param('newean13') . " is " . strlen($get_param('newean13')) . " long "
-                 ." \n\nPlease check your data before trying again.");
-      return $r;
-  }
-  
-  $sql = 
-    "UPDATE ean13 " 
-    ."SET ean13 = " . $i->dbescape($q->get_param('newean13'));
-  if (is_numeric($q->res)) {
-    $sql .=
-      " WHERE (resource_id = " . $i->dbescape($q->res) . ") ";
-  }
-  else {
-    $sql .= 
-      " WHERE resource_id = "
-      ."(SELECT id FROM resource WHERE "
-      ." uri_normal = url_whack('". $i->dbescape($q->res) . "'))";
-  }
-  $sql .= "AND (ean13 = " . $q->get_param('oldean13') . ")";
+    $sql = 
+      "UPDATE ean13 " 
+      ."SET ean13 = " . $i->dbescape($q->get_param('newean13'));
+    if (is_numeric($q->res)) {
+      $sql .=
+        " WHERE (resource_id = " . $i->dbescape($q->res) . ") ";
+    }
+    else {
+      $sql .= 
+        " WHERE resource_id = "
+        ."(SELECT id FROM resource WHERE "
+        ." uri_normal = url_whack('". $i->dbescape($q->res) . "'))";
+    }
+    $sql .= "AND (ean13 = " . $q->get_param('oldean13') . ")";
 
-  $i->query($sql);
-  if ($i->result_status == 'DBERR') {
-    $r->dbQueryError($i->error_info());
+    $i->query($sql);
   }
-  elseif ($i->affected_rows == 0) {
+  catch(dbException $e) {
+    return $r->handleDBexception($e);
+  }
+
+  if ($i->affected_rows === 0) {
     $r->setError(404, 
                  'Resource/EAN13  not found',
                  "The combination resource + ean13 was not found.");
-
   }
   else {
     $r->setOk(200, 'Modified');
@@ -757,52 +746,53 @@ function modifyEan13 (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $db
 /**
  * Delete EAN13 information from a resource.
  */
-function deleteEan13 (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+function deleteEan13 (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
-  $i = new folksoDBinteract($dbc);
-  if ($i->db_error()) {
-    $r->dbConnectionError($i->error_info());
-    return $r;
+  $u = $fks->userSession(null, 'folkso', 'redac');
+  if ((! $u instanceof folksoUser) ||
+      (! $u->checkUserRight('folkso', 'redac'))) {
+    return $r->unAuthorized($u);
   }
 
-  if (! ean13dataCheck($q->get_param('ean13'))) {
-    $r->setError(406, 'Bad EAN13 data',
-                 "The folksoean13 field should consist of exactly 13 digits. "
-                 ."\n\nPlease check your "
-                 ."data before trying again.");
-    return $r;
-  }
+  try {
+    $i = new folksoDBinteract($dbc);
+    if (! ean13dataCheck($q->get_param('ean13'))) {
+      $r->setError(406, 'Bad EAN13 data',
+                   "The folksoean13 field should consist of exactly 13 digits. "
+                   ."\n\nPlease check your "
+                   ."data before trying again.");
+      return $r;
+    }
 
-  $sql = 
-    "DELETE FROM ean13  where (ean13 = " .  $q->get_param('ean13') . " "
-    . "AND resource_id = ";
-  if (is_numeric($q->res)) {
-    $sql .=  $q->res;
-  }
-  else {
-    $sql .= 
-      "(select id from resource where uri_normal = url_whack('"
-      . $q->res 
-      . "'))";
-  }
-  $sql .= ")";
-  $i->query($sql);
-
-  if ($i->result_status == 'DBERR') {
-    $r->dbQueryError($i->error_info());
-  }
-  else {
-    if ($i->affected_rows == 0) {
-      $r->setError(404, 'Resource/EAN13 not found',
-                   "The combination resource + EAN13 could not be found. "
-                   ."Nothing was deleted.");
+    $sql = 
+      "DELETE FROM ean13  where (ean13 = " .  $q->get_param('ean13') . " "
+      . "AND resource_id = ";
+    if (is_numeric($q->res)) {
+      $sql .=  $q->res;
     }
     else {
-      $r->setOk(200, 'Deleted');
-      $r->t( "The EAN13 information was deleted");
+      $sql .= 
+        "(select id from resource where uri_normal = url_whack('"
+        . $q->res 
+        . "'))";
     }
+    $sql .= ")";
+    $i->query($sql);
   }
-  return $r;
+  catch (dbException $e) {
+    return $r->handleDBexception($e);
+  }
+
+  if ($i->affected_rows == 0) {
+    return $r->setError(404, 'Resource/EAN13 not found',
+                        "The combination resource + EAN13 could not be found. "
+                        ."Nothing was deleted.");
+  }
+  else {
+    $r->setOk(200, 'Deleted');
+    $r->t( "The EAN13 information was deleted");
+    return $r;
+  }
 }
 
 
@@ -811,69 +801,74 @@ function deleteEan13 (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $db
  *
  * Web params: POST, note, res
  */
-function addNote (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+function addNote (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
-  $i = new folksoDBinteract($dbc);
-  if ($i->db_error()) {
-    $r->dbConnectionError($i->error_info());
-    return $r;
+  $u = $fks->userSession(null, 'folkso', 'tag');
+  if ((! $u instanceof folksoUser) ||
+      (! $u->checkUserRight('folkso', 'tag'))) {
+    return $r->unAuthorized($u);
   }
 
-  $sql = 
-    "INSERT INTO note ".
-    "SET note = '". $i->dbescape($q->get_param("note")) . "', ".
-    "user_id = 9999, " .
-    "resource_id = ";
+  try {
+    $i = new folksoDBinteract($dbc);
+    $sql = 
+      "INSERT INTO note "
+      . "SET note = '". $i->dbescape($q->get_param("note")) . "', "
+      . "userid = '" . $u->userid . "', "
+      . "resource_id = ";
 
-  if (is_numeric($q->res)) {
-    $sql .= $q->res;
+    if (is_numeric($q->res)) {
+      $sql .= $q->res;
+    }
+    else {
+      $sql .= 
+        "(SELECT id FROM resource  ".
+        " WHERE uri_normal = url_whack('" . $q->res . "'))";
+    }
+
+    $i->query($sql);
   }
-  else {
-    $sql .= 
-      "(SELECT id FROM resource  ".
-      " WHERE uri_normal = url_whack('" . $q->res . "'))";
+  catch (dbException $e) {
+    return $r->handleDBexception($e);
   }
 
-  $i->query($sql);
-  if ($i->result_status == 'DBERR') {
-    $r->dbQueryError($i->error_info());
-  }
-  else {
-    $r->setOk(202, 'Note accepted');
-    $r->t( "This note will be added to the resource: " . $q->res);
-    $r->t( "\n\nText of the submitted note:\n". $q->get_param('note'));
-  }
+  $r->setOk(202, 'Note accepted');
+  $r->t( "This note will be added to the resource: " . $q->res);
+  $r->t( "\n\nText of the submitted note:\n". $q->get_param('note'));
   return $r;
 }
 
-function getNotes (folksoquery $q, folksoWsseCreds $cred, folksoDBconnect $dbc){
+function getNotes (folksoquery $q, folksoDBconnect $dbc, folksoSession $fks){
   $r = new folksoResponse();
-  $i = new folksoDBinteract($dbc);
-  if ($i->db_error()) {
-    $r->dbConnectionError($i->error_info());
-    return $r;
+  $u = $fks->userSession(null, 'folkso', 'redac');
+  if ((! $u instanceof folksoUser) ||
+      (! $u->checkUserRight('folkso', 'redac'))){
+    return $r->unAuthorized($u);
   }
 
-  $sql = 
-    "SELECT note, user_id, id \n\t".
-    "FROM note n \n\t".
-    "WHERE n.resource_id = ";
+  try {
+    $i = new folksoDBinteract($dbc);
 
-  if (is_numeric($q->res)){
-    $sql .= $q->res;
+    $sql = 
+      "SELECT note, user_id, id \n\t".
+      "FROM note n \n\t".
+      "WHERE n.resource_id = ";
+
+    if (is_numeric($q->res)){
+      $sql .= $q->res;
+    }
+    else {
+      $sql .= 
+        "(SELECT id FROM resource r \n\t".
+        " WHERE r.uri_normal = url_whack('" .$q->res . "'))";
+    }
+    $i->query($sql);
   }
-  else {
-    $sql .= 
-      "(SELECT id FROM resource r \n\t".
-      " WHERE r.uri_normal = url_whack('" .$q->res . "'))";
+  catch (dbException $e){
+    return $r->handleDBexception($e);
   }
-  $i->query($sql);
-  switch ($i->result_status) {
-  case 'DBERR':
-    $r->dbQueryError($i->error_info());
-    return $r;
-    break;
-  case 'NOROWS': 
+
+  if  ($i->result_status ==  'NOROWS'){
     if ($i->resourcep($q->res)) {
       $r->setError(404, 'No notes associated with this resource',
                    "No notes have been written yet. Write one if you want.");
@@ -884,14 +879,11 @@ function getNotes (folksoquery $q, folksoWsseCreds $cred, folksoDBconnect $dbc){
                    " is not present in the database");
     }
     return $r;
-    break;
-  case 'OK':
-    $r->setOk(200, 'Notes found');
-    break;
-}
+  }
+
+  $r->setOk(200, 'Notes found');
 
   // assuming 200 from here on
-
   $df = new folksoDisplayFactory();
   $dd = $df->NoteList();
   $dd->activate_style('xml');
@@ -912,31 +904,30 @@ function getNotes (folksoquery $q, folksoWsseCreds $cred, folksoDBconnect $dbc){
  *
  * "note" must be a numerical note id.
  */
-function rmNote (folksoquery $q, folksoWsseCreds $cred, folksoDBconnect $dbc){
+function rmNote (folksoquery $q, folksoDBconnect $dbc, folksoSession $fks){
   $r = new folksoResponse();
-  $i = new folksoDBinteract($dbc);
-  if ($i->db_error()) {
-    $r->dbConnectionError($i->error_info());
-    return $r;
+  $u = $fks->userSession(null, 'folkso', 'redac');
+  if ((! $u instanceof folksoUser) ||
+      (! $u->checkUserRight('folkso', 'redac'))){
+    return $r->unAuthorized($u);
+  }
+  try {
+    $i = new folksoDBinteract($dbc);
+    if (! is_numeric($q->get_param('note'))){
+      $r->setError(400, 'Bad note argument',
+                   $q->get_param('note') . ' is not a number');
+      return $r;
+    }
+
+    $sql = "DELETE FROM note WHERE id = " . $q->get_param('note');
+    $i->query($sql);
+  }
+  catch (dbException $e) {
+    return $r->handleDBexception($e);
   }
 
-  if (! is_numeric($q->get_param('note'))){
-    $r->setError(400, 'Bad note argument',
-                 $q->get_param('note') . ' is not a number');
-    return $r;
-  }
-
-  $sql = "DELETE FROM note WHERE id = " . $q->get_param('note');
-  $i->query($sql);
-
-  if ($i->result_status == 'DBERR'){
-    $r->setError(500, 'Database delete errors',
-                 $i->error_info());
-  }
-  else {
-    $r->setOk(200, 'Deleted');
-    $r->t( "The note " . $q->get_param('note'). " was deleted.");
-  }
+  $r->setOk(200, 'Deleted');
+  $r->t( "The note " . $q->get_param('note'). " was deleted.");
   return $r;
 }
 
@@ -946,8 +937,9 @@ function rmNote (folksoquery $q, folksoWsseCreds $cred, folksoDBconnect $dbc){
  *
  * Web params: GET, folksores, folksoean13list
  */
-function resEans (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+function resEans (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
+  try {
   $i = new folksoDBinteract($dbc);
   if ($i->db_error()) {
     $r->dbConnectionError($i->error_info());
@@ -958,28 +950,33 @@ function resEans (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
   $sql = $rq->resEans($i->dbescape($q->res));
 
   $i->query($sql);
+  }
+  catch (dbConnectionException $e) {
+    $r->dbConnectionError($e->getMessage());
+    return $r;
+  }
+  catch (dbQueryException $e) {
+    $r->dbQueryError($e->getMessage() . $e->sqlquery);
+    return $r;
+  }
 
   switch ($i->result_status) {
-  case 'DBERR':
-    $r->dbQueryError($i->error_info());
-    break;
   case 'NOROWS':
     $r->setError(404, 'Resource not found',
                  "The requested resource is not present in the database.\n"
                  ." Maybe it  has not been indexed yet, or an erroneous identifier "
                  ." was used. ");
+    return $r;
     break;
   case 'OK':
     if ($i->result->num_rows == 1) {
       $r->setError(404, 'No EAN-13 data associated with this resource',
                    "There is no EAN-13 data yet for the resource " . $q->res . ".");
+      return $r;
     }
     else {
       $r->setOk(200, 'EAN-13 data found');
     }
-  }
-  if ($r->isError()) {
-    return $r;
   }
 
   $title_line = $i->result->fetch_object(); /**popping the title that

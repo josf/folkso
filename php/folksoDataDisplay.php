@@ -63,6 +63,10 @@ class folksoDataDisplay {
         $this->datastyles[] = $display;
       }
     }
+
+    if (count($this->datastyles) == 1) {
+      $this->activate_style($this->datastyles[0]['type']);
+    }
   }
 
   /**

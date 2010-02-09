@@ -12,6 +12,7 @@
  * 
  */
 require_once('folksoTags.php');
+require_once('folksoFabula.php');
 
 class folksoResponse {
 
@@ -21,6 +22,8 @@ class folksoResponse {
   private $body;
   public $error_body;
   public $headers;
+  public $redirect;
+  private $loc;
 
   /**
    * Special headers added before header preparation.
@@ -109,21 +112,35 @@ class folksoResponse {
     if ($representation){
       $this->errorBody($representation);
     }
+    return $this;
   }
 
   public function dbError($status = 500, $message = null){
     $this->setError($status, $message ? $message : 'Database error');
+    return $this;
   }
 
   public function dbConnectionError($error_info){
     $this->setError(500, "Database connection error");
     $this->errorBody($error_info);
+    return $this;
   }
 
   public function dbQueryError($error_info){
     $this->setError(500, "Database query error");
     $this->errorBody($error_info);
+    return $this;
   }
+
+  /**
+   * @param $user optional A folksoUser object
+   */
+   public function unAuthorized ($user = null) {
+     $this->setError(403, "Forbidden");
+     $this->setLoginRedirect();
+     return $this;
+   }
+  
 
   public function setOk ($status, $message = null){
     if (! isset($this->httpStatus[$status])){
@@ -134,6 +151,7 @@ class folksoResponse {
     $this->status = $status;
     $this->statusMessage = 
       $message ? $message : $this->httpStatus[$status];
+    return $this;
   }
 
   /**
@@ -153,6 +171,40 @@ class folksoResponse {
     }
     $this->outType = $str;
   }
+
+  /**
+   * Basic exception handling for the most common error cases, where
+   * we simply want to return the right kind of HTTP error with the
+   * appropriate information.
+   * 
+   * @param dbException $e
+   */
+   public function handleDBexception (dbException $e) {
+     if ($e instanceof dbConnectionException) {
+       $this->dbConnectionError($e->getMessage());
+     }
+     elseif ($e instanceof dbQueryException) {
+       $this->dbQueryError($e->getMessage() . "\n\nQuery: \n" .
+                           $e->sqlquery);
+     }
+     return $this;
+   }
+  
+
+   /**
+    * @param userException $e
+    */
+    public function handleUserException (userException $e) {
+      if ($e instanceof badUseridException) {
+        $this->setError(403, 'Invalid user',
+                        $e->getMessage());
+      }
+      else {
+        $this->setError(500, 'Unknown user problem',
+                        $e->getMessage());
+      }
+    }
+   
 
   /**
    * Returns the string for the HTTP content-type header but does not
@@ -202,6 +254,24 @@ class folksoResponse {
    $this->preheaders[] = $str;
  }
 
+ /**
+  * @param 
+  */
+ public function setRedirect ($url) {
+   $this->redirect = $url;
+ }
+ 
+ /**
+  * @param 
+  */
+  public function setLoginRedirect () {
+    if (! $this->loc instanceof folksoLocal) {
+      $this->loc = new folksoFabula();
+    }
+    $this->setRedirect($this->loc->loginPage());
+   }
+ 
+
   /**
    * Prepares an array containing the HTTP headers to be sent. 
    * 
@@ -212,6 +282,10 @@ class folksoResponse {
     $headers[] = $this->contentType();
     if (count($this->preheaders) > 0) {
       $headers = array_merge($headers, $this->preheaders);
+    }
+
+    if ($this->redirect) {
+      $headers[] = sprintf('Location: %s', $this->redirect);
     }
     
     $this->headers = $headers;

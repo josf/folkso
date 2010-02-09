@@ -8,18 +8,21 @@
    * @copyright 2009 Gnu Public Licence (GPL)
    */
 require_once 'folksoUser.php';
+require_once 'folksoRights.php';
   /**
    * @package Folkso
    */
 class folksoOIuser extends folksoUser {
 
   public $loginId;
+  public $rights;
 
   /**
    * @param folksoDBconnect $dbc
    */
   public function __construct (folksoDBconnect $dbc) {
     $this->dbc = $dbc;
+    $this->rights = new folksoRightStore();
   }
 
 
@@ -67,8 +70,8 @@ class folksoOIuser extends folksoUser {
 /**
  * @param $id
  */
- public function userFromLogin ($id) {
-   $z = $this->userFromLogin_base($id, 'oi_users', 'oid_url');
+  public function userFromLogin ($id, $service = null, $right = null) {
+    $z = $this->userFromLogin_base($id, 'oi_users', 'oid_url', $service, $right);
    return $z;
  }
 

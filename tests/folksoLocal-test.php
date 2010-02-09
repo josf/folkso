@@ -26,6 +26,25 @@ class testOffolksoLocal extends  UnitTestCase {
 
     $this->assertIsA($loc->locDBC(), folksoDBconnect,
                      'Not able to build a dbc object');
+    $loc->loginPage = 'loggezmoi.php';
+    $loc->setServerUrl('example.com');
+    $loc->set_server_web_path('hooha');
+    $this->assertEqual($loc->loginPage(),
+                       'http://example.com/hooha/loggezmoi.php',
+                       'Incorrect loginPage: ' . $loc->loginPage());
+    $this->assertEqual($loc->web_url, 'http://example.com',
+                       'Incorrect web_url is set: ' . $loc->web_url);
+
+    $loc->loginPage = 'tagorama/loggezmoi.php';
+    $this->assertEqual($loc->loginPage(),
+                       'http://example.com/tagorama/loggezmoi.php',
+                       'Incorrect login url with path in $loc->loginPage');
+    $loc->loginPage = '/tagallday/loggezmoi.php';
+    $this->assertEqual($loc->loginPage(),
+                       'http://example.com/tagallday/loggezmoi.php',
+                       'Incorrect login url with absolute path in $loc->loginPage' .
+                       $loc->loginPage());
+
    }
 }//end class
 

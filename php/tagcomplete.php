@@ -23,7 +23,7 @@ $srv->addResponseObj(new folksoResponder('get',
                                         'autocomplete'));
 $srv->Respond();
 
-function autocomplete (folksoQuery $q, folksoWsseCreds $cred, folksoDBconnect $dbc) {
+function autocomplete (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $i = new folksoDBinteract($dbc);
   $r = new folksoResponse();
   if ($i->db_error()) {

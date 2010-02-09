@@ -177,7 +177,7 @@ class folksoQuery {
    * Check if string is one of the basic request datatypes.
    */
   private function is_valid_datatype ($str) {
-    $valid_types = array('xml', 'html', 'text');
+    $valid_types = array('xml', 'html', 'text', 'json');
     if (in_array($str, $valid_types)) {
       return true;
     }
@@ -197,6 +197,7 @@ class folksoQuery {
                      'html' => 'html',
                      'xhtml' => 'html',
                      'xhtml-xml' => 'html',
+                     'json' => 'json',
                      'text' => 'text');
     foreach ($parts as $accept) {
       $acc = $accept; // default is to keep the whole thing, just in case.
@@ -218,6 +219,22 @@ class folksoQuery {
   public function method () {
     return $this->method;
   }
+
+
+/**
+ * Whether the method (from $_SERVER['REQUEST_METHOD']) is a write
+ * method (POST or DELETE, possibly PUSH) or not.
+ * 
+ * @return bool True for post, delete, etc. False for get, head.
+ */
+ public function is_write_method () {
+   if (($this->method == 'get') ||
+       ($this->method == 'head')) {
+     return false;
+   }
+   return true;
+ }
+
 
   /* This should not be publicly used anymore */
   private function params () {

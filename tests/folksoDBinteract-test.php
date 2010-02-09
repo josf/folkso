@@ -10,31 +10,34 @@ class testOffolksoDBinteract extends  UnitTestCase {
   public $connection;
   public $i;
   public $dbc;
+  public $dbc2;
+  public $dbc3;
     
   public function setUp () {
     test_db_init();
     $this->dbc = new folksoDBconnect('localhost', 'tester_dude', 'testy', 'testostonomie');
+    $this->dbc2 = new folksoDBconnect('localhost', 'tester_dude', 'testy', 'testostonomie');
+    $this->dbc3 = new folksoDBconnect('localhost', 'tester_dude', 'testy', 'testostonomie');
   }
 
   
   public function testDBobjCreation () {
-    $this->connection = new folksoDBconnect('localhost','root','hellyes','folksonomie');
-    $this->i = new folksoDBinteract($this->connection);
-
-    $this->assertIsA($this->connection, folksoDBconnect, 
-                     "DBconnect object creation failed. Expect other problems. [%s]");
-    $this->assertIsA($this->i, folksoDBinteract, "Object creation failed: [%s]");
+    $i = new folksoDBinteract($this->dbc);
+    $this->assertIsA($i, folksoDBinteract, 
+                     "Object creation failed:");
   }
 
   public function testDBConnectError () {
     $baddb = new folksoDBconnect('localhost', 'bob', '123456', 'nonexistantdb');
+    $this->expectException('Exception');
+    $i = new folksoDBinteract($baddb); 
   }
 
   public function testUrl_from_id () {
-    $this->assertEqual($this->i->url_from_id(3), 
-                       "http://www.fabula.org/actualites/article24402.php");
-    $this->assertEqual($this->i->url_from_id(2),
-                       0);
+    $i = new folksoDBinteract($this->dbc);
+    $this->assertEqual($i->url_from_id(3), 
+                       'http://example.com/3',
+                       'url_from_id not retrieving correct url.');
   }
 
   public function testMultiQuery () {
@@ -109,9 +112,8 @@ class testOffolksoDBinteract extends  UnitTestCase {
   }
 
   function testExistence () {
-    $dbc = new folksoDBconnect('localhost','tester_dude',
-                               'testy', 'testostonomie');
-    $i = new folksoDBinteract($dbc);
+
+    $i = new folksoDBinteract($this->dbc);
     $this->assertTrue($i->resourcep('http://example.com/1'),
                       'Not reporting existence of example.com/1 (resourcep)'); 
     $dbc2 = new folksoDBconnect('localhost','tester_dude',

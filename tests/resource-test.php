@@ -1,6 +1,7 @@
 <?php
 require_once('unit_tester.php');
 require_once('reporter.php');
+require_once('folksoSession.php');
 include('folksoTags.php');
 include('/var/www/resource.php');
 include('dbinit.inc');
@@ -9,10 +10,14 @@ class testOfResource extends  UnitTestCase {
   public $dbc;
   public $dbc2;
   public $dbc3;
-  public $cred;
+  public $fks;
 
   function setUp() {
     test_db_init();
+    $lh = 'localhost';
+    $td = 'tester_dude';
+    $ty = 'testy';
+    $tt = 'testostonomie';
     /** not using teardown because this function does a truncate
         before starting. **/
      $this->dbc = new folksoDBconnect('localhost', 'tester_dude', 
@@ -20,18 +25,28 @@ class testOfResource extends  UnitTestCase {
      $this->dbc2 = new folksoDBconnect('localhost', 'tester_dude', 
                                       'testy', 'testostonomie');
      $this->dbc3 =new folksoDBconnect('localhost', 'tester_dude', 
-                                      'testy', 'testostonomie');
-     $this->cred = new folksoWsseCreds('zork');    
+                                      'testy', 'testostonomie'); 
+     $this->fks = new folksoSession(new folksoDBconnect($lh, $td, $ty, $tt));
+     $this->fks2 = new folksoSession(new folksoDBconnect($lh, $td, $ty, $tt));
+     $this->fks3 = new folksoSession(new folksoDBconnect($lh, $td, $ty, $tt));
+     $this->fks4 = new folksoSession(new folksoDBconnect($lh, $td, $ty, $tt));
   }
+  function testTheTest () {
+    $this->assertIsA($this->fks, folksoSession,
+                     'Not creating session object for tests');
+    $this->assertIsA($this->fks->dbc, folksoDBconnect,
+                     'Session DBconnect object not present');
+
+  }
+
 
   function testIsHead () {
      $q = new folksoQuery(array(), 
                           array('folksores' => 'http://example.com/1'),
                           array());
-     $cred = new folksoWsseCreds('zork');
      $dbc = new folksoDBconnect('localhost', 'tester_dude', 
                                 'testy', 'testostonomie');
-     $r = isHead($q, $cred, $dbc);
+     $r = isHead($q, $dbc, $this->fks);
      $r->prepareHeaders();
      $this->assertIsA($r, folksoResponse, 
                 'getTagsIds() does not return a folksoResponse object');
@@ -46,7 +61,7 @@ class testOfResource extends  UnitTestCase {
      $q2 = new folksoQuery(array(),
                            array('folksores' => 'http://zorkfest.org'),
                            array());
-     $r2 = isHead($q2, $cred, $dbc);
+     $r2 = isHead($q2, $this->dbc2, $this->fks2);
      $r2->prepareHeaders();
 
      $this->assertIsA($r2, folksoResponse,
@@ -60,14 +75,13 @@ class testOfResource extends  UnitTestCase {
      $q = new folksoQuery(array(), 
                           array('folksores' => 'http://example.com/1'),
                           array());
-     $cred = new folksoWsseCreds('zork');
      $dbc = new folksoDBconnect('localhost', 'tester_dude', 
                                 'testy', 'testostonomie');
-     $r = getTagsIds($q, $cred, $dbc);
+     $r = getTagsIds($q, $dbc, $this->fks);
      $this->assertIsA($r, folksoResponse, 
                 'getTagsIds() does not return a folksoResponse object');
      $this->assertEqual($r->status, 200, 
-                        'getTagsIds returns incorrect status');
+                        'getTagsIds returns incorrect status: ' . $r->status);
      $this->assertTrue(strlen($r->body()) > 1, 
                        'Not returning any body');
      $this->assertPattern('/tagone/',
@@ -78,8 +92,8 @@ class testOfResource extends  UnitTestCase {
                                       array('folksores' => 'http://example.com/1',
                                             'folksodatatype' => 'xml'),
                                       array()),
-                      new folksoWsseCreds('zork'),
-                      $this->dbc);
+                      $this->dbc2,
+                      $this->fks2);
      $this->assertEqual($r2->status, 200,
                         'getTagsIds returns error with xml datatype');
      $xxx = new DOMDocument();
@@ -92,10 +106,9 @@ class testOfResource extends  UnitTestCase {
                           array('folksores' => 'http://example.com/1',
                                 'folksodatatype' => 'text/xml'),
                           array());
-     $cred = new folksoWsseCreds('zork');
      $dbc = new folksoDBconnect('localhost', 'tester_dude', 
                                 'testy', 'testostonomie');
-     $r = getTagsIds($q, $cred, $dbc);
+     $r = getTagsIds($q, $dbc, $this->fks);
      $this->assertEqual($r->status, 200,
                         'getTagsIds (xml) returns error status');
      
@@ -114,10 +127,9 @@ class testOfResource extends  UnitTestCase {
                           array('folksoclouduri' => 1,
                                 'folksores' => 'http://example.com/1'),
                           array());
-     $cred = new folksoWsseCreds('zork');
      $dbc = new folksoDBconnect('localhost', 'tester_dude', 
                                 'testy', 'testostonomie');
-     $r = tagCloudLocalPop($q, $cred, $dbc);
+     $r = tagCloudLocalPop($q, $dbc, $this->fks);
      $this->assertIsA($r, folksoResponse, 
                       'tagCloudLocalPop is not returning a folksoResponse object');
      $this->assertEqual($r->status, 406, 
@@ -129,7 +141,7 @@ class testOfResource extends  UnitTestCase {
                            array());
      $dbc2 = new folksoDBconnect('localhost', 'tester_dude',
                                  'testy', 'testostonomie');
-     $r2 = tagCloudLocalPop($q2, $cred, $dbc2);
+     $r2 = tagCloudLocalPop($q2, $dbc2, $this->fks2);
      $this->assertIsA($r2, folksoResponse,
                       "tagCloudLocalPop is not returning a Response object (xml request)");
      $this->assertEqual($r2->status, 200,
@@ -147,7 +159,7 @@ class testOfResource extends  UnitTestCase {
                            array('folksoclouduri' => 1,
                                  'folksores' => 'http://not-here-at-all.com'),
                            array());
-     $r3 = tagCloudLocalPop($q3, $cred, $dbc3); 
+     $r3 = tagCloudLocalPop($q3, $dbc3, $this->fks3); 
      $this->assertIsA($r3, folksoResponse,
                       'tagCloudPop not returning Response object (non-exist request)');
      $this->assertEqual($r3->status, 404,
@@ -162,36 +174,35 @@ class testOfResource extends  UnitTestCase {
                                 'folksovisit' => 1,
                                 ),
                           array());
-     $cred = new folksoWsseCreds('zork');
-     $r = visitPage($q,  $cred, $dbc);
+     $r = visitPage($q,  $dbc, $this->fks);
      $this->assertIsA($r, folksoResponse, 
                       "visitPage() not returning a folksoResponse object");
      $this->assertEqual($r->status, 202, 
                         'visitPage() not returning 202 on cache request. Warning: this might depend on the state of the cache.');
      for ($i = 0; $i < 6; ++$i ) {
-       visitPage($q, $cred, new folksoDBconnect('localhost', 'tester_dude',
-                                                    'testy', 'testostonomie'));
+       visitPage($q, new folksoDBconnect('localhost', 'tester_dude',
+                                         'testy', 'testostonomie'),
+                 $this->fks2);
      }
      $is = isHead(new folksoQuery(array(), 
                                   array('folksores' => 'http://newone.com'),
                                   array()),
-                  $cred,
                   new folksoDBconnect('localhost', 'tester_dude', 
-                                      'testy', 'testostonomie'));
+                                      'testy', 'testostonomie'),
+                  $this->fks3);
 
      $this->assertEqual($is->status, 200,
                         "isHead() not reporting creation of new resource by visitPage()");
    }
 
    function testAddResourced () {
-     $cred = new folksoWsseCreds('zork');
      $r = addResource(new folksoQuery(array(),
                                       array('folksonewtitle' => 'New new!',
                                             'folksores' => 'http://newone.com'),
                                       array()),
-                      $cred,
                       new folksoDBconnect('localhost', 'tester_dude',
-                                          'testy', 'testostonomie')
+                                          'testy', 'testostonomie'),
+                      $this->fks
                       );
      $this->assertIsA($r, folksoResponse,
                       'addResource() not returning folksoResponse object');
@@ -202,9 +213,9 @@ class testOfResource extends  UnitTestCase {
      $is = isHead(new folksoQuery(array(), 
                                   array('folksores' => 'http://newone.com'),
                                   array()),
-                  $cred,
                   new folksoDBconnect('localhost', 'tester_dude', 
-                                      'testy', 'testostonomie'));
+                                      'testy', 'testostonomie'),
+                  $this->fks2);
 
      $this->assertEqual($is->status, 200,
                         "isHead() not reporting creation of new resource by addResource()");
@@ -212,14 +223,18 @@ class testOfResource extends  UnitTestCase {
    }
 
    function testTagResource() {
-     $cred = new folksoWsseCreds('zork');
+     $sid = $this->fks->startSession('marcelp-2010-001', true);
+     $this->assertTrue($this->fks->validateSid($sid),
+                       'Producing invalid sid');
+     $this->assertTrue($this->fks->checkSession($sid),
+                       'Session not considered valid');
      $r = tagResource(new folksoQuery(array(),
                                       array('folksores' => 'http://example.com/4',
                                             'folksotag' => 'tagone'),
                                       array()),
-                      $cred,
                       new folksoDBconnect('localhost', 'tester_dude',
-                                          'testy', 'testostonomie')
+                                          'testy', 'testostonomie'),
+                      $this->fks
                       );
      $this->assertIsA($r, folksoResponse, "tagResource not returning Response object");
      $this->assertEqual($r->status, 200,
@@ -227,9 +242,9 @@ class testOfResource extends  UnitTestCase {
      $r2 = getTagsIds(new folksoQuery(array(),
                                   array('folksores' => 'http://example.com/4'),
                                   array()),
-                      $cred,
                       new folksoDBconnect('localhost', 'tester_dude',
-                                          'testy', 'testostonomie')
+                                          'testy', 'testostonomie'),
+                      $this->fks2
                       );
      $this->assertEqual($r2->status, 200, 
                         'tagResource failed to tag example.com/4, getTagsIds not returning 200');
@@ -241,49 +256,68 @@ class testOfResource extends  UnitTestCase {
                                       array('folksores' => 'http://bobworld.com/4',
                                             'folksotag' => 'tagone'),
                                       array()),
-                      $cred,
                       new folksoDBconnect('localhost', 'tester_dude',
-                                          'testy', 'testostonomie')
+                                          'testy', 'testostonomie'),
+                       $this->fks
                       );
      $this->assertEqual($r3->status, 404,
-                        "Tagging unknown resource should return 404");
+                        "Tagging unknown resource should return 404: " . $r3->status);
 
      // Unknown tag
      $r4 = tagResource(new folksoQuery(array(),
                                        array('folksores' => 'http://example.com/4',
                                              'folksotag' => 'pistonengine'),
                                        array()),
-                       $cred,
                        new folksoDBconnect('localhost', 'tester_dude',
-                                           'testy', 'testostonomie')
+                                           'testy', 'testostonomie'),
+                       $this->fks
                        );
      $this->assertEqual($r4->status, 404,
                         "Tagging with unknown tag should return 404");
      $this->assertEqual($r4->statusMessage,
                         "Tag does not exist",
                         "Bad tag not appearing as such");
+
    }
+
+   function testTagResourceAgain () {
+     $sid = $this->fks->startSession('michl-2010-001', true);
+     $this->assertTrue($this->fks->validateSid($sid),
+                       'Invalid sid');
+     $r = tagResource(new folksoQuery(array(),
+                                      array('folksores' => 'http://example.com/1',
+                                            'folksotag' => 'tagtwo'),
+                                      array()),
+                      $this->dbc,
+                      $this->fks);
+     $this->assertIsA($r, folksoResponse,
+                      'Not even getting a response object back');
+     $this->assertEqual($r->status, 403,
+                        'Not getting 403 back on unauthorized user');
+
+   }
+
    function testUnTag () {
-     $cred = new folksoWsseCreds('zork');
+     $sid = $this->fks->startSession('gustav-2010-001', true);
      $r = unTag(new folksoQuery(array(),
                                 array('folksores' => 'http://example.com/1',
                                       'folksotag' => 'tagone',
                                       'folksodelete' => 1),
                                 array()),
-                $cred,
                 new folksoDBconnect('localhost', 'tester_dude',
-                                    'testy', 'testostonomie'));
+                                    'testy', 'testostonomie'),
+                $this->fks);
 
      $this->assertIsA($r, folksoResponse,
                       'unTag not return a folksoResponse object');
      $this->assertEqual($r->status, 200,
-                        'Error code on unTag request');
+                        'Error code on unTag request: ' . $r->status);
      $h = getTagsIds(new folksoQuery(array(),
                                      array('folksores' => 'http://example.com/1'),
                                      array()),
-                     $cred,
                      new folksoDBconnect('localhost', 'tester_dude',
-                                         'testy', 'testostonomie'));
+                                         'testy', 'testostonomie'),
+                     $this->fks2);
      $this->assertEqual($h->status, 200, 
                         'getTagsIds not returning a 200. Must be a problem');
      $this->assertNoPattern('/tagone/',
@@ -292,23 +326,22 @@ class testOfResource extends  UnitTestCase {
    }
 
    function testRmRes() {
-     $cred = new folksoWsseCreds('zork');
 
      $h1 = isHead(new folksoQuery(array(),
                                   array('folksores' => 'http://example.com/1'),
                                   array()),
-                     $cred,
                      new folksoDBconnect('localhost', 'tester_dude',
-                                         'testy', 'testostonomie'));
+                                         'testy', 'testostonomie'),
+                  $this->fks);
      $this->assertEqual($h1->status, 200,
                         'example.com/1 not present acorrding to isHead. Test pb.');
-
+     $this->fks->startSession('vicktr-2010-001', true);
      $r = rmRes(new folksoQuery(array(),
                                 array('folksores' => 'http://example.com/1'),
                                 array()),
-                $cred,
                 new folksoDBconnect('localhost', 'tester_dude',
-                                    'testy', 'testostonomie'));
+                                    'testy', 'testostonomie'),
+                $this->fks);
      $this->assertIsA($r, folksoResponse,
                       'rmRes does not return a folksoResponse object');
      $this->assertEqual($r->status, 200, 
@@ -317,9 +350,9 @@ class testOfResource extends  UnitTestCase {
      $h = isHead(new folksoQuery(array(),
                                   array('folksores' => 'http://example.com/1'),
                                   array()),
-                     $cred,
-                     new folksoDBconnect('localhost', 'tester_dude',
-                                         'testy', 'testostonomie'));
+                 new folksoDBconnect('localhost', 'tester_dude',
+                                     'testy', 'testostonomie'),
+                 $this->fks3);
 
      $this->assertEqual($h->status, 404, 
                         'Removed resource still present in DB' . $r->status);
@@ -329,27 +362,28 @@ class testOfResource extends  UnitTestCase {
      $r = resEans(new folksoQuery(array(),
                                   array('folksores' => 'http://example.com/1'),
                                   array()),
-                  $this->cred,
-                  $this->dbc);
+                  $this->dbc,
+                  $this->fks);
      $this->assertIsA($r, folksoResponse,
                       'Problem with object creation');
      $this->assertEqual($r->status, 404,
                         'Should not be any ean13 data yet');
+     $this->fks2->startSession('marcelp-2010-001', true);
      $r2 = assocEan13(new folksoQuery(array(),
                                 array('folksores' => 'http://example.com/1',
                                       'folksoean13' => '1234567890123'),
                                 array()),
-                $this->cred,
                 new folksoDBconnect('localhost', 'tester_dude',
-                                    'testy', 'testostonomie'));
-
+                                    'testy', 'testostonomie'),
+                      $this->fks2);
+     $this->fks3->startSession('marcelp-2010-001', true);
      $r2bis = assocEan13(new folksoQuery(array(),
                                 array('folksores' => 'http://example.com/2',
                                       'folksoean13' => '1234567890123'),
                                 array()),
-                $this->cred,
-                new folksoDBconnect('localhost', 'tester_dude',
-                                    'testy', 'testostonomie'));
+                         new folksoDBconnect('localhost', 'tester_dude',
+                                    'testy', 'testostonomie'),
+                         $this->fks3);
      $this->assertEqual($r2->status, 200,
                         'Failed to associate ean13 to resource, following test may fail');
      $cl = getTagsIds(new folksoQuery(array(),
@@ -357,17 +391,18 @@ class testOfResource extends  UnitTestCase {
                                             'folksoean13' => 1,
                                             'folksodatatype' => 'xml'),
                                       array()),
-                      $this->cred,
                       new folksoDBconnect('localhost', 'tester_dude',
-                                                'testy', 'testostonomie'));               
+                                          'testy', 'testostonomie'),
+                      $this->fks);               
+
      $this->assertEqual($cl->status, 200,
                         'Ean data not there');
 
      $r3 = resEans(new folksoQuery(array(),
                                    array('folksores' => 'http://example.com/1'),
                                    array()),
-                   $this->cred, 
-                   $this->dbc2);
+                   $this->dbc2,
+                   $this->fks2);
      $this->assertIsA($r3, folksoResponse,
                       'This is not my beautiful folksoResponse object');
      $this->assertEqual($r3->status, 200,
@@ -381,14 +416,14 @@ class testOfResource extends  UnitTestCase {
 
 
    function testAssocEan13 () {
-     $cred = new folksoWsseCreds('zork');
+     $this->fks->startSession('marcelp-2010-001', true);
      $r = assocEan13(new folksoQuery(array(),
-                                array('folksores' => 'http://example.com/1',
+                                     array('folksores' => 'http://example.com/1',
                                       'folksoean13' => '1234567890123'),
-                                array()),
-                $cred,
-                new folksoDBconnect('localhost', 'tester_dude',
-                                    'testy', 'testostonomie'));
+                                     array()),
+                     new folksoDBconnect('localhost', 'tester_dude',
+                                         'testy', 'testostonomie'),
+                     $this->fks);
      $this->assertIsA($r, folksoResponse,
                       'assocEan13 does not return a folksoResponse object');
      $this->assertEqual($r->status, 200,
@@ -399,9 +434,9 @@ class testOfResource extends  UnitTestCase {
                                                   'folksoean13' => 1,
                                                   'folksodatatype' => 'xml'),
                                             array()),
-                            $cred,
-                            new folksoDBconnect('localhost', 'tester_dude',
-                                                'testy', 'testostonomie'));                 
+                      new folksoDBconnect('localhost', 'tester_dude',
+                                          'testy', 'testostonomie'),
+                      $this->fks2);
      $this->assertPattern('/ean13/i',
                           $cl->body(),
                           'Did not find "ean13" in xml response');
@@ -412,37 +447,60 @@ class testOfResource extends  UnitTestCase {
    }
 
    function testModify() {
-     $cred = new folksoWsseCreds('zork'); 
      /** setup oldean **/
+     $this->fks->startSession('marcelp-2010-001', true);
      $su = assocEan13(new folksoQuery(array(),
                                 array('folksores' => 'http://example.com/1',
                                       'folksoean13' => '1234567890123'),
                                       array()),
-                      $cred,
                       new folksoDBconnect('localhost', 'tester_dude',
-                                          'testy', 'testostonomie'));
+                                          'testy', 'testostonomie'),
+                      $this->fks);
+
+     $this->assertEqual($su->status,
+                        200,
+                        'Could not associate ean13 with example/1');
+
+     $cl = getTagsIds(new folksoQuery(array(),
+                                            array('folksores' => 1,
+                                                  'folksoean13' => 1,
+                                                  'folksodatatype' => 'xml'),
+                                            array()),
+                      new folksoDBconnect('localhost', 'tester_dude',
+                                          'testy', 'testostonomie'),
+                      $this->fks2);
+
+     $this->assertPattern('/ean13/i',
+                          $cl->body(),
+                          'Did not find "ean13" in xml response');
+       
+     $this->assertPattern('/1234567890123/',
+                          $cl->body(),
+                          'Did not find ean13 data'. $cl->body());
+
+
      /** do the deed **/
      $r = modifyEan13(new folksoQuery(array(),
                                      array('folksores' => 'http://example.com/1',
                                            'folksooldean13' => '1234567890123',
                                            'folksonewean13' => '1111111111111'),
                                      array()),
-                     $cred,
                      new folksoDBconnect('localhost', 'tester_dude',
-                                         'testy', 'testostonomie'));
+                                         'testy', 'testostonomie'),
+                      $this->fks);
      $this->assertIsA($r, folksoResponse,
                       'not returning folksoReponse object');
      $this->assertEqual($r->status, 200,
                         'Error message on ean13 modification' . $r->status . $r->status_message . $r->body());
      
      $cl = getTagsIds(new folksoQuery(array(),
-                                            array('folksores' => 1,
-                                                  'folksoean13' => 1,
-                                                  'folksodatatype' => 'xml'),
-                                            array()),
-                            $cred,
-                            new folksoDBconnect('localhost', 'tester_dude',
-                                         'testy', 'testostonomie'));
+                                      array('folksores' => 1,
+                                            'folksoean13' => 1,
+                                            'folksodatatype' => 'xml'),
+                                      array()),
+                      new folksoDBconnect('localhost', 'tester_dude',
+                                          'testy', 'testostonomie'),
+                      $this->fks3);
      $this->assertEqual(200, $cl->status,
                         'Problem getting resource data back.');
      $this->assertPattern('/111111111/', $cl->body(),
@@ -454,23 +512,24 @@ class testOfResource extends  UnitTestCase {
 
 
    function testDeleteEan13 () {
-     $cred = new folksoWsseCreds('zork'); 
      /** setup oldean **/
+     $this->fks->startSession('marcelp-2010-001', true);
      $su = assocEan13(new folksoQuery(array(),
                                 array('folksores' => 'http://example.com/1',
                                       'folksoean13' => '1234567890123'),
                                       array()),
-                      $cred,
                       new folksoDBconnect('localhost', 'tester_dude',
-                                          'testy', 'testostonomie'));
+                                          'testy', 'testostonomie'),
+                      $this->fks);
      /** do the deed **/
      $r = deleteEan13(new folksoQuery(array(),
                                      array('folksores' => 'http://example.com/1',
                                            'folksoean13' => '1234567890123'),
                                      array()),
-                     $cred,
                      new folksoDBconnect('localhost', 'tester_dude',
-                                         'testy', 'testostonomie'));
+                                         'testy', 'testostonomie'),
+                      $this->fks);
+
      $this->assertIsA($r, folksoResponse,
                       'not returning folksoReponse object');
      $this->assertEqual(200, $r->status,
@@ -479,13 +538,13 @@ class testOfResource extends  UnitTestCase {
                         );
 
      $cl = getTagsIds(new folksoQuery(array(),
-                                            array('folksores' => 1,
-                                                  'folksoean13' => 1,
-                                                  'folksodatatype' => 'xml'),
-                                            array()),
-                            $cred,
-                            new folksoDBconnect('localhost', 'tester_dude',
-                                         'testy', 'testostonomie'));
+                                      array('folksores' => 1,
+                                            'folksoean13' => 1,
+                                            'folksodatatype' => 'xml'),
+                                      array()),
+                      new folksoDBconnect('localhost', 'tester_dude',
+                                          'testy', 'testostonomie'),
+                      $this->fks3);
      $this->assertNoPattern('/1234567/', $cl->body(),
                             'Still finding old ean13');
 

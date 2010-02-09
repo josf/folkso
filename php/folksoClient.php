@@ -26,10 +26,10 @@ class folksoClient {
   var $query_code;
 
   /**
-   * Arguments: HOST, URI, METHOD. URI means the local part of the
-   * URI. Right now we assume that it starts with a leading slash,
-   * though that should probably be fixed.
    *
+   * @param $host String URL of webserver, or 'localhost'
+   * @param $path String Local part of url 
+   * @param $method String HTTP method (GET, POST, possibly others)
    */
   function __construct ($host, $path, $method) {
     $this->host = $host;
@@ -77,12 +77,13 @@ class folksoClient {
     $this->getfields .=  "$key=$val";
   }
   /**
-   * Datastyle indicators (html, xml, etc.) should be very short,
-   * probably one character (h = html, x = xml, etc.)
+   * Datastyle indicators (html, xml, etc.) should be short: (html,
+   * xml, etc.) The datastyle arg will be passed as a parameter (not
+   * Content_Type)
    *
    */
   function set_datastyle ($str) {
-    if (strlen($str) > 3) { 
+    if (strlen($str) > 4) { 
       $str = substr($str, 0, 3);
     }
     $this->datastyle = $str;
@@ -113,6 +114,17 @@ class folksoClient {
     return  $result;
   }
 
+
+  public function assemble_url ($host, $path) { 
+    if (substr($path, 0, 1) == '/') {
+      $path = substr($path, 1);
+    }
+    if (substr($host, -1) == '/') {
+      $host = substr($host, 0, strlen($host) -1);
+    }
+    return $host . '/' . $path;
+  }
+
   /**
    * Returns the appropriate request string depending on method and
    * the different fields involved. Mostly this is a problem for GETs
@@ -120,7 +132,7 @@ class folksoClient {
    *
    */
   function build_req () {
-    $uri = $this->host . '/'. $this->path;
+    $uri = $this->assemble_url($this->host, $this->path);
     $get = '';
     if (strtolower($this->method) == 'get') {
       /* add '?' */
@@ -135,7 +147,7 @@ class folksoClient {
         $get .= '&';
       }
       if (strlen($this->datastyle) > 0) {
-        $get .= 'folksodatastyle=' . $this->datastyle;
+        $get .= 'folksodatatype=' . $this->datastyle;
       }
       return $uri . $get;
     }

@@ -28,6 +28,22 @@ class testOffolksoDataDisplay extends  UnitTestCase {
     $this->assertEqual($this->dd->type, 'xhtml');
   }
 
+  function testDefaultSetting () {
+    $dd = new folksoDataDisplay(
+                                array('type' => 'xml',
+                                      'argsperline' => 1,
+                                      'lineformat' => '<hooha>>XXX</hooha>',
+                                      'start' => '<zork>',
+                                      'end' => '</zork>'));
+    $this->assertIsA($dd, folksoDataDisplay,
+                     'Not creating one-style object');
+    $this->assertEqual($dd->type, 'xml',
+                       'Default display style not being automatically set');
+
+
+  }
+
+
   function testOutput () {
     $this->assertEqual(
                        $this->dd->line("bob", "slob"),

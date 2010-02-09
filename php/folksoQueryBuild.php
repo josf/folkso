@@ -50,16 +50,23 @@
    * $arg_arr is an assoc array of assoc arrays (HoH) where the keys
    * in the primary array are the names of the "variables" used in the
    * SQL strings. The value corresponding to each key is another assoc
-   * array containing two keys, 'func' and 'value'. 'func' can be a
-   * function that must return a boolean and is called to determine
-   * whether or not a given sequence is to be included. 'value' is the
-   * value that will be inserted in the place of <<<variable_name>>>,
-   * whatever 'variable_name' happens to be. 
+   * array containing one or two keys, 'func' and 'value'. 'value' is
+   * required, 'func' is optional.
+   *
+   * In the simplest case (ie. just inserting a value), each secondary
+   * array can have just one key, 'values', which is associated with
+   * whatever value you want to insert.
+   *
+   * 'func' can be a function that must return a boolean and is
+   * called to determine whether or not a given sequence is to be
+   * included. 'value' is the value that will be inserted in the place
+   * of <<<variable_name>>>, whatever 'variable_name' happens to be.
    *
    * If the value of 'func' is undefined or false, no function is
    * called to determine whether or not an SQL sequence should be
    * included. If 'value' evaluates to TRUE, the sequence is included,
-   * and otherwise it is not. 
+   * and otherwise it is not.  TODO: The purpose of 'func' is not very
+   * clear here.
    *
    * 
    */
