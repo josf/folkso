@@ -87,7 +87,6 @@ if (! $fks->sessionId
                       }
 
                       window.handleOpenIDResponse = function (openid_args){
-                        alert("Incoming!");
                         $("#bucket").html("Verifying OpenID response");
                         $.ajax({type: "get",
                               url: fK.oid.oidpath + "oid_popup_end.php",
@@ -124,7 +123,6 @@ if (! $fks->sessionId
                         fK.fn.pollFolksoCookie();
 
                       }
-                      alert(fK.cf.autocompleteUrl);
                       $("input.fKTaginput", fK.cf.container).autocomplete(fK.cf.autocompleteUrl);
                     });
 
