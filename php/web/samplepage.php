@@ -74,7 +74,10 @@ if (! $fks->sessionId
   $(document).ready(function()
                     {
                       var hostAndPath = 'http://www.fabula.org/tags/';
-                      fK.init({autocompleteUrl: hostAndPath + 'tagcomplete.php'});
+                      fK.init({
+                        autocompleteUrl: hostAndPath + 'tagcomplete.php',
+                            postResUrl: hostAndPath + 'resource.php'
+                            });
 
                       fK.oid.logopath = "/tags/logos/";
                       fK.oid.oidpath = "/tags/fdent/";
@@ -124,6 +127,8 @@ if (! $fks->sessionId
 
                       }
                       $("input.fKTaginput", fK.cf.container).autocomplete(fK.cf.autocompleteUrl);
+                      $(".fKTagbutton").click(fK.fn.tagres_react($("input.fKTaginput"),
+                                                                  $("ul.tagcloud")));
                     });
 
 
@@ -135,10 +140,9 @@ if (! $fks->sessionId
 <h1>Test des fonctions  </h1>
 <div id="bloc_orange" style="padding-top: 0pt; padding-bottom: 0pt;">
   <b class="niftycorners"><h3>Mots clés: </h3></b>
-  <div class="tagcloud">
+  <ul class="tagcloud">
   <?php print $fp->basic_cloud(); ?>
-  </b>
-  </div>
+  </ul>
   </div>
 <?php
 
