@@ -268,6 +268,16 @@ $(document).ready(function() {
 
                            });
 
+                      test("tagres_react (without server)", function() 
+                          {
+                              expect(1);
+                              var button = $(".droptag", "#restarget"),
+                              tagit = fK.fn.tagres_react($("#restarget"), 
+                                                         $("#restarget"));
+                              ok(typeof tagit == "function",
+                                 "tagres_react not returning function");
+                          });
+
                       test("Error function composing", function()
                            {
                                expect(4);
