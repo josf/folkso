@@ -13,6 +13,7 @@ require_once('folksoPageData.php');
 require_once('folksoPageDataMeta.php');
 require_once('folksoTagRes.php');
 require_once('folksoRelatedTags.php');
+require_once('folksoSession.php');
 /**
  * A class that regroups the functions that might be called from a
  * page: presentation, certain database interaction, tag clouds etc.
