@@ -422,47 +422,49 @@
                      error404 = function(xhr, msg)
                      {
                          if (/Tag does not exist/i.test(xhr.statusText)) {
-                             alert("Le tag '" + tag + "' n'existe pas encore");    
+                             alert("Le tag '" + tag + "' n'existe pas encore");
                          }
-                         else { 
+                         else {
                              alert("Erreur : cette page n'est pas encore indexée");
                          }
                      },
                      error403 = function(xhr, msg) { alert("Loggez-vous"); },
-                     errorOther = function(xhr, msg) { 
-                         alert("Erreur: " + xhr.statusText); 
+                     errorOther = function(xhr, msg) {
+                         alert("Erreur: " + xhr.statusText);
                      };
                      error404.errorcode = 404; error403.errorcode = 403;
-                     
-                     $.ajax(fK.fn.resPostObject({folksotag: tag, 
+                     alert("tag " + tag + " and url " + url );
+
+
+                     $.ajax( fK.fn.resPostObject({folksotag: tag,
                                                  folksores: url },
                                                 onSuccess,
-                                                fK.fn.errorChoose(error404, 
+                                                fK.fn.errorChoose(error404,
                                                                   error403,
-                                                                  errorOther)));
+                                                                  errorOther))); 
                  };
              },
 
 
              /**
               * This function allows us to listen for the addition of
-              * a folksosess cookie. Specifically, this might happen via 
+              * a folksosess cookie. Specifically, this might happen via
               * a facebook login.
               */
-             pollFolksoCookie: function () 
+             pollFolksoCookie: function ()
              {
-                 $('body').bind('loggedIn', function() { 
-                                    fK.loginStatus = true; 
+                 $('body').bind('loggedIn', function() {
+                                    fK.loginStatus = true;
                                     if (fK.onLoggedIn.length > 0) {
                                         for (var i = 0; i < fK.onLoggedIn.length; i++) {
                                             fK.onLoggedIn[i]();
-                                        } 
+                                        }
                                     }
                                 });
                  $('body').bind('loggedOut', function() {fK.loginStatus = false; });
 
-                 var poller = 
-                     setInterval(function() 
+                 var poller =
+                     setInterval(function()
                                  {
                                      if (/folksosess/.test(document.cookie)) {
                                          $('body').trigger('loggedIn');
