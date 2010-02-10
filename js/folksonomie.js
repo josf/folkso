@@ -49,6 +49,7 @@
           * 
           */
          init: function(config) {
+             jQuery.ajaxSettings.traditional = true;
              for (var prop in config) {
 
                  // here we check for jQuery selectors (yes, this is
