@@ -11,12 +11,11 @@
                     {
                       var hostAndPath = 'http://www.fabula.org/tags/';
                       fK.init({
-                        autocompleteUrl: hostAndPath + 'tagcomplete.php',
-                            postResUrl: hostAndPath + 'resource.php'
+                                  autocompleteUrl: hostAndPath + 'tagcomplete.php',
+                                  postResUrl: hostAndPath + 'resource.php',
+                                  oIdLogoPath: "/tags/logos/",
+                                  oIdPath: '/tags/fdent/'
                             });
-
-                      fK.oid.logopath = "/tags/logos/";
-                      fK.oid.oidpath = "/tags/fdent/";
 
                       function setupLogin () {
                         return function (ev) {
