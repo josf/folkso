@@ -447,7 +447,46 @@
                                                                   errorOther))); 
                  };
              },
+             /**
+              * Get tag cloud and add each tag as an individual <li> to the 
+              * target elemnt
+              * 
+              * testxml is _very_ optional (testing only, bypasses the ajax call)
+              */
+             buildCloud: function(target, url, testxml) {
+                 
+                 var success =
+                     function(xml, status, xhr) {
+                         $("tag", xml)
+                             .each(function() 
+                                   {
+                                       var elem = $(this);
+                                       target.append($("<li><a href=\"" 
+                                                       + $("link", elem).attr("href")
+                                                       + "\" class=\"cloudclass" 
+                                                       + $("weight", elem).text()
+                                                       + "\">" 
+                                                       + $("display", elem).text()
+                                                       + "</a></li>"));
 
+                                   });
+                     }, 
+                 fail = function (xhr, status, errorThrown){
+                     alert(status);
+                 };
+
+                 if (testxml) {
+                     success(testxml, "Bogus status");
+                 }
+                 else 
+                 {
+                     $.ajax(fK.fn.resGetObject( {folksores: url || window.location,
+                                                 folksodatatype: "xml",
+                                                 folksoclouduri: 1},
+                                                success,
+                                                fail));
+                 }
+             },
 
              /**
               * This function allows us to listen for the addition of

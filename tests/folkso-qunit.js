@@ -503,6 +503,24 @@ $(document).ready(function() {
                                   "dropres_react not returning a function");
                            });
 
+
+                      test("Tag cloud formatting (no ajax)", function()
+                           {
+                               var targ = $("<ul>");
+                               fK.fn.buildCloud(targ, "http://nothing.com",
+'<?xml version="1.0"?> <tagcloud resource="http://www.fabula.org/actualites/article13644.php">  <tag> <numid>13012</numid> <display>Dessons, Gérard</display> <link href="http://www.fabula.org/tags/tag.php/folksotag=dessons-gerard&amp;folksodatatype=html" rel="alternate"/><weight>1</weight> <tagnorm>dessons-gerard</tagnorm></tag>  <tag> <numid>5781</numid> <display>Imitation</display> <link href="http://www.fabula.org/tags/tag.php/folksotag=imitation&amp;folksodatatype=html" rel="alternate"/><weight>5</weight> <tagnorm>imitation</tagnorm></tag>  <tag> <numid>6165</numid> <display>Peinture</display> <link href="http://www.fabula.org/tags/tag.php/folksotag=peinture&amp;folksodatatype=html" rel="alternate"/><weight>5</weight> <tagnorm>peinture</tagnorm></tag>  <tag> <numid>15145</numid> <display>Rembrandt</display> <link href="http://www.fabula.org/tags/tag.php/folksotag=rembrandt&amp;folksodatatype=html" rel="alternate"/><weight>2</weight> <tagnorm>rembrandt</tagnorm></tag>  <tag> <numid>7551</numid> <display>spectateurs</display> <link href="http://www.fabula.org/tags/tag.php/folksotag=spectateurs&amp;folksodatatype=html" rel="alternate"/><weight>4</weight> <tagnorm>spectateurs</tagnorm></tag>  <tag> <numid>6483</numid> <display>Tableau</display> <link href="http://www.fabula.org/tags/tag.php/folksotag=tableau&amp;folksodatatype=html" rel="alternate"/><weight>2</weight> <tagnorm>tableau</tagnorm></tag>');
+
+                               expect(4);
+                               ok($("li", targ).length > 2,
+                                  "Did not find at least 3 list elements added");
+                               ok(/Tableau/.test(targ.html()),
+                                  "Did not find display element ('Tableau') in cloud");
+                               ok(/cloudclass/.test(targ.html()),
+                                  "Did not find cloudclass in cloud");
+                               ok(/www\.fabula\.org\/tags/.test(targ.html()),
+                                  "Did not find url in cloud");
+                           });
+
                       module("Login status");
                       test("pollFolksoCookie", function()
                            {
