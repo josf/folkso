@@ -2,9 +2,9 @@
 require_once('unit_tester.php');
 require_once('reporter.php');
 require_once('folksoSession.php');
-include('folksoTags.php');
-include('/var/www/resource.php');
-include('dbinit.inc');
+require_once('folksoTags.php');
+require_once('/var/www/resource.php');
+require_once('dbinit.inc');
 
 class testOfResource extends  UnitTestCase {
   public $dbc;
@@ -239,6 +239,14 @@ class testOfResource extends  UnitTestCase {
      $this->assertIsA($r, folksoResponse, "tagResource not returning Response object");
      $this->assertEqual($r->status, 200,
                         "tagResource throws error");
+
+
+     $this->assertTrue(strlen($r->body()) > 10,
+                       "tag resource body looks too short (< 10 chars)");
+     $this->assertPattern('/tagone/', $r->body(),
+                          "Tagnorm missing from response");
+     $this->assertPattern('/<tag>/', $r->body(),
+                          "xml boilerplate seems to be missing from response");
      $r2 = getTagsIds(new folksoQuery(array(),
                                   array('folksores' => 'http://example.com/4'),
                                   array()),
@@ -281,7 +289,7 @@ class testOfResource extends  UnitTestCase {
    }
 
    function testTagResourceAgain () {
-     $sid = $this->fks->startSession('michl-2010-001', true);
+     $sid = $this->fks->startSession('michl-2005-001', true);
      $this->assertTrue($this->fks->validateSid($sid),
                        'Invalid sid');
      $r = tagResource(new folksoQuery(array(),
@@ -292,8 +300,9 @@ class testOfResource extends  UnitTestCase {
                       $this->fks);
      $this->assertIsA($r, folksoResponse,
                       'Not even getting a response object back');
+
      $this->assertEqual($r->status, 403,
-                        'Not getting 403 back on unauthorized user');
+                        'Not getting 403 back on unauthorized user'); 
 
    }
 
@@ -309,7 +318,7 @@ class testOfResource extends  UnitTestCase {
                 $this->fks);
 
      $this->assertIsA($r, folksoResponse,
-                      'unTag not return a folksoResponse object');
+                      'unTag does not return a folksoResponse object');
      $this->assertEqual($r->status, 200,
                         'Error code on unTag request: ' . $r->status);
      $h = getTagsIds(new folksoQuery(array(),

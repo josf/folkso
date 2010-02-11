@@ -501,7 +501,16 @@ function tagResource (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) 
   }
 
   $r->setOk(200, "Tagged");
-  $r->t("Resource has been tagged");
+
+
+  $row = $i->result->fetch_object();
+  $df = new folksoDisplayFactory();
+  $dd = $df->tageventResponse();
+  $r->t($dd->startform());
+
+  $link = new folksoTagLink($row->finaltag);
+  $r->t($dd->line($link->getLink(), $row->finalresource));
+  $r->t($dd->endform());
 
   return $r;
 }

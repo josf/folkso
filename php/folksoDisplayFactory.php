@@ -309,5 +309,24 @@ class folksoDisplayFactory {
 
   }
 
+
+/**
+ * To be used on successful tagging of a resource, to send back the
+ * new link.
+ */
+ public function tageventResponse () {
+   return new folksoDataDisplay(
+                                array('type' => 'xml',
+                                      'start' =>
+                                      "<?xml version=\"1.0\"?>\n"
+                                      ."<tagevent>\n",
+                                      'titleformat' => '',
+                                      'end' => "</tagevent>\n",
+                                      'lineformat' =>
+                                      "\t<tag>XXX</tag>\n"
+                                      ."\t<resource>XXX</resource>\n",
+                                      'argsperline' => 2));
+ }
+
 }
 ?>
