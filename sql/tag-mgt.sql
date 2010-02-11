@@ -149,6 +149,8 @@ BEGIN
         DECLARE existing_meta_id INT UNSIGNED;
         DECLARE out_status VARCHAR(255);
         DECLARE already_tagged INT UNSIGNED;
+        declare tag_result varchar(255);
+        declare resource_result varchar(255);
 
 IF (tag_id) THEN
         SELECT id
@@ -223,6 +225,19 @@ ELSE
         meta_id = existing_meta_id,
         userid = userid_var;
 END IF;
+
+select tagnorm
+       into tag_result
+       from tag
+       where id = existing_tag_id;
+
+select uri_raw
+       into resource_result
+       from resource
+       where id = existing_uri;
+
+select tag_result as finaltag, resource_result as finalresource;
+
 
 END$$
 DELIMITER ;
