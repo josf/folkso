@@ -425,7 +425,13 @@
                          alert("Il faut choisir un tag d'abord"); return;
                      }
                      var tag = tagbox.val(),
-                     onSuccess = function() { target.append("<li>" + tag + "</li>"); },
+                     onSuccess = function(xml, status, xhr) { 
+                         tagbox.val("");                         
+                         target.append("<li><a href=\"" 
+                                       + $("tag", xml).text() 
+                                       + "\">"
+                                       + tag + "</a></li>"); 
+                     },
                      error404 = function(xhr, msg)
                      {
                          if (/Tag does not exist/i.test(xhr.statusText)) {
@@ -484,6 +490,7 @@
                  }
                  else 
                  {
+
                      $.ajax(fK.fn.resGetObject( {folksores: url || window.location,
                                                  folksodatatype: "xml",
                                                  folksoclouduri: "1"},
