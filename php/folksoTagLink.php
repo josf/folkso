@@ -27,9 +27,8 @@ class folksoTagLink extends folksoLink {
     $t = $tag ? $tag : $this->identifier;
     $this->getlink = 
       $this->loc->web_url
-      . $this->loc->get_path . 'tag.php/folksotag='
-      . $t
-      . "&folksodatatype=$type";
+      . $this->loc->get_path . 'tagview.php/tag='
+      . $t;
     return $this->getlink;
   }
 
