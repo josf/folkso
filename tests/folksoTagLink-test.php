@@ -1,8 +1,8 @@
 <?php
 require_once('unit_tester.php');
 require_once('reporter.php');
-include('folksoTags.php');
-include('folksoTagLink.php');
+require_once('folksoTags.php');
+require_once('folksoTagLink.php');
 
 class testOffolksoTagLink extends  UnitTestCase {
 
