@@ -218,7 +218,7 @@
                          data: data, success: success, error: error};
              },
              resGetObject: function(data, success, error) {
-                 return { url: fK.cf.getResUrl, type: "get", 
+                 return { url: fK.cf.getResUrl, type: "get", dataType: "xml",
                           data: data, success: success, error: error };
              },
              resPostObject: function (data, success, error) {
@@ -472,7 +472,7 @@
                                    });
                      }, 
                  fail = function (xhr, status, errorThrown){
-                     alert(status);
+                     alert(xhr.status + " " + xhr.statusText + " " + xhr.responseText);
                  };
 
                  if (testxml) {
@@ -482,7 +482,7 @@
                  {
                      $.ajax(fK.fn.resGetObject( {folksores: url || window.location,
                                                  folksodatatype: "xml",
-                                                 folksoclouduri: 1},
+                                                 folksoclouduri: "1"},
                                                 success,
                                                 fail));
                  }
