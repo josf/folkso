@@ -207,7 +207,7 @@ SELECT COUNT(*)
        FROM tagevent t
        WHERE (t.resource_id = existing_uri)
              AND (t.tag_id = existing_tag_id)
-             AND (userid = 9999)
+             AND (userid = userid_var)
        LIMIT 1;
 
 IF (already_tagged > 0) THEN
