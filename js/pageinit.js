@@ -9,10 +9,11 @@
 
   $(document).ready(function()
                     {
-                      var hostAndPath = 'http://www.fabula.org/tags/';
+                      var hostAndPath = 'http://www.fabula.org/tags/', tagAddTarget;
                       fK.init({
                                   autocompleteUrl: hostAndPath + 'tagcomplete.php',
                                   postResUrl: hostAndPath + 'resource.php',
+                                  getResUrl: hostAndPath + 'resource.php',
                                   oIdLogoPath: "/tags/logos/",
                                   oIdPath: '/tags/fdent/'
                             });
@@ -27,7 +28,7 @@
                       window.handleOpenIDResponse = function (openid_args){
                         $("#bucket").html("Verifying OpenID response");
                         $.ajax({type: "get",
-                              url: fK.oid.oidpath + "oid_popup_end.php",
+                              url: fK.cf.oIdPath + "oid_popup_end.php",
                               data: openid_args,
                               success: function(msg) {
                               $("#bucket").html(msg);
@@ -61,8 +62,28 @@
                         fK.fn.pollFolksoCookie();
 
                       }
-                      $("input.fKTaginput", fK.cf.container).autocomplete(fK.cf.autocompleteUrl);
+
+                        $("input.fKTaginput", fK.cf.container).autocomplete(fK.cf.autocompleteUrl);
+
+                        function tagAddTarget() {
+                            if ($("#bloc_orange ul").length > 0) {
+                                return $("#bloc_orange ul");
+                            }
+                            else {
+                                var newbox = $('<div id="bloc_orange">'
+                                           + '<b class="niftycorners">'
+                                           + '<h3>Mots clés : </h3>'
+                                           + '<div class="tagcloud">'
+                                           + '<ul class="cloudlist">'
+                                           + '</ul></div></div>');
+//                                fK.fn.buildCloud($("ul", newbox));
+                                $("#bloc_folkso").after(newbox);
+                                return $("ul", newbox);
+                            }
+                        }
+
                       $(".fKTagbutton").click(fK.fn.tagres_react($("input.fKTaginput"),
-                                                                  $("ul.tagcloud")));
+                                                                 tagAddTarget()));
                     });
+
 
