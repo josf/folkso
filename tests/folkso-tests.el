@@ -39,8 +39,9 @@
 
 
 ;; basic xml get
-(url-retrieve-synchronously
- "http://www.fabula.org/tags/resource.php?folksores=http://www.fabula.org/actualites/article13644.php&folksodatatype=xml")
+(fk-run-req 
+  "http://www.fabula.org/tags/resource.php?folksores=http://www.fabula.org/actualites/article13644.php&folksodatatype=xml&folksoclouduri=1")
+
 
 (url-retrieve-synchronously "http://localhost/user.php?_=1265366823256&folksotag=dyn1&folksouid=gustav-2010-001&folksodatatype=json")
 

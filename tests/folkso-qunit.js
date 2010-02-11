@@ -250,6 +250,57 @@ $(document).ready(function() {
                                      "Incorrect id in resource data");
 
                            });
+                      module("Ajax object builders");
+                      test("tagGetObject", function() 
+                           {
+                               expect(6);
+                               var thing = 
+                                   fK.fn.tagGetObject({ 
+                                                          folksothis: "a", folksothat: "b" },
+                                                      function() { return 1; },
+                                                      function() { return 2; });
+                               ok(thing.data, "Data object is missing");
+                               equal(thing.data.folksothis, "a",
+                                     "Incorrect data back, expecting 'a'");
+                               ok($.isFunction(thing.success), 
+                                  "success should be a function");
+                               ok($.isFunction(thing.error),
+                                  "error should be a function");
+                               ok(thing.url, "Url should be present");
+                               ok(thing.type, "type should be present");
+                           });
+
+
+                      test("resPostObject", function()
+                           {
+
+                               expect(7);
+                               var
+                               suck = function() { return 1; },
+                               fail = function() { return 2; },
+                               thing = 
+                                   fK.fn.resPostObject({
+                                                           folksothis: "a",
+                                                           folksothat: "b"
+                                                       },
+                                                       suck,
+                                                       fail);
+
+                               ok(thing.data, "Data object is missing");
+                               equal(thing.data.folksothis, "a",
+                                     "Incorrect data back, expecting 'a'");
+                               ok($.isFunction(thing.success), 
+                                  "success should be a function");
+                               ok($.isFunction(thing.error),
+                                  "error should be a function");
+                               ok(thing.url, "Url should be present");
+                               ok(thing.type, "type should be present");
+
+                               equal(thing.url, "http://localhost/resource.php",
+                                     "Incorrect url set");
+
+                           });
+
                       module("Basic event stuff");
                       test("droptag_react (without ajax)", function() 
                            {
@@ -277,6 +328,24 @@ $(document).ready(function() {
                               ok(typeof tagit == "function",
                                  "tagres_react not returning function");
                           });
+
+                      /* setup ajax call  */
+                      var ibox = $("<input type=\"text\">"),
+                      target = $("<ul>"),
+                      tagbutton = $("<a href=\"#\">");
+
+                      ibox.val("tagone");
+                      tagbutton.click(fK.fn.tagres_react(ibox, target));
+
+/*                      asyncTest("tagres_react (with server)", 1, function()
+                           {
+                               tagbutton.trigger("click");
+                               ok(/tagone/.test(target.html()),
+                                  "Did not find 'tagone' in target list");
+                               start();
+                           });*/
+                               
+
 
                       test("Error function composing", function()
                            {
@@ -432,6 +501,24 @@ $(document).ready(function() {
                                expect(1);
                                ok(typeof fK.fn.dropres_react == "function",
                                   "dropres_react not returning a function");
+                           });
+
+
+                      test("Tag cloud formatting (no ajax)", function()
+                           {
+                               var targ = $("<ul>");
+                               fK.fn.buildCloud(targ, "http://nothing.com",
+'<?xml version="1.0"?> <tagcloud resource="http://www.fabula.org/actualites/article13644.php">  <tag> <numid>13012</numid> <display>Dessons, Gérard</display> <link href="http://www.fabula.org/tags/tag.php/folksotag=dessons-gerard&amp;folksodatatype=html" rel="alternate"/><weight>1</weight> <tagnorm>dessons-gerard</tagnorm></tag>  <tag> <numid>5781</numid> <display>Imitation</display> <link href="http://www.fabula.org/tags/tag.php/folksotag=imitation&amp;folksodatatype=html" rel="alternate"/><weight>5</weight> <tagnorm>imitation</tagnorm></tag>  <tag> <numid>6165</numid> <display>Peinture</display> <link href="http://www.fabula.org/tags/tag.php/folksotag=peinture&amp;folksodatatype=html" rel="alternate"/><weight>5</weight> <tagnorm>peinture</tagnorm></tag>  <tag> <numid>15145</numid> <display>Rembrandt</display> <link href="http://www.fabula.org/tags/tag.php/folksotag=rembrandt&amp;folksodatatype=html" rel="alternate"/><weight>2</weight> <tagnorm>rembrandt</tagnorm></tag>  <tag> <numid>7551</numid> <display>spectateurs</display> <link href="http://www.fabula.org/tags/tag.php/folksotag=spectateurs&amp;folksodatatype=html" rel="alternate"/><weight>4</weight> <tagnorm>spectateurs</tagnorm></tag>  <tag> <numid>6483</numid> <display>Tableau</display> <link href="http://www.fabula.org/tags/tag.php/folksotag=tableau&amp;folksodatatype=html" rel="alternate"/><weight>2</weight> <tagnorm>tableau</tagnorm></tag>');
+
+                               expect(4);
+                               ok($("li", targ).length > 2,
+                                  "Did not find at least 3 list elements added");
+                               ok(/Tableau/.test(targ.html()),
+                                  "Did not find display element ('Tableau') in cloud");
+                               ok(/cloudclass/.test(targ.html()),
+                                  "Did not find cloudclass in cloud");
+                               ok(/www\.fabula\.org\/tags/.test(targ.html()),
+                                  "Did not find url in cloud");
                            });
 
                       module("Login status");

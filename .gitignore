@@ -44,3 +44,6 @@ folksologfile
 /php/web/GRTAGS
 /php/web/GSYMS
 /php/web/GTAGS
+/js/temp.js
+/js/compiler.jar
+/js/folksonomie.min.js
