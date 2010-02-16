@@ -7,6 +7,23 @@
  * 
  */
 
+function update_user_box() {
+    var user_box = document.getElementById("user");
+    user_box.innerHTML = "<span>"
+                  + '<fb:profile-pic uid="loggedinuser" facebook-logo="true">'
+                  + '</fb:profile-pic>'
+                  + 'Bienvenue, <fb:name uid="loggedinuser" useyou="false"></fb:name>.'
+                  + ' Vous êtes enregistré avec votre compte Facebook.'
+                  + '</span>';
+
+                  FB.XFBML.Host.parseDomTree();
+}
+
+
+fK.fb.onLogin = function() {
+        return 1;
+};
+
   $(document).ready(function()
                     {
                       var hostAndPath = 'http://www.fabula.org/tags/', tagAddTarget;
@@ -40,18 +57,26 @@
 
                         $('body').bind('loggedIn',
                                        function() {
+
                                          $("#fbkillbox", fK.cf.container).hide();
                                          $(".fKTagbutton").show();
                                          $(".fKTaginput", fK.cf.container).show();
                                          $(".fKLoginButton", fK.cf.container).hide();
                                          $("fb:login-button").hide();
-                                         $("ul.provider_list").hide();
-                                       });
+                                           $("#fbstuff").hide();
 
+                                         $("ul.provider_list").hide();
+                                           if (FB) {
+                                           FB.XFBML.Host.parseDomTree();
+                                           }
+                                       });
+                        fK.fn.pollFolksoCookie();
                           
                       if (fK.loginStatus) {
-                        $("#fbkillbox", fK.cf.container).hide();
-                        $(".fKLoginButton", fK.cf.container).hide();
+                          $("#fbstuff").hide();
+                          $("#fbkillbox").hide();
+                          $(".fKLoginButton").hide();
+                          $("fb:login-button").hide();
                       }
                       else {
                         $(".fKTagbutton", fK.cf.container).hide();
@@ -59,7 +84,7 @@
                         $(".fKLoginButton").click(setupLogin());
 
                         /* Sets up event handler: $("body").bind("loggedIn") */
-                        fK.fn.pollFolksoCookie();
+
 
                       }
 
