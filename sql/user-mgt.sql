@@ -3,69 +3,125 @@
 delimiter $$
 drop procedure if exists create_user$$
 create procedure create_user(
-                  nick_arg varchar(70),
+                  userid_base_arg varchar(70),
+                  oid_url_val text,
+                  fb_id bigint,
                   firstname varchar(255),
                   lastname varchar(255),
                   email varchar(255),
-                  oid_url_val text,
-                  fb_id int,
                   institution varchar(255),
                   pays varchar(50),
                   fonction varchar(50)
                  )      
 begin
 
---declare variables
+-- declare variables
+
+declare fb_test bigint default 0;
+declare oid_test varchar(255) default '';
 declare uid varchar(79) default '';
-declare nick varchar(70);
+declare url varchar(100) default '';
+declare userid_base varchar(70);
 declare counting int default 1;
+declare basecounting int default 0;
 declare loopcheck int default 0;
 declare err_msg varchar(255) default '';
 declare test_uid varchar(79) default '';
+declare test_url varchar(100) default '';
 
-set nick = lcase(nick_arg);
+
+set userid_base = lcase(userid_base_arg);
 set counting = 1;
 
-if length(nick) < 5 then
-   set err_msg =  'ERROR: nick is less than 5 characters long';
+if length(userid_base) < 10 then
+   set err_msg =  'ERROR: useridbase is less than 5 characters long';
 elseif length(oid_url_val) = 0 and fb_id = 0 then
    set err_msg = 'ERROR: no login id data (fb and oid are empty)';
 elseif length(oid_url_val) > 0 and fb_id > 0 then
    set err_msg = 'ERROR: we have both fb and oid. This will not work';
+
 else
 
--- build userid from nick
+-- build userid from userid_base
   UID: loop
-    set uid = make_userid(nick, counting);
-    -- test for existing, otherwise increment final field: xxxx-2009-001
+    set uid = make_userid(userid_base, counting);
+
+    -- test for existing
     select userid
     into test_uid
     from users
     where userid = uid;
 
-    if test_uid then 
-    -- else increment and loop again
-        set counting = counting + 1;
+    if length(test_uid) > 0 then 
+    -- oops, already taken so we increment and loop again
+
+        set counting = counting + 1; 
+        set test_uid = '';
         if counting > 999 then
            set err_msg = 'ERROR: incremented up to 999 by mistake';
            leave UID;
         end if;      
     else    
-       leave UID;       -- no existing uid, we are done
+       leave UID;       -- no existing uid, we are done. 
+                        -- uid should be correctly defined
     end if;          
  end loop UID;
 
- end if;  -- end of data checks (we avoid the loop)
+-- build the user url
+-- decided to store this separately so that it can be customized later without 
+-- touching the structure of the userid
+ URL: loop
+  set url = make_urlbase(userid_base, basecounting);
+  select urlbase into test_url
+   from users
+   where urlbase = url;
 
+  if length(test_url) > 0 then
+     set basecounting = basecounting + 1;
+     set test_url = '';
+     if basecounting > 999 then 
+       set err_msg = 'ERROR: incremented up to 999 with basecounting';
+       leave URL;
+     end if;
+  else
+    leave URL;    -- no existing url, we are done. variable is ready to be 
+  end if;
+ end loop URL;
+
+ end if;  -- end of data checks (we avoid the loop if we already have errors)
+
+
+   -- check for existing oid_url or fb_id
+   if length(oid_url_val) > 0 then
+       select oid_url into oid_test from oid_urls
+       where oid_url = oid_url_val;
+       
+       if length(oid_test) > 0 then
+          set err_msg = 'ERROR: oid_url already exists, cannot create user';
+       end if;
+  elseif fb_id > 0 then
+       select fb_uid into fb_test from fb_ids
+       where fb_uid = fb_id;
+
+       if fb_test > 0 then
+          set err_msg = 'ERROR: fb_id already exists, cannot create user';
+      end if;
+  end if;
 
   if length(err_msg) > 1 then
-     select err_msg;
+     select err_msg as error_message;
   else
    start transaction;
    insert into users 
-        (userid, firstname, lastname, nick, email, institution, pays, fonction)
-        values
-        (uid, firstname, lastname, nick, email, institution, pays, fonction);
+        (userid, urlbase) values (uid, url);
+
+
+   if length(concat(firstname, lastname, email, institution, pays, fonction)) > 0 then
+      insert into user_data
+      (userid, firstname, lastname, email, institution, pays, fonction)
+      values
+      (uid, firstname, lastname, email, institution, pays, fonction);
+   end if;
 
    if length(oid_url_val) > 1 then
    insert into oid_urls
@@ -79,7 +135,8 @@ else
           (uid, fb_id);
    end if;
    commit;
-   select userid, firstname, lastname, nick, email, institution, pays, fonction
+
+   select userid, firstname, lastname, email, institution, pays, fonction
    from users 
    where userid = uid;
 end if;

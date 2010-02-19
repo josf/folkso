@@ -1,29 +1,40 @@
 drop table if exists oid_urls;
 drop table if exists fb_ids;
 drop table if exists sessions;
+drop table if exists user_data;
 drop table if exists users;
 
+
 create table users
-       (userid varchar(255) primary key,
+       (userid varchar(255) primary key not null,
        userno  integer unsigned auto_increment not null, -- not to be used but mysql wants it
+       urlbase varchar(100) not null,  -- string to be used to reference this user in urls
        created datetime not null,
        last_visit datetime not null,
+       index unumb (userno), 
+       index uurl (urlbase)
+       )
+ENGINE=InnoDB;
+grant select on users to 'folkso'@'localhost';
+grant select, insert, update, delete on users to 'folkso-rw'@'localhost';
+
+create table user_data
+       (userid varchar(255) primary key,
        firstname varchar(255) not null,
        lastname varchar(255) not null,
        nick varchar(70) not null,
        email varchar(255) not null, 
        institution varchar(255) null,
        pays varchar(50) null,
-       fonction varchar(50) null,
-       index unumb (userno)
-       )
+       fonction varchar(50) null, 
+       foreign key (userid) references users (userid))
 ENGINE=InnoDB;
-grant select on users to 'folkso'@'localhost';
-grant select, insert, update, delete on users to 'folkso-rw'@'localhost';
+grant select on user_data to 'folkso'@'localhost';
+grant select, insert, update, delete on user_data to 'folkso-rw'@'localhost';
 
 create table fb_ids
        (userid varchar(255) primary key,
-       fb_uid integer unsigned,
+       fb_uid bigint unsigned not null,
        foreign key (userid) references users (userid),
        index fb (fb_uid))
 ENGINE=InnoDB;
@@ -42,7 +53,8 @@ grant select, insert, update, delete on oid_urls to 'folkso-rw'@'localhost';
 create or replace view fb_users
        as select fb_uid, u.userid as userid, last_visit, lastname, firstname, nick, email, institution, pays, fonction
           from users u 
-          join fb_ids f on f.userid = u.userid;
+          join fb_ids f on f.userid = u.userid
+          join user_data ud on u.userid = ud.userid;
 grant select on fb_users to 'folkso'@'localhost';
 grant select on fb_users to 'folkso-rw'@'localhost';
 
@@ -50,7 +62,8 @@ grant select on fb_users to 'folkso-rw'@'localhost';
 create or replace view oi_users
        as select oid_url, u.userid as userid, last_visit, lastname, firstname, nick, email, institution, pays, fonction
        from users u
-       join oid_urls o on u.userid = o.userid;
+       join oid_urls o on u.userid = o.userid
+       join user_data ud on u.userid = ud.userid;
 
 create table sessions  
        (token char(64) primary key,
