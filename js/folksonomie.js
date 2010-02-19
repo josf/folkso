@@ -519,6 +519,7 @@
                  var poller =
                      setInterval(function()
                                  {
+
                                      if (/folksosess/.test(document.cookie)) {
                                          $('body').trigger('loggedIn');
                                          clearInterval(poller);
