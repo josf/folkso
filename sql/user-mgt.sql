@@ -109,3 +109,27 @@ return uid;
 
 end$$
 delimiter ;
+
+
+delimiter $$
+drop function if exists make_urlbase$$
+create function make_urlbase(
+       inbase varchar(70),
+       basecounting int
+       )
+returns varchar(100) deterministic
+begin
+
+declare outurl varchar(100) default '';
+
+if basecounting > 999 then 
+   return '';
+end if;
+
+if basecounting = 0 then
+   return inbase;
+else
+   return concat(inbase, basecounting);
+end if;
+end$$
+delimiter ;
