@@ -50,3 +50,7 @@ folksologfile
 /info/folkso-gribouillis.jpg
 /info/folkso-ui-diagram.xcf
 /info/folksonomie-db-schema.mwb
+/js/deps/jquery.autocomplete.js
+/js/deps/jquery.folksodeps.min.js
+/js/deps/jquery.jqote.js
+/js/deps/temp.js
