@@ -8,7 +8,7 @@ function test_db_init() {
                   'memoize_tagnormal', 
                   'note', 'replace_characters', 'resource',
                   'tag',  'urltest',
-                  'metatag',  'fb_ids', 'oid_urls', 'sessions', 'users_rights', 'users' );
+                  'metatag', 'user_data', 'fb_ids', 'oid_urls', 'sessions', 'users_rights', 'users' );
   $dbc = new folksoDBconnect('localhost', 'tester_dude', 'testy', 'testostonomie');
   $i = new folksoDBinteract($dbc);
   
