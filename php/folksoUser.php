@@ -173,14 +173,8 @@ class folksoUser {
    */  
   public function Writeable() {
     /** check presence of vars **/
-    if ( empty($this->firstName) ||
-         empty($this->lastName) ||
-         empty($this->email) ||
+    if ( empty($this->urlBase) ||
          empty($this->loginId)){
-      return false;
-    }
-
-    if ($this->validEmail() === false){
       return false;
     }
     return true;
