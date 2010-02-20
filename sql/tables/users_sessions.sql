@@ -88,6 +88,8 @@ insert into rights (rightid, service) values ('delete_othertaggage', 'folkso');
 insert into rights (rightid, service) values ('supertag', 'folkso');
 insert into rights (rightid, service) values ('delete_tags', 'folkso');
 insert into rights (rightid, service) values ('delete', 'folkso_user');
+insert into rights (rightid, service) values ('redac', 'folkso'), ('admin', 'folkso'), ('tag', 'folkso');
+
 
 
 create table users_rights
