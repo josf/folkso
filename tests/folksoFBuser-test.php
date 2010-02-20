@@ -34,11 +34,11 @@ class testOffolksoFBuser extends  UnitTestCase {
          $this->assertTrue($fb->validateLoginId('123456'),
                            '123456 not validating as FB id');
          $this->assertTrue($fb->exists('543210'),
-                           'rambo-2009-001 at 543210 not showing up');
+                           'rambo-2010-001 at 543210 not showing up');
          $this->assertTrue($fb->userFromLogin('543210'),
                            'userFromLogin returns false');
-         $this->assertEqual($fb->nick, 'rambo',
-                            'Incorrect nick');
+         $this->assertEqual($fb->urlBase, 'rambo',
+                            'Incorrect urlbase');
 
          $fb->setFirstName('Frank');
          $this->assertEqual('Frank', $fb->firstName,
@@ -76,7 +76,7 @@ class testOffolksoFBuser extends  UnitTestCase {
 
    function testCreateUser() {
      $u = new folksoFBuser($this->dbc);
-     $u->loadUser(array('nick' => 'chuckb',
+     $u->loadUser(array('urlbase' => 'chuckb',
                         'firstname' => 'Charles',
                         'lastname' => 'Baudelaire',
                         'email' => 'cb@interflora.com',
