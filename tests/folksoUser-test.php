@@ -82,6 +82,17 @@ class testOffolksoUser extends  UnitTestCase {
                       folksoRightStore,
                       'No fkRightStore at $u->rights');
 
+     $u->loadUser(array('userid' => 'marcelp-2010-001',
+                        'urlbase' => 'marcelp'));
+     $u->loadAllRights();
+     $this->assertTrue($u->checkUserRight("folkso", "tag"),
+                       "user marcelp should have right 'tag'");
+     $this->assertFalse($u->checkUserRight("folkso", "admin"),
+                        "user marcelp should not have right 'admin'");
+     $this->assertTrue($u->checkUserRight("folkso", "create"),
+                       "user marcelp should have right 'create'");
+                                           
+
    }
 
    function testExists() {
