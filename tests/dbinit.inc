@@ -32,8 +32,8 @@ function test_db_init() {
 
     foreach($user as $k => $v){
       print $k;
-      $i->sp_query(sprintf("call create_user('%s', '%s', '%s', '%s', '%s', %d, '', '', '')",
-                           $k, $v[0], $v[1], $v[2], $v[4], $v[3]));
+      $i->sp_query(sprintf("call create_user('%s', '%s', %d, '%s', '%s', '%s', '', '', '')",
+                           $k, $v[4], $v[3], $v[0], $v[1], $v[2]));
       print $i->error_info();
     }
 
