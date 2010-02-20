@@ -51,19 +51,29 @@ grant select  on oid_urls to 'folkso'@'localhost';
 grant select, insert, update, delete on oid_urls to 'folkso-rw'@'localhost';
 
 create or replace view fb_users
-       as select fb_uid, u.userid as userid, last_visit, lastname, firstname, nick, email, institution, pays, fonction
+       as select 
+          fb_uid, 
+          u.userid as userid, last_visit, 
+          ud.lastname as lastname, ud.firstname as firstname, ud.email as email, 
+          ud.institution as institution, ud.pays as pays, ud.fonction as fonction
           from users u 
           join fb_ids f on f.userid = u.userid
-          join user_data ud on u.userid = ud.userid;
+          left join user_data ud on u.userid = ud.userid;
 grant select on fb_users to 'folkso'@'localhost';
 grant select on fb_users to 'folkso-rw'@'localhost';
 
 
 create or replace view oi_users
-       as select oid_url, u.userid as userid, last_visit, lastname, firstname, nick, email, institution, pays, fonction
+       as select 
+       oid_url,
+       u.userid as userid, last_visit,    
+       ud.lastname as lastname, ud.firstname as firstname, ud.email as email, 
+       ud.institution as institution, ud.pays as pays, ud.fonction as fonction
        from users u
        join oid_urls o on u.userid = o.userid
-       join user_data ud on u.userid = ud.userid;
+       left join user_data ud on u.userid = ud.userid;
+grant select on oi_users to 'folkso'@'localhost';
+grant select on oi_users to 'folkso-rw'@'localhost';
 
 create table sessions  
        (token char(64) primary key,
