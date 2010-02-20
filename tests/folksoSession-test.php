@@ -111,7 +111,7 @@ class testOffolksoSession extends  UnitTestCase {
      $this->assertTrue($u->rights->hasRights(),
                        'user right store is still empty');
      $this->assertTrue($u->checkUserRight('folkso', 'tag'),
-                       'checkUserRights() not returning true');
+                       'checkUserRight() not returning true');
    }
 
 }//end class

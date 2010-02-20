@@ -94,7 +94,7 @@ class folksoSession {
    */
  public function startSession ($uid, $debug = null) {
     if ($this->validateUid($uid) === false) {
-      throw new Exception('Missing userid');
+      throw new userException('Missing userid');
     }
 
     $sess = $this->newSessionId($uid);
@@ -223,7 +223,7 @@ class folksoSession {
    $i = new folksoDBinteract($this->dbc);
    $sql = '';
    if (is_null($service) || is_null($right)){
-     $sql = 'select u.userid, '
+     $sql = 'select u.userid, u.urlbase as urlbase,'
        .'  ud.firstname as firstname,  ud.lastname as lastname, ud.email as email '
        .' from sessions s '
        .' join users u on u.userid = s.userid '
@@ -232,7 +232,7 @@ class folksoSession {
        ." and s.started > now() - 1209600 ";
    }
    else {
-     $sql = 'select u.userid as userid, ud.firstname as firstname, '
+     $sql = 'select u.userid as userid, u.urlbase as urlbase, ud.firstname as firstname, '
        .'  ud.lastname as lastname, ud.email as email, '
        .' dr.rightid, dr.service '
        .' from sessions s '
@@ -251,12 +251,12 @@ class folksoSession {
      $u = new folksoUser($this->dbc);
      $res = $i->result->fetch_object();
      $u->loadUser(array(
-                          'nick' => $res->nick,
-                          'firstname' => $res->firstname,
-                          'lastname' => $res->lastname,
-                          'email' => $res->email,
-                          'userid' => $res->userid
-                          ));
+                        'urlbase' => $res->urlbase,
+                        'firstname' => $res->firstname,
+                        'lastname' => $res->lastname,
+                        'email' => $res->email,
+                        'userid' => $res->userid
+                        ));
 
      if (($right && $service) &&
          ($res->rightid == $right) &&
