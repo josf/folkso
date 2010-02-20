@@ -87,8 +87,8 @@ class testOffolksoSession extends  UnitTestCase {
          $this->assertIsA($u, folksoUser,
                           'userSession not returning folksoUser object');
 
-         $this->assertEqual($u->nick, 'gustav',
-                            'User nick not correctly retrieved' . $u->nick);
+         $this->assertEqual($u->firstName, 'Gustave',
+                            'First name not correctly retrieved: ' . $u->firstName);
 
    }
 

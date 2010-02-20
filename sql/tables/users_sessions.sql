@@ -53,7 +53,7 @@ grant select, insert, update, delete on oid_urls to 'folkso-rw'@'localhost';
 create or replace view fb_users
        as select 
           fb_uid, 
-          u.userid as userid, last_visit, 
+          u.userid as userid, u.urlbase as urlbase, last_visit, 
           ud.lastname as lastname, ud.firstname as firstname, ud.email as email, 
           ud.institution as institution, ud.pays as pays, ud.fonction as fonction
           from users u 
@@ -66,7 +66,7 @@ grant select on fb_users to 'folkso-rw'@'localhost';
 create or replace view oi_users
        as select 
        oid_url,
-       u.userid as userid, last_visit,    
+       u.userid as userid, u.urlbase as urlbase, last_visit,    
        ud.lastname as lastname, ud.firstname as firstname, ud.email as email, 
        ud.institution as institution, ud.pays as pays, ud.fonction as fonction
        from users u

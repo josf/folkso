@@ -41,8 +41,8 @@ class folksoUser {
    */
   public $rights;
 
-  private $required_fields = array('nick', 'email', 'firstname', 'lastname', 'loginid');
-  private $allowed_fields = array('nick', 'email', 'firstname', 'lastname', 'userid', 'loginid', 'institution', 'pays', 'fonction');
+  private $required_fields = array('email', 'firstname', 'lastname', 'loginid');
+  private $allowed_fields = array('email', 'firstname', 'lastname', 'userid', 'loginid', 'institution', 'pays', 'fonction');
 
 
   public function __construct (folksoDBconnect $dbc) {
@@ -50,18 +50,27 @@ class folksoUser {
     $this->rights = new folksoRightStore();
   }
 
-  public function setNick($nick) {
-    $this->nick = trim(strtolower($nick));
+  /**
+   * Will throw an exception on malformed urlbases
+   */
+  public function setUrlbase($ubase) {
+    $ubase = strtolower($ubase);
+    if ($this->validUrlbase($ubase)) {
+      $this->urlBase = $ubase;
+    }
+    else {
+      throw new badUrlbaseException("Bad urlbase: " . $ubase);
+    }
   }
 
   /**
-   * Nick must be lowercase, all letters and numbers, and at least 5
-   * characters long.
+   * urlbase must be lowercase, all letters and numbers, and at least 5
+   * characters long. Periods are allowed.
    */
-  public function validNick($nick = null){
-    $nick = $nick ? $nick : $this->nick;
-    if (preg_match('/^[a-z0-9]{5,}/',
-                   $nick) === 0){
+  public function validUrlbase($ubase = null){
+    $ubase = $ubase ? $ubase : $this->urlBase;
+    if (preg_match('/^[.a-z0-9]{5,}$/',
+                   $ubase) === 0){
       return false;
     }
     else {
@@ -167,14 +176,10 @@ class folksoUser {
     if ( empty($this->firstName) ||
          empty($this->lastName) ||
          empty($this->email) ||
-         empty($this->nick)  ||
          empty($this->loginId)){
       return false;
     }
 
-    if ($this->validNick() === false) {
-      return false;
-    }
     if ($this->validEmail() === false){
       return false;
     }
@@ -189,7 +194,7 @@ class folksoUser {
    * (typically an error message).final
    */
   public function loadUser ($params) {
-    $this->setNick($params['nick']);
+    $this->setUrlbase($params['urlbase']);
     $this->setFirstName($params['firstname']);
     $this->setLastName($params['lastname']);
     $this->setLoginId($params['loginid']);
@@ -216,14 +221,16 @@ class folksoUser {
 
    $i = new folksoDBinteract($this->dbc);
    $sql = "select "
-     ." userid, last_visit, lastname, firstname, nick, email, institution, pays, fonction "
+     ." userid, urlbase, last_visit, lastname, firstname, email, "
+     ." institution, pays, fonction "
      ." from "
      ." $view "
      ." where $login_column = '" . $i->dbescape($id) . "'";
 
    if ($service && $right){
      $sql = "select "
-       ." v.userid, last_visit, lastname, firstname, nick, email, institution, pays, fonction, ur.rightid "
+       ." userid, urlbase, last_visit, lastname, firstname, email, institution, "
+       ." pays, fonction, ur.rightid "
        ." from "
        ." $view v "
        ." left join users_rights ur on ur.userid = v.userid "
@@ -244,9 +251,9 @@ class folksoUser {
      break;
    case 'OK':
      $res = $i->result->fetch_object();
-     $this->loadUser(array('nick' => $res->nick,
-                           'loginid' => $id,
+     $this->loadUser(array('loginid' => $id,
                            'userid' => $res->userid,
+                           'urlbase' => $res->urlbase,
                            'firstname' => $res->firstname,
                            'lastname' => $res->lastname,
                            'email' => $res->email,
