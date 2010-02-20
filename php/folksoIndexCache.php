@@ -109,7 +109,7 @@ class folksoIndexCache {
     }
   } 
     
-  private function new_cache_filename () {
+  public function new_cache_filename () {
     return 
       $this->cache_prefix . 
       sprintf('%09d', rand(0, 999999999)) . 
