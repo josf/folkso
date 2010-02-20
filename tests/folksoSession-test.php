@@ -78,6 +78,11 @@ class testOffolksoSession extends  UnitTestCase {
 
          $this->assertFalse($s->checkSession($sess),
                             'the session should be gone now');
+
+   }
+
+   function testSession2 () {
+     $s = new folksoSession($this->dbc);
          $sess2 = $s->startSession('gustav-2010-001', true);
          $this->assertTrue($sess2,
                            'session creation failed');
