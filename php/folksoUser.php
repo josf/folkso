@@ -188,7 +188,17 @@ class folksoUser {
    * (typically an error message).final
    */
   public function loadUser ($params) {
-    $this->setUrlbase($params['urlbase']);
+    /** urlBase is necessary for user to be writeable, but we may need
+        to generate it after the user object is loaded, for instance
+        when we are not loading from the db but actually creating the
+        user for the first time.**/
+    if (isset($params['urlbase'])) {
+      $this->setUrlbase($params['urlbase']);
+    }
+    if (isset($params['userid'])) {
+      $this->setUid($params['userid']);
+    }
+
     $this->setFirstName($params['firstname']);
     $this->setLastName($params['lastname']);
     $this->setLoginId($params['loginid']);
@@ -196,12 +206,9 @@ class folksoUser {
     $this->setPays($params['pays']);
     $this->setFonction($params['fonction']);
     $this->setEmail($params['email']);
-    if ($params['userid']) {
-      $this->setUid($params['userid']);
-    }
 
     $this->Writeable();
-    return array(true);
+    return array($this);
   }
 
 
