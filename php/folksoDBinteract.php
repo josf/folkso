@@ -121,6 +121,14 @@ class folksoDBinteract {
   }
 
   /**
+   * @return mysql error code or empty string if no error has occurred.
+   */
+   public function errorCode () {
+     return isset($this->db->errno) ? $this->db->errno : null;
+   }
+  
+
+  /**
    * Depending on the result of the query, sets $this->result_status
    * to 'DBERR' (error), 'NOROWS' (no error, but no result set
    * returned), 'OK' (results returned).
@@ -136,6 +144,7 @@ class folksoDBinteract {
     $this->first_val = ''; // reset first_val for new query (just in case).
     $this->result = $this->db->query($query);
     $this->affected_rows = $this->db->affected_rows;
+    $this->latest_query = $query;
 
     /** some SQL operations do not return result sets. In this case we bail. **/
     if ($this->result instanceof MySQLi_Result) {

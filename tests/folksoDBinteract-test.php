@@ -29,12 +29,14 @@ class testOffolksoDBinteract extends  UnitTestCase {
 
   public function testDBConnectError () {
     $baddb = new folksoDBconnect('localhost', 'bob', '123456', 'nonexistantdb');
-    $this->expectException('Exception');
+    $this->expectException('dbConnectionException');
     $i = new folksoDBinteract($baddb); 
+    $this->assertTrue($i->errorCode(), "errorCode() not returning anything");
   }
 
   public function testUrl_from_id () {
-    $i = new folksoDBinteract($this->dbc);
+    $i = new folksoDBinteract(new folksoDBconnect('localhost', 'tester_dude', 
+                                                  'testy', 'testostonomie'));
     $this->assertEqual($i->url_from_id(3), 
                        'http://example.com/3',
                        'url_from_id not retrieving correct url.');
