@@ -33,7 +33,7 @@ declare test_url varchar(100) default '';
 set userid_base = lcase(userid_base_arg);
 set counting = 1;
 
-if length(userid_base) < 10 then
+if length(userid_base) < 5 then
    set err_msg =  'ERROR: useridbase is less than 5 characters long';
 elseif length(oid_url_val) = 0 and fb_id = 0 then
    set err_msg = 'ERROR: no login id data (fb and oid are empty)';
