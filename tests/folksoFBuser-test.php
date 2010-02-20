@@ -71,7 +71,7 @@ class testOffolksoFBuser extends  UnitTestCase {
          $this->assertTrue($fb->userFromLogin('543210'),
                            'userFromLogin returns false');
          $this->assertEqual($fb->urlBase, 'rambo',
-                            'Incorrect urlbase');
+                            'Incorrect urlbase: ' . $fb->urlBase);
 
          $fb->setFirstName('Frank');
          $this->assertEqual('Frank', $fb->firstName,
@@ -109,10 +109,11 @@ class testOffolksoFBuser extends  UnitTestCase {
 
    function testCreateUser() {
      $u = new folksoFBuser($this->dbc);
-     $u->loadUser(array('urlbase' => 'chuckb',
+     $u->loadUser(array('urlbase' => 'charlesbaudelaire',
                         'firstname' => 'Charles',
                         'lastname' => 'Baudelaire',
                         'email' => 'cb@interflora.com',
+                        'userid' => 'charlesbaud-2010-001',
                         'loginid' => 99119911));
      $this->assertIsA($u, folksoFBuser,
                       'problem with object creation');
@@ -123,7 +124,27 @@ class testOffolksoFBuser extends  UnitTestCase {
      $ex = new folksoFBuser($this->dbc2);
      $this->assertTrue($ex->exists(99119911),
                        'User does not seem to have been created');
+     
+     $u2 = new folksoFBuser($this->dbc);
+     $this->assertTrue($u2->userFromLogin(99119911),
+                       "Should return true here, user loading should have succeeded");
+   }
 
+
+   function testGenerateUrlbase () {
+     $u = new folksoFBuser($this->dbc);
+     $u->loadUser(array('firstname' => 'Francis',
+                        'lastname' => 'Ponge',
+                        'email' => 'fponge@parti-choses.fr',
+                        'loginid' => 1234567890));
+     $u->writeNewUser();
+     
+     $u2 = new folksoFBuser($this->dbc2);
+     $u2->userFromLogin(1234567890);
+     $this->assertEqual($u2->firstName, 'Francis',
+                        'Did not get first name back after writing');
+     $this->assertEqual($u2->urlBase, 'francis.ponge',
+                        'Did not get urlbase back after writing: ' . $u2->urlBase);
 
    }
 }//end class

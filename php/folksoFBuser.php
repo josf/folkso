@@ -79,7 +79,12 @@ class folksoFBuser extends folksoUser{
  * use for existing users, which will throw exceptions.
  */
  public function writeNewUser () {
+   if (! $this->validUrlbase($this->urlBase)){
+     $this->urlbaseFromFBname();
+   }
+
     if (! $this->Writeable()){
+      /** This probably means that we did not get a valid urlbase **/
      throw new userException('User object is not writeable, cannot write to DB');
    }
 
@@ -91,6 +96,8 @@ class folksoFBuser extends folksoUser{
    if ($i->db_error()) {
      throw new dbConnectionException($i->error_info());
    }
+
+   
 
    $i->sp_query(
                 sprintf("call create_user("
