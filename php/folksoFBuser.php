@@ -148,5 +148,51 @@ class folksoFBuser extends folksoUser{
   }
  
 
+ /**
+  * By default, overwrites $this->urlBase, so make sure that is what
+  * you want.
+  *
+  * NB: We have hardcoded the locale here, via setlocale(). If there
+  * are problems with accented characters, this may need to be
+  * changed.
+  * 
+  * @uses firstName
+  * @uses lastName
+  * @uses urlBase
+  * @param $name String Optional Facebook name string
+  * @param $overwrite Optional default true. False if you just want a string returned
+  */
+ public function urlbaseFromFBname ($name = null, $overwrite = true) {
+    if ($name) {
+      $this->useFBname($name, true);
+    }
+    elseif (! ($this->firstName || $this->lastName)) {
+      throw new userException('No information to construct base url');
+    }
+
+    if ((strlen($this->firstName) > 1) && (strlen($this->lastName) > 1)) {
+      $base = $this->firstName . '.' . $this->lastName;
+    }
+    else {
+      $base = $this->firstName . $this->lastName;  // one of these is empty
+    }
+    $base = strtolower($base);
+    $base = str_replace(' ', '', $base);
+    setlocale(LC_CTYPE, 'en_US.utf8');
+
+    //    $base = mb_convert_encoding($base, 'UTF-8', "auto");
+    $base = iconv('UTF-8', 'ASCII//TRANSLIT', $base);
+    if (strlen($base) > 4) {
+      if ($overwrite) {
+        $this->urlBase = $base; 
+      }
+      return $base;
+    }
+    else {
+      throw userException('urlbase is too short');
+    }
+  }
+ 
+
 }
 ?>

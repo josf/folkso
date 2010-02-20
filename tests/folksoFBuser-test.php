@@ -18,6 +18,39 @@ class testOffolksoFBuser extends  UnitTestCase {
                                        'testy', 'testostonomie');
   }
 
+  function testNaming () {
+    $fb = new folksoFBuser($this->dbc);
+    $url = $fb->urlbaseFromFBname("Dennis Menace");
+    $this->assertEqual($fb->firstName, "Dennis",
+                       "urlbaseFromFBname not setting firstName");
+    $this->assertEqual($fb->lastName, "Menace",
+                       "urlbaseFromFBname not setting lastName");
+    $this->assertTrue(is_string($url),
+                      "urlbaseFromFBname not returning string");
+    $this->assertEqual($url, "dennis.menace",
+                       "urlbaseFromFBname returning incorrect url: " . $url);
+    $this->assertEqual($url, $fb->urlBase,
+                       "urlbaseFromFBname not setting urlBase property");
+
+    /* Spaces in name */
+    $url2 = $fb->urlbaseFromFBname("Dennis the Menace");
+    $this->assertEqual($url2, "dennisthe.menace",
+                       "urlbaseFromFBname not removing spaces from lastname: " 
+                       . $url2);
+    $this->assertEqual($fb->lastName, "Menace",
+                       "Incorrect last name when more than 1 word" . $fb->lastName);
+    $this->assertEqual($fb->firstName, "Dennis the",
+                       "Incorrect first name when more than 1 word: " . $fb->firstName);
+
+    /* Accented characters */
+    $url3 = $fb->urlbaseFromFBname("Hervé François");
+    $this->assertEqual($url3, "herve.francois",
+                       "urlbaseFromFBname not switching out accented characters"
+                       . $url3);
+
+
+  }
+
 
    function testFBuser () {
          $fb   = new folksoFBuser($this->dbc);
