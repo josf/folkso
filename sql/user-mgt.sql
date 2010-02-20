@@ -22,6 +22,7 @@ declare oid_test varchar(255) default '';
 declare uid varchar(79) default '';
 declare url varchar(100) default '';
 declare userid_base varchar(70);
+declare urlbase_var varchar(100) default '';
 declare counting int default 1;
 declare basecounting int default 0;
 declare loopcheck int default 0;
@@ -29,9 +30,13 @@ declare err_msg varchar(255) default '';
 declare test_uid varchar(79) default '';
 declare test_url varchar(100) default '';
 
+-- dots are allowed in the urlbase but not in the userid
+set urlbase_var = lcase(userid_base_arg);
+set userid_base = replace(urlbase_var, '.', '');
+set url = urlbase_var;
 
-set userid_base = lcase(userid_base_arg);
 set counting = 1;
+set basecounting = 0;
 
 if length(userid_base) < 5 then
    set err_msg =  'ERROR: useridbase is less than 5 characters long';
@@ -50,7 +55,8 @@ else
     select userid
     into test_uid
     from users
-    where userid = uid;
+    where userid = uid
+    limit 1;
 
     if length(test_uid) > 0 then 
     -- oops, already taken so we increment and loop again
@@ -71,12 +77,14 @@ else
 -- decided to store this separately so that it can be customized later without 
 -- touching the structure of the userid
  URL: loop
-  set url = make_urlbase(userid_base, basecounting);
+
   select urlbase into test_url
    from users
-   where urlbase = url;
+   where urlbase = url
+   limit 1;
 
   if length(test_url) > 0 then
+     set url = make_urlbase(urlbase_var, basecounting);
      set basecounting = basecounting + 1;
      set test_url = '';
      if basecounting > 999 then 
