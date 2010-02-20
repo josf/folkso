@@ -81,30 +81,35 @@ class folksoOIuser extends folksoUser {
  */
  public function writeNewUser () {
    if (! $this->Writeable()){
-     throw new Exception('User object is not writeable, cannot write to DB');
+     throw new userException('User object is not writeable, cannot write to DB');
    }
 
    if ($this->exists($this->loginId)) {
-     throw new Exception('User already exists, cannot be created');
+     throw new userException('User already exists, cannot be created');
    }
 
    $i = new folksoDBinteract($this->dbc);
    if ($i->db_error()) {
-     throw new Exception('DB connect error: ' . $i->error_info());
+     throw new dbConnectionException($i->db->errno,
+                                     $i->latest_query,
+                                     $i->db->error);
    }
 
    $i->sp_query(
-                sprintf("call create_user('%s', '%s', '%s', '%s', '%s', 0, '%s', '%s', '%s')",
-                        $i->dbescape($this->nick),
+                sprintf("call create_user('%s', '%s', 0, '%s', '%s', '%s', '%s', '%s', '%s')",
+                        $i->dbescape($this->urlBase),
+                        $i->dbescape($this->loginId),
                         $i->dbescape($this->firstName),
                         $i->dbescape($this->lastName),
                         $i->dbescape($this->email),
-                        $i->dbescape($this->loginId),
                         $i->dbescape($this->institution),
                         $i->dbescape($this->pays),
                         $i->dbescape($this->fonction)));
+
    if ($i->result_status == 'DBERR') {
-     throw new Exception('DB query error on create user: ' . $i->error_info());
+     throw new dbQueryException($i->db->errno,
+                                $i->latest_query,
+                                'create_user problem: ' . $i->db->error);
    }
  }
 }

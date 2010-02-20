@@ -29,7 +29,7 @@ class testOffolksoOIuser extends  UnitTestCase {
 
     $this->assertFalse($u->writeable,
                        'initial writable state should be false');
-    $simple_u = $u->loadUser(array('nick' => 'bobert',
+    $simple_u = $u->loadUser(array('urlbase' => 'slobbo',
                                    'firstname' => 'Bobness',
                                    'lastname' => 'Justaguy',
                                    'email' => 'sloink@zoink.com',
@@ -38,21 +38,17 @@ class testOffolksoOIuser extends  UnitTestCase {
                       'Basic user creation fails');
     $this->assertTrue($u->Writeable(),
                       'Writeable state incorrect: should be writeable now');
-    $this->assertEqual($u->nick, 'bobert',
+    $this->assertEqual($u->urlBase, 'slobbo',
                        'Not retreiving nick correctly');
     $this->assertEqual($u->firstName, 'Bobness',
                        'Not retreiving first name correctly');
 
-    $this->assertTrue($u->validNick('abcde'),
-                      'Nick validation of "abcde" fails');
-    $this->assertFalse($u->validNick('a'),
-                       'Nick validation incorrect: single character should fail');
-    $this->assertTrue($u->validNick('abcdefghijklm'),
-                      'Nick validation incorrect. Long password should pass.');
-    $this->assertTrue($u->validNick('abc123'),
-                      'Nick validation incorrect. Should accept numbers');
-    $this->assertFalse($u->validNick('abc_def'),
-                       'Nick validation incorrect. Should not accept underscore');
+    $this->assertTrue($u->validUrlbase('abcde'),
+                      'Validation of "abcde" as urlbase fails');
+    $this->assertFalse($u->validUrlbase('a'),
+                       'Urlbase validation incorrect: single character should fail');
+    $this->assertFalse($u->validUrlbase('abc_def'),
+                       'Urlbase validation incorrect. Should not accept underscore');
 
     $this->assertFalse($u->validEmail("zork"), 
                        'Not detecting incomplete email (zork)');
@@ -104,7 +100,7 @@ class testOffolksoOIuser extends  UnitTestCase {
 
          $marcel = new folksoOIuser($this->dbc4);
          $marcel->userFromLogin('http://flickr.com/marcelp');
-         $this->assertEqual($marcel->nick, 'marcelp',
+         $this->assertEqual($marcel->urlBase, 'marcelp',
                             'Not retreiving correct nick for marcelp');
 
 
@@ -116,12 +112,12 @@ class testOffolksoOIuser extends  UnitTestCase {
                           'userFromLogin should not return false');
          $this->assertTrue($gus->Writeable(),
                            'userFromLogin does not fetch a writeable user' );
-         $this->assertEqual($gus->userid, 'gustav-2009-001',
+         $this->assertEqual($gus->userid, 'gustav-2010-001',
                             'Not retreiving userid');
-         $this->assertEqual($gus->nick, 'gustav',
-                            'Not retreiving correct nick');
-         $this->assertTrue(strlen($gus->nick) > 2,
-                           'nick is too short or does not exist');
+         $this->assertEqual($gus->urlBase, 'gustav',
+                            'Not retreiving correct urlbase');
+         $this->assertTrue(strlen($gus->urlBase) > 2,
+                           'urlbase is too short or does not exist');
          $this->assertEqual($gus->firstName, 'Gustave',
                             'Not retrieving correct first name');
          $this->assertEqual($gus->email, 'gflaub@sentimental.edu',
@@ -133,7 +129,7 @@ class testOffolksoOIuser extends  UnitTestCase {
 
    function testCreation () {
          $claud = new folksoOIuser($this->dbc);
-         $claud->loadUser(array('nick' => 'paulc',
+         $claud->loadUser(array('urlbase' => 'paulc',
                                 'firstname' => 'Paul',
                                 'lastname' => 'Claudel',
                                 'email' => 'pclaudel@vatican.com',
@@ -146,7 +142,7 @@ class testOffolksoOIuser extends  UnitTestCase {
                            'User does not seem to have been created');
 
          $bad = new folksoOIuser($this->dbc3);
-         $bad->loadUser(array('nick' => 'celine75',
+         $bad->loadUser(array('urlbase' => 'celine75',
                               'firstname' => 'Ferdy',
                               'lastname' => 'Céline',
                               'email' => 'f.celine@fn.fr'));
@@ -160,8 +156,8 @@ class testOffolksoOIuser extends  UnitTestCase {
 
      $this->assertIsA($u, folksoOIuser,
                       'Problem with object creation');
-     $this->assertEqual($u->nick, 'marcelp',
-                        'Incorrect nick with userFromLogin');
+     $this->assertEqual($u->urlBase, 'marcelp',
+                        'Incorrect urlBase with userFromLogin');
      $this->assertTrue($u->rights->hasRights(),
                        'RightStore is reporting empty');
      $this->assertTrue($u->rights->checkRight('folkso', 'tag'),
@@ -173,7 +169,7 @@ class testOffolksoOIuser extends  UnitTestCase {
    function testAllRights () {
      $u = new folksoOIuser($this->dbc);
      $u->userFromLogin('http://flickr.com/marcelp');
-     $this->assertEqual($u->userid, 'marcelp-2009-001',
+     $this->assertEqual($u->userid, 'marcelp-2010-001',
                         'Did not load userid');
      $u->loadAllRights();
      $this->assertTrue($u->rights->hasRights(),
@@ -182,8 +178,8 @@ class testOffolksoOIuser extends  UnitTestCase {
                        'marcelp should have folkso/create');
      $this->assertTrue($u->checkUserRight('folkso', 'tag'),
                        'marcelp should have folkso/tag');
-     $this->assertFalse($u->checkUserRight('folkso', 'delete'),
-                        'marcelp should not have delete');
+     $this->assertTrue($u->checkUserRight('folkso', 'delete'),
+                        'marcelp should have delete because he has redac');
 
    }
 }//end class

@@ -223,7 +223,7 @@ class folksoUser {
 
    if ($service && $right){
      $sql = "select "
-       ." userid, urlbase, last_visit, lastname, firstname, email, institution, "
+       ." v.userid, urlbase, last_visit, lastname, firstname, email, institution, "
        ." pays, fonction, ur.rightid "
        ." from "
        ." $view v "
@@ -322,6 +322,7 @@ class folksoUser {
         return true;
       }
     }
+    return false;
   }
 }
 
