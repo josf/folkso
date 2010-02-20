@@ -7,8 +7,6 @@ require_once('folksoDBconnect.php');
 require('dbinit.inc');
 
 class testOffolksoDBinteract extends  UnitTestCase {
-  public $connection;
-  public $i;
   public $dbc;
   public $dbc2;
   public $dbc3;
