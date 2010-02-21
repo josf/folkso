@@ -29,17 +29,19 @@ class testOffolksoOIuser extends  UnitTestCase {
 
     $this->assertFalse($u->writeable,
                        'initial writable state should be false');
-    $simple_u = $u->loadUser(array('urlbase' => 'slobbo',
+    $simple_u = $u->loadUser(array(
                                    'firstname' => 'Bobness',
                                    'lastname' => 'Justaguy',
                                    'email' => 'sloink@zoink.com',
-                                   'loginid' => 'http://i.am.me'));
+                                   'loginid' => 'http://bobness_is_here.am.me'));
     $this->assertTrue($simple_u[0],
                       'Basic user creation fails');
+    $u->setUrlbase($u->autoUrlbase());
     $this->assertTrue($u->Writeable(),
                       'Writeable state incorrect: should be writeable now');
-    $this->assertEqual($u->urlBase, 'slobbo',
-                       'Not retreiving nick correctly');
+    $this->assertEqual($u->urlBase, 'bobnessishere',
+                       'Not retreiving urlbase correctly: ' 
+                       . $u->urlBase);
     $this->assertEqual($u->firstName, 'Bobness',
                        'Not retreiving first name correctly');
 
@@ -127,25 +129,56 @@ class testOffolksoOIuser extends  UnitTestCase {
 
    }
 
+   function testUrlbaseGeneration() {
+     $oi = new folksoOIuser($this->dbc);
+     $this->assertEqual($oi->autoUrlbase('http://yahoo.com/blahblahblah'),
+                        "blahblahblah",
+                        "Incorrect autoUrl for http://yahoo.com/blahblahblah: " .
+                        $oi->autoUrlbase('http://yahoo.com/blahblahblah'));
+                        
+     $myop = $oi->autoUrlbase('http://funkypeople.myopenid.com');
+     $this->assertEqual($myop, 'funkypeople',
+                        "Incorrect autoUrl for http://funkypeople.myopenid.com: " .
+                        $myop);
+     
+     preg_match("{^https?://([^.]+)\.haa}", "http://hooo.haa", $matcheroo);
+     $this->assertEqual($matcheroo[1], "hooo", "regexs, go figure");
+ 
+     $reallylong = 'http://onandonandonandonandonandonand--___onandonandonandonandonandonandonandonandonandonand';
+     $rl = $oi->autoUrlbase($reallylong);
+     $this->assertEqual($rl, substr($reallylong, -50),
+                        "really long not working: " . $rl);
+
+   }
+
+
    function testCreation () {
          $claud = new folksoOIuser($this->dbc);
-         $claud->loadUser(array('urlbase' => 'paulc',
+         $claud->loadUser(array(
                                 'firstname' => 'Paul',
                                 'lastname' => 'Claudel',
                                 'email' => 'pclaudel@vatican.com',
                                 'loginid' => 'http://pclaudel.openid.fr'));
-         $this->assertTrue($claud->Writeable(),
-                           'Claudel: failed to create writeable user');
+         $this->assertFalse($claud->Writeable(),
+                            'Writeable should return false here because there is no urlbase');
          $claud->writeNewUser();
          $ex = new folksoOIuser($this->dbc2);
          $this->assertTrue($ex->exists('http://pclaudel.openid.fr'),
                            'User does not seem to have been created');
 
+         $ex2 = new folksoOIuser($this->dbc2);
+         $ex2->userFromLogin('http://pclaudel.openid.fr');
+         $this->assertEqual($ex2->urlBase, 
+                            'pclaudel',
+                            "Incorrect url base retreived after automatic urlbase creation: " 
+                            . $ex2->urlBase);
          $bad = new folksoOIuser($this->dbc3);
          $bad->loadUser(array('urlbase' => 'celine75',
                               'firstname' => 'Ferdy',
                               'lastname' => 'Céline',
                               'email' => 'f.celine@fn.fr'));
+         $this->assertFalse($bad->Writeable(),
+                            "Celine user not in db, should not be writeable");
 
 
    }

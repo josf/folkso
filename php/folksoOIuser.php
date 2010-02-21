@@ -80,6 +80,10 @@ class folksoOIuser extends folksoUser {
  * @param 
  */
  public function writeNewUser () {
+   if (! $this->urlBase) {
+     $this->urlBase = $this->autoUrlbase($this->loginId);
+   }
+
    if (! $this->Writeable()){
      throw new userException('User object is not writeable, cannot write to DB');
    }
@@ -112,5 +116,42 @@ class folksoOIuser extends folksoUser {
                                 'create_user problem: ' . $i->db->error);
    }
  }
+
+ /**
+  * Extract a user id from an openid url. Returned string will be no
+  * more than 50 characters long and consist of all alphanumerics.
+  *
+  * @param $oid_url String (Optional) The url
+  * @return String
+  */
+ public function autoUrlbase ($oid_url = null) {
+   $oid_url = $oid_url ? $oid_url : $this->loginId;
+   
+   /* case 1: yahoo style, personal part is after slash,
+    * http://yahoo.com/blah/342Z3sd.cqufd */
+   if (preg_match("{^http://[^/]+/([^/]{5,})$}", $oid_url, $matches)) {
+     $base = $matches[1];
+   }
+   /* case 2: myopenid style, personal part as subdomain
+    * http://yourself.myopenid.com
+    */
+   elseif (preg_match("{http://([^.]+)}",
+                      $oid_url, $matching)) {
+     $base = $matching[1];
+   }
+   else {
+     /*
+      * Unknown pattern, we take twenty letters and call it a night
+      */
+     preg_match("{^https?://(.*)$}", $oid_url, $matcheesmo);
+     $base = $matcheesmo[1];
+   }
+   $base = preg_replace("/[^a-z0-9]/", '', $base);
+   if (strlen($base) > 50) {
+     $base = substr($base, -50);
+   }
+   return $base;
+ }
+
 }
 ?>
