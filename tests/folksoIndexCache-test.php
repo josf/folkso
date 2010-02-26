@@ -1,8 +1,12 @@
 <?php
-require_once('/usr/local/www/apache22/lib/simpletest/unit_tester.php');
-require_once('/usr/local/www/apache22/lib/simpletest/reporter.php');
-require_once('/usr/local/www/apache22/lib/jf/folksoIndexCache.php');
-include('/usr/local/www/apache22/data/folksoUrl.php');
+
+require_once('unit_tester.php');
+require_once('reporter.php');
+require_once('folksoTags.php');
+require_once('dbinit.inc');
+require_once('folksoUrl.php');
+require_once('folksoIndexCache.php');
+
 class testOffolksoIndexCache extends  UnitTestCase {
 
   var $ic;

@@ -18,6 +18,39 @@ class testOffolksoFBuser extends  UnitTestCase {
                                        'testy', 'testostonomie');
   }
 
+  function testNaming () {
+    $fb = new folksoFBuser($this->dbc);
+    $url = $fb->urlbaseFromFBname("Dennis Menace");
+    $this->assertEqual($fb->firstName, "Dennis",
+                       "urlbaseFromFBname not setting firstName");
+    $this->assertEqual($fb->lastName, "Menace",
+                       "urlbaseFromFBname not setting lastName");
+    $this->assertTrue(is_string($url),
+                      "urlbaseFromFBname not returning string");
+    $this->assertEqual($url, "dennis.menace",
+                       "urlbaseFromFBname returning incorrect url: " . $url);
+    $this->assertEqual($url, $fb->urlBase,
+                       "urlbaseFromFBname not setting urlBase property");
+
+    /* Spaces in name */
+    $url2 = $fb->urlbaseFromFBname("Dennis the Menace");
+    $this->assertEqual($url2, "dennisthe.menace",
+                       "urlbaseFromFBname not removing spaces from lastname: " 
+                       . $url2);
+    $this->assertEqual($fb->lastName, "Menace",
+                       "Incorrect last name when more than 1 word" . $fb->lastName);
+    $this->assertEqual($fb->firstName, "Dennis the",
+                       "Incorrect first name when more than 1 word: " . $fb->firstName);
+
+    /* Accented characters */
+    $url3 = $fb->urlbaseFromFBname("Hervé François");
+    $this->assertEqual($url3, "herve.francois",
+                       "urlbaseFromFBname not switching out accented characters"
+                       . $url3);
+
+
+  }
+
 
    function testFBuser () {
          $fb   = new folksoFBuser($this->dbc);
@@ -34,11 +67,11 @@ class testOffolksoFBuser extends  UnitTestCase {
          $this->assertTrue($fb->validateLoginId('123456'),
                            '123456 not validating as FB id');
          $this->assertTrue($fb->exists('543210'),
-                           'rambo-2009-001 at 543210 not showing up');
+                           'rambo-2010-001 at 543210 not showing up');
          $this->assertTrue($fb->userFromLogin('543210'),
                            'userFromLogin returns false');
-         $this->assertEqual($fb->nick, 'rambo',
-                            'Incorrect nick');
+         $this->assertEqual($fb->urlBase, 'rambo',
+                            'Incorrect urlbase: ' . $fb->urlBase);
 
          $fb->setFirstName('Frank');
          $this->assertEqual('Frank', $fb->firstName,
@@ -76,10 +109,11 @@ class testOffolksoFBuser extends  UnitTestCase {
 
    function testCreateUser() {
      $u = new folksoFBuser($this->dbc);
-     $u->loadUser(array('nick' => 'chuckb',
+     $u->loadUser(array('urlbase' => 'charlesbaudelaire',
                         'firstname' => 'Charles',
                         'lastname' => 'Baudelaire',
                         'email' => 'cb@interflora.com',
+                        'userid' => 'charlesbaud-2010-001',
                         'loginid' => 99119911));
      $this->assertIsA($u, folksoFBuser,
                       'problem with object creation');
@@ -90,7 +124,27 @@ class testOffolksoFBuser extends  UnitTestCase {
      $ex = new folksoFBuser($this->dbc2);
      $this->assertTrue($ex->exists(99119911),
                        'User does not seem to have been created');
+     
+     $u2 = new folksoFBuser($this->dbc);
+     $this->assertTrue($u2->userFromLogin(99119911),
+                       "Should return true here, user loading should have succeeded");
+   }
 
+
+   function testGenerateUrlbase () {
+     $u = new folksoFBuser($this->dbc);
+     $u->loadUser(array('firstname' => 'Francis',
+                        'lastname' => 'Ponge',
+                        'email' => 'fponge@parti-choses.fr',
+                        'loginid' => 1234567890));
+     $u->writeNewUser();
+     
+     $u2 = new folksoFBuser($this->dbc2);
+     $u2->userFromLogin(1234567890);
+     $this->assertEqual($u2->firstName, 'Francis',
+                        'Did not get first name back after writing');
+     $this->assertEqual($u2->urlBase, 'francis.ponge',
+                        'Did not get urlbase back after writing: ' . $u2->urlBase);
 
    }
 }//end class

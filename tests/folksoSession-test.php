@@ -3,7 +3,7 @@ require_once('unit_tester.php');
 require_once('reporter.php');
 require_once('folksoTags.php');
 require_once('folksoSession.php');
-require('dbinit.inc');
+require_once('dbinit.inc');
 
 class testOffolksoSession extends  UnitTestCase {
   public $dbc;
@@ -78,6 +78,11 @@ class testOffolksoSession extends  UnitTestCase {
 
          $this->assertFalse($s->checkSession($sess),
                             'the session should be gone now');
+
+   }
+
+   function testSession2 () {
+     $s = new folksoSession($this->dbc);
          $sess2 = $s->startSession('gustav-2010-001', true);
          $this->assertTrue($sess2,
                            'session creation failed');
@@ -87,8 +92,8 @@ class testOffolksoSession extends  UnitTestCase {
          $this->assertIsA($u, folksoUser,
                           'userSession not returning folksoUser object');
 
-         $this->assertEqual($u->nick, 'gustav',
-                            'User nick not correctly retrieved' . $u->nick);
+         $this->assertEqual($u->firstName, 'Gustave',
+                            'First name not correctly retrieved: ' . $u->firstName);
 
    }
 
@@ -106,7 +111,7 @@ class testOffolksoSession extends  UnitTestCase {
      $this->assertTrue($u->rights->hasRights(),
                        'user right store is still empty');
      $this->assertTrue($u->checkUserRight('folkso', 'tag'),
-                       'checkUserRights() not returning true');
+                       'checkUserRight() not returning true');
    }
 
 }//end class

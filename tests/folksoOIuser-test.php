@@ -29,30 +29,28 @@ class testOffolksoOIuser extends  UnitTestCase {
 
     $this->assertFalse($u->writeable,
                        'initial writable state should be false');
-    $simple_u = $u->loadUser(array('nick' => 'bobert',
+    $simple_u = $u->loadUser(array(
                                    'firstname' => 'Bobness',
                                    'lastname' => 'Justaguy',
                                    'email' => 'sloink@zoink.com',
-                                   'loginid' => 'http://i.am.me'));
+                                   'loginid' => 'http://bobness_is_here.am.me'));
     $this->assertTrue($simple_u[0],
                       'Basic user creation fails');
+    $u->setUrlbase($u->autoUrlbase());
     $this->assertTrue($u->Writeable(),
                       'Writeable state incorrect: should be writeable now');
-    $this->assertEqual($u->nick, 'bobert',
-                       'Not retreiving nick correctly');
+    $this->assertEqual($u->urlBase, 'bobnessishere',
+                       'Not retreiving urlbase correctly: ' 
+                       . $u->urlBase);
     $this->assertEqual($u->firstName, 'Bobness',
                        'Not retreiving first name correctly');
 
-    $this->assertTrue($u->validNick('abcde'),
-                      'Nick validation of "abcde" fails');
-    $this->assertFalse($u->validNick('a'),
-                       'Nick validation incorrect: single character should fail');
-    $this->assertTrue($u->validNick('abcdefghijklm'),
-                      'Nick validation incorrect. Long password should pass.');
-    $this->assertTrue($u->validNick('abc123'),
-                      'Nick validation incorrect. Should accept numbers');
-    $this->assertFalse($u->validNick('abc_def'),
-                       'Nick validation incorrect. Should not accept underscore');
+    $this->assertTrue($u->validUrlbase('abcde'),
+                      'Validation of "abcde" as urlbase fails');
+    $this->assertFalse($u->validUrlbase('a'),
+                       'Urlbase validation incorrect: single character should fail');
+    $this->assertFalse($u->validUrlbase('abc_def'),
+                       'Urlbase validation incorrect. Should not accept underscore');
 
     $this->assertFalse($u->validEmail("zork"), 
                        'Not detecting incomplete email (zork)');
@@ -104,7 +102,7 @@ class testOffolksoOIuser extends  UnitTestCase {
 
          $marcel = new folksoOIuser($this->dbc4);
          $marcel->userFromLogin('http://flickr.com/marcelp');
-         $this->assertEqual($marcel->nick, 'marcelp',
+         $this->assertEqual($marcel->urlBase, 'marcelp',
                             'Not retreiving correct nick for marcelp');
 
 
@@ -116,12 +114,12 @@ class testOffolksoOIuser extends  UnitTestCase {
                           'userFromLogin should not return false');
          $this->assertTrue($gus->Writeable(),
                            'userFromLogin does not fetch a writeable user' );
-         $this->assertEqual($gus->userid, 'gustav-2009-001',
+         $this->assertEqual($gus->userid, 'gustav-2010-001',
                             'Not retreiving userid');
-         $this->assertEqual($gus->nick, 'gustav',
-                            'Not retreiving correct nick');
-         $this->assertTrue(strlen($gus->nick) > 2,
-                           'nick is too short or does not exist');
+         $this->assertEqual($gus->urlBase, 'gustav',
+                            'Not retreiving correct urlbase');
+         $this->assertTrue(strlen($gus->urlBase) > 2,
+                           'urlbase is too short or does not exist');
          $this->assertEqual($gus->firstName, 'Gustave',
                             'Not retrieving correct first name');
          $this->assertEqual($gus->email, 'gflaub@sentimental.edu',
@@ -131,25 +129,56 @@ class testOffolksoOIuser extends  UnitTestCase {
 
    }
 
+   function testUrlbaseGeneration() {
+     $oi = new folksoOIuser($this->dbc);
+     $this->assertEqual($oi->autoUrlbase('http://yahoo.com/blahblahblah'),
+                        "blahblahblah",
+                        "Incorrect autoUrl for http://yahoo.com/blahblahblah: " .
+                        $oi->autoUrlbase('http://yahoo.com/blahblahblah'));
+                        
+     $myop = $oi->autoUrlbase('http://funkypeople.myopenid.com');
+     $this->assertEqual($myop, 'funkypeople',
+                        "Incorrect autoUrl for http://funkypeople.myopenid.com: " .
+                        $myop);
+     
+     preg_match("{^https?://([^.]+)\.haa}", "http://hooo.haa", $matcheroo);
+     $this->assertEqual($matcheroo[1], "hooo", "regexs, go figure");
+ 
+     $reallylong = 'http://onandonandonandonandonandonand--___onandonandonandonandonandonandonandonandonandonand';
+     $rl = $oi->autoUrlbase($reallylong);
+     $this->assertEqual($rl, substr($reallylong, -50),
+                        "really long not working: " . $rl);
+
+   }
+
+
    function testCreation () {
          $claud = new folksoOIuser($this->dbc);
-         $claud->loadUser(array('nick' => 'paulc',
+         $claud->loadUser(array(
                                 'firstname' => 'Paul',
                                 'lastname' => 'Claudel',
                                 'email' => 'pclaudel@vatican.com',
                                 'loginid' => 'http://pclaudel.openid.fr'));
-         $this->assertTrue($claud->Writeable(),
-                           'Claudel: failed to create writeable user');
+         $this->assertFalse($claud->Writeable(),
+                            'Writeable should return false here because there is no urlbase');
          $claud->writeNewUser();
          $ex = new folksoOIuser($this->dbc2);
          $this->assertTrue($ex->exists('http://pclaudel.openid.fr'),
                            'User does not seem to have been created');
 
+         $ex2 = new folksoOIuser($this->dbc2);
+         $ex2->userFromLogin('http://pclaudel.openid.fr');
+         $this->assertEqual($ex2->urlBase, 
+                            'pclaudel',
+                            "Incorrect url base retreived after automatic urlbase creation: " 
+                            . $ex2->urlBase);
          $bad = new folksoOIuser($this->dbc3);
-         $bad->loadUser(array('nick' => 'celine75',
+         $bad->loadUser(array('urlbase' => 'celine75',
                               'firstname' => 'Ferdy',
                               'lastname' => 'Céline',
                               'email' => 'f.celine@fn.fr'));
+         $this->assertFalse($bad->Writeable(),
+                            "Celine user not in db, should not be writeable");
 
 
    }
@@ -160,8 +189,8 @@ class testOffolksoOIuser extends  UnitTestCase {
 
      $this->assertIsA($u, folksoOIuser,
                       'Problem with object creation');
-     $this->assertEqual($u->nick, 'marcelp',
-                        'Incorrect nick with userFromLogin');
+     $this->assertEqual($u->urlBase, 'marcelp',
+                        'Incorrect urlBase with userFromLogin');
      $this->assertTrue($u->rights->hasRights(),
                        'RightStore is reporting empty');
      $this->assertTrue($u->rights->checkRight('folkso', 'tag'),
@@ -173,7 +202,7 @@ class testOffolksoOIuser extends  UnitTestCase {
    function testAllRights () {
      $u = new folksoOIuser($this->dbc);
      $u->userFromLogin('http://flickr.com/marcelp');
-     $this->assertEqual($u->userid, 'marcelp-2009-001',
+     $this->assertEqual($u->userid, 'marcelp-2010-001',
                         'Did not load userid');
      $u->loadAllRights();
      $this->assertTrue($u->rights->hasRights(),
@@ -182,8 +211,8 @@ class testOffolksoOIuser extends  UnitTestCase {
                        'marcelp should have folkso/create');
      $this->assertTrue($u->checkUserRight('folkso', 'tag'),
                        'marcelp should have folkso/tag');
-     $this->assertFalse($u->checkUserRight('folkso', 'delete'),
-                        'marcelp should not have delete');
+     $this->assertTrue($u->checkUserRight('folkso', 'delete'),
+                        'marcelp should have delete because he has redac');
 
    }
 }//end class

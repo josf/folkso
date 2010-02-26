@@ -80,32 +80,78 @@ class folksoOIuser extends folksoUser {
  * @param 
  */
  public function writeNewUser () {
+   if (! $this->urlBase) {
+     $this->urlBase = $this->autoUrlbase($this->loginId);
+   }
+
    if (! $this->Writeable()){
-     throw new Exception('User object is not writeable, cannot write to DB');
+     throw new userException('User object is not writeable, cannot write to DB');
    }
 
    if ($this->exists($this->loginId)) {
-     throw new Exception('User already exists, cannot be created');
+     throw new userException('User already exists, cannot be created');
    }
 
    $i = new folksoDBinteract($this->dbc);
    if ($i->db_error()) {
-     throw new Exception('DB connect error: ' . $i->error_info());
+     throw new dbConnectionException($i->db->errno,
+                                     $i->latest_query,
+                                     $i->db->error);
    }
 
    $i->sp_query(
-                sprintf("call create_user('%s', '%s', '%s', '%s', '%s', 0, '%s', '%s', '%s')",
-                        $i->dbescape($this->nick),
+                sprintf("call create_user('%s', '%s', 0, '%s', '%s', '%s', '%s', '%s', '%s')",
+                        $i->dbescape($this->urlBase),
+                        $i->dbescape($this->loginId),
                         $i->dbescape($this->firstName),
                         $i->dbescape($this->lastName),
                         $i->dbescape($this->email),
-                        $i->dbescape($this->loginId),
                         $i->dbescape($this->institution),
                         $i->dbescape($this->pays),
                         $i->dbescape($this->fonction)));
+
    if ($i->result_status == 'DBERR') {
-     throw new Exception('DB query error on create user: ' . $i->error_info());
+     throw new dbQueryException($i->db->errno,
+                                $i->latest_query,
+                                'create_user problem: ' . $i->db->error);
    }
  }
+
+ /**
+  * Extract a user id from an openid url. Returned string will be no
+  * more than 50 characters long and consist of all alphanumerics.
+  *
+  * @param $oid_url String (Optional) The url
+  * @return String
+  */
+ public function autoUrlbase ($oid_url = null) {
+   $oid_url = $oid_url ? $oid_url : $this->loginId;
+   
+   /* case 1: yahoo style, personal part is after slash,
+    * http://yahoo.com/blah/342Z3sd.cqufd */
+   if (preg_match("{^http://[^/]+/([^/]{5,})$}", $oid_url, $matches)) {
+     $base = $matches[1];
+   }
+   /* case 2: myopenid style, personal part as subdomain
+    * http://yourself.myopenid.com
+    */
+   elseif (preg_match("{http://([^.]+)}",
+                      $oid_url, $matching)) {
+     $base = $matching[1];
+   }
+   else {
+     /*
+      * Unknown pattern, we take twenty letters and call it a night
+      */
+     preg_match("{^https?://(.*)$}", $oid_url, $matcheesmo);
+     $base = $matcheesmo[1];
+   }
+   $base = preg_replace("/[^a-z0-9]/", '', $base);
+   if (strlen($base) > 50) {
+     $base = substr($base, -50);
+   }
+   return $base;
+ }
+
 }
 ?>

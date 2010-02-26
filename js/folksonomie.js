@@ -240,11 +240,13 @@
              droptag_react: function() {
                  var funcs = {}, tdata = arguments[0];
                  funcs.displaySuccess = function(){ tdata.element.remove(); };
-                 funcs.error403 = function(xhr, msg) { alert("Better login, dude"); };
+                 funcs.error403 = function(xhr, msg) { 
+                     alert("Il faut vous loguer d'abord."); };
                  funcs.error403.errorcode = 403;
-                 funcs.error404 = function(xhr, msg) { alert("Sorry, no tag"); };
+                 funcs.error404 = function(xhr, msg) { alert("Le tag n'existe pas."); };
                  funcs.error404.errorcode = 404;
-                 funcs.errorOther = function(xhr, msg) { alert("Wierd error"); };
+                 funcs.errorOther = function(xhr, msg) { alert("Erreur serveur: " 
+                                                               + xhr.status); };
                  
                  var ajOb = fK.fn.tagDeleteObject(
                      {folksotag: tdata.tagnorm || tdata.id},
@@ -267,7 +269,9 @@
                  tdata = arguments[0],
                  target = arguments[1],
                  displaySuccess = fK.fn.displayJsonResList(target),
-                 errorOther = function(xhr, msg) {alert("More wierdness" + tdata.tagnorm); };
+                 errorOther = function(xhr, msg) {alert("Erreur serveur " 
+                                                        + xhr.status + " " 
+                                                        + tdata.tagnorm); };
 
                  var ajOb = fK.fn.userGetObject(
                      {folksotag: tdata.tagnorm || tdata.id,
@@ -421,7 +425,13 @@
                          alert("Il faut choisir un tag d'abord"); return;
                      }
                      var tag = tagbox.val(),
-                     onSuccess = function() { target.append("<li>" + tag + "</li>"); },
+                     onSuccess = function(xml, status, xhr) { 
+                         tagbox.val("");                         
+                         target.append("<li><a href=\"" 
+                                       + $("tag", xml).text() 
+                                       + "\">"
+                                       + tag + "</a></li>"); 
+                     },
                      error404 = function(xhr, msg)
                      {
                          if (/Tag does not exist/i.test(xhr.statusText)) {
@@ -436,7 +446,7 @@
                          alert("Erreur: " + xhr.statusText);
                      };
                      error404.errorcode = 404; error403.errorcode = 403;
-                     alert("tag " + tag + " and url " + url );
+//                     alert("tag " + tag + " and url " + url );
 
 
                      $.ajax( fK.fn.resPostObject({folksotag: tag,
@@ -480,6 +490,7 @@
                  }
                  else 
                  {
+
                      $.ajax(fK.fn.resGetObject( {folksores: url || window.location,
                                                  folksodatatype: "xml",
                                                  folksoclouduri: "1"},
@@ -508,6 +519,7 @@
                  var poller =
                      setInterval(function()
                                  {
+
                                      if (/folksosess/.test(document.cookie)) {
                                          $('body').trigger('loggedIn');
                                          clearInterval(poller);

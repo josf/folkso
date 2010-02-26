@@ -94,7 +94,7 @@ class folksoSession {
    */
  public function startSession ($uid, $debug = null) {
     if ($this->validateUid($uid) === false) {
-      throw new Exception('Missing userid');
+      throw new userException('Missing userid');
     }
 
     $sess = $this->newSessionId($uid);
@@ -223,21 +223,23 @@ class folksoSession {
    $i = new folksoDBinteract($this->dbc);
    $sql = '';
    if (is_null($service) || is_null($right)){
-     $sql = 'select u.nick as nick, u.firstname as firstname, '
-       .'  u.lastname as lastname, u.email as email, u.userid  as userid'
+     $sql = 'select u.userid, u.urlbase as urlbase,'
+       .'  ud.firstname as firstname,  ud.lastname as lastname, ud.email as email '
        .' from sessions s '
        .' join users u on u.userid = s.userid '
+       .' left join user_data ud on ud.userid = u.userid '
        ." where s.token = '" . $sid . "'"
        ." and s.started > now() - 1209600 ";
    }
    else {
-     $sql = 'select u.nick as nick, u.firstname as firstname, '
-       .'  u.lastname as lastname, u.email as email, u.userid  as userid, '
+     $sql = 'select u.userid as userid, u.urlbase as urlbase, ud.firstname as firstname, '
+       .'  ud.lastname as lastname, ud.email as email, '
        .' dr.rightid, dr.service '
        .' from sessions s '
        .' join users u on u.userid = s.userid '
        .' left join users_rights ur on ur.userid = s.userid '
        .' left join rights dr on dr.rightid = ur.rightid '
+       .' left join user_data ud on ud.userid = u.userid '
        ." where s.token = '" . $i->dbescape($sid) . "' "
        ." and dr.rightid = '" . $i->dbescape($right) . "' "
        ." and s.started > now() - 1209600 ";
@@ -249,12 +251,12 @@ class folksoSession {
      $u = new folksoUser($this->dbc);
      $res = $i->result->fetch_object();
      $u->loadUser(array(
-                          'nick' => $res->nick,
-                          'firstname' => $res->firstname,
-                          'lastname' => $res->lastname,
-                          'email' => $res->email,
-                          'userid' => $res->userid
-                          ));
+                        'urlbase' => $res->urlbase,
+                        'firstname' => $res->firstname,
+                        'lastname' => $res->lastname,
+                        'email' => $res->email,
+                        'userid' => $res->userid
+                        ));
 
      if (($right && $service) &&
          ($res->rightid == $right) &&

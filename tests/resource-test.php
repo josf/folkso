@@ -247,6 +247,9 @@ class testOfResource extends  UnitTestCase {
                           "Tagnorm missing from response");
      $this->assertPattern('/<tag>/', $r->body(),
                           "xml boilerplate seems to be missing from response");
+     $xxx = new DOMDocument();
+     $this->assertTrue($xxx->loadXML($r->body()),
+                       "response is not valid xml");
      $r2 = getTagsIds(new folksoQuery(array(),
                                   array('folksores' => 'http://example.com/4'),
                                   array()),

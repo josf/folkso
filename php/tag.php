@@ -120,13 +120,13 @@ function headCheckTag (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks)
         $r->setError(404, "Missing or unknown user", "No user was specified");
         return $r;
       }
-
+  
       if (is_numeric($q->tag)) {
       $sql = 
-        "select tag_id from tagevent "
-        ." where tag_id = " . $i->dbescape($q->tag)
+        "select tag_id from tagevent te "
+        ." where te.tag_id = " . $i->dbescape($q->tag)
         ." and "
-        ." userid = '" . $i->dbescape($u->uid) . "'"
+        ." te.userid = '" . $i->dbescape($u->userid) . "'"
         ." limit 1";
       
       }

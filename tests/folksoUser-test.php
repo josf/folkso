@@ -2,9 +2,9 @@
 
 require_once('unit_tester.php');
 require_once('reporter.php');
-include('folksoTags.php');
+require_once('folksoTags.php');
 require_once('folksoUser.php');
-include('dbinit.inc');
+require_once('dbinit.inc');
 
 class testOffolksoUser extends  UnitTestCase {
   public $dbc;
@@ -16,6 +16,30 @@ class testOffolksoUser extends  UnitTestCase {
         before starting. **/
      $this->dbc = new folksoDBconnect('localhost', 'tester_dude', 
                                       'testy', 'testostonomie');
+  }
+
+
+  function testValidation() {
+    $u = new folksoUser($this->dbc);
+    $this->assertTrue($u->validUrlbase('marcelp'), "Basic urlbase should validate");
+    $this->assertTrue($u->validUrlbase('marcelp123'), 
+                      "Alphanumeric urlbase should validate");
+    $this->assertTrue($u->validUrlbase('marcel.proust'),
+                      "Period in urlbase is allowed");
+    $this->assertFalse($u->validUrlbase(''),
+                       "Empty string is not a valid urlbase");
+    $this->assertFalse($u->validUrlbase('marcel!'),
+                       "Non alphanumeric should be refused");
+    $this->assertFalse($u->validUrlbase('abc'),
+                       "Three letter urlbase should be rejected");
+    $this->assertFalse($u->validUrlbase('Marcel.Proust'),
+                       "Capital letters should be rejected");
+    $this->assertFalse($u->validUrlbase('abcd'),
+                       'Four letter urlbase should be rejected');
+    $this->assertTrue($u->validUrlbase('abcde'),
+                      'Five letter urlbase should be accepted');
+                      
+
   }
 
    function testUser () {
@@ -32,15 +56,16 @@ class testOffolksoUser extends  UnitTestCase {
 
    function testWithDB (){
      $u = new folksoUser($this->dbc);
-     $u->loadUser(array( 'nick' => 'marcelp',
+     $u->loadUser(array( 
+                        'urlbase' => 'proust.marcel',
                          'firstname' => 'Marcel',
                          'lastname' => 'Proust',
                          'email' => 'marcelp@temps.eu',
                          'userid' => 'marcelp-2010-001'));
      $this->assertIsA($u, folksoUser,
                       'problem with object creation');
-     $this->assertEqual($u->nick, 'marcelp',
-                        'missing data in user object');
+     $this->assertEqual($u->urlBase, 'proust.marcel',
+                        'missing urlbase in user object');
      $this->assertEqual($u->email, 'marcelp@temps.eu',
                         'Email incorrect after loadUser');
      $this->assertEqual($u->userid, 'marcelp-2010-001',
@@ -56,6 +81,17 @@ class testOffolksoUser extends  UnitTestCase {
      $this->assertIsA($u->rights, 
                       folksoRightStore,
                       'No fkRightStore at $u->rights');
+
+     $u->loadUser(array('userid' => 'marcelp-2010-001',
+                        'urlbase' => 'marcelp'));
+     $u->loadAllRights();
+     $this->assertTrue($u->checkUserRight("folkso", "tag"),
+                       "user marcelp should have right 'tag'");
+     $this->assertFalse($u->checkUserRight("folkso", "admin"),
+                        "user marcelp should not have right 'admin'");
+     $this->assertTrue($u->checkUserRight("folkso", "create"),
+                       "user marcelp should have right 'create'");
+                                           
 
    }
 

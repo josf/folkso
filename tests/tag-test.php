@@ -42,7 +42,7 @@ class testOffolksotag extends  UnitTestCase {
      $this->assertIsA($r, folksoResponse,
                       'not creating Response object');
      $this->assertEqual(200, $r->status,
-                        'Error returned by headcheck');
+                        'Error returned by headcheck: ' . $r->status . " " .$r->statusMessage . " " . $r->error_body);
      $r->prepareHeaders();
      $this->assertEqual(count($r->headers), 3,
                         'Not getting 3 headers');

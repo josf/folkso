@@ -12,5 +12,8 @@ grant select, delete, insert, update, drop on metatag to 'tester_dude'@'localhos
 grant select, delete, insert, update, drop on fb_ids to 'tester_dude'@'localhost';
 grant select, delete, insert, update, drop on oid_urls to 'tester_dude'@'localhost';
 grant select, delete, insert, update, drop on sessions to 'tester_dude'@'localhost';
+grant select, delete, insert, update, drop on user_data to 'tester_dude'@'localhost';
 grant select, delete, insert, update, drop on users_rights to 'tester_dude'@'localhost';
 grant select, delete, insert, update, drop on users to 'tester_dude'@'localhost';
+
+grant execute on procedure testostonomie.create_user to 'tester_dude'@'localhost';
