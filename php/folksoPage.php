@@ -157,14 +157,24 @@ class folksoPage {
          . '</div>';
     
      }
-    
+
      /**
-      * Access to facebook connect code (javascript and xml), if this
-      * variable exists in fKLocal->snippets->facebookLoginCode
+      * Access to facebook javascript init (<script> element and
+      * FB.init() call). These need to be defined in folksoLocal.
       */
-     public function facebookLoginCode() {
-       if ($this->loc->snippets['facebookLoginCode']) {
-         return $this->loc->snippets['facebookLoginCode'];
+     public function facebookJSinit() {
+       if ($this->loc->snippets['facebookJSinit']) {
+         return $this->loc->snippets['facebookJSinit'];
+       }
+     }
+
+     /**
+      * Access to facebook connect button. The actual content needs to
+      * be defined as a snippet in folksoLocal
+      */
+     public function facebookConnectButton() {
+       if ($this->loc->snippets['facebookConnectButton']) {
+         return $this->loc->snippets['facebookConnectButton'];
        }
      }
 
