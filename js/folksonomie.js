@@ -193,13 +193,13 @@
              errorChoose: function(fn) {
                  var lastFn = arguments[arguments.length - 1],
                      fns = Array.prototype.slice.call(arguments, 0, -1);
-                 return function(errno) {
+                 return function(xhr, textStatus, errThrown) {
                      for (var i = 0; i < fns.length; i++) {
-                     if (fns[i].errorcode == errno) {
-                         return fns[i]();
+                         if (fns[i].errorcode == xhr.status) {
+                             return fns[i](xhr, textStatus, errThrown);
+                         }
                      }
-                     }
-                     return lastFn();
+                     return lastFn(xhr, textStatus, errThrown);
                  };
              },
              /**

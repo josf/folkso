@@ -357,15 +357,18 @@ $(document).ready(function() {
                                var f3 = function() { return 3; }; //default
 
                                var efunk = fK.fn.errorChoose(f1, f2, f3);
+
+                               var fake500 = {status: 500}, fake200 = {status: 200},
+                               fake404 = {status: 404};
                                ok(efunk,
                                   "efunk not defined: no function returned");
-                               equal(efunk(500),
+                               equal(efunk(fake500),
                                      2,
                                      "Incorrect result from error choosing function");
-                               equal(efunk(200),
+                               equal(efunk(fake200),
                                      3,
                                      "Default error function not being called");
-                               equal(efunk(404),
+                               equal(efunk(fake404),
                                      1,
                                      "First error function not being called");
                            });
