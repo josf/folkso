@@ -33,6 +33,7 @@ fK.fb.onLogin = function() {
 
                         $('body').bind('loggedIn',
                                        function() {
+                                           fK.loginStatus = true;
                                          $("#fbkillbox", fK.cf.container).hide();
                                          $(".fKTagbutton").show();
                                          $(".fKTaginput", fK.cf.container).show();
@@ -41,13 +42,26 @@ fK.fb.onLogin = function() {
                                          $("ul.provider_list").hide();
                                        });
 
+                        $('body').bind('loggedOut',
+                                       function() { 
+                                           fK.loginStatus = false;
+                                       });
 
                         /* Sets up event handler: $("body").bind("loggedIn") */
                         fK.fn.pollFolksoCookie();
 
+                        /* Facebook connect login and logout events */
                         fK.fb.loggedUser = function()
                         {
-                            $('body').trigger('loggedIn');
+                            fK.fn.checkFBuserid(
+                                function() {$('body').trigger('loggedIn'); },
+                                function() {$('body').trigger('loggedOut'); }
+                                );
+                        };
+
+                        fK.fb.unLoggedUser = function()
+                        {
+                            $('body').trigger('loggedOut');
                         };
 
                         if (FB && fK.fb.sitevars) {
@@ -57,8 +71,9 @@ fK.fb.onLogin = function() {
                                      "ifUserNotConnected": fK.fb.unLoggedUser}
                                    );
                         }
-                      var hostAndPath = 'http://www.fabula.org/tags/', tagAddTarget;
-                      fK.init({
+
+                        var hostAndPath = 'http://www.fabula.org/tags/', tagAddTarget;
+                        fK.init({
                                   autocompleteUrl: hostAndPath + 'tagcomplete.php',
                                   postResUrl: hostAndPath + 'resource.php',
                                   getResUrl: hostAndPath + 'resource.php',
