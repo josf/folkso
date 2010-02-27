@@ -153,7 +153,7 @@ class folksoPage {
      */
     public function fbJsVars ($var = 'fK.fb.sitevars') {
       return 
-        "var $var = "
+        "$var = "
         . "{apikey: '" . $this->loc->snippets['facebookApiKey'] . "', "
         . " xdm: '" . $this->loc->snippets['facebookXdmChannel'] . "'};";
     }
