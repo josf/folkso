@@ -16,6 +16,7 @@ require_once('folksoIndexCache.php');
 require_once('folksoUrl.php');
 require_once('folksoSession.php');
 require_once('folksoUser.php');
+require_once('folksoFBuser.php');
 require_once('folksoUserQuery.php');
 
 $srv = new folksoServer(array( 'methods' => array('POST', 'GET', 'HEAD', 'DELETE'),
@@ -27,6 +28,10 @@ $srv->addResponseObj(new folksoResponder('get',
 $srv->addResponseObj(new folksoResponder('get',
                                          array('required' => array('tag')),
                                          'getUserResByTag'));
+$srv->addResponseObj(new folksoResponder('get',
+                                         array('required' => array('check', 'fbuid')),
+                                         'checkFBuserId'));
+
                                                
 $srv->Respond();
 
@@ -154,6 +159,35 @@ function getUserResByTag (folksoQuery $q, folksoDBconnect $dbc, folksoSession $f
   $r->t($dd->endform());
   return $r;
 }
+
+/**
+ * Mostly returns its own status depending on whether the user exists or not.
+ */
+function checkFBuserId (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
+  $r = new folksoResponse();
+  
+  /* check for well formed FB uid */
+  $fbu = new folksoFBuser($dbc);
+  if (! $fbu->validateLoginId($q->get_param('fbuid'))) {
+    return $r->setError(406, "Malformed or impossible Facebook uid",
+                        htmlspecialchars($q->get_param('fbuid')) 
+                        . " is not a valid Facebook user id.");
+  }
+
+  if ($fbu->exists($q->get_param('fbuid'))) {
+      $r->setOk(200, "User found");
+      $r->t('The Facebook id that you supplied corresponds to a valid user');
+      return $r;
+  }
+  else {
+    return $r->setError(404, "User not found",
+                        'The Facebook id that you supplied does not correspond '
+                        .' to a valid account');
+
+  }
+}
+  
+  
 
 
 
