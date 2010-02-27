@@ -120,7 +120,7 @@ class folksoSession {
     }
     if (! $debug) {
       setcookie('folksosess', $this->sessionId, 
-                time() + 1800, '/', 
+                time() + 60 * 60 * 24 * 15, '/', 
                 $this->loc->web_domain);
     }
     return $this->sessionId;

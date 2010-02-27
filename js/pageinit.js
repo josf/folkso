@@ -1,14 +1,31 @@
 /* (c) 2010 Joseph Fahey
  * Released under the Gnu Public Licence
- * 
- * Sets up the tagbox 
- * 
- * To be used with (and called after) folksonomie.js. 
- * 
- * For the Facebook features to work, the FB and fK.fb variables 
- * need to already exist. 
- * 
+ *
+ * Sets up the tagbox
+ *
+ * To be used with (and called after) folksonomie.js.
+ *
+ * For the Facebook features to work, the FB and fK.fb variables
+ * need to already exist.
+ *
  */
+
+function update_user_box() {
+    var user_box = document.getElementById("user");
+    user_box.innerHTML = "<span>"
+                  + '<fb:profile-pic uid="loggedinuser" facebook-logo="true">'
+                  + '</fb:profile-pic>'
+                  + 'Bienvenue, <fb:name uid="loggedinuser" useyou="false"></fb:name>.'
+                  + ' Vous êtes enregistré avec votre compte Facebook.'
+                  + '</span>';
+
+                  FB.XFBML.Host.parseDomTree();
+}
+
+
+fK.fb.onLogin = function() {
+        return 1;
+};
 
   $(document).ready(function()
                     {
@@ -28,7 +45,7 @@
                         /* Sets up event handler: $("body").bind("loggedIn") */
                         fK.fn.pollFolksoCookie();
 
-                        fK.fb.loggedUser = function() 
+                        fK.fb.loggedUser = function()
                         {
                             $('body').trigger('loggedIn');
                         };
@@ -36,7 +53,7 @@
                         if (FB && fK.fb.sitevars) {
                             FB.init(fK.fb.sitevars.apikey,
                                     fK.fb.sitevars.xdm,
-                                    {"ifUserConnected": fK.fb.loggedUser, 
+                                    {"ifUserConnected": fK.fb.loggedUser,
                                      "ifUserNotConnected": fK.fb.unLoggedUser}
                                    );
                         }
@@ -69,20 +86,17 @@
                       // setup according to login state
                       fK.cf.container = $("#folksocontrol");
 
-
-                          
                       if (fK.loginStatus) {
-                        $("#fbkillbox", fK.cf.container).hide();
-                        $(".fKLoginButton", fK.cf.container).hide();
+                          $("#fbstuff").hide();
+                          $("#fbkillbox").hide();
+                          $(".fKLoginButton").hide();
+                          $("fb:login-button").hide();
                       }
                       else {
                         $(".fKTagbutton", fK.cf.container).hide();
                         $("input.fKTaginput").hide();
                         $(".fKLoginButton").click(setupLogin());
-
-
-
-                      }
+                       }
 
                         $("input.fKTaginput", fK.cf.container).autocomplete(fK.cf.autocompleteUrl);
 

@@ -153,7 +153,7 @@ class folksoPage {
      */
     public function fbJsVars ($var = 'fK.fb.sitevars') {
       return 
-        "var $var = "
+        "$var = "
         . "{apikey: '" . $this->loc->snippets['facebookApiKey'] . "', "
         . " xdm: '" . $this->loc->snippets['facebookXdmChannel'] . "'};";
     }
@@ -163,7 +163,9 @@ class folksoPage {
      */
      public function tagbox () {
        return '<div id="folksocontrol">'
-         . '<a href="#" class="fKLoginButton">Login</a>'
+         . '<a href="#" class="fKLoginButton">Identifiez-vous via OpenID</a><br/>'
+         . '<a href="' . $this->loc->account_creation_url 
+         . '">Connectez-vous pour la première fois</a>'
          . '<input type="text" class="fKTaginput" length="20"></input>'
          . '<a href="#" class="fKTagbutton">Tagger</a>'
          . '</div>';
