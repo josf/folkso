@@ -90,8 +90,8 @@ class folksoPage {
    * For most purposes (besides testing) there is no need to use this
    * parameter. If empty, the URL of the current page is used.
    */
-  public function __construct($url = '', $cookie_arg = null) {
-    $this->loc = new folksoFabula();
+  public function __construct($url = '', $cookie_arg = null, $loc = null) {
+    $this->loc = $loc ? $loc : new folksoFabula();
     if ($url) {
       $this->url = $url;
     }
