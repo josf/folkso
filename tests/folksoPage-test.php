@@ -191,12 +191,12 @@ class testOffolksoPage extends  UnitTestCase {
     $this->assertTrue(is_string($page->jsHolder("stuff")), "Should return string");
     $this->assertTrue(is_string($page->jsHolder(array("stuff", "more stuff"))),
                       "even with array, should output string");
-    $this->assertPattern('/CDATA/', $page->jsHolder("stuff"),
-                         "Not finding CDATA in jsHolder output");
+    /*    $this->assertPattern('/CDATA/', $page->jsHolder("stuff"),
+          "Not finding CDATA in jsHolder output");*/
   }
 
   function testJsLoginStatus () {
-
+    
     $page = new folksoPage('http://bogus.yow');
 
     $this->assertPattern('/false/', $page->fKjsLoginState(),
