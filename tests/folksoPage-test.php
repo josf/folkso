@@ -193,6 +193,8 @@ class testOffolksoPage extends  UnitTestCase {
                       "even with array, should output string");
     /*    $this->assertPattern('/CDATA/', $page->jsHolder("stuff"),
           "Not finding CDATA in jsHolder output");*/
+    $this->assertPattern('{^<script[^>]+>}', $page->jsHolder("stuff"),
+                         'Not finding script tags in withjsHolder():' . $page->jsHolder("stuff"));
   }
 
   function testJsLoginStatus () {
@@ -207,6 +209,19 @@ class testOffolksoPage extends  UnitTestCase {
     $page2 = new folksoPage('http://bogus.example.com', $s->sessionId);
     $this->assertPattern('/true/', $page2->fKjsLoginState(),
                          "Not getting 'true' as login state for initialized session");
+
+  }
+
+  function testJsFBinfo () {
+    $loc = new folksoFabula();
+    $loc->snippets = array('facebookApiKey' => '1234567890',
+                           'facebookXdmChannel' => '/xd_receiver.htm');
+    $pg = new folksoPage('http://bogus.yow', null, $loc);
+
+    $this->assertPattern('/1234567890/', $pg->fbJsVars(),
+                         'javascript output should include api key');
+    $this->assertPattern('/xd_receiver.htm/', $pg->fbJsVars(),
+                         'javascript output should include facebook cross channel domain url');
 
   }
 
