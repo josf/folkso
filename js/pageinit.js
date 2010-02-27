@@ -12,12 +12,32 @@
 
   $(document).ready(function()
                     {
+                        fK.fb = fK.fb || {};
+
+                        $('body').bind('loggedIn',
+                                       function() {
+                                         $("#fbkillbox", fK.cf.container).hide();
+                                         $(".fKTagbutton").show();
+                                         $(".fKTaginput", fK.cf.container).show();
+                                         $(".fKLoginButton", fK.cf.container).hide();
+                                         $("fb:login-button").hide();
+                                         $("ul.provider_list").hide();
+                                       });
+
+
+                        /* Sets up event handler: $("body").bind("loggedIn") */
+                        fK.fn.pollFolksoCookie();
+
+                        fK.fb.loggedUser = function() 
+                        {
+                            $('body').trigger('loggedIn');
+                        };
 
                         if (FB && fK.fb.sitevars) {
                             FB.init(fK.fb.sitevars.apikey,
                                     fK.fb.sitevars.xdm,
                                     {"ifUserConnected": fK.fb.loggedUser, 
-                                     "ifUserNotConnected": onNotConnected}
+                                     "ifUserNotConnected": fK.fb.unLoggedUser}
                                    );
                         }
                       var hostAndPath = 'http://www.fabula.org/tags/', tagAddTarget;
@@ -49,15 +69,6 @@
                       // setup according to login state
                       fK.cf.container = $("#folksocontrol");
 
-                        $('body').bind('loggedIn',
-                                       function() {
-                                         $("#fbkillbox", fK.cf.container).hide();
-                                         $(".fKTagbutton").show();
-                                         $(".fKTaginput", fK.cf.container).show();
-                                         $(".fKLoginButton", fK.cf.container).hide();
-                                         $("fb:login-button").hide();
-                                         $("ul.provider_list").hide();
-                                       });
 
                           
                       if (fK.loginStatus) {
@@ -69,8 +80,7 @@
                         $("input.fKTaginput").hide();
                         $(".fKLoginButton").click(setupLogin());
 
-                        /* Sets up event handler: $("body").bind("loggedIn") */
-                        fK.fn.pollFolksoCookie();
+
 
                       }
 
