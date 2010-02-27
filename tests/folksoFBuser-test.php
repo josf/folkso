@@ -61,15 +61,18 @@ class testOffolksoFBuser extends  UnitTestCase {
                           'object hierarchy problem');
          $this->assertFalse($fb->exists('999999'),
                             'bad fb id should return false');
-         $this->assertTrue($fb->validateLoginId('abcdef'),
-                           'ultra simple FB id should pass.');
+         $this->assertFalse($fb->validateLoginId('abcdef'),
+                            'non-numeric facebook uid should fail');
 
+         $this->assertFalse($fb->validateLoginId('A doo day'),
+                            'Bad FB id with letters and spaces should return false');
          $this->assertTrue($fb->validateLoginId('123456'),
                            '123456 not validating as FB id');
          $this->assertTrue($fb->exists('543210'),
                            'rambo-2010-001 at 543210 not showing up');
          $this->assertTrue($fb->userFromLogin('543210'),
                            'userFromLogin returns false');
+
          $this->assertEqual($fb->urlBase, 'rambo',
                             'Incorrect urlbase: ' . $fb->urlBase);
 
