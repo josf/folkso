@@ -527,7 +527,38 @@
                                  },
                                  500);
 
+             },
+
+             /**
+              * Verify that a FB user has an account here.
+              */
+             checkFBuserid: function(uid, okFunc, badFunc) {
+
+                 var 
+                 error406 = function() {
+                     alert("Erreur système: identifiant Facebook malformé");
+                     badFunc();
+                 },
+                 error404 = function() {
+                     alert("Utilisateur non encore inscrit");
+                     badFunc();
+                 },
+                 errorOther = function(xhr, msg) {
+                     alert("Problème: " + xhr.status + " " + msg);
+                     badFunc();
+                 };
+
+                 error406.errorcode = 406; error404.errorcode = 404;
+                 
+                 var aj = 
+                     userGetObject({folksofbuid: uid,
+                                    folksocheck: "1"},
+                                   function() { okFunc();},
+                                   fK.fn.errorChoose(error406, error404, errorOther)
+                                   );
+                 $.ajax(aj);
              }
+
          }
      };
      
