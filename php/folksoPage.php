@@ -90,8 +90,8 @@ class folksoPage {
    * For most purposes (besides testing) there is no need to use this
    * parameter. If empty, the URL of the current page is used.
    */
-  public function __construct($url = '', $cookie_arg = null) {
-    $this->loc = new folksoFabula();
+  public function __construct($url = '', $cookie_arg = null, $loc = null) {
+    $this->loc = $loc ? $loc : new folksoFabula();
     if ($url) {
       $this->url = $url;
     }
@@ -145,6 +145,18 @@ class folksoPage {
       return $varname . " = false;";
     }
    
+    /**
+     * Returns javascript string outputting an object containing API
+     * key (apikey) and cross-domain channel url (xdm) information.
+     * 
+     * @param $var String optional Variable name to use instead of fK.fb.sitevars
+     */
+    public function fbJsVars ($var = 'fK.fb.sitevars') {
+      return 
+        "var $var = "
+        . "{apikey: '" . $this->loc->snippets['facebookApiKey'] . "', "
+        . " xdm: '" . $this->loc->snippets['facebookXdmChannel'] . "'};";
+    }
 
     /**
      * @param 
@@ -159,14 +171,33 @@ class folksoPage {
          . '</div>';
     
      }
-    
+
+
+     public function facebookApiKey() {
+       return $this->loc->snippets['facebookApiKey'];
+     }
+     public function facebookXdmChannel() {
+       return $this->loc->snippets['facebookXdmChannel'];
+     }
+
+
      /**
-      * Access to facebook connect code (javascript and xml), if this
-      * variable exists in fKLocal->snippets->facebookLoginCode
+      * Access to facebook javascript init (<script> element and
+      * FB.init() call). These need to be defined in folksoLocal.
       */
-     public function facebookLoginCode() {
-       if ($this->loc->snippets['facebookLoginCode']) {
-         return $this->loc->snippets['facebookLoginCode'];
+     public function facebookJSinit() {
+       if ($this->loc->snippets['facebookJSinit']) {
+         return $this->loc->snippets['facebookJSinit'];
+       }
+     }
+
+     /**
+      * Access to facebook connect button. The actual content needs to
+      * be defined as a snippet in folksoLocal
+      */
+     public function facebookConnectButton() {
+       if ($this->loc->snippets['facebookConnectButton']) {
+         return $this->loc->snippets['facebookConnectButton'];
        }
      }
 

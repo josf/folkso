@@ -3,7 +3,10 @@
  * 
  * Sets up the tagbox 
  * 
- * To be used with (and called after) folksonomie.js.
+ * To be used with (and called after) folksonomie.js. 
+ * 
+ * For the Facebook features to work, the FB and fK.fb variables 
+ * need to already exist. 
  * 
  */
 
@@ -26,6 +29,14 @@ fK.fb.onLogin = function() {
 
   $(document).ready(function()
                     {
+
+                        if (FB && fK.fb.sitevars) {
+                            FB.init(fK.fb.sitevars.apikey,
+                                    fK.fb.sitevars.xdm,
+                                    {"ifUserConnected": fK.fb.loggedUser, 
+                                     "ifUserNotConnected": onNotConnected}
+                                   );
+                        }
                       var hostAndPath = 'http://www.fabula.org/tags/', tagAddTarget;
                       fK.init({
                                   autocompleteUrl: hostAndPath + 'tagcomplete.php',
