@@ -1,13 +1,13 @@
 /* (c) 2010 Joseph Fahey
  * Released under the Gnu Public Licence
- * 
- * Sets up the tagbox 
- * 
- * To be used with (and called after) folksonomie.js. 
- * 
- * For the Facebook features to work, the FB and fK.fb variables 
- * need to already exist. 
- * 
+ *
+ * Sets up the tagbox
+ *
+ * To be used with (and called after) folksonomie.js.
+ *
+ * For the Facebook features to work, the FB and fK.fb variables
+ * need to already exist.
+ *
  */
 
 function update_user_box() {
@@ -29,12 +29,32 @@ fK.fb.onLogin = function() {
 
   $(document).ready(function()
                     {
+                        fK.fb = fK.fb || {};
+
+                        $('body').bind('loggedIn',
+                                       function() {
+                                         $("#fbkillbox", fK.cf.container).hide();
+                                         $(".fKTagbutton").show();
+                                         $(".fKTaginput", fK.cf.container).show();
+                                         $(".fKLoginButton", fK.cf.container).hide();
+                                         $("fb:login-button").hide();
+                                         $("ul.provider_list").hide();
+                                       });
+
+
+                        /* Sets up event handler: $("body").bind("loggedIn") */
+                        fK.fn.pollFolksoCookie();
+
+                        fK.fb.loggedUser = function()
+                        {
+                            $('body').trigger('loggedIn');
+                        };
 
                         if (FB && fK.fb.sitevars) {
                             FB.init(fK.fb.sitevars.apikey,
                                     fK.fb.sitevars.xdm,
-                                    {"ifUserConnected": fK.fb.loggedUser, 
-                                     "ifUserNotConnected": onNotConnected}
+                                    {"ifUserConnected": fK.fb.loggedUser,
+                                     "ifUserNotConnected": fK.fb.unLoggedUser}
                                    );
                         }
                       var hostAndPath = 'http://www.fabula.org/tags/', tagAddTarget;
@@ -66,23 +86,6 @@ fK.fb.onLogin = function() {
                       // setup according to login state
                       fK.cf.container = $("#folksocontrol");
 
-                        $('body').bind('loggedIn',
-                                       function() {
-
-                                         $("#fbkillbox", fK.cf.container).hide();
-                                         $(".fKTagbutton").show();
-                                         $(".fKTaginput", fK.cf.container).show();
-                                         $(".fKLoginButton", fK.cf.container).hide();
-                                         $("fb:login-button").hide();
-                                           $("#fbstuff").hide();
-
-                                         $("ul.provider_list").hide();
-                                           if (FB) {
-                                           FB.XFBML.Host.parseDomTree();
-                                           }
-                                       });
-                        fK.fn.pollFolksoCookie();
-                          
                       if (fK.loginStatus) {
                           $("#fbstuff").hide();
                           $("#fbkillbox").hide();
@@ -93,11 +96,7 @@ fK.fb.onLogin = function() {
                         $(".fKTagbutton", fK.cf.container).hide();
                         $("input.fKTaginput").hide();
                         $(".fKLoginButton").click(setupLogin());
-
-                        /* Sets up event handler: $("body").bind("loggedIn") */
-
-
-                      }
+                       }
 
                         $("input.fKTaginput", fK.cf.container).autocomplete(fK.cf.autocompleteUrl);
 
