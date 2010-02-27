@@ -100,7 +100,7 @@ class folksoPage {
     }
     $this->pdata = new folksoPageData($this->url);
     
-    $cookie = $_COOKIE['folksosess'] ? $_COOKIE['folksosess'] : $cookie_arg;
+    $cookie = $cookie_arg ? $cookie_arg : $_COOKIE['folksosess'];
     if ($cookie) {
       $this->dbc = $this->loc->locDBC();
       $this->session = new folksoSession($this->dbc);
