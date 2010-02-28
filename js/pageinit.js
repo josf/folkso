@@ -58,7 +58,9 @@ fK.fb.onLogin = function() {
                         /* Facebook connect login and logout events */
                         fK.fb.loggedUser = function()
                         {
+                            alert("Logged user!");
                             fK.fn.checkFBuserid(
+                                FB.Connect.get_loggedInUser(),
                                 function() {$('body').trigger('loggedIn'); },
                                 function() {$('body').trigger('loggedOut'); }
                                 );
