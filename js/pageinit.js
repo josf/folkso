@@ -31,6 +31,9 @@ fK.fb.onLogin = function() {
                     {
                         fK.fb = fK.fb || {};
 
+                        // setup according to login state
+                        fK.cf.container = $("#folksocontrol");
+
                         $('body').bind('loggedIn',
                                        function() {
                                          $("#fbkillbox", fK.cf.container).hide();
@@ -39,6 +42,8 @@ fK.fb.onLogin = function() {
                                          $(".fKLoginButton", fK.cf.container).hide();
                                          $("fb:login-button").hide();
                                          $("ul.provider_list").hide();
+                                           $("#fbstuff").hide();
+                                         $(".firstLogin", fK.cf.container).hide();
                                        });
 
 
