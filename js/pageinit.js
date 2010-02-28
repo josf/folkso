@@ -88,14 +88,9 @@ fK.fb.onLogin = function() {
                             }});
                       };
 
-                      // setup according to login state
-                      fK.cf.container = $("#folksocontrol");
 
                       if (fK.loginStatus) {
-                          $("#fbstuff").hide();
-                          $("#fbkillbox").hide();
-                          $(".fKLoginButton").hide();
-                          $("fb:login-button").hide();
+                          $('body').trigger('loggedIn');
                       }
                       else {
                         $(".fKTagbutton", fK.cf.container).hide();
