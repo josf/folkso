@@ -202,6 +202,11 @@
                      return lastFn(xhr, textStatus, errThrown);
                  };
              },
+             defErrorFn: function(code, fn) {
+                 fn.errorcode = code;
+                 return fn;
+             },
+             
              /**
               * 
               */
