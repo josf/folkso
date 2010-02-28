@@ -126,6 +126,9 @@ class folksoUser {
      if ($this->validateLoginId(trim($id))) {
        $this->loginId = trim($id);
      }
+     else {
+       throw new userException('Invalid login id, user creation will fail');
+     }
    }
 
 /**
