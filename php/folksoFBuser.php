@@ -27,7 +27,8 @@ class folksoFBuser extends folksoUser{
    */
   public function validateLoginId ($loginId = null) {
     $id_to_check = $loginId ? $loginId : $this->loginId;
-    if (strlen($id_to_check) > 5){
+    if (is_numeric($id_to_check) &&
+        ($id_to_check > 100000)) {
       return true;
     }
     return false;

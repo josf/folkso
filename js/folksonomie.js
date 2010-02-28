@@ -193,13 +193,13 @@
              errorChoose: function(fn) {
                  var lastFn = arguments[arguments.length - 1],
                      fns = Array.prototype.slice.call(arguments, 0, -1);
-                 return function(errno) {
+                 return function(xhr, textStatus, errThrown) {
                      for (var i = 0; i < fns.length; i++) {
-                     if (fns[i].errorcode == errno) {
-                         return fns[i]();
+                         if (fns[i].errorcode == xhr.status) {
+                             return fns[i](xhr, textStatus, errThrown);
+                         }
                      }
-                     }
-                     return lastFn();
+                     return lastFn(xhr, textStatus, errThrown);
                  };
              },
              /**
@@ -527,7 +527,38 @@
                                  },
                                  500);
 
+             },
+
+             /**
+              * Verify that a FB user has an account here.
+              */
+             checkFBuserid: function(uid, okFunc, badFunc) {
+
+                 var 
+                 error406 = function() {
+                     alert("Erreur système: identifiant Facebook malformé");
+                     badFunc();
+                 },
+                 error404 = function() {
+                     alert("Utilisateur non encore inscrit");
+                     badFunc();
+                 },
+                 errorOther = function(xhr, msg) {
+                     alert("Problème: " + xhr.status + " " + msg);
+                     badFunc();
+                 };
+
+                 error406.errorcode = 406; error404.errorcode = 404;
+                 
+                 var aj = 
+                     userGetObject({folksofbuid: uid,
+                                    folksocheck: "1"},
+                                   function() { okFunc();},
+                                   fK.fn.errorChoose(error406, error404, errorOther)
+                                   );
+                 $.ajax(aj);
              }
+
          }
      };
      

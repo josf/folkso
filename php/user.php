@@ -17,6 +17,12 @@ require_once('folksoUrl.php');
 require_once('folksoSession.php');
 require_once('folksoUser.php');
 require_once('folksoUserQuery.php');
+require_once('folksoFabula.php');
+
+/** facebook related stuff **/
+require_once('folksoFBuser.php');
+require_once('facebook.php');
+
 
 $srv = new folksoServer(array( 'methods' => array('POST', 'GET', 'HEAD', 'DELETE'),
                                'access_mode' => 'ALL'));
@@ -27,6 +33,10 @@ $srv->addResponseObj(new folksoResponder('get',
 $srv->addResponseObj(new folksoResponder('get',
                                          array('required' => array('tag')),
                                          'getUserResByTag'));
+$srv->addResponseObj(new folksoResponder('get',
+                                         array('required' => array('check', 'fbuid')),
+                                         'checkFBuserId'));
+
                                                
 $srv->Respond();
 
@@ -154,6 +164,123 @@ function getUserResByTag (folksoQuery $q, folksoDBconnect $dbc, folksoSession $f
   $r->t($dd->endform());
   return $r;
 }
+
+/**
+ * Mostly returns its own status depending on whether the user exists or not.
+ */
+function checkFBuserId (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
+  $r = new folksoResponse();
+  
+  /* check for well formed FB uid */
+  $fbu = new folksoFBuser($dbc);
+  if (! $fbu->validateLoginId($q->get_param('fbuid'))) {
+    return $r->setError(406, "Malformed or impossible Facebook uid",
+                        htmlspecialchars($q->get_param('fbuid')) 
+                        . " is not a valid Facebook user id.");
+  }
+
+  if ($fbu->exists($q->get_param('fbuid'))) {
+      $r->setOk(200, "User found");
+      $r->t('The Facebook id that you supplied corresponds to a valid user');
+      return $r;
+  }
+  else {
+    return $r->setError(404, "User not found",
+                        'The Facebook id that you supplied does not correspond '
+                        .' to a valid account');
+
+  }
+}
+
+/**
+ * Logs in an existing Facebook user or creates a new account. 
+ */
+function loginFBuser (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
+  $r = new folksoResponse();
+
+  /* already logged in? go about your business */
+  if ($fks->status()) {
+    $r->setOk(200, "Session already valid");
+    $r->body("You are already logged in");
+    return $r;
+  }
+
+
+  $loc = new folksoFabula();
+  $fb = new Facebook($loc->snippets['facebookApiKey'],
+                     $loc->snippets['facebookSecret']);
+  $fbu = new folksoFBuser($dbc);
+
+  $fb_uid = $fb->get_loggedin_user();
+
+  if (! $fb_uid) {
+    return $r->setError(400, "Insufficient information",
+                 'Unable to obtain necessary login information');
+
+  }
+  else {
+    if (! $fbu->validateLoginId($q->get_param('fbuid'))) {
+      return $r->setError(500, "Facebook error",  
+                          "Impossible facebook user id");
+    }
+
+    /** user already known **/
+    if ($fbu->exists($fb_uid)) {
+      $fks = new folksoSession($dbc);
+      $u = $fbu->userFromLogin($fb_uid);
+      try {
+        $fks->startSession($u->userid);
+        $r->setOk(200, "User found, session started");
+        $r-t('You are in.');
+        return $r;
+      }
+      catch (userException $e) {
+        return $r->setError(500, 'Internal user or session related error',
+                            'An error occurred. Sorry. We will get right on it.');
+      }
+    }
+    else { /* Create new user */
+      
+      /* get name from Facebook */
+      $name = $fb->api_client->users_getInfo($fb_uid, array('name'));
+      $fbu->useFBname($name, true); // true = make sure we overwrite
+
+      try {
+        $fbu->setLoginId($fb_uid);
+        $fbu->writeNewUser();
+      }
+      catch (userException $e) {
+        return $r->setError(500, 'Error creating new user');
+      }
+      catch (dbException $e) {
+        return $r->handleDBexception($e);
+      }
+
+      $fbu2 = new folksoFBuser($dbc);
+      $u2 = $fbu2->userFromLogin($fb_uid);
+      
+      if (! $u2 instanceof folksoFBuser) {
+        return $r->setError(500, 'Strange error creating new account',
+                            'New user not found.');
+      }
+      // TODO: correct format for user url
+      $xml = sprintf('<?xml version="1.0"?>'
+                     .'<user>'
+                     .'<facebookid>%d</facebookid>'
+                     .'<firstname>%s</firstname>'
+                     .'<lastname>%s</lastname>'
+                     .'<url>%s</url>'
+                     .'</user>',
+                     $u2->loginId, $u2->firstName, $u2->lastName, $u2->urlBase);
+      $r->setOk(201, 'User successfully created');
+      $r->t($xml);
+      $fks->startSession($u2->userid);
+      return $r;
+    }
+  }
+}
+  
+  
 
 
 

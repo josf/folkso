@@ -175,11 +175,30 @@ class testOffolksoPage extends  UnitTestCase {
   function testSessionInit () {
     $s = new folksoSession($this->dbc);
     $s->startSession('gustav-2010-001', true);
+    $this->assertTrue($s->validateSid($s->sessionId),
+                      'Just checking, but s->sessionId is not a valid Sid');
+
     $page = new folksoPage('http://bogus.example.com', $s->sessionId);
+
     $this->assertIsA($page, folksoPage,
                      "Object construction with session id failed");
     $this->assertIsA($page->session, folksoSession,
                      "No session object created on fkPage construction");
+    $this->assertIsA($page->dbc, folksoDBconnect,
+                     'Not initialzing fkDBconnect object on fkPage construction');
+    $this->assertTrue($page->session->sessionId,
+                      'Missing session id in fkPage  obj, should be: '
+                      . $s->sessionId);
+
+    $this->assertTrue($page->session->validateSid('2a81c4a49e11feb87bbcb6d2550d07173e4762d9427f117ac730b79e653d6bda'),
+                      'Real sid fails when validated from within fkPage obj');
+
+    $this->assertEqual($page->session->sessionId,
+                       $s->sessionId,
+                       'fkPage does not have the same session id that we gave it');
+
+    $this->assertIsA($page->user, folksoUser,
+                     'Not initializing fkUser obj at $page->user');
     $this->assertEqual($page->user->userid, 'gustav-2010-001',
                        "Not retrieving the correct userid");
 
@@ -223,6 +242,15 @@ class testOffolksoPage extends  UnitTestCase {
     $this->assertPattern('/xd_receiver.htm/', $pg->fbJsVars(),
                          'javascript output should include facebook cross channel domain url');
 
+  }
+
+  /**
+   * Stuff to determine the final state of the db.
+   */
+
+  function testEnd () {
+    $s = new folksoSession($this->dbc);
+    $s->startSession('gustav-2010-001', true);
   }
 
 }//end class

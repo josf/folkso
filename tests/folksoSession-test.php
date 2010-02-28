@@ -46,6 +46,10 @@ class testOffolksoSession extends  UnitTestCase {
                            'this should be a valid session id');
          $this->assertFalse($s->validateSid('eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee-e'),
                             'Non alphanumeric session id should fail');
+
+         $this->assertTrue($s->validateSid('948e1f8fabdfcac218a234ce2f154d6b4865deb03fbf54421fe28a60fd528543'),
+                           'Real sid does not pass validateSid()');
+                                         
          $this->assertTrue($s->validateSid($s->newSessionId('zoopfest-1776-010')),
                            'a new session id should validate');
 

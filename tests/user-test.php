@@ -123,6 +123,75 @@ class testOfuser extends  UnitTestCase {
 
    }
 
+   function testCheckFBuserId () {
+     /* good user */
+     $r = checkFBuserId(new folksoQuery(array(),
+                                        array('folksofbuid' => "543210",
+                                              'folksocheck' => "1"),
+                                        array()),
+                        $this->dbc,
+                        $this->fks);
+     $this->assertIsA($r, folksoResponse,
+                      'checkFBuserId is not returning a response object');
+     $this->assertEqual($r->status, 200,
+                        'Did not find a valid FB user: ' . $r->statusMessage);
+
+     /* unknown user */
+     $r2 = checkFBuserId(new folksoQuery(array(),
+                                         array('folksofbuid' => '1000000000000',
+                                               'folksocheck' => '1'),
+                                         array()),
+                         $this->dbc2,
+                         $this->fks2);
+     $this->assertIsA($r2, folksoResponse,
+                      'checkFBuserId not returning response object on unknown user');
+     $this->assertEqual($r2->status, 404,
+                        'Incorrect error status for unknown user: ' . $r2->status);
+
+     /* invalid user string */
+     $r3 = checkFBuserId(new folksoQuery(array(),
+                                         array('folksofbuid' => 'wop a doo day',
+                                               'folksocheck' => '1'),
+                                         array()),
+                         $this->dbc3,
+                         $this->fks3);
+     $this->assertIsA($r3, folksoResponse,
+                      'checkFBuserId not returning response object on invalid uid');
+     $this->assertEqual($r3->status, 406,
+                        'Incorrect error status for unknown user'
+                        .'. expecting 406, got ' . $r3->status);
+
+
+   }
+
+   function testLoginFBuser () {
+
+     /*
+      * Note: the key logic of the loginFBuser() function can't really
+      * be tested here because they require Facebook cookies.
+      */
+
+     $this->fks->startSession('gustav-2010-001', true);
+     $r = loginFBuser(new folksoQuery(array(), array(), array()),
+                      $this->dbc,
+                      $this->fks);
+     $this->assertIsA($r, folksoResponse,
+                      'Not getting resp obj back from loginFBuser() using '
+                      .' already open session');
+     $this->assertEqual($r->status, 200,
+                        'Already open session should return 200');
+
+     $r2 = loginFBuser(new folksoQuery(array(), array(), array()),
+                       $this->dbc, 
+                       $this->fks2);
+     $this->assertIsA($r, folksoResponse,
+                      'Not getting resp obj back from loginFBuser(). '
+                     .  'Expecting insufficient data warning (400)');
+     $this->assertEqual($r2->status, 400,
+                        'Expected 400 as status for insufficient fb data: '
+                        . $r2->status);
+
+   }
    
 }//end class
 
