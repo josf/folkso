@@ -163,6 +163,35 @@ class testOfuser extends  UnitTestCase {
 
 
    }
+
+   function testLoginFBuser () {
+
+     /*
+      * Note: the key logic of the loginFBuser() function can't really
+      * be tested here because they require Facebook cookies.
+      */
+
+     $this->fks->startSession('gustav-2010-001', true);
+     $r = loginFBuser(new folksoQuery(array(), array(), array()),
+                      $this->dbc,
+                      $this->fks);
+     $this->assertIsA($r, folksoResponse,
+                      'Not getting resp obj back from loginFBuser() using '
+                      .' already open session');
+     $this->assertEqual($r->status, 200,
+                        'Already open session should return 200');
+
+     $r2 = loginFBuser(new folksoQuery(array(), array(), array()),
+                       $this->dbc, 
+                       $this->fks2);
+     $this->assertIsA($r, folksoResponse,
+                      'Not getting resp obj back from loginFBuser(). '
+                     .  'Expecting insufficient data warning (400)');
+     $this->assertEqual($r2->status, 400,
+                        'Expected 400 as status for insufficient fb data: '
+                        . $r2->status);
+
+   }
    
 }//end class
 
