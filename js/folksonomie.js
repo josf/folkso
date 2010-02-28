@@ -202,6 +202,11 @@
                      return lastFn(xhr, textStatus, errThrown);
                  };
              },
+             defErrorFn: function(code, fn) {
+                 fn.errorcode = code;
+                 return fn;
+             },
+             
              /**
               * 
               */
@@ -544,19 +549,56 @@
                      badFunc();
                  },
                  errorOther = function(xhr, msg) {
-                     alert("Problème: " + xhr.status + " " + msg);
+                     alert("Problème: " + xhr.status 
+                           + " " + xhr.statusText
+                           + " " + msg);
                      badFunc();
                  };
 
                  error406.errorcode = 406; error404.errorcode = 404;
                  
                  var aj = 
-                     userGetObject({folksofbuid: uid,
+                     fK.fn.userGetObject({folksofbuid: uid,
                                     folksocheck: "1"},
                                    function() { okFunc();},
                                    fK.fn.errorChoose(error406, error404, errorOther)
                                    );
+                 aj.dataType = "text";
                  $.ajax(aj);
+             },
+
+             /**
+              * Log a Facebook user in, creating new account if necessary. 
+              * This assumes that the FB Connect stuff is done.
+              */
+             completeFBlogin: function(okFunc, badFunc) {
+                 var
+                 error400 = 
+                     fK.fn.defErrorFn(400,
+                                      function(xhr, msg) 
+                                      {
+                                          alert("Erreur système: informations insuffisantes");
+                                          badFunc();
+                                      }),
+                 error500 = fK.fn.defErrorFn(500,
+                                             function(xhr, msg) 
+                                             {
+                                                 alert("Erreur interne du système des utilisateurs "
+                                                       + xhr.status + " " + xhr.statusText);
+                                                 badFunc();
+                                             }),
+                 errorOther = function(xhr, msg) {
+                     alert("Erreur inattendue: " + xhr.status + " " + xhr.statusText);
+                     badFunc();
+                 };
+                 
+                 var aj =
+                     fK.fn.userGetObject({folksofblogin: "1"},
+                                         okFunc,
+                                         fK.fn.errorChoose(error400, error500, errorOther));
+                 aj.dataType = "text";
+                 $.ajax(aj);
+
              }
 
          }
