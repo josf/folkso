@@ -158,6 +158,11 @@ class folksoPage {
         . " xdm: '" . $this->loc->snippets['facebookXdmChannel'] . "'};";
     }
 
+
+    public function fbSecret () {
+      return $loc->snippets['facebookSecret'];
+    }
+
     /**
      * @param 
      */
