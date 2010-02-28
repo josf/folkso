@@ -222,10 +222,6 @@ function loginFBuser (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) 
 
   }
   else {
-    if (! $fbu->validateLoginId($q->get_param('fbuid'))) {
-      return $r->setError(500, "Facebook error",  
-                          "Impossible facebook user id");
-    }
 
     /** user already known **/
     if ($fbu->exists($fb_uid)) {
