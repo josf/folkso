@@ -82,6 +82,7 @@ fK.fb.onLogin = function() {
                                   autocompleteUrl: hostAndPath + 'tagcomplete.php',
                                   postResUrl: hostAndPath + 'resource.php',
                                   getResUrl: hostAndPath + 'resource.php',
+                                  getUserUrl: hostAndPath + 'user.php',
                                   oIdLogoPath: "/tags/logos/",
                                   oIdPath: '/tags/fdent/'
                             });
