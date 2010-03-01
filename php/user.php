@@ -241,8 +241,10 @@ function loginFBuser (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) 
     else { /* Create new user */
       
       /* get name from Facebook */
-      $name = $fb->api_client->users_getInfo($fb_uid, array('name'));
-      $fbu->useFBname($name, true); // true = make sure we overwrite
+      $name = $fb->api_client->users_getInfo($fb_uid, 'last_name, first_name');
+      //      $fbu->useFBname($name, true); // true = make sure we overwrite
+      $fbu->setFirstName($name['first_name']);
+      $fbu->setLastName($name['last_name']);
 
       try {
         $fbu->setLoginId($fb_uid);
