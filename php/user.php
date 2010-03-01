@@ -243,8 +243,8 @@ function loginFBuser (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) 
       /* get name from Facebook */
       $name = $fb->api_client->users_getInfo($fb_uid, 'last_name, first_name');
       //      $fbu->useFBname($name, true); // true = make sure we overwrite
-      $fbu->setFirstName($name['first_name']);
-      $fbu->setLastName($name['last_name']);
+      $fbu->setFirstName($name[0]['first_name']);
+      $fbu->setLastName($name[0]['last_name']);
       $fbu->urlbaseFromFBname();
 
       try {
