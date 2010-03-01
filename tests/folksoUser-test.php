@@ -58,10 +58,10 @@ class testOffolksoUser extends  UnitTestCase {
      $u = new folksoUser($this->dbc);
      $u->loadUser(array( 
                         'urlbase' => 'proust.marcel',
-                         'firstname' => 'Marcel',
-                         'lastname' => 'Proust',
-                         'email' => 'marcelp@temps.eu',
-                         'userid' => 'marcelp-2010-001'));
+                        'firstname' => 'Marcel',
+                        'lastname' => 'Proust',
+                        'email' => 'marcelp@temps.eu',
+                        'userid' => 'marcelp-2010-001'));
      $this->assertIsA($u, folksoUser,
                       'problem with object creation');
      $this->assertEqual($u->urlBase, 'proust.marcel',

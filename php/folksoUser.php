@@ -123,6 +123,10 @@ class folksoUser {
    * @param $id
    */
    public function setLoginId ($id) {
+     if ((! is_string($id)) && (! is_numeric($id))) {
+       throw new userException('Internal error, bad data for setLoginId');
+     }
+
      if ($this->validateLoginId(trim($id))) {
        $this->loginId = trim($id);
      }
@@ -160,7 +164,8 @@ class folksoUser {
    */
   public function setUid ($uid) {
     $uid = trim($uid);
-    if ($this->validateUid($uid)){
+    if (is_string($uid) &&
+        $this->validateUid($uid)){
       $this->userid = $uid;
       return $this->userid;
     }   
@@ -202,9 +207,13 @@ class folksoUser {
       $this->setUid($params['userid']);
     }
 
+    if (isset($params['loginid'])) {
+      $this->setLoginId($params['loginid']);
+    }
+
     $this->setFirstName($params['firstname']);
     $this->setLastName($params['lastname']);
-    $this->setLoginId($params['loginid']);
+
     $this->setInstitution($params['institution']);
     $this->setPays($params['pays']);
     $this->setFonction($params['fonction']);
