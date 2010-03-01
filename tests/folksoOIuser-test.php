@@ -183,6 +183,21 @@ class testOffolksoOIuser extends  UnitTestCase {
 
    }
 
+   function testSimpleCreation () {
+     $u = new folksoOIuser($this->dbc);
+     $u->setLoginId('http://bogus.openid.com');
+     $u->writeNewUser();
+
+     $u2 = new folksoOIuser($this->dbc2);
+     $this->assertTrue($u2->exists('http://bogus.openid.com'),
+                       'Minimally created OIuser not found');
+     $u2->userFromLogin('http://bogus.openid.com');
+     $this->assertEqual($u2->urlBase, 'bogus',
+                        'Minimally created OIuser does not have correct urlBase: '
+                        . $u2->urlBase);
+   }
+
+
    function testRights () {
      $u = new folksoOIuser($this->dbc);
      $u->userFromLogin('http://flickr.com/marcelp', 'folkso', 'tag');
