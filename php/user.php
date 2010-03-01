@@ -245,6 +245,7 @@ function loginFBuser (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) 
       //      $fbu->useFBname($name, true); // true = make sure we overwrite
       $fbu->setFirstName($name['first_name']);
       $fbu->setLastName($name['last_name']);
+      $fbu->urlbaseFromFBname();
 
       try {
         $fbu->setLoginId($fb_uid);
