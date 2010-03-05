@@ -100,8 +100,8 @@ fK.fb.onLogin = function() {
                         $.ajax({type: "get",
                               url: fK.cf.oIdPath + "oid_popup_end.php",
                               data: openid_args,
-                              success: function(msg) {
-                              $("#bucket").html(msg);
+                              success: function(xhr, msg) {
+                                  $("#bucket").html(msg);
                             }});
                       };
 
