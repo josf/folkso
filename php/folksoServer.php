@@ -116,21 +116,23 @@ class folksoServer {
   }
 
   /**
-   * Based on the request received, checks each response object is
-   * checked to see if it is equiped to handle the request.
+   * After some initial checks (method, client address, session for
+   * write methods), each response object is checked to see if it is
+   * equiped to handle the request.
+   * 
    */
   public function Respond () {
     if (!($this->valid_method())) {
       // some kind of error
       header('HTTP/1.0 405');
       print "NOT OK. Illegal request method for this resource.";
-     return;
+      return;
     }
     
     if (!($this->validClientAddress($_SERVER['REMOTE_HOST'], 
                                     $_SERVER['REMOTE_ADDR']))) {
-      header('HTTP/1.0 403');
-      print "Sorry, this not available to you";
+      header('HTTP/1.1 403 Forbidden');
+      print "Sorry, this not available to you.";
       return;
     }
 
@@ -151,7 +153,7 @@ class folksoServer {
     catch ( badSidException $e) {
       if ($q->is_write_method()) {
         header('HTTP/1.1 403 Login required'); // redirect instead
-        //        header('Location: ' . $loc->loginPage());
+        print "You must login first. Go to the login page.";
         exit();
       }
     }
@@ -177,7 +179,6 @@ class folksoServer {
       header('HTTP/1.1 400');
       print "Client did not make a valid query. (folksoServer)";
       // default response or error page...
-
     }
   }
 
