@@ -157,9 +157,7 @@ class folksoResponder {
    */
   function Respond (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
     $aa = $this->action_func;
-    $resp =  $aa($q, $dbc, $fks); //action (on DB for example) + return document
-    //+ status. In fact, returned value does not
-    //matter probably.
+    $resp =  $aa($q, $dbc, $fks);
     if (! ($resp instanceof folksoResponse)) {
       throw new Exception('Not getting response object here');
     }
