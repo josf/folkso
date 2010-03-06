@@ -216,7 +216,22 @@ class folksoQuery {
       if (strpos($accept, '/')) {
         $acc = substr($accept, strpos($accept, '/') + 1);
       }
-      return $returns[$acc] ? $returns[$acc] : $acc;
+      if ($returns[$acc]) {
+        return $returns[$acc];
+      }
+      elseif (preg_match('/rss/i', $acc)) {
+        $this->applyOutput = 'rss';
+        return 'xml';
+      }
+      elseif (preg_match('/atom/i', $acc)) {
+        $this->applyOutput = 'atom';
+        return 'xml';
+      }
+      else { 
+        /** default case: just return 2nd part of the original
+            http_accept string **/
+        return $acc;
+      }
     }
   }
 
