@@ -4,6 +4,7 @@ create table tag
        tagnorm varchar(120) not null unique,
        tagdisplay varchar(150) not null unique,
        popularity int unsigned not null default 0,
+       created timestamp default current_timestamp,
        index tagids (id),
        index tagnorms (tagnorm))
     ENGINE=InnoDB;
