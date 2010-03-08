@@ -198,6 +198,46 @@ class testOffolksotag extends  UnitTestCase {
 
    }
 
+
+   function testAtomFancyResource () {
+     $q = new folksoQuery(array(),
+                          array('folksotag' => 'tagone'),
+                          array());
+     $q->applyOutput = 'atom';
+     $r = fancyResource($q, $this->dbc, $this->fks);
+     $this->assertIsA($r, folksoResponse, "Not getting fkResponse obj");
+     $this->assertEqual($r->styleSheet, 'atom_fancyResource.xsl',
+                        '$r->styleSheet should be atom_fancyResource.xsl, getting: '
+                        . $r->styleSheet);
+
+     $this->assertTrue(file_exists($r->loc->xsl_dir . $r->styleSheet),
+                       "Stylesheet not found. This will cause trouble later on.");
+
+     $this->assertEqual($r->status, 200, 
+                        "Should get status of 200, not: " . $r->status 
+                        . " with message ". $r->statusMessage);
+     $xxx = new DOMDocument();
+     $this->assertTrue($xxx->loadXML($r->body()),
+                       'malformed xml on atom fancyResource request');
+
+
+     $atom = $r->bodyXsltTransform();
+     $this->assertTrue(is_string($atom), 
+                       "result of atom xslt transform is not a string");
+     $zzz = new DOMDocument();
+     $this->assertTrue($zzz->loadXML($atom),
+                       "malformed xml after atom xslt transformation");
+     $this->assertPattern('/<feed/', 
+                          $atom,
+                          'atom output does not look like a feed');
+     $this->assertPattern('/Atom/',
+                          $atom,
+                          'atom output does not look like it is an Atom feed '
+                          .' (Did not find the string "Atom" in feed');
+
+   }
+
+
    function testRelatedTags () {
      $r = relatedTags(new folksoQuery(array(),
                                       array('folksotag' => 'tagone'),

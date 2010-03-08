@@ -302,6 +302,46 @@ class folksoResponse {
   }
 
   /**
+   * @param $xsl xslt filname
+   */
+   public function setStylesheet ($xsl) {
+     if (! is_string($xsl)) {
+       throw new responseXsltException('Bad input data to setStylesheet, expecting string');
+     }
+     $this->styleSheet = $xsl; 
+   }
+  
+
+
+   /**
+    * 
+    */
+    public function bodyXsltTransform () {
+      $doc = new DOMDocument();
+      $xsl = new DOMDocument();
+      $proc = new XsltProcessor();
+
+      if ($doc->loadXML($this->body)) {
+
+        $xsl->load($this->loc->xsl_dir . $this->styleSheet);
+        $xsl = $proc->importStylesheet($xsl);
+
+        $output = $proc->transformToDoc($doc);
+        if ($output) {
+          return $output->saveXML();      
+        }
+        else {
+          throw new Exception('Xslt processing failed');
+        }
+      }
+      else {
+        throw new Exception('Bad xml');
+      }
+    }
+   
+
+
+  /**
    * Final output function. Sets headers then prints body or
    * errorBody.
    */
@@ -316,10 +356,18 @@ class folksoResponse {
     }
     /** Check for status codes that do not allow body **/
     elseif (in_array($this->status, 
-                     array(204, 304))) {
+                     arrbay(204, 304))) {
       return;
     } 
     else {
+      if ($this->styleSheet && $this->body) {
+        try {
+          print $this->bodyXsltTransform();
+        }
+        catch(Exception $e) {
+          throw new responseXsltException('Problem generating output xml');
+        }
+      }
       print $this->body;
     }
   }
