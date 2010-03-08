@@ -19,6 +19,7 @@
 (setq fktest-tags
       '((number . "8170")
         (poesie . "poésie")
+        (tagone . "tagone")
         (communication . "communication")
         (gustav . "gustav-2010-001")))
 
@@ -69,7 +70,7 @@
                    (fk-build-get "http://localhost/tag.php?folksouid="
                                  'gustav
                                  '("folksotag" . "tagone")
-                                 '("folksodatatype" . "json"))))
+                                 '("folksodatatype" . "xml"))))
 
 (switch-to-buffer (url-retrieve-synchronously
                    (fk-build-get "http://localhost/user.php?folksouid="
@@ -84,8 +85,8 @@
 (fk-run-req "http://www.fabula.org/tags/user.php?folksouid=jfahey-2009-001&folksomytags=1&folksodatatype=json")
 
 (switch-to-buffer (url-retrieve-synchronously
-                   (fk-build-resource-get
-                    "http://localhost/" 
+                   (fk-build-get
+                    "http://localhost/resource.php" 
                     'yokel 
                     '("folksoclouduri" . "1")
                     '("folksodatatype" . "xml"))))
@@ -96,12 +97,11 @@
                     'poesie
                     '("folksorelated" . "1"))))
 
-(switch-to-buffer (url-retrieve-synchronously
-                   (fk-build-tag-get
-                    "http://localhost/"
-                    'poesie
-                    '("folksofancy" . "1")
-                    '("folksodatatype" . "xml"))))
+(fk-run-req (fk-build-get
+             "http://localhost/tag.php?folksotag="
+             'tagone
+             '("folksofancy" . "1")
+             '("folksodatatype" . "xml")))
 
 (switch-to-buffer (url-retrieve-synchronously
                    (fk-build-get "http://localhost/user.php?folksouser=" 
