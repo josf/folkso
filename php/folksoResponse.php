@@ -225,7 +225,12 @@ class folksoResponse {
     $type = '';
     switch ($this->outType) {
     case 'xml': 
-      $type =  'text/xml';
+      if ($this->styleSheet) {
+        $type = $this->contentTypeFromStylesheet();
+      }
+      else {
+        $type =  'text/xml';
+      }
       break;
     case 'text':
       $type =  'text/text';
@@ -239,6 +244,24 @@ class folksoResponse {
    return 'Content-Type: ' . $type;
   }
 
+  /**
+   * Determine contentType from name of stylesheet. 
+   * 
+   * @param $style String optional
+   * @return String or Boolean (false if no match);
+   */
+   public function contentTypeFromStylesheet ($style = null) {
+     $sty = $style ? $style : $this->styleSheet;
+     
+     if (preg_match('/^atom_/', $sty)) {
+       return 'application/atom+xml';
+     }
+     elseif (preg_match('/^rss_/', $sty)) {
+       return 'application/rss+xml';
+     }
+     return false;
+   }
+  
 
   /**
    * In case of an error, we make sure that the old body is not

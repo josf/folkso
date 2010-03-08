@@ -66,6 +66,12 @@ class testOffolksoResponse extends  UnitTestCase {
     $this->assertEqual($r3->contentType(),
                        'Content-Type: text/html',
                        'HTML content type not correctly determined');
+
+    $r4 = new folksoResponse();
+    $r4->styleSheet = 'atom_thisorthat.xsl';
+    $r4->setType('xml');
+    $this->assertEqual($r4->contentType(), 'Content-Type: application/atom+xml',
+                       'Incorrect content type for atom: ' . $r4->contentType());
   }
 
 
@@ -120,6 +126,19 @@ class testOffolksoResponse extends  UnitTestCase {
                        'Bad userid not returning 403');
 
   }
+
+
+  function testContentTypeFromStylesheet () {
+    $r = new folksoResponse();
+    $this->assertEqual($r->contentTypeFromStylesheet('atom_getsomething.xsl'),
+                       'application/atom+xml',
+                       'Should return "application/atom+xml"');
+    $this->assertEqual($r->contentTypeFromStylesheet('rss_getsomethingelse.xsl'),
+                       'application/rss+xml',
+                       'should return "application/rss+xml');
+
+  }
+
 
   function testDB () {
     test_db_init();
