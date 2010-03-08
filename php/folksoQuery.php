@@ -199,6 +199,11 @@ class folksoQuery {
   /**
    * Parses the string to see which datatype will become the content
    * type. Returns one of the basic internal datatypes.
+   *
+   * Loop problem
+   *
+   * @param $content String Contents of HTTP_ACCEPT 
+   * @todo There is a logical problem here. The loop is useless.
    */
   public function parse_content_type($content) {
     $parts = explode(',', $content);
@@ -233,7 +238,7 @@ class folksoQuery {
         return $acc;
       }
     }
-  }
+   }
 
 
 
