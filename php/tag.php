@@ -430,7 +430,7 @@ function fancyResource (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks
       "tagnorm AS href, \n\t" .
       "'dummy' AS display, \n\t" .
       "'dummy' AS tags, \n".
-      "date_format(created, '%Y-%m-%d') as tagdate "
+      "date_format(created, '%Y-%m-%dT%TZ') as tagdate "
       . "FROM tag \n\t";
     if (is_numeric($q->tag)) {
       $querytagtitle .= ' WHERE id = ' . $q->tag . ' ';
@@ -463,7 +463,9 @@ function fancyResource (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks
   JOIN tagevent te ON r.id = te.resource_id
   JOIN tag t ON te.tag_id = t.id'
       .' join ('
-      .' select tag_id, min(tagtime) as firsttag'
+      .' select '
+      .'tag_id, '
+      ." date_format(min(tagtime),'%Y-%m-%dT%TZ') as firsttag "
       .' from tagevent group by tag_id) as td on td.tag_id = t.id' ;
 
     //  $queryend = " LIMIT 100";
@@ -506,16 +508,32 @@ function fancyResource (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks
   //pop the first line of the results containing the tagtitle
   $row1 = $i->result->fetch_object();  
   $r->t($dd->startform());
-  $r->t($dd->title($row1->title));
+  //  $r->t($dd->title($row1->title));
+  $r->t(sprintf("<tagtitle>%s</tagtitle>\n<tagid>%d</tagid>\n<tagnorm>%s</tagnorm>"
+                ."\n<created>%s</created>"
+                ."\n<resourcelist>\n",
+                htmlspecialchars($row1->title, ENT_COMPAT, 'UTF-8'),
+                $row1->id,
+                htmlspecialchars($row1->href, ENT_COMPAT, 'UTF-8'),
+                htmlspecialchars($row1->tagdate, ENT_COMPAT, 'UTF-8')));
 
   while ($row = $i->result->fetch_object()) {
     $r->t( $dd->line( $row->id,
                       htmlspecialchars($row->href, ENT_COMPAT, 'UTF-8'),
                       html_entity_decode(strip_tags($row->display), ENT_NOQUOTES, 'UTF-8'),
+                      htmlspecialchars($row->tagdate, ENT_COMPAT, 'UTF-8'),
                       htmlspecialchars($row->tags, ENT_COMPAT, 'UTF-8')
                       )); // inner quotes supplied by sql
   }
   $r->t( $dd->endform());
+
+
+  $xsl = array('atom' => 'atom_fancyResource.xsl',
+               'rss'  => 'rss_fancyResource.xsl');
+  if ($xsl[$q->applyOutput]) {
+    $r->setStylesheet($xsl[$q->applyOutput]);
+  }
+
   return $r;
 }
 
