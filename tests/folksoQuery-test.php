@@ -96,6 +96,41 @@ class testOffolksoQuery extends  UnitTestCase {
 
   }
 
+
+  function testXsltOutput () {
+    $q = new folksoQuery(array('HTTP_ACCEPT' => 'application/atom+xml'),
+                         array('folksotag' => 'tagone'),
+                         array());
+    $this->assertIsA($q, folksoQuery,
+                     'Problem with object creation using atom HTTP_ACCEPT');
+    $this->assertEqual($q->content_type(), 'xml',
+                       'application/atom+xml not giving "xml" as $q->content_type()'); 
+    $this->assertEqual($q->applyOutput, 'atom',
+                       '$q->applyOutput not getting set to "atom": ' . $q->applyOutput);
+
+
+  }
+
+
+  function testParseContentType () {
+    $q = new folksoQuery(array(),
+                         array(),
+                         array());
+    $this->assertIsA($q, folksoQuery, 'Object creation failed');
+    
+    $this->assertEqual($q->parse_content_type('text/xml'),
+                       'xml',
+                       'text/xml not parsing to "xml"');
+    $this->assertEqual($q->parse_content_type('application/atom+xml'),
+                       'xml',
+                       'application/atom+xml not parsing to "xml"');
+    $this->assertEqual($q->applyOutput, 'atom',
+                       'parse_content_not setting $q->applyOutput to "atom"');
+    
+    
+
+  }
+
   function message($message) {
 
   }
