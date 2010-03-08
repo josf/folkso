@@ -14,8 +14,13 @@ class testOffolksoResponse extends  UnitTestCase {
     $r = new folksoResponse();
     $this->assertIsA($r, folksoResponse);
 
+    $this->assertIsA($r->loc, folksoLocal,
+                     '$r->loc is not a folksoLocal object');
+    $this->assertEqual($r->loc->xsl_dir, '/var/lib/php5/xsl/',
+                       'xsl_dir var is incorrect: ' . $r->loc->xsl_dir);
 
   }
+
   function testBodyFuncs () {
     $r = new folksoResponse();
     $r->t('Hello');
