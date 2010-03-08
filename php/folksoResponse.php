@@ -61,6 +61,14 @@ class folksoResponse {
    * by the function that returns the fkResponse object whenever a
    * stylsheet is needed. The internal datatype should be xml in these
    * cases.
+   *
+   * NB: stylesheets filenames should follow a strict naming
+   * convention. Atom stylesheets should always start with "atom_",
+   * eg. atom_dosomething.xsl, rss stylsheets should start with "rss_".
+   * 
+   * The stylesheet name is used to determine the content type that
+   * will be indicated to the client.
+   *
    */
   public $styleSheet;
 
