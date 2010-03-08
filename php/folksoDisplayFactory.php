@@ -255,9 +255,10 @@ class folksoDisplayFactory {
                                        "\t\t<numid>XXX</numid>\n" .
                                        "\t\t<url>XXX</url>\n" .
                                        "\t\t<title><![CDATA[XXX]]></title>\n" .
+                                       "\t\t<tagdate>XXX</tagdate>\n" .
                                        "\t\t<tags>XXX</tags>\n" .
                                        "\t</resource>\n",
-                                       'argsperline' => 4));
+                                       'argsperline' => 5));
     return $obj;
   }
 
