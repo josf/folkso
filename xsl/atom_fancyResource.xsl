@@ -10,13 +10,6 @@
       <xsl:element name="author">
         <xsl:element name="name">www.fabula.org</xsl:element>
       </xsl:element>
-      
-      <xsl:element name="id">
-        <xsl:call-template name="feedId">
-          <xsl:with-param name="shortdate" select="./created"/>
-          <xsl:with-param name="tagid" select="./tagid"/>
-        </xsl:call-template>
-      </xsl:element>
 
       <xsl:apply-templates/>
     </xsl:element>
@@ -38,6 +31,18 @@
     <xsl:value-of
         select="concat('tag:fabula.org,', $shortdate, ':/resource/', $resid)"/>
   </xsl:template>
+
+  <xsl:template match="tag">      
+    <xsl:element name="id">
+      <xsl:call-template name="feedId">
+        <xsl:with-param name="shortdate" 
+                        select="./created"/>
+        <xsl:with-param name="tagid" select="./tagid"/>
+      </xsl:call-template>
+    </xsl:element>
+    <xsl:apply-templates/>
+  </xsl:template>
+
 
   <xsl:template match="tagnorm">
       <xsl:element name="link">
