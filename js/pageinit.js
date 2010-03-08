@@ -100,6 +100,7 @@ fK.fb.onLogin = function() {
                         $.ajax({type: "get",
                               url: fK.cf.oIdPath + "oid_popup_end.php",
                               data: openid_args,
+                              cache: false,
                               success: function(msg) {
                               $("#bucket").html(msg);
                             }});
