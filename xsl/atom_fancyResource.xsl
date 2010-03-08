@@ -36,7 +36,7 @@
     <xsl:element name="id">
       <xsl:call-template name="feedId">
         <xsl:with-param name="shortdate" 
-                        select="./created"/>
+                        select="substring-before(./created, 'T')"/>
         <xsl:with-param name="tagid" select="./tagid"/>
       </xsl:call-template>
     </xsl:element>
@@ -76,7 +76,7 @@
 
       <xsl:element name="id">
         <xsl:call-template name="entryId">
-          <xsl:with-param name="shortdate" select="./tagdate"/>
+          <xsl:with-param name="shortdate" select="substring-before(./tagdate, 'T')"/>
           <xsl:with-param name="resid" select="./numid"/>
         </xsl:call-template>
       </xsl:element>
