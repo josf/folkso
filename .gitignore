@@ -1,6 +1,8 @@
 *~
 info/afaire.txt
 php/folksoFabula.php
+php/html/*
+php/latex/*
 tests/*.xml
 info/tagload.pl
 info/Thesaurus*
