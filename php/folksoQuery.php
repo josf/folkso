@@ -117,6 +117,13 @@ class folksoQuery {
                 case 'folksores':
                   $this->res = $param_val;
                   break;
+                case 'folksofeed':
+                  if (($param_val == 'atom') ||
+                      ($param_val == 'rss')) {
+                    $this->fk_content_type = 'xml';
+                    $this->applyOutput = $param_val;
+                  }
+                  break;
                 case 'folksodatatype':
                   $this->req_content_type = $param_val;
                   if ($this->is_valid_datatype($param_val)) {
