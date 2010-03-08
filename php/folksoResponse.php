@@ -23,7 +23,7 @@ class folksoResponse {
   public $error_body;
   public $headers;
   public $redirect;
-  private $loc;
+  public $loc;
 
   /**
    * Special headers added before header preparation.
@@ -54,10 +54,19 @@ class folksoResponse {
    * Internal representation of output content type. One of 'xml',
    * 'text', 'html'...
    */
-  private $outType;
+  public $outType;
+
+  /**
+   * Complete path of stylesheet to use on output. This should be set
+   * by the function that returns the fkResponse object whenever a
+   * stylsheet is needed. The internal datatype should be xml in these
+   * cases.
+   */
+  public $styleSheet;
 
   function __construct() {
     $this->errorDeclared = false;
+    $this->loc = new folksoFabula();
 
   }
 
