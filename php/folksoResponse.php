@@ -387,7 +387,7 @@ class folksoResponse {
     }
     /** Check for status codes that do not allow body **/
     elseif (in_array($this->status, 
-                     arrbay(204, 304))) {
+                     array(204, 304))) {
       return;
     } 
     else {
