@@ -399,7 +399,9 @@ class folksoResponse {
           throw new responseXsltException('Problem generating output xml');
         }
       }
-      print $this->body;
+      else {
+        print $this->body;
+      }
     }
   }
 }
