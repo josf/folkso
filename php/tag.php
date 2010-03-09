@@ -418,6 +418,13 @@ function fancyResource (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks
   try {
     $i = new folksoDBinteract($dbc);
 
+    $xsl = array('atom' => 'atom_fancyResource.xsl',
+                 'rss'  => 'rss_fancyResource.xsl');
+    if ($xsl[$q->applyOutput]) {
+      $r->setStylesheet($xsl[$q->applyOutput]);
+    }
+
+
     /*
      * This is a bit of a hack. We are using a UNION to put the tag name
      * in the first row of the result set, to avoid two separate
@@ -467,6 +474,11 @@ function fancyResource (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks
       .'tag_id, '
       ." date_format(min(tagtime),'%Y-%m-%dT%TZ') as firsttag "
       .' from tagevent group by tag_id) as td on td.tag_id = t.id' ;
+
+    if ($r->styleSheet) {
+      $queryend .= ' order by tagdate limit 20';
+    }
+
 
     //  $queryend = " LIMIT 100";
     $querywhere = '';
@@ -527,12 +539,6 @@ function fancyResource (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks
   }
   $r->t( $dd->endform());
 
-
-  $xsl = array('atom' => 'atom_fancyResource.xsl',
-               'rss'  => 'rss_fancyResource.xsl');
-  if ($xsl[$q->applyOutput]) {
-    $r->setStylesheet($xsl[$q->applyOutput]);
-  }
 
   return $r;
 }
