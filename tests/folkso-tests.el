@@ -115,6 +115,13 @@
              '("folksofancy" . "1")
              '("folksofeed" . "atom")))
 
+(fk-run-req (fk-build-get
+             "http://localhost/tag.php?folksotag="
+             'tagone
+             '("folksofancy" . "1")))
+
+
+
 (switch-to-buffer (url-retrieve-synchronously
                    (fk-build-get "http://localhost/user.php?folksouser=" 
                                  'gustav
