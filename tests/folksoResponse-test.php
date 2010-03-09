@@ -72,6 +72,16 @@ class testOffolksoResponse extends  UnitTestCase {
     $r4->setType('xml');
     $this->assertEqual($r4->contentType(), 'Content-Type: application/atom+xml',
                        'Incorrect content type for atom: ' . $r4->contentType());
+
+    $r4->prepareHeaders();
+    $ct = '';
+    foreach ($r4->headers as $h) {
+      if (preg_match('/Content-Type/', $h)) {
+        $ct = $h;
+      }
+    }
+    $this->assertEqual($ct, 'Content-Type: application/atom+xml',
+                       'Content-Type not actually set in headers (atom)');
   }
 
 
