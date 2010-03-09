@@ -234,8 +234,46 @@ class testOffolksotag extends  UnitTestCase {
                           $atom,
                           'atom output does not look like it is an Atom feed '
                           .' (Did not find the string "Atom" in feed');
+     print '<pre><code>' . $atom . '</code></pre>';
 
    }
+
+
+   function testTagsToTaglist() {
+     $in = 'Sometag::sometag - Another::another';
+     $out = tagsToTaglist($in);
+     $this->assertPattern('/^<ul><li><a/',
+                          $out,
+                          'Basic list formatting not working for tagsToTaglist().'
+                          .' expected "<ul><li><a" at beginngin of stirng');
+     $this->assertPattern('/>Sometag<\/a>/',
+                          $out,
+                          'tagsToList() not formatting display tag text: ' . $out);
+
+     $this->assertPattern('/href=[^<>]+sometag/',
+                          $out,
+                          'tagsToList() ignoring tagnorm in href: ' . $out);
+
+     $blocks = explode('-', $in);
+     $this->assertEqual(count($blocks), 2);
+     
+     $tinyblocks = explode('::', $blocks[0]);
+     $this->assertEqual(trim($tinyblocks[0]), 'Sometag');
+     $this->assertEqual(trim($tinyblocks[1]), 'sometag');
+
+     $tt = new folksoTagLink(trim($tinyblocks[1]));
+     $this->assertEqual($tt->getLink(),
+                        'http://localhost/tagview.php?tag=sometag');
+
+     $simpleIn = 'Sometag::sometag';
+     $simpleOut = tagsToTaglist($simpleIn);
+     $this->assertPattern('/href=[^>]+=sometag">Sometag<\/a>/',
+                          $simpleOut);
+
+
+
+   }
+
 
 
    function testRelatedTags () {
