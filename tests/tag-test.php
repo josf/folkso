@@ -201,7 +201,8 @@ class testOffolksotag extends  UnitTestCase {
 
    function testAtomFancyResource () {
      $q = new folksoQuery(array(),
-                          array('folksotag' => 'tagone'),
+                          array('folksotag' => 'tagone', 
+                                'folksofeed' => 'atom'),
                           array());
      $q->applyOutput = 'atom';
      $r = fancyResource($q, $this->dbc, $this->fks);
@@ -216,6 +217,9 @@ class testOffolksotag extends  UnitTestCase {
      $this->assertEqual($r->status, 200, 
                         "Should get status of 200, not: " . $r->status 
                         . " with message ". $r->statusMessage);
+
+     $this->assertEqual($r->contentType(), 'Content-Type: application/atom+xml',
+                        'Incorrect content type: ' . $r->contentType());
      $xxx = new DOMDocument();
      $this->assertTrue($xxx->loadXML($r->body()),
                        'malformed xml on atom fancyResource request');
@@ -234,7 +238,8 @@ class testOffolksotag extends  UnitTestCase {
                           $atom,
                           'atom output does not look like it is an Atom feed '
                           .' (Did not find the string "Atom" in feed');
-     print '<pre><code>' . $atom . '</code></pre>';
+     $r->prepareHeaders();
+     print_r($r->headers);
 
    }
 

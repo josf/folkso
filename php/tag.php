@@ -422,6 +422,7 @@ function fancyResource (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks
                  'rss'  => 'rss_fancyResource.xsl');
     if ($xsl[$q->applyOutput]) {
       $r->setStylesheet($xsl[$q->applyOutput]);
+      $r->setType('xml');
     }
 
 
