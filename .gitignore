@@ -1,6 +1,8 @@
 *~
 info/afaire.txt
 php/folksoFabula.php
+php/html/*
+php/latex/*
 tests/*.xml
 info/tagload.pl
 info/Thesaurus*
@@ -54,3 +56,4 @@ folksologfile
 /js/deps/jquery.folksodeps.min.js
 /js/deps/jquery.jqote.js
 /js/deps/temp.js
+/js/folksonomie.max.js

@@ -23,7 +23,7 @@ class folksoResponse {
   public $error_body;
   public $headers;
   public $redirect;
-  private $loc;
+  public $loc;
 
   /**
    * Special headers added before header preparation.
@@ -54,10 +54,27 @@ class folksoResponse {
    * Internal representation of output content type. One of 'xml',
    * 'text', 'html'...
    */
-  private $outType;
+  public $outType;
+
+  /**
+   * Complete path of stylesheet to use on output. This should be set
+   * by the function that returns the fkResponse object whenever a
+   * stylsheet is needed. The internal datatype should be xml in these
+   * cases.
+   *
+   * NB: stylesheets filenames should follow a strict naming
+   * convention. Atom stylesheets should always start with "atom_",
+   * eg. atom_dosomething.xsl, rss stylsheets should start with "rss_".
+   * 
+   * The stylesheet name is used to determine the content type that
+   * will be indicated to the client.
+   *
+   */
+  public $styleSheet;
 
   function __construct() {
     $this->errorDeclared = false;
+    $this->loc = new folksoFabula();
 
   }
 
@@ -216,7 +233,12 @@ class folksoResponse {
     $type = '';
     switch ($this->outType) {
     case 'xml': 
-      $type =  'text/xml';
+      if ($this->styleSheet) {
+        $type = $this->contentTypeFromStylesheet();
+      }
+      else {
+        $type =  'text/xml';
+      }
       break;
     case 'text':
       $type =  'text/text';
@@ -230,6 +252,24 @@ class folksoResponse {
    return 'Content-Type: ' . $type;
   }
 
+  /**
+   * Determine contentType from name of stylesheet. 
+   * 
+   * @param $style String optional
+   * @return String or Boolean (false if no match);
+   */
+   public function contentTypeFromStylesheet ($style = null) {
+     $sty = $style ? $style : $this->styleSheet;
+     
+     if (preg_match('/^atom_/', $sty)) {
+       return 'application/atom+xml';
+     }
+     elseif (preg_match('/^rss_/', $sty)) {
+       return 'application/rss+xml';
+     }
+     return false;
+   }
+  
 
   /**
    * In case of an error, we make sure that the old body is not
@@ -293,6 +333,46 @@ class folksoResponse {
   }
 
   /**
+   * @param $xsl xslt filname
+   */
+   public function setStylesheet ($xsl) {
+     if (! is_string($xsl)) {
+       throw new responseXsltException('Bad input data to setStylesheet, expecting string');
+     }
+     $this->styleSheet = $xsl; 
+   }
+  
+
+
+   /**
+    * 
+    */
+    public function bodyXsltTransform () {
+      $doc = new DOMDocument();
+      $xsl = new DOMDocument();
+      $proc = new XsltProcessor();
+
+      if ($doc->loadXML($this->body)) {
+
+        $xsl->load($this->loc->xsl_dir . $this->styleSheet);
+        $xsl = $proc->importStylesheet($xsl);
+
+        $output = $proc->transformToDoc($doc);
+        if ($output) {
+          return $output->saveXML();      
+        }
+        else {
+          throw new Exception('Xslt processing failed');
+        }
+      }
+      else {
+        throw new Exception('Bad xml');
+      }
+    }
+   
+
+
+  /**
    * Final output function. Sets headers then prints body or
    * errorBody.
    */
@@ -311,7 +391,17 @@ class folksoResponse {
       return;
     } 
     else {
-      print $this->body;
+      if ($this->styleSheet && $this->body) {
+        try {
+          print $this->bodyXsltTransform();
+        }
+        catch(Exception $e) {
+          throw new responseXsltException('Problem generating output xml');
+        }
+      }
+      else {
+        print $this->body;
+      }
     }
   }
 }

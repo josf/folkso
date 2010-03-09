@@ -14,8 +14,13 @@ class testOffolksoResponse extends  UnitTestCase {
     $r = new folksoResponse();
     $this->assertIsA($r, folksoResponse);
 
+    $this->assertIsA($r->loc, folksoLocal,
+                     '$r->loc is not a folksoLocal object');
+    $this->assertEqual($r->loc->xsl_dir, '/var/lib/php5/xsl/',
+                       'xsl_dir var is incorrect: ' . $r->loc->xsl_dir);
 
   }
+
   function testBodyFuncs () {
     $r = new folksoResponse();
     $r->t('Hello');
@@ -61,6 +66,22 @@ class testOffolksoResponse extends  UnitTestCase {
     $this->assertEqual($r3->contentType(),
                        'Content-Type: text/html',
                        'HTML content type not correctly determined');
+
+    $r4 = new folksoResponse();
+    $r4->styleSheet = 'atom_thisorthat.xsl';
+    $r4->setType('xml');
+    $this->assertEqual($r4->contentType(), 'Content-Type: application/atom+xml',
+                       'Incorrect content type for atom: ' . $r4->contentType());
+
+    $r4->prepareHeaders();
+    $ct = '';
+    foreach ($r4->headers as $h) {
+      if (preg_match('/Content-Type/', $h)) {
+        $ct = $h;
+      }
+    }
+    $this->assertEqual($ct, 'Content-Type: application/atom+xml',
+                       'Content-Type not actually set in headers (atom)');
   }
 
 
@@ -115,6 +136,19 @@ class testOffolksoResponse extends  UnitTestCase {
                        'Bad userid not returning 403');
 
   }
+
+
+  function testContentTypeFromStylesheet () {
+    $r = new folksoResponse();
+    $this->assertEqual($r->contentTypeFromStylesheet('atom_getsomething.xsl'),
+                       'application/atom+xml',
+                       'Should return "application/atom+xml"');
+    $this->assertEqual($r->contentTypeFromStylesheet('rss_getsomethingelse.xsl'),
+                       'application/rss+xml',
+                       'should return "application/rss+xml');
+
+  }
+
 
   function testDB () {
     test_db_init();

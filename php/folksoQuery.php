@@ -19,18 +19,28 @@ class folksoQuery {
   public $tag; // tag id or name
   public $res; // resource id or url
 
-  private $method;
+
+  public $method;
 
   /**
    * We store the raw server HTTP_ACCEPT data here.
    */
-  private $req_content_type;
+  public $req_content_type;
 
   /**
    * Once the internal content type has been calculated, we cache it here.
    */
   private $fk_content_type;
 
+  /**
+   * String. If a valid string is present (ie. 'atom' or 'rss'), and
+   * if the folksoResponse object has registered an output variant
+   * with an XSLT stylesheet for that type of output, then
+   * folksoResponse will run the usual xml output through the
+   * stylesheet before returning it.
+   */
+  public $applyOutput;
+  
   private $fk_params = array(); //will contain only folkso related parameters
 
   /**
@@ -106,6 +116,13 @@ class folksoQuery {
                   break;
                 case 'folksores':
                   $this->res = $param_val;
+                  break;
+                case 'folksofeed':
+                  if (($param_val == 'atom') ||
+                      ($param_val == 'rss')) {
+                    $this->fk_content_type = 'xml';
+                    $this->applyOutput = $param_val;
+                  }
                   break;
                 case 'folksodatatype':
                   $this->req_content_type = $param_val;
@@ -189,8 +206,13 @@ class folksoQuery {
   /**
    * Parses the string to see which datatype will become the content
    * type. Returns one of the basic internal datatypes.
+   *
+   * Loop problem
+   *
+   * @param $content String Contents of HTTP_ACCEPT 
+   * @todo There is a logical problem here. The loop is useless.
    */
-  private function parse_content_type($content) {
+  public function parse_content_type($content) {
     $parts = explode(',', $content);
     $returns = array('xml' => 'xml',
                      'xml' => 'xml',
@@ -206,9 +228,24 @@ class folksoQuery {
       if (strpos($accept, '/')) {
         $acc = substr($accept, strpos($accept, '/') + 1);
       }
-      return $returns[$acc] ? $returns[$acc] : $acc;
+      if ($returns[$acc]) {
+        return $returns[$acc];
+      }
+      elseif (preg_match('/rss/i', $acc)) {
+        $this->applyOutput = 'rss';
+        return 'xml';
+      }
+      elseif (preg_match('/atom/i', $acc)) {
+        $this->applyOutput = 'atom';
+        return 'xml';
+      }
+      else { 
+        /** default case: just return 2nd part of the original
+            http_accept string **/
+        return $acc;
+      }
     }
-  }
+   }
 
 
 
