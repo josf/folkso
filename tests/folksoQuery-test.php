@@ -127,7 +127,17 @@ class testOffolksoQuery extends  UnitTestCase {
     $this->assertEqual($q->applyOutput, 'atom',
                        'parse_content_not setting $q->applyOutput to "atom"');
     
-    
+  }
+
+  function testContentTypeFromParams () {
+    $q = new folksoQuery(array(),
+                         array('folksofeed' => 'atom'),
+                         array());
+    $this->assertIsA($q, folksoQuery, 'Object creation failed');
+    $this->assertEqual($q->fk_content_type, 'xml',
+                       'fk_content_type not getting set with atom query');
+    $this->assertEqual($q->applyOutput, 'atom',
+                       'applyOutput not set with atom query');
 
   }
 
