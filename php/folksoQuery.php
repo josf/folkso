@@ -30,7 +30,7 @@ class folksoQuery {
   /**
    * Once the internal content type has been calculated, we cache it here.
    */
-  private $fk_content_type;
+  public $fk_content_type;
 
   /**
    * String. If a valid string is present (ie. 'atom' or 'rss'), and
@@ -178,14 +178,12 @@ class folksoQuery {
    *
    */
   public function content_type () {
-
     if (is_string($this->fk_content_type)) {
       return $this->fk_content_type;
     }
     else {
       $this->fk_content_type 
         = $this->parse_content_type($this->req_content_type);
-
       return $this->fk_content_type;
     }
   }
@@ -198,9 +196,7 @@ class folksoQuery {
     if (in_array($str, $valid_types)) {
       return true;
     }
-    else {
-      return false;
-    }
+    return false;
   }
 
   /**

@@ -18,7 +18,7 @@ class testOffolksoTagLink extends  UnitTestCase {
                        'Problem with setting $identifier');
     $this->assertEqual(
                        $tl->getLink(),
-                       'http://bobworld.com/tag.php/folksotag=poesie&folksodatatype=html',
+                       'http://bobworld.com/tagview.php?tag=poesie',
                        'Incorrect url creation: ' . $tl->getLink());
 
    }
