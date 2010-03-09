@@ -82,6 +82,16 @@ class testOffolksoResponse extends  UnitTestCase {
     }
     $this->assertEqual($ct, 'Content-Type: application/atom+xml',
                        'Content-Type not actually set in headers (atom)');
+
+    $r5 = new folksoResponse();
+    $r5->styleSheet = 'atom_thisorthat.xsl';
+    $r5->setType('xml');
+    $this->assertEqual($r5->contentType(), 'Content-Type: application/atom+xml',
+                       'Incorrect content type for atom (redux): ' . $r5->contentType());
+    $r5->prepareHeaders();
+    $this->assertEqual($r5->headers[1], 'Content-Type: application/atom+xml',
+                       'atom content type not in 2nd header: ' . $r5->headers[1]);
+
   }
 
 
