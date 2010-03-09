@@ -103,6 +103,18 @@
              '("folksofancy" . "1")
              '("folksodatatype" . "xml")))
 
+(fk-run-req (fk-build-get
+             "http://www.fabula.org/tags/tag.php?folksotag="
+             'poesie
+             '("folksofancy" . "1")
+             '("folksofeed" . "atom")))
+
+(fk-run-req (fk-build-get
+             "http://localhost/tag.php?folksotag="
+             'tagone
+             '("folksofancy" . "1")
+             '("folksofeed" . "atom")))
+
 (switch-to-buffer (url-retrieve-synchronously
                    (fk-build-get "http://localhost/user.php?folksouser=" 
                                  'gustav
