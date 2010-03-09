@@ -530,17 +530,38 @@ function fancyResource (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks
                 htmlspecialchars($row1->tagdate, ENT_COMPAT, 'UTF-8')));
 
   while ($row = $i->result->fetch_object()) {
+
+    $innerTagList = htmlspecialchars($row->tags, ENT_COMPAT, 'UTF-8');
+    if ($r->styleSheet) {
+      $innerTagList = tagsToTaglist($innerTagList);
+    }
     $r->t( $dd->line( $row->id,
                       htmlspecialchars($row->href, ENT_COMPAT, 'UTF-8'),
                       html_entity_decode(strip_tags($row->display), ENT_NOQUOTES, 'UTF-8'),
                       htmlspecialchars($row->tagdate, ENT_COMPAT, 'UTF-8'),
-                      htmlspecialchars($row->tags, ENT_COMPAT, 'UTF-8')
+                      $innerTagList
                       )); // inner quotes supplied by sql
   }
   $r->t( $dd->endform());
-
-
   return $r;
+}
+
+/**
+ * the fancyResource() sql returns a list of tags in the form
+ * 'TagOne::tagone, TagTwo::tagtwo'. This functions takes one of these
+ * lists and returns an html formatted <ul> containing links to the
+ * tags.
+ */
+function tagsToTaglist ($raw) {
+  $tagArray = array();
+  foreach (explode('-', $raw) as $tag) {
+    $tags = explode('::', $tag);
+    $t = new folksoTagLink(trim($tags[1]));
+    $tagArray[] = sprintf('<li><a href="%s">%s</a></li>',
+                          $t->getLink(),
+                          trim($tags[0]));
+  }
+  return '<ul>' . implode("\n", $tagArray) . '</ul>';
 }
 
 

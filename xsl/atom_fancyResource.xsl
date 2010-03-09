@@ -67,12 +67,53 @@
     </xsl:element>
   </xsl:template>
 
+  <xsl:template match="tags">
+      <xsl:element name="summary">
+        <xsl:text>Ressource taggée avec:</xsl:text>
+        <xsl:apply-templates/>
+      </xsl:element>
+  </xsl:template>
+
+  <xsl:template match="ul">
+    <xsl:element name="ul">
+      <xsl:apply-templates/>
+    </xsl:element>
+  </xsl:template>
+
+  <xsl:template match="li">
+    <xsl:element name="li">
+      <xsl:apply-templates/>
+    </xsl:element>
+  </xsl:template>
+
+
+  <xsl:template match="a">
+    <xsl:element name="a">
+      <xsl:attribute name="href">
+        <xsl:value-of select="@href"/>
+      </xsl:attribute>
+      <xsl:apply-templates/>
+    </xsl:element>
+  </xsl:template>
+
+  <xsl:template match="title">  
+      <xsl:element name="title">
+        <xsl:apply-templates/>
+      </xsl:element>
+  </xsl:template>
+
+  <xsl:template match="tagdate">
+    <xsl:element name="updated">
+      <xsl:apply-templates/>
+    </xsl:element>
+  </xsl:template>
+
+
+  <xsl:template match="numid"/>
+  <xsl:template match="url"/>
+
   <xsl:template match="resource">
     <xsl:element name="entry">
-
-      <xsl:element name="title">
-        <xsl:value-of select="./title"/>
-      </xsl:element>
 
       <xsl:element name="id">
         <xsl:call-template name="entryId">
@@ -95,16 +136,9 @@
           <xsl:value-of select="./url"/>
         </xsl:attribute>
       </xsl:element>
-
-      <xsl:element name="updated">
-        <xsl:value-of select="./tagdate"/>
-      </xsl:element>
-
-      <xsl:element name="summary">
-        <xsl:text>Already tagged with:</xsl:text>
-        <xsl:value-of select="./tags"/>
-      </xsl:element>
       
+      <xsl:apply-templates/>
+
     </xsl:element>
   </xsl:template>
 </xsl:stylesheet>
