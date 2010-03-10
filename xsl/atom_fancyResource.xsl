@@ -69,9 +69,12 @@
 
   <xsl:template match="tags">
       <xsl:element name="content">
-        <xsl:attribute name="type">html</xsl:attribute>
-        <xsl:text>Ressource taggée avec:</xsl:text>
+        <xsl:attribute name="type">xhtml</xsl:attribute>
+        <xsl:element name="div">
+          <xsl:attribute name="xmlns">http://www.w3.org/1999/xhtml</xsl:attribute>
+          <xsl:text>Ressource taggée avec:</xsl:text>
         <xsl:apply-templates/>
+        </xsl:element>
       </xsl:element>
   </xsl:template>
 
