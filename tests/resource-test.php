@@ -3,7 +3,7 @@ require_once('unit_tester.php');
 require_once('reporter.php');
 require_once('folksoSession.php');
 require_once('folksoTags.php');
-require_once('/var/www/resource.php');
+require_once('folksoResource.php');
 require_once('dbinit.inc');
 
 class testOfResource extends  UnitTestCase {
