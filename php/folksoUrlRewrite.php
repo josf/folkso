@@ -38,20 +38,31 @@ abstract class folksoUrlRewrite {
     if (! $this->validateArgs($args)) {
       throw new InvalidRequestException('Malformed url: ' . $req);
     }
-    $this->addPair($qu, $this->firstArg, $args[1]);
+    $this->argParse($qu, $args);
     return $qu;
   }
 
-
+  /**
+   * Prepares input string by splitting into an array on
+   * slashes. Prepends $this->firstArg to the array that get created
+   * so that then initial item (eg. folksotag=atag) can be treated as
+   * a simple param/value pair. "tag" will usually be stripped off of
+   * the URI if /tag is a real directory.
+   *
+   * @param $req String The uri string.
+   */
   public function splitReq ($req) {
-    return explode('/', $req);
+    $arr =  explode('/', $req);
+
+    // warning, pass by ref php function!
+    array_unshift($arr, $this->firstArg);
+    return $arr;
   }
 
 
   public function argParse(&$qu, $args) {
     $it = 0;
-    $remaining = array_slice($args, 2);
-    while ($it <= count($remaining)) {
+    while ($it <= count($args)) {
       if ($this->isSingleVal($args[$it])) {
         $this->addSingleton($qu, $args[$it]);
         ++$it;

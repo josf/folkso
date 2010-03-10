@@ -25,14 +25,14 @@ class testOffolksoUrlRewriteTag extends  UnitTestCase {
    function testSplitting () {
      $req = 'blah/and/blaw';
      $rw = new folksoUrlRewriteTag();
-     $this->assertEqual(array('blah', 'and', 'blaw'),
+     $this->assertEqual(array('tag','blah', 'and', 'blaw'),
                         $rw->splitReq($req));          
    }
 
    function testValidation() {
      $req = 'blah/and/blaw';
      $rw = new folksoUrlRewriteTag();
-     $this->assertFalse($rw->validateArgs($rw->splitReq($req)),
+     $this->assertFalse($rw->validateArgs(array('blah', 'and', 'blah')),
                         'Request does not start with "tag", should return false here');
 
      $req2 = 'tag/and/blaw';
@@ -53,7 +53,7 @@ class testOffolksoUrlRewriteTag extends  UnitTestCase {
      $this->assertEqual($arr['folksohopeless'], 1,
                         'Incorrect value for singleton: ' . $arr['folksohopeless']);
 
-     $qu = $rw->transmute('tag/taggy');
+     $qu = $rw->transmute('taggy');
      $this->assertEqual($qu, array('folksotag' => 'taggy'),
                         'Two arg transmute ("tag/taggy") should give "folksotag" => "taggy"');
 
@@ -88,12 +88,16 @@ class testOffolksoUrlRewriteTag extends  UnitTestCase {
                              array('tag', 'bogus', 'related', 'feed', 'atom',
                                    'merge', 'tagtwo'));
      $this->assertEqual($parsed,
-                        array('folksorelated' => '1',
+                        array('folksotag' => 'bogus',
+                              'folksorelated' => '1',
                               'folksofeed' => 'atom',
                               'folksomerge' => '1',
                               'folksotarget' => 'tagtwo'), 
                         'Output array does not match ');
-     print_r($parsed);
+     $arr2 = array();
+     $par2 = $rw->argParse($arr2, array('tag', 'bogus'));
+     $this->assertEqual($par2,
+                        array('folksotag' => 'bogus'));
 
 
    }
