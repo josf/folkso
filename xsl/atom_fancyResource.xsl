@@ -68,7 +68,7 @@
   </xsl:template>
 
   <xsl:template match="tags">
-      <xsl:element name="summary">
+      <xsl:element name="content">
         <xsl:text>Ressource taggée avec:</xsl:text>
         <xsl:apply-templates/>
       </xsl:element>
@@ -136,6 +136,13 @@
           <xsl:value-of select="./url"/>
         </xsl:attribute>
       </xsl:element>
+
+      <xsl:element name="summary">
+        <xsl:text>Une ressource récemment taggée avec le tag "</xsl:text>
+        <xsl:value-of select="./title"/>
+        <xsl:text>"</xsl:text>
+      </xsl:element>
+
       
       <xsl:apply-templates/>
 
