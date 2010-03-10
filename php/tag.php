@@ -34,6 +34,12 @@ $srv->addResponseObj(new folksoResponder('get',
                                         array('required' => array('fancy'),
                                               'required_single' => array('tag')),
                                         'fancyResource'));
+/*
+ * Alias for simpler feed urls
+ */
+$srv->addResponseObj(new folksoResponder('get',
+                                         array('required' => array('feed', 'tag')),
+                                         'fancyResource'));
 
 $srv->addResponseObj(new folksoResponder('get', 
                                         array('required_single' => 
