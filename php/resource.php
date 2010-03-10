@@ -26,6 +26,10 @@ $srv->addResponseObj(new folksoResponder('get',
                                         'tagCloudLocalPop'));
 
 $srv->addResponseObj(new folksoResponder('get',
+                                         array('required' => array('cloud', 'res')),
+                                         'tagCloudLocalPop'));
+
+$srv->addResponseObj(new folksoResponder('get',
                                         array('required' => array('res'),
                                               'exclude' => 
                                               array('clouduri', 'visit', 'note', 'ean13list')),
