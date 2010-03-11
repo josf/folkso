@@ -78,5 +78,5 @@ $srv->addResponseObj(new folksoResponder('post',
                                         'renameTag'));
 
 $srv->Respond($_GET['folksohuge']);
-print $_GET['folksohuge'];
+
 
