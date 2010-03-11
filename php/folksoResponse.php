@@ -386,10 +386,17 @@ class folksoResponse {
       print $this->error_body;
     }
     /** Check for status codes that do not allow body **/
-    elseif (in_array($this->status, 
-                     array(204, 304))) {
+    elseif (in_array($this->status, array(204, 304))) {
       return;
     } 
+    elseif ($this->styleSheet && $this->body) {
+      try {
+        print $this->bodyXsltTransform();
+      }
+      catch(Exception $e) {
+        throw new responseXsltException('Problem generating output xml');
+      }
+    }
     else {
       if ($this->styleSheet && $this->body) {
         try {
@@ -405,5 +412,6 @@ class folksoResponse {
     }
   }
 }
+
 
 ?>

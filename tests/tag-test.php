@@ -3,7 +3,7 @@ require_once('unit_tester.php');
 require_once('reporter.php');
 require('folksoTags.php');
 require('dbinit.inc');
-require('/var/www/tag.php');
+require('folksoTag.php');
 
 class testOffolksotag extends  UnitTestCase {
  
