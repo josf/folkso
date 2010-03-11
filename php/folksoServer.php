@@ -31,6 +31,8 @@ require_once('folksoFabula.php');
 require_once('folksoResponder.php');
 require_once('folksoSession.php');
 
+
+
 class folksoServer {
 
   // Access stuff
@@ -54,6 +56,11 @@ class folksoServer {
   private $conf__keys = array('methods', 
                        'access_mode','access_list', 
                        'authorize_get_fields');
+  /**
+   * @brief folksoUrlRewrite object
+   */
+  public $rewrite;
+
 
   /**
    * @param array $config
@@ -74,6 +81,9 @@ class folksoServer {
    * step. However, certain kinds of GETs may need
    * authentication/authorization, so you can put the field names that
    * _do_ require it in an array here.
+   *
+   * 5. rewrite: A folksoUrlRewrite object for converting clean URL's to traditional
+   * associative arrays
    */
   function __construct ($config) {
     // methods
@@ -102,6 +112,10 @@ class folksoServer {
         ( is_array($config['access_list']))) { // this should be an erreur instead!
       $this->clientAllowedHost = $config['access_list'];
     }
+
+    if (array_key_exists('rewrite', $config)) {
+      $this->rewrite = $config['rewrite'];
+    }
   }
 
   /**
@@ -116,12 +130,19 @@ class folksoServer {
   }
 
   /**
+   * @brief Produce output and send to client.
+   *
    * After some initial checks (method, client address, session for
    * write methods), each response object is checked to see if it is
    * equiped to handle the request.
+   *
+   * @param $req String (optional) url parameters
+   *
+   * If $req is supplied (presumably through a url rewrite), $req 
+   * used instead of $_GET and $_POST.
    * 
    */
-  public function Respond () {
+  public function Respond ($req = null) {
     if (!($this->valid_method())) {
       // some kind of error
       header('HTTP/1.0 405');
@@ -132,11 +153,26 @@ class folksoServer {
     if (!($this->validClientAddress($_SERVER['REMOTE_HOST'], 
                                     $_SERVER['REMOTE_ADDR']))) {
       header('HTTP/1.1 403 Forbidden');
-      print "Sorry, this not available to you.";
+      print "Sorry, this is not available to you.";
       return;
     }
 
-    $q = new folksoQuery($_SERVER, $_GET, $_POST); 
+
+    /*
+     * Only going to try to rewrite if $this->rw is valid. Wimpy, and
+     * probably should be changed later. If there is a $req, then it
+     * is time to rewrite.
+     */
+    if ($req &&
+        ($this->rewrite instanceof folksoUrlRewrite)) {
+      $q = new folksoQuery($_SERVER, 
+                           $this->rewrite->transmute($req),
+                           array());
+    }
+    else {
+      $q = new folksoQuery($_SERVER, $_GET, $_POST); 
+    }
+
     $realm = 'folkso';
     $loc = new folksoFabula();
     $dbc = $loc->locDBC();
