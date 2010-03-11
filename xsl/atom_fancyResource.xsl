@@ -133,7 +133,7 @@
       </xsl:element>
 
       <xsl:element name="link">
-        <xsl:attribute name="rel">tagcloud</xsl:attribute>
+        <xsl:attribute name="rel">alternate</xsl:attribute>
         <xsl:attribute name="type">text/html</xsl:attribute>
         <xsl:attribute name="href">
           <xsl:text>http://www.fabula.org/tags/resource.php?folksoclouduri=1&amp;folksores=</xsl:text>
