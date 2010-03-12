@@ -6,8 +6,12 @@
 
 
   <xsl:template name="fabhead">
-    <head>
-      <title>Fabula - Tag: Philosophie</title>
+    <xsl:param name="pageTitle"/>
+    <xsl:element name="head">
+      <xsl:element name="title">
+        <xsl:text>Fabula - tag : </xsl:text>
+        <xsl:value-of select="$pageTitle"/>
+      </xsl:element>
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
       <meta http-equiv="Content-Language" content="fr-FR"/>
       <meta name="url" content="http://www.fabula.org/equipe.php"/>
@@ -90,7 +94,7 @@
         </style>
 
 
-      </head>
+      </xsl:element>
     </xsl:template>
 
     <xsl:template name="fab_docTop">

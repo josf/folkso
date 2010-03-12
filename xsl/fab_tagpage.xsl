@@ -9,7 +9,10 @@
   <xsl:template match="/">
     <xsl:element name="html">
       <xsl:attribute name="xmlns">http://www.w3.org/1999/xhtml</xsl:attribute>
-      <xsl:call-template name="fabhead"/>
+      <xsl:call-template name="fabhead">
+        <xsl:with-param name="pageTitle"
+                        select="./tagpage/tag/tagtitle"/>
+      </xsl:call-template>
       <xsl:element name="body">
         <xsl:call-template name="fab_docTop"/>
         <xsl:element name="div">
