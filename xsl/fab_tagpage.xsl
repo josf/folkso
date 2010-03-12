@@ -138,7 +138,7 @@
                 select="substring-after($remaining, '::')"/>
           </xsl:attribute>
           <xsl:value-of 
-              select="substring-after($remaining, '::')"/>
+              select="substring-before($remaining, '::')"/>
         </xsl:element>
       </xsl:when>
 
