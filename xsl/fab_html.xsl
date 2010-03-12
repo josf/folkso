@@ -7,6 +7,7 @@
 
   <xsl:template name="fabhead">
     <xsl:param name="pageTitle"/>
+    <xsl:param name="tagnorm"/>
     <xsl:element name="head">
       <xsl:element name="title">
         <xsl:text>Fabula - tag : </xsl:text>
@@ -39,7 +40,19 @@
         <meta name="DC.Language" scheme="RFC3066" content="fr-FR"/>
         <link rel="stylesheet" type="text/css" href="http://www.fabula.org/commun3/template.css" media="screen"/>
         <link rel="stylesheet" type="text/css" href="http://www.fabula.org/commun3/print.css" media="print"/>
+        <link rel="stylesheet" type="text/css" href="http://www.fabula.org/commun3/tagpage.css" media="screen"/>
         <link rel="shortcut icon" type="image/x-icon" href="http://www.fabula.org/favicon.ico"/>
+        <xsl:element name="link">
+          <xsl:attribute name="rel">alternate</xsl:attribute>
+          <xsl:attribute name="type">application/atom+xml</xsl:attribute>
+          <xsl:attribute name="title">
+            <xsl:value-of select="concat('Fabula tag: ', $pageTitle)"/>
+          </xsl:attribute>
+          <xsl:attribute name="href">
+            <xsl:value-of select="concat('http://www.fabula.org/tag/', $tagnorm, '/feed/atom')"/>
+          </xsl:attribute>
+        </xsl:element>
+
         <link rel="alternate" type="application/rss+xml" title="A la une de fabula" href="http://www.fabula.org/rss/fabula.xml"/>
 
         <link rel="alternate" type="application/rss+xml" title="Les dernières annonces" href="http://www.fabula.org/rss/fabula1.xml"/>
