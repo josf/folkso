@@ -34,21 +34,24 @@ class folksoResponder {
    * lowercase.
    */
   public $method;
-  protected $activate_params;
+  public $activate_params;
 
   /**
+   *
+   *
+   * The possible keys are 'required', 'oneof', 'required_single',
+   * 'required_multiple', and 'accept'. The key or keys present must
+   * contain a linear array of field names (not necessarily preceded
+   * by 'folkso'). If just one of the fields in the 'oneof' array are
+   * present in the query, the query will be considered valid
+   * (provided that the other conditions from the 'required*' arrays
+   * are met, if present). The 'accept' array allows you to screen
+   * requests based on content type.
+   * 
+   *
    * @param string $method The method that this Response will respond
    * to.  
-   *
-   * @param associative array $params An associative array of
-   * arrays. The four possible keys are 'required', 'oneof',
-   * 'required_single', and 'required_multiple'. The key or keys
-   * present must contain a linear array of field names (not
-   * necessarily preceded by 'folkso'). If just one of the fields in
-   * the 'oneof' array are present in the query, the query will be
-   * considered valid (provided that the other conditions from the
-   * 'required*' arrays are met, if present).
-   *
+   * @param associative array $params Associative array of parameter arrays.
    * @param function $action_func This function will be called if this
    * response is activated.
    */
@@ -132,6 +135,15 @@ class folksoResponder {
       }
     }
 
+    if (is_array($this->activate_params['accept']) &&
+        (! in_array($q->content_type(), 
+                    $this->activate_params['accept']))) {
+          return false;
+    }
+
+    /*
+     * This works because it is the last test.
+     */
     $oneof = false;
     if (is_array($this->activate_params['oneof'])) {
       foreach ($this->activate_params['oneof'] as $p) {

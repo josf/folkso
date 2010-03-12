@@ -26,6 +26,7 @@ class folksoTagRes extends folksoTagdata {
    * and Pagetags).
    */
   public $url;
+
   public $xml;
   public $xml_dom;
   public $html;
