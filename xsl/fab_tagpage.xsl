@@ -12,6 +12,8 @@
       <xsl:call-template name="fabhead">
         <xsl:with-param name="pageTitle"
                         select="./tagpage/tag/tagtitle"/>
+        <xsl:with-param name="tagnorm"
+                        select="./tagpage/tag/tagnorm"/>
       </xsl:call-template>
       <xsl:element name="body">
         <xsl:call-template name="fab_docTop"/>
