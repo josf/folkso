@@ -17,7 +17,7 @@ class folksoUrlRewriteResource extends folksoUrlRewrite {
   public $singletons = array('cloud', 'clouduri', 'delete', 'ean13list',
                              'visit');
   public $pairs = array('res','tag', 'newtitle', 'note', 'newean13', 'ean13', 
-                        'oldean13', 'meta');
+                        'oldean13', 'meta', 'datatype');
   public $special = array();
 
 }
