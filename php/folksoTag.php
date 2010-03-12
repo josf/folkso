@@ -296,7 +296,7 @@ function relatedTags (folksoQuery $q, folksoDBConnect $dbc, folksoSession $fks) 
   $proc->importStylesheet($xsl);
   $proc->setParameter('', 
                       'tagviewbase',
-                      $loc->server_web_path . 'tagview.php?tag=');
+                      $loc->web_url . '/tag/');
   // by using transformToXML instead of transformToDoc, we avoid
   // putting an xml type declaration into the output doc.
   $reltags = $proc->transformToXML($accum_XML);

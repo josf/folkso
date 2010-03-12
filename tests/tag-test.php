@@ -291,6 +291,8 @@ class testOffolksotag extends  UnitTestCase {
                       'This is not my beautiful folksoResponse object');
      $this->assertEqual($r->status, 204,
                         'There should not be any related tags: ' . $r->status . $r->body());
+
+
      $this->expectError();
      $baddb = relatedTags(new folksoQuery(array(),
                                           array('folksotag' => 'tagone'),
