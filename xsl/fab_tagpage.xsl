@@ -16,14 +16,19 @@
                         select="./tagpage/tag/tagnorm"/>
       </xsl:call-template>
       <xsl:element name="body">
-        <xsl:call-template name="fab_docTop"/>
         <xsl:element name="div">
-          <xsl:attribute name="id">container_1col</xsl:attribute>
-          <xsl:apply-templates/>
+          <xsl:attribute name="class">container</xsl:attribute>
+          <xsl:call-template name="fab_docTop"/>
+
+          <xsl:element name="div">
+            <xsl:attribute name="id">container_1col</xsl:attribute>
+            <xsl:apply-templates/>
+          </xsl:element>
+          <xsl:call-template name="fab_docBottom"/>
         </xsl:element>
-        <xsl:call-template name="fab_docBottom"/>
       </xsl:element>
     </xsl:element>
+
   </xsl:template>
 
 
