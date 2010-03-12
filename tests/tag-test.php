@@ -497,6 +497,28 @@ class testOffolksotag extends  UnitTestCase {
      $this->assertEqual($h2->status, 404,
                         'Old tag name is still present');
    }
+
+   function testTagPage () {
+     $q = new folksoQuery(array(),
+                          array('folksotag' => 'tagone',
+                                'folksodatatype' => 'xml'),
+                          array());
+     $r = tagPage($q, $this->dbc, $this->fks);
+
+     $resp = fancyResource($q, $this->dbc, $this->fks);
+     $this->assertEqual($resp->status, 200, "fancy query not returning 200");
+     print '<pre>fancy' . htmlentities($resp->body()) . '</pre>';
+
+     $this->assertIsA($r, folksoResponse, 'Pb with object creation');
+     $this->assertPattern('/<tagpage>/',
+                          $r->body(),
+                          'XML boilerplate missing from tagPage response');
+     //     print '<pre><code>' . htmlentities($r->body()) . '</code></pre>';
+     print '<pre><code> ' . htmlentities($r->bodyXsltTransform()) . '</pre></code>';
+
+
+   }
+
    function testAllTags () {
      $r = allTags(new folksoQuery(array(),
                                   array(),

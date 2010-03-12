@@ -11,6 +11,17 @@ $srv = new folksoServer(array( 'methods' =>
                                'rewrite' => new  folksoUrlRewriteTag));
 
 $srv->addResponseObj(new folksoResponder('get',
+                                         array('required' => array('tag'),
+                                               'exclude' => array(
+                                                                  'related', 'fancy',
+                                                                  'feed', 'newtag', 
+                                                                  'autotag', 'resources'
+                                                                  ),
+                                               'accept' => array('html')),
+                                         'tagPage'));
+
+
+$srv->addResponseObj(new folksoResponder('get',
                                         array('required' => array('fancy'),
                                               'required_single' => array('tag')),
                                         'fancyResource'));

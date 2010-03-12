@@ -849,3 +849,36 @@ function allTags (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   return $r;
 }
 
+function tagPage  (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
+  // it hurts me to do this dynamic include, but it really seems like
+  // the best thing to do here.
+  include_once("fdent/fabelements.inc");
+  $r = new folksoResponse();
+  $fab = new FabElements();
+  
+  $relatedResp = relatedTags($q, $dbc, $fks);
+  $resourceResp = fancyResource($q, $dbc, $fks);
+
+  if ($resourceResp->status == 200) {
+    $resourceXML = preg_replace('/<\?xml\s+version="1\.0"\?>/i', 
+                                '', 
+                                $resourceResp->body());
+
+  }
+  if ($relatedResp->status == 200) {
+    $relatedXML = preg_replace('/<\?xml\s+version="1\.0"\?>/i', 
+                               '', 
+                               $relatedResp->body());
+  }
+
+  $r->t(
+        sprintf('<?xml version="1.0"?>'
+                ."\n<tagpage>\n<related>%s</related>\n"
+                ."%s</tagpage>",
+                $relatedXML, $resourceXML)
+        );
+
+  $r->setStylesheet("fab_tagpage.xsl");
+  return $r;
+  
+}
