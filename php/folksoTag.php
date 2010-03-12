@@ -879,6 +879,7 @@ function tagPage  (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
         );
 
   $r->setStylesheet("fab_tagpage.xsl");
+  $r->setType('html');
   return $r;
   
 }
