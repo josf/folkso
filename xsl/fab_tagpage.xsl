@@ -131,7 +131,7 @@
           <xsl:value-of
               select="substring-before(substring-before($remaining, ' - '), '::')"/>
         </xsl:element>
-        <xsl:text>  </xsl:text>
+        <xsl:text>,  </xsl:text>
         <xsl:call-template name="taglistFormat">
           <xsl:with-param name="remaining"
                           select="substring-after($remaining, ' - ')"/>
