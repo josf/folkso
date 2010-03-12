@@ -40,6 +40,7 @@
         <meta name="DC.Language" scheme="RFC3066" content="fr-FR"/>
         <link rel="stylesheet" type="text/css" href="http://www.fabula.org/commun3/template.css" media="screen"/>
         <link rel="stylesheet" type="text/css" href="http://www.fabula.org/commun3/print.css" media="print"/>
+        <link rel="stylesheet" type="text/css" href="http://www.fabula.org/commun3/tagpage.css" media="screen"/>
         <link rel="shortcut icon" type="image/x-icon" href="http://www.fabula.org/favicon.ico"/>
         <xsl:element name="link">
           <xsl:attribute name="rel">alternate</xsl:attribute>
