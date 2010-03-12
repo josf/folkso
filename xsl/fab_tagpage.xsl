@@ -38,6 +38,22 @@
         <xsl:value-of select="./tag/tagtitle"/>
       </xsl:element>
 
+      <xsl:element name="div">
+        <xsl:attribute name="class">tagfeeds</xsl:attribute>
+
+        <xsl:element name="a">
+          <xsl:attribute name="href">
+            <xsl:value-of select="concat('http://www.fabula.org/tag/',
+                                          ./tag/tagnorm,
+                                          '/feed/atom')"/>
+          </xsl:attribute>
+          <xsl:element name="img">
+            <xsl:attribute name="src">http://www.fabula.org/tags/rssbutton.png</xsl:attribute>
+          </xsl:element>
+          <xsl:text>RSS</xsl:text>
+        </xsl:element>
+      </xsl:element>
+
       <xsl:apply-templates/>
     </xsl:element>
   </xsl:template>
