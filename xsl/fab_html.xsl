@@ -111,8 +111,7 @@
     </xsl:template>
 
     <xsl:template name="fab_docTop">
-      <div id="titre_fab_imprimer">Fabula, la recherche en littérature (accueil)</div>
-      <div id="container"/>
+
 
       <div id="header">
         <div id="titre">
@@ -197,6 +196,7 @@
             </li>
           </ul>
         </div>
+
         </div>
     </xsl:template>
 
