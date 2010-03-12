@@ -1,12 +1,26 @@
 <?xml version="1.0"?>
 <xsl:stylesheet version="1.0"
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-
+  <xsl:import href="fab_html.xsl"/>
   <xsl:output method="xml"/>
 
+
+
   <xsl:template match="/">
-    <xsl:apply-templates/>
+    <xsl:element name="html">
+      <xsl:attribute name="xmlns">http://www.w3.org/1999/xhtml</xsl:attribute>
+      <xsl:call-template name="fabhead"/>
+      <xsl:element name="body">
+        <xsl:call-template name="fab_docTop"/>
+        <xsl:element name="div">
+          <xsl:attribute name="id">container_1col</xsl:attribute>
+          <xsl:apply-templates/>
+        </xsl:element>
+        <xsl:call-template name="fab_docBottom"/>
+      </xsl:element>
+    </xsl:element>
   </xsl:template>
+
 
   <xsl:template match="tagpage">
     <xsl:element name="div">
