@@ -91,11 +91,16 @@
                     '("folksoclouduri" . "1")
                     '("folksodatatype" . "xml"))))
                     
-(switch-to-buffer (url-retrieve-synchronously
-                   (fk-build-tag-get
-                    "http://localhost/"
-                    'poesie
-                    '("folksorelated" . "1"))))
+(fk-run-req (fk-build-get
+             "http://localhost/tag.php?folksotag="
+             'poesie
+             '("folksorelated" . "1")))
+
+(fk-run-req (fk-build-get
+             "http://www.fabula.org/tags/tag.php?folksotag="
+             'poesie
+             '("folksorelated" . "1")
+             '("folksodatatype" . "xml")))
 
 (fk-run-req (fk-build-get
              "http://localhost/tag.php?folksotag="
@@ -114,6 +119,9 @@
              'tagone
              '("folksofancy" . "1")
              '("folksofeed" . "atom")))
+
+(fk-run-req "http://localhost/tag/tagone/related/datatype/html")
+             
 
 (fk-run-req (fk-build-get
              "http://localhost/tag.php?folksotag="
