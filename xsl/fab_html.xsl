@@ -202,8 +202,7 @@
 
     <xsl:template name="fab_docBottom">
 
-      <div id="bottom_1col">
-      </div>
+      <div id="bottom_1col">&#160;</div>
       <div id="copyright">
         &#169; Tous les textes et documents disponibles sur ce site, sont, sauf mention contraire, protégés par une <a href="http://creativecommons.org/licenses/by-nc-nd/2.0/fr/">licence Creative Common</a><br/>(diffusion et reproduction libres avec l'obligation de citer l'auteur original et l'interdiction de toute modification et de toute utilisation commerciale sans autorisation préalable).
       </div>
