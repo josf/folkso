@@ -102,6 +102,11 @@
              '("folksorelated" . "1")
              '("folksodatatype" . "xml")))
 
+(fk-run-req "http://www.fabula.org/tag/poesie/datatype/html")
+
+(fk-run-req "http://www.fabula.org/resource/3441/cloud/datatype/xml")
+
+
 (fk-run-req (fk-build-get
              "http://localhost/tag.php?folksotag="
              'tagone
