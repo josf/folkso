@@ -95,6 +95,17 @@ class testOffolksoResQuery extends UnitTestCase {
                          'Not finding ean13 in sql ' . $sql_ean);
     print '==================' . $sql_ean;
   }
+
+  function testResInfo () {
+    $rq = new folksoResQuery();
+    $sql = $rq->resInfo('http://example.com');
+    $this->assertPattern('/example\.com/', $sql,
+                         'Url not appearing in sql');
+    $this->assertPattern('/555/', 
+                         $rq->resInfo(555),
+                         'res id not appearing in sql');
+    print 'Resinfo: ' . $sql;
+  }
 }
 
 

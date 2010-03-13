@@ -19,9 +19,20 @@ require_once('folksoUrlRewriteResource.php');
 $srv = new folksoServer(array( 'methods' => array('POST', 'GET', 'HEAD', 'DELETE'),
                                'access_mode' => 'ALL',
                                'rewrite' => new folksoUrlRewriteResource()));
+
 $srv->addResponseObj(new folksoResponder('head', 
                                         array('required' => array('res')),
                                         'isHead'));
+
+
+$srv->addResponseObj(new folksoResponder('get',
+                                         array('required' => array('res'),
+                                               'exclude' => 
+                                               array('clouduri', 'cloud',
+                                                     'tag', 'visit', 'note', 'meta',
+                                                     'newresource', 'delete'),
+                                               'accept' => 'html'),
+                                         'resPage'));
 
 $srv->addResponseObj(new folksoResponder('get',
                                         array('required' => array('clouduri', 'res')),

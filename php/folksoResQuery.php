@@ -291,4 +291,27 @@ group by tag_id;
 
   }
 
+
+  /**
+   * @brief SQL to get one line about a resource
+   * @param $res
+   */
+   public function resInfo ($res) {
+     $a = array(
+                array('type' => 'common',
+                      'sql' =>
+                      'select id, uri_normal, uri_raw, title '
+                      . ' from resource '
+                      .' where '),
+                array('type' => 'isnum',
+                      'sql' =>
+                      ' id = <<<x>>>'),
+                array('type' => 'notnum',
+                      'sql' =>
+                      " uri_normal = url_whack('<<<x>>>')")
+                );
+     return $this->qb->build($a, $res, array());
+   }
+  
+
   }
