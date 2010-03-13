@@ -329,7 +329,8 @@ class folksoUser {
 
 
   /**
-   * @param $right
+   * @param $service String
+   * @param $right String
    */
   public function checkUserRight ($service, $right) {
     if ($this->rights->checkRight($service, $right)){
