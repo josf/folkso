@@ -99,7 +99,7 @@ public $loc;
       // setting url format so that it is not hard coded in the xsl.
       $proc->setParameter('', 
                           'tagviewbase', 
-                          $this->loc->server_web_path . 'tagview.php?tag=');
+                          $this->loc->web_url . '/tag/');
 
       //using cloud->xml_DOM() because this data might have been cached already.
       $cloud = $proc->transformToDoc($this->xml_DOM());
