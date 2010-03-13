@@ -1,7 +1,7 @@
 /**
  * Part of "Folkso"
  *  author: Joseph Fahey
- *  copyright 2008 Gnu Public Licence
+ *  copyright 2008-2010 Gnu Public Licence
  */
 
 
@@ -402,7 +402,7 @@ function activateTageditCommands () {
   var item = $(this);
   var display = item.find(".tagname").text();
   var id = item.attr("id").substring(5);
-  alert("display: " + display + "  id: " + id);
+//  alert("display: " + display + "  id: " + id);
 
   /** div tagcommands **/
   var divtc = $("<div class=\"tagcommands\">");
