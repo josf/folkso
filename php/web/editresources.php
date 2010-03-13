@@ -35,8 +35,8 @@ $fk = new folksoAdmin();
 <meta http-equiv="Content-Language" content="fr-FR"/>
     <title>Taggons des pages</title>
 
-    <script type="text/javascript" src="js/jquery.js">
-    </script>
+  <script type="text/javascript" 
+          src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.js"></script>
     <script type="text/javascript" src="js/jquery.autocomplete.js">
     </script>
 
