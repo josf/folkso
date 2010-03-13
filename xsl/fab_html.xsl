@@ -8,9 +8,12 @@
   <xsl:template name="fabhead">
     <xsl:param name="pageTitle"/>
     <xsl:param name="tagnorm"/>
+
+    <!-- whether or not to include a link element for an atomfeed -->
+    <xsl:param name="atomfeedp"/>
+
     <xsl:element name="head">
       <xsl:element name="title">
-        <xsl:text>Fabula - tag : </xsl:text>
         <xsl:value-of select="$pageTitle"/>
       </xsl:element>
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
@@ -42,16 +45,19 @@
         <link rel="stylesheet" type="text/css" href="http://www.fabula.org/commun3/print.css" media="print"/>
         <link rel="stylesheet" type="text/css" href="http://www.fabula.org/commun3/tagpage.css" media="screen"/>
         <link rel="shortcut icon" type="image/x-icon" href="http://www.fabula.org/favicon.ico"/>
-        <xsl:element name="link">
-          <xsl:attribute name="rel">alternate</xsl:attribute>
-          <xsl:attribute name="type">application/atom+xml</xsl:attribute>
-          <xsl:attribute name="title">
-            <xsl:value-of select="concat('Fabula tag: ', $pageTitle)"/>
-          </xsl:attribute>
-          <xsl:attribute name="href">
-            <xsl:value-of select="concat('http://www.fabula.org/tag/', $tagnorm, '/feed/atom')"/>
-          </xsl:attribute>
-        </xsl:element>
+
+        <xsl:if test="$atomfeedp">
+          <xsl:element name="link">
+            <xsl:attribute name="rel">alternate</xsl:attribute>
+            <xsl:attribute name="type">application/atom+xml</xsl:attribute>
+            <xsl:attribute name="title">
+              <xsl:value-of select="$pageTitle"/>
+            </xsl:attribute>
+            <xsl:attribute name="href">
+              <xsl:value-of select="concat('http://www.fabula.org/tag/', $tagnorm, '/feed/atom')"/>
+            </xsl:attribute>
+          </xsl:element>
+        </xsl:if>
 
         <link rel="alternate" type="application/rss+xml" title="A la une de fabula" href="http://www.fabula.org/rss/fabula.xml"/>
 

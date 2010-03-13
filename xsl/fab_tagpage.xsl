@@ -11,9 +11,10 @@
       <xsl:attribute name="xmlns">http://www.w3.org/1999/xhtml</xsl:attribute>
       <xsl:call-template name="fabhead">
         <xsl:with-param name="pageTitle"
-                        select="./tagpage/tag/tagtitle"/>
+                        select="concat('Fabula. Tag : ', ./tagpage/tag/tagtitle)"/>
         <xsl:with-param name="tagnorm"
                         select="./tagpage/tag/tagnorm"/>
+        <xsl:with-param name="atomfeedp" select="1"/>
       </xsl:call-template>
       <xsl:element name="body">
         <xsl:element name="div">
