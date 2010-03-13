@@ -2,7 +2,7 @@
   /**
    * @package Folkso
    * @author Joseph Fahey
-   * @copyright 2008 Gnu Public Licence (GPL)
+   * @copyright 2008-2010 Gnu Public Licence (GPL)
    * @subpackage webinterface
    */
 
@@ -14,6 +14,7 @@ require_once('folksoDBconnect.php');
 require_once('folksoDBinteract.php');
 require_once('folksoFabula.php');
 require_once('folksoAdmin.php');
+require_once('folksoSession.php');
 
 $loc = new folksoFabula();
 
@@ -27,6 +28,33 @@ $dbc = new folksoDBconnect($loc->db_server,
  */
 $i = new folksoDBinteract($dbc);
 $fk = new folksoAdmin();
+
+$fks = new folksoSession($dbc);
+$sid = $_COOKIE['folksosess'];
+
+$login_page = 'http://www.fabula.org/tags/admin/adminlogin.php';
+$sorry = 'http://www.fabula.org/tags/admin/sorry.php';
+
+if (! $fks->validateSid($sid)) {
+  header('Location: ' . $login_page);
+  exit();
+}
+else {
+  $fks->setSid($sid);
+}
+
+if (! $fks->status) { // cookie present, but is not valid
+  header('Location: ' . $login_page);
+  exit();
+}
+
+$user = $fks->userSession($sid);
+if (! $user->checkUserRight('folkso', 'redac')) {
+  header('Location: ' . $sorry);
+  exit;
+}
+
+
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
