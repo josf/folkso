@@ -914,7 +914,48 @@ function resEans (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   return $r;
 }
 
+/**
+ * Simple wrapper around tagCloudLocalPop to force an xslt transform.
+ */
 
+function resPage (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
+  $r = new folksoResponse();
+  $q->fk_content_type = 'xml';
+  $pop = tagCloudLocalPop($q, $dbc, $fks);
+  
+  if ($pop->status >= 500) {
+    return $r->dbError(500, $pop->statusMessage);
+  }
+  $popXML = preg_replace('/<\?xml\s+version="1\.0"\?>/i', 
+                                '', 
+                         $pop->body());
+
+  $i = new folksoDBinteract($dbc);
+  $rq = new folksoResQuery();
+  $sql = $rq->resInfo($q->res);
+  $i->query($sql);
+  $r->debug = $sql . ' res: ' . $q->res . ' numrows: ';
+
+  if ($i->result_status == 'NOROWS') {
+    return $r->setError(404, 'Resource is not indexed',
+                        'The resource you requested is not present in our database');
+  }
+
+  $r->setOk(200, "Found resource");
+  $row = $i->result->fetch_object();
+  $info = sprintf(
+                  "<resource>\n"
+                  ."<url>%s</url>\n"
+                  ."<normurl>%s</normurl>\n"
+                  ."<resid>%d</resid>\n"
+                  ."<title>%s</title>\n",
+                  $row->uri_raw, $row->uri_normal, $row->id, $row->title);
+
+  $r->t($info . $popXML . '</resource>');
+  $r->setStylesheet('fab_cloudpage.xsl');
+  $r->setType('html');
+  return $r;
+}
 
 
 /**

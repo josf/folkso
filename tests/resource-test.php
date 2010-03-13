@@ -563,6 +563,26 @@ class testOfResource extends  UnitTestCase {
    }
 
 
+   function testResPage () {
+
+     $q = new folksoQuery(array(), array('folksores' => 'http://example.com/1'),
+                          array());
+     $r = resPage($q, $this->dbc, $this->fks);
+     $this->assertIsA($r, folksoResponse, 'Prob with ob creation');
+     $this->assertEqual($r->status, 200,
+                        'resPage should return 200 status with example.com/1, not: '
+                        . $r->status);
+     
+     $xxx = new DOMDocument();
+     $this->assertTrue($xxx->loadXML($r->body()),
+                       'malformed internal xml in $r->body()');
+     $this->assertTrue(file_exists($r->loc->xsl_dir . $r->styleSheet),
+                       'Missing stylesheet');
+
+     print '<rel><code>' . htmlentities($r->body()) . '</code></rel>';
+     print '<rel><code>' . htmlentities($r->bodyXsltTransform()) . '</code></rel>';
+   }
+
 }//end class
 
 $test = &new testOfResource();
