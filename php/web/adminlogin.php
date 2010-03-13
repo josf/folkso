@@ -190,10 +190,10 @@ if (! $loggedIn ) {
 
 <p>Pour commencer, cliquer sur le bouton <strong>Facebook Connect</strong>.</p>
 
-?> //'
+<?php //'
 
-    print $fab->fbInit()
-print $fab->facebookConnectButton();
+
+print $fp->facebookConnectButton();
 
 } // end (if not logged in)
 
@@ -220,6 +220,7 @@ elseif ( $hasRights ) {
 
 else { // logged in but insufficient rights
 
+?>
 <h1>Droits insuffisants</h1>
     <p>Nous sommes désolés, mais vous ne disposez pas des droits nécessaires
     pour accéder à l'interface de gestion des tags. Veuillez nous en excuser si 
