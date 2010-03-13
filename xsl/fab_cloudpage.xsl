@@ -57,7 +57,7 @@
     <xsl:param name="title"/>
 
     <xsl:element name="h1">
-      <xsl:text>Folksonomie resource : </xsl:text>
+      <xsl:text>Folksonomie ressource : </xsl:text>
     </xsl:element>
 
     <xsl:element name="h2">
@@ -98,6 +98,9 @@
   <xsl:template match="tagcloud">
     <xsl:element name="div">
       <xsl:attribute name="class">tagcloud</xsl:attribute>
+      <xsl:element name="h3">
+        <xsl:text>Nuage de tags</xsl:text>
+      </xsl:element>
       <xsl:element name="ul">
         <xsl:attribute name="class">cloudlist</xsl:attribute>
         <xsl:apply-templates/>
