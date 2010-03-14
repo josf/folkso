@@ -120,8 +120,8 @@ pageTracker._trackPageview();
   <?php print $fp->facebookJSinit(); ?>
 <script type="text/javascript" src="/tags/js/jquery.folksodeps.min.js"></script>
 <script type="text/javascript" src="/tags/js/folksonomie.min.js"></script> 
-<!-- <script type="text/javascript" src="/tags/js/folksonomie.js"></script>
-<script type="text/javascript" src="/tags/js/faboid.js"></script> -->
+<!-- <script type="text/javascript" src="/tags/js/folksonomie.js"></script> -->
+<script type="text/javascript" src="/tags/js/faboid.js"></script>
 <script type="text/javascript" src="/tags/js/pageinit.js"></script>
 <?php
   print $fp->jsHolder($fp->fKjsLoginState('fK.loginStatus') 
@@ -176,7 +176,7 @@ pageTracker._trackPageview();
 
 <?php
 
-print $fab->headHTML();
+
 
 if (! $loggedIn ) {
 ?>
