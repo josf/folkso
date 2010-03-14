@@ -176,7 +176,6 @@ pageTracker._trackPageview();
 
 <?php
 
-print $fab->headHTML();
 
 if (! $loggedIn ) {
 ?>
