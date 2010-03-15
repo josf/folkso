@@ -37,14 +37,15 @@ fK.fb.onLogin = function() {
                         $('body').bind('loggedIn',
                                        function() {
                                            fK.loginStatus = true;
-                                         $("#fbkillbox", fK.cf.container).hide();
-                                         $(".fKTagbutton").show();
-                                         $(".fKTaginput", fK.cf.container).show();
-                                         $(".fKLoginButton", fK.cf.container).hide();
-                                         $("fb:login-button").hide();
-                                         $("ul.provider_list").hide();
+                                           $("#fbkillbox", fK.cf.container).hide();
+                                           $(".fKTagbutton").show();
+                                           $(".fKTaginput", fK.cf.container).show();
+                                           $(".fKLoginButton", fK.cf.container).hide();
+                                           $("fb:login-button").hide();
+                                           $("ul.provider_list").hide();
                                            $("#fbstuff").hide();
-                                         $(".firstLogin", fK.cf.container).hide();
+                                           $(".firstLogin", fK.cf.container).hide();
+
                                        });
 
                         $('body').bind('loggedOut',
@@ -58,11 +59,15 @@ fK.fb.onLogin = function() {
                         /* Facebook connect login and logout events */
                         fK.fb.loggedUser = function()
                         {
-                            alert("Logged user!");
                             fK.fn.completeFBlogin(
-                                function(){ $('body').trigger('loggedIn'); },
+                                function(){ $('body').trigger('loggedIn');
+                                            if ($.isFunction(fK.ufn.loggedIn)) {
+                                                fK.ufn.loggedIn();
+                                            }
+                                          },
                                 function() {$('body').trigger('loggedOut'); }
                                 );
+
                         };
 
                         fK.fb.unLoggedUser = function()
@@ -70,10 +75,17 @@ fK.fb.onLogin = function() {
                             $('body').trigger('loggedOut');
                         };
 
+                        /*
+                         * Initialize FB. Default is to use functions
+                         *  for reacting to login state. If
+                         *  fK.cf.facebookReload is set, we reload instead.
+                         */
                         if (FB && fK.fb.sitevars) {
                             FB.init(fK.fb.sitevars.apikey,
                                     fK.fb.sitevars.xdm,
-                                    {"ifUserConnected": fK.fb.loggedUser,
+                                    fK.cf.facebookReload ? 
+                                    {"reloadIfSessionStateChanged" : true } 
+                                    : {"ifUserConnected": fK.fb.loggedUser,
                                      "ifUserNotConnected": fK.fb.unLoggedUser}
                                    );
                         }
@@ -98,12 +110,11 @@ fK.fb.onLogin = function() {
                       window.handleOpenIDResponse = function (openid_args){
                         $("#bucket").html("Verifying OpenID response");
                         $.ajax({type: "get",
-                              url: fK.cf.oIdPath + "oid_popup_end.php",
-                              data: openid_args,
-                              cache: false,
+                                url: fK.cf.oIdPath + "oid_popup_end.php",
+                                data: openid_args,
+                                cache: false,
                                 success: function(xhr, msg) {
                                     $("#bucket").html(msg);
-                                    
                                 }});
                       };
 

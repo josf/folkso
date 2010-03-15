@@ -7,23 +7,13 @@
    * @subpackage webinterface
    */
 require_once "/var/www/dom/fabula/commun3/head_folkso.php"; 
-require_once "fdent/fabelements.inc";
-require_once 'folksoSession.php';
-require_once 'folksoFabula.php';
 
-$sid = $_COOKIE['folksosess'];
-$loc = new folksoFabula();
-$dbc = $loc->locDBC();
-$fks = new folksoSession($dbc);
 
-if ($fks->validateSid($sid)) {
-  $fks->setSid($sid);
-  if ($fks->status()) {
-    $loggedIn = true;
-    $user = $fks->userSession();
-    if ($user->checkUserRight('folkso', 'redac')) {
-      $hasRights = true;
-    }
+if ($fks->status()) {
+  $loggedIn = true;
+  $user = $fks->userSession();
+  if ($user->checkUserRight('folkso', 'redac')) {
+    $hasRights = true;
   }
 }
 
@@ -37,7 +27,7 @@ $fab = new FabElements();
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
-<head><title>Ph. Stewart, L'Invention du sentiment: roman et économie affective au XVIIIe s.</title>
+<head><title>Folksonomie, gestion de tags et de ressources : se loguer</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <meta http-equiv="Content-Language" content="fr-FR"/>
 <meta name="url" content="http://www.fabula.org/actualites/article35785.php"/>
@@ -123,6 +113,10 @@ pageTracker._trackPageview();
 <!-- <script type="text/javascript" src="/tags/js/folksonomie.js"></script> -->
 <script type="text/javascript" src="/tags/js/faboid.js"></script>
 <script type="text/javascript" src="/tags/js/pageinit.js"></script>
+<script type="text/javascript">
+  fK.cf.facebookReload = true;
+
+</script>
 <?php
   print $fp->jsHolder($fp->fKjsLoginState('fK.loginStatus') 
                       . $fp->fbJsVars());

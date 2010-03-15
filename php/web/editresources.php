@@ -10,6 +10,8 @@
   /** Since DB connection etc. are used both in the <head> and <body>,
  all the initialization stuff goes here. **/
 
+require_once "/var/www/dom/fabula/commun3/head_folkso.php"; 
+
 require_once('folksoDBconnect.php');
 require_once('folksoDBinteract.php');
 require_once('folksoFabula.php');
@@ -29,21 +31,11 @@ $dbc = new folksoDBconnect($loc->db_server,
 $i = new folksoDBinteract($dbc);
 $fk = new folksoAdmin();
 
-$fks = new folksoSession($dbc);
-$sid = $_COOKIE['folksosess'];
 
 $login_page = 'http://www.fabula.org/tags/admin/adminlogin.php';
 $sorry = 'http://www.fabula.org/tags/admin/sorry.php';
 
-if (! $fks->validateSid($sid)) {
-  header('Location: ' . $login_page);
-  exit();
-}
-else {
-  $fks->setSid($sid);
-}
-
-if (! $fks->status) { // cookie present, but is not valid
+if (! $fks->status()) {
   header('Location: ' . $login_page);
   exit();
 }
