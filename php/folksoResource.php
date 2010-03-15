@@ -949,7 +949,10 @@ function resPage (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
                   ."<normurl>%s</normurl>\n"
                   ."<resid>%d</resid>\n"
                   ."<title>%s</title>\n",
-                  $row->uri_raw, $row->uri_normal, $row->id, $row->title);
+                  htmlspecialchars($row->uri_raw, ENT_COMPAT, 'UTF-8'),
+                  htmlspecialchars($row->uri_normal, ENT_COMPAT, 'UTF-8'),
+                  $row->id, 
+                  htmlspecialchars($row->title, ENT_QUOTES, 'UTF-8'));
 
   $r->t($info . $popXML . '</resource>');
   $r->setStylesheet('fab_cloudpage.xsl');
