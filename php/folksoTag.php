@@ -402,10 +402,10 @@ function fancyResource (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks
   JOIN tag t ON te.tag_id = t.id'
       .' join ('
       .' select '
-      .'tag_id, '
+      .'tag_id, resource_id, '
       ." date_format(min(tagtime),'%Y-%m-%dT%TZ') as firsttag, "
       .' min(tagtime) as realtime '
-      .' from tagevent group by tag_id) as td on td.tag_id = t.id' ;
+      .' from tagevent group by tag_id) as td on td.tag_id = t.id and td.resource_id = r.id' ;
 
     $queryend = ' order by realtime desc ';
     if ($r->styleSheet) {
