@@ -849,6 +849,9 @@ function allTags (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   return $r;
 }
 
+/**
+ * Default html page for tag/thistag requests.
+ */
 function tagPage  (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   // it hurts me to do this dynamic include, but it really seems like
   // the best thing to do here.
