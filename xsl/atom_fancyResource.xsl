@@ -73,7 +73,7 @@
         <xsl:element name="div">
           <xsl:attribute name="xmlns">http://www.w3.org/1999/xhtml</xsl:attribute>
           <xsl:text>Ressource taggée avec:</xsl:text>
-        <xsl:apply-templates/>
+          <xsl:apply-templates/>
         </xsl:element>
       </xsl:element>
   </xsl:template>
@@ -143,7 +143,7 @@
 
       <xsl:element name="summary">
         <xsl:text>Une ressource récemment taggée avec le tag "</xsl:text>
-        <xsl:value-of select="./title"/>
+        <xsl:value-of select="/tag/tagtitle"/>
         <xsl:text>"</xsl:text>
       </xsl:element>
 
