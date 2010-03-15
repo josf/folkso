@@ -1081,7 +1081,7 @@ function deleteNoteButton(noteid) {
   * "tag" can be either a tagnorm or an id. Returns a correct tag url.
   */
  function tagUrl(tag) {
-   return  webbase + "resourceview.php?tag=" + tag; // this is probably wrong!
+   return  webbase + "/tag/" + tag; // this is probably wrong!
  }
 
 /** EAN13 stuff **/
