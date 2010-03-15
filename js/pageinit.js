@@ -75,10 +75,17 @@ fK.fb.onLogin = function() {
                             $('body').trigger('loggedOut');
                         };
 
+                        /*
+                         * Initialize FB. Default is to use functions
+                         *  for reacting to login state. If
+                         *  fK.cf.facebookReload is set, we reload instead.
+                         */
                         if (FB && fK.fb.sitevars) {
                             FB.init(fK.fb.sitevars.apikey,
                                     fK.fb.sitevars.xdm,
-                                    {"ifUserConnected": fK.fb.loggedUser,
+                                    fK.cf.facebookReload ? 
+                                    {"reloadIfSessionStateChanged" : true } 
+                                    : {"ifUserConnected": fK.fb.loggedUser,
                                      "ifUserNotConnected": fK.fb.unLoggedUser}
                                    );
                         }
