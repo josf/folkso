@@ -61,6 +61,20 @@ class folksoServer {
    */
   public $rewrite;
 
+  /**
+   * @brief Boolean 
+   * 
+   * This should almost always be false. It can only be set to true if
+   * access_mode is set to LOCAL. If access_mode is not set to
+   * 'LOCAL', this variable will remain set to false. It is included
+   * to allow automatic resource visiting without logins. The
+   * functions called this way should probably be have their own
+   * folksoServer object (and url) so that other functions are not
+   * contaminated by this (minor) weakening of security. (Of course
+   * the functions themselves can have their own policies too. This
+   * variable does not affect that.)
+   */
+  public $allow_anonymous_post = false;
 
   /**
    * @param array $config
@@ -83,7 +97,12 @@ class folksoServer {
    * _do_ require it in an array here.
    *
    * 5. rewrite: A folksoUrlRewrite object for converting clean URL's to traditional
-   * associative arrays
+   * associative arrays.
+   *
+   * 6. allow_anonymous_posts: Boolean that, if set to true, bypasses
+   * the check on request type. access_mode must be set to 'LOCAL' for
+   * this to work. See the documentation for the variable
+   * $allow_anonymous_post in this file.
    */
   function __construct ($config) {
     // methods
@@ -112,6 +131,13 @@ class folksoServer {
         ( is_array($config['access_list']))) { // this should be an erreur instead!
       $this->clientAllowedHost = $config['access_list'];
     }
+
+    if (array_key_exists('allow_anonymous_post', $config) &&
+        ($this->clientAccessRestrict == 'LOCAL') &&
+        $config['allow_anonymous_post']) {
+      $this->allow_anonymous_post = true;
+    }
+
 
     if (array_key_exists('rewrite', $config)) {
       $this->rewrite = $config['rewrite'];
@@ -188,9 +214,12 @@ class folksoServer {
     }
     catch ( badSidException $e) {
       if ($q->is_write_method()) {
-        header('HTTP/1.1 403 Login required'); // redirect instead
-        print "You must login first. Go to the login page.";
-        exit();
+        if (($this->allow_anonymous_post === false) ||
+            ($q->method !== 'post')) {
+          header('HTTP/1.1 403 Login required'); // redirect instead
+          print "You must login first. Go to the login page.";
+          exit();
+        }
       }
     }
 
