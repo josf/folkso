@@ -405,7 +405,7 @@ function fancyResource (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks
       .' from tagevent group by tag_id) as td on td.tag_id = t.id' ;
 
     if ($r->styleSheet) {
-      $queryend .= ' order by tagdate limit 20';
+      $queryend .= ' order by tagdate desc limit 20';
     }
 
 
