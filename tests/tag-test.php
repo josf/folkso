@@ -239,7 +239,7 @@ class testOffolksotag extends  UnitTestCase {
                           'atom output does not look like it is an Atom feed '
                           .' (Did not find the string "Atom" in feed');
      $r->prepareHeaders();
-     print_r($r->headers);
+     print $r->debug;
 
    }
 

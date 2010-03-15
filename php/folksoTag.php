@@ -366,7 +366,8 @@ function fancyResource (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks
       "tagnorm AS href, \n\t" .
       "'dummy' AS display, \n\t" .
       "'dummy' AS tags, \n".
-      "date_format(created, '%Y-%m-%dT%TZ') as tagdate "
+      "date_format(created, '%Y-%m-%dT%TZ') as tagdate, "
+      . "'dummy' as realtime "
       . "FROM tag \n\t";
     if (is_numeric($q->tag)) {
       $querytagtitle .= ' WHERE id = ' . $q->tag . ' ';
@@ -394,18 +395,21 @@ function fancyResource (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks
        JOIN resource r2 ON r2.id = te2.resource_id
        WHERE r2.id = r.id
        ) AS tags,
-  td.firsttag as tagdate
+  td.firsttag as tagdate,
+  td.realtime as realtime
   FROM resource r
   JOIN tagevent te ON r.id = te.resource_id
   JOIN tag t ON te.tag_id = t.id'
       .' join ('
       .' select '
       .'tag_id, '
-      ." date_format(min(tagtime),'%Y-%m-%dT%TZ') as firsttag "
+      ." date_format(min(tagtime),'%Y-%m-%dT%TZ') as firsttag, "
+      .' min(tagtime) as realtime '
       .' from tagevent group by tag_id) as td on td.tag_id = t.id' ;
 
+    $queryend = ' order by realtime desc ';
     if ($r->styleSheet) {
-      $queryend .= ' order by tagdate desc limit 20';
+      $queryend .= ' limit 20';
     }
 
 
