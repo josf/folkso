@@ -15,7 +15,7 @@ require_once "folksoUrlRewriteTag.php";
 $srv = new folksoServer(array( 'methods' => 
                                array('POST', 'GET', 'HEAD', 'DELETE'),
                                'access_mode' => 'ALL',
-                               'rewrite' => new  folksoUrlRewriteTag));
+                               'rewrite' => new  folksoUrlRewriteTag()));
 
 $srv->addResponseObj(new folksoResponder('get',
                                          array('required' => array('tag'),
