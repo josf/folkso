@@ -115,9 +115,7 @@ pageTracker._trackPageview();
 <script type="text/javascript" src="/tags/js/pageinit.js"></script>
 <script type="text/javascript">
   fK.cf.facebookReload = false;
-fK.ufn.loggedIn = function() {
-  window.location = "http://www.fabula.org/tags/admin/adminlogged.php";
-}
+
 </script>
 <?php
   print $fp->jsHolder($fp->fKjsLoginState('fK.loginStatus') 
@@ -175,21 +173,14 @@ fK.ufn.loggedIn = function() {
 if (! $loggedIn ) {
 ?>
 
+<h1>Utilisateur non logué</h1>
+<p>Veuillez vous loguer sur <a href="adminlogin.php">
+la page de login de la gestion de tags</a>.
+</p>
 
-<h1>Se loguer sur le système de gestion de tags</h1>
+<?php 
 
-<p>Actuellement, pour vous loguer, il faut d'abord posséder un compte 
-<a href="http://www.facebook.com">Facebook</a>. Bientôt vous pourrez vous loguer 
-également par le biais de <a href="http://openid.net">Open ID</a>.</p>
-
-<p>Pour commencer, cliquer sur le bouton <strong>Facebook Connect</strong>.</p>
-
-<?php //'
-
-
-print $fp->facebookConnectButton();
-
-} // end (if not logged in)
+}
 
 elseif ( $hasRights ) {
 ?>
@@ -223,3 +214,9 @@ else { // logged in but insufficient rights
 }
 
 print $fab->footHtml();
+
+
+
+
+
+
