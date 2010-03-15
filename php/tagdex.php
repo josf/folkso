@@ -1,4 +1,11 @@
 <?php
+/**
+ *
+ * @package Folkso
+ * @author Joseph Fahey
+ * @copyright 2008-2010 Gnu Public Licence (GPL)
+ * @subpackage Tagserv
+ */
 
 require_once "folksoTag.php";
 require_once "folksoTags.php";
@@ -89,5 +96,5 @@ $srv->addResponseObj(new folksoResponder('post',
                                         'renameTag'));
 
 $srv->Respond($_GET['folksohuge']);
-print $_GET['folksohuge'];
+
 
