@@ -396,7 +396,7 @@ function fancyResource (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks
        WHERE r2.id = r.id
        ) AS tags,
   td.firsttag as tagdate,
-  td.realtime as realtime
+  te.tagtime as realtime
   FROM resource r
   JOIN tagevent te ON r.id = te.resource_id
   JOIN tag t ON te.tag_id = t.id'
