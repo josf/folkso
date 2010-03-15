@@ -1,3 +1,37 @@
+<?php
+   /**
+    *
+   * @package Folkso
+   * @author Joseph Fahey
+   * @copyright 2008 Gnu Public Licence (GPL)
+   * @subpackage webinterface
+   */
+require_once "/var/www/dom/fabula/commun3/head_folkso.php"; 
+require_once('folksoClient.php');
+require_once('folksoFabula.php');
+require_once('folksoAdmin.php');
+
+$loc = new folksoFabula();
+$fk = new folksoAdmin();
+
+
+$login_page = 'http://www.fabula.org/tags/admin/adminlogin.php';
+$sorry = 'http://www.fabula.org/tags/admin/sorry.php';
+
+if (! $fks->status()) {
+  header('Location: ' . $login_page);
+  exit();
+}
+
+$user = $fks->userSession($sid);
+if (! $user->checkUserRight('folkso', 'redac')) {
+  header('Location: ' . $sorry);
+  exit;
+}
+
+
+?>
+
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -26,21 +60,7 @@
 <script type="text/javascript" src="js/jquery.autocomplete.js">
   </script>
 
-<?php 
-   /**
-    *
-   * @package Folkso
-   * @author Joseph Fahey
-   * @copyright 2008 Gnu Public Licence (GPL)
-   * @subpackage webinterface
-   */
-
-require_once('folksoClient.php');
-require_once('folksoFabula.php');
-require_once('folksoAdmin.php');
-
-$loc = new folksoFabula();
-$fk = new folksoAdmin();
+<?php
 
 /** if basic authentication info is present, we send it back to the
     browser for use in ajax requests **/
