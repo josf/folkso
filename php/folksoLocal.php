@@ -85,6 +85,15 @@ abstract class folksoLocal {
    */
   public $visit_valid_useragents;
 
+
+  /**
+   * The IP address that should be considered as local. Usually this
+   * would be 127.0.0.1 but if it is not you can configure it
+   * here. And yes, I know about IP spoofing, but we may as well add an 
+   * extra layer of protection here anyway.
+   */
+  public $local_ip;
+
   /**
    * Target for redirects. Do not use this variable for redirects, use
    * the loginPage() method instead to include a return path.

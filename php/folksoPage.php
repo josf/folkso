@@ -326,7 +326,7 @@ class folksoPage {
     }
 
     $fc = new folksoClient($this->loc->web_url,
-                           $this->loc->server_web_path . 'admin/folksovisit.php',
+                           $this->loc->server_web_path . 'folksovisit.php',
                            'POST');
     $fc->set_postfields(array('folksovisit' => 1,
                               'folksores' => $our_current_url,

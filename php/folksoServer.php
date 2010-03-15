@@ -30,7 +30,7 @@ require_once('folksoWsseCreds.php');
 require_once('folksoFabula.php');
 require_once('folksoResponder.php');
 require_once('folksoSession.php');
-
+require_once('folksoFabula.php');
 
 
 class folksoServer {
@@ -76,6 +76,8 @@ class folksoServer {
    */
   public $allow_anonymous_post = false;
 
+  private $loc;
+
   /**
    * @param array $config
    * Argument is an associative array containing any of the following
@@ -105,6 +107,8 @@ class folksoServer {
    * $allow_anonymous_post in this file.
    */
   function __construct ($config) {
+    $this->loc = new folksoFabula();
+
     // methods
     if ((array_key_exists('methods', $config)) &&
         (is_array($config['methods']))) {
@@ -216,7 +220,8 @@ class folksoServer {
     catch ( badSidException $e) {
       if ($q->is_write_method()) {
         if (($this->allow_anonymous_post === false) ||
-            ($q->method !== 'post')) {
+            (($this->allow_anonymous_post === true) && 
+             ($q->method !== 'post'))) {
           header('HTTP/1.1 403 Login required'); // redirect instead
           print "You must login first. Go to the login page.";
           exit();
@@ -268,10 +273,10 @@ class folksoServer {
       return true;
     }
     if (( $this->clientAccessRestrict == 'LOCAL') &&
-        (( $ip == '127.0.0.1' ) or
-         ( $ip == '::1'))) {
-      return TRUE;
+        in_array($ip, array('127.0.0.1', '::1', $this->loc->local_ip))) {
+        return TRUE;
     }
+      
     if (( $this->clientAccessRestrict == 'LIST' ) &&
         (( in_array($ip, $this->clientAccessRestrictList)) ||
          ( in_array($host, $this->clientAccessRestrictList)))) {
