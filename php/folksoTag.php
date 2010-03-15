@@ -314,9 +314,9 @@ function relatedTags (folksoQuery $q, folksoDBConnect $dbc, folksoSession $fks) 
  */
 function singlePostTag (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
-  $u = $fks->userSession(null, 'folkso', 'create');
+  $u = $fks->userSession(null, 'folkso', 'redac');
   if ((! $u instanceof folksoUser) ||
-      (! $u->checkUserRight('folkso', 'create'))){
+      (! $u->checkUserRight('folkso', 'redac'))){
     return $r->unAuthorized($u);
   }
 
