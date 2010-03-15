@@ -230,7 +230,7 @@ function loginFBuser (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) 
       try {
         $fks->startSession($u->userid);
         $r->setOk(200, "User found, session started");
-        $r-t('You are in.');
+        $r->t('You are in.');
         return $r;
       }
       catch (userException $e) {
