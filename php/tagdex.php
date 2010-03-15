@@ -1,4 +1,11 @@
 <?php
+/**
+ *
+ * @package Folkso
+ * @author Joseph Fahey
+ * @copyright 2008-2010 Gnu Public Licence (GPL)
+ * @subpackage Tagserv
+ */
 
 require_once "folksoTag.php";
 require_once "folksoTags.php";
@@ -8,7 +15,7 @@ require_once "folksoUrlRewriteTag.php";
 $srv = new folksoServer(array( 'methods' => 
                                array('POST', 'GET', 'HEAD', 'DELETE'),
                                'access_mode' => 'ALL',
-                               'rewrite' => new  folksoUrlRewriteTag));
+                               'rewrite' => new  folksoUrlRewriteTag()));
 
 $srv->addResponseObj(new folksoResponder('get',
                                          array('required' => array('tag'),

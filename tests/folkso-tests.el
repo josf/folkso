@@ -120,6 +120,8 @@
              '("folksofancy" . "1")
              '("folksofeed" . "atom")))
 
+(fk-run-req "http://localhost/folksovisit.php?resource=http://bobsworld.com")
+
 (fk-run-req "http://localhost/tag/tagone/related/datatype/html")
              
 
