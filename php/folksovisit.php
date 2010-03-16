@@ -23,7 +23,7 @@ $srv = new folksoServer(array('methods' => array('POST'),
                               'allow_anonymous_post' => true));
 
 $srv->addResponseObj(new folksoResponder('post',
-                                         array('required' => array('resource')),
+                                         array('required' => array('res')),
                                          'visitPage'));
 
 $srv->Respond();
