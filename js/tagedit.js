@@ -384,7 +384,7 @@ function makeInitial (id, display, popularity) {
               + "disabled=\"disabled\"/>"));
 
   var taglink = $("<a class=\"tagname\">");
-  taglink.attr("href", "resourceview.php?tag=" + id);
+  taglink.attr("href", "/tag/" + id);
   taglink.text(display);
   p1.append(taglink);
 
