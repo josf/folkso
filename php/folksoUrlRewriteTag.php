@@ -15,7 +15,7 @@ class folksoUrlRewriteTag extends folksoUrlRewrite {
 
   public $firstArg = 'tag';
   public $singletons = array('related', 'fancy', 'newtag', 'byalpha');
-  public $pairs = array('tag', 'feed', 'datatype');
+  public $pairs = array('tag', 'feed', 'datatype', 'offset');
   public $special = array('merge' => 'target');
 
 
