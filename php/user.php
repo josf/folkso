@@ -33,6 +33,7 @@ $srv->addResponseObj(new folksoResponder('get',
 $srv->addResponseObj(new folksoResponder('get',
                                          array('required' => array('tag')),
                                          'getUserResByTag'));
+
 $srv->addResponseObj(new folksoResponder('get',
                                          array('required' => array('check', 'fbuid')),
                                          'checkFBuserId'));
