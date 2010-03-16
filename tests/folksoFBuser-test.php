@@ -1,9 +1,9 @@
 <?php
 require_once('unit_tester.php');
 require_once('reporter.php');
-include('folksoTags.php');
-include('folksoFBuser.php');
-require('dbinit.inc');
+require_once('folksoTags.php');
+require_once('folksoFBuser.php');
+require_once('dbinit.inc');
 
 class testOffolksoFBuser extends  UnitTestCase {
   public $dbc;

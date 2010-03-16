@@ -4,7 +4,7 @@ require_once('reporter.php');
 
 require_once('folksoDBinteract.php');
 require_once('folksoDBconnect.php');
-require('dbinit.inc');
+require_once('dbinit.inc');
 
 class testOffolksoDBinteract extends  UnitTestCase {
   public $dbc;

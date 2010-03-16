@@ -1,9 +1,9 @@
 <?php
 require_once('unit_tester.php');
 require_once('reporter.php');
-require('folksoTags.php');
-require('folksoUrlRewriteTag.php');
-require('dbinit.inc');
+require_once('folksoTags.php');
+require_once('folksoUrlRewriteTag.php');
+require_once('dbinit.inc');
 
 class testOffolksoUrlRewriteTag extends  UnitTestCase {
  
