@@ -213,7 +213,7 @@
               </xsl:when>
             </xsl:choose>
           </xsl:attribute>
-          <xsl:text>prÃ©cÃ©dent &lt; &lt; &lt; </xsl:text>
+          <xsl:text>&lt; &lt; &lt; précédentes &lt; &lt; &lt; </xsl:text>
         </xsl:element>
       </xsl:if>
 
@@ -225,7 +225,7 @@
             <xsl:value-of
                 select="concat('http://www.fabula.org/tag/', $tagnorm, '/offset/', $offset + 50)"/>
           </xsl:attribute>
-          <xsl:text> &gt; &gt; &gt; suivantes </xsl:text>
+          <xsl:text> &gt; &gt; &gt; suivantes &gt; &gt; &gt; </xsl:text>
         </xsl:element>
       </xsl:if>
 
