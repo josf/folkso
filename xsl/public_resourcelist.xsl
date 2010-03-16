@@ -74,7 +74,7 @@
         <xsl:element name="a">
 
           <xsl:attribute name="href">
-            <xsl:text>http://wwww.fabula.org/tag/</xsl:text>
+            <xsl:text>tagview.php?tag=</xsl:text>
             <xsl:call-template name="extract-tag-id">
               <xsl:with-param name="rawstring">
                 <xsl:value-of select="substring-before($original, $separator)"/>
