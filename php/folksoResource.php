@@ -301,8 +301,10 @@ function visitPage (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
       $title = array();
       foreach ($pages_to_parse as $raw) {
         $item = unserialize($raw);
-        $urls[] = $i->dbescape($item->get_url());
-        $titles[] = $item->get_title();
+        if ($item instanceof folksoUrl) {
+          $urls[] = $i->dbescape($item->get_url());
+          $titles[] = $item->get_title();
+        }
       }
 
       $sql = 
