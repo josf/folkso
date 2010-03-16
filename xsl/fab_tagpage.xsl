@@ -62,15 +62,7 @@
         </xsl:element>
       </xsl:element>
 
-      <xsl:call-template name="forwardBack">
-        <xsl:with-param name="offset"
-                        select="/tagpage/tag/resourcelist/@offset"/>
-        <xsl:with-param name="reslength"
-                        select="count(/tagpage/tag/resourcelist/resource)"/>
-        <xsl:with-param name="tagnorm"
-                        select="/tagpage/tag/tagnorm"/>
-      </xsl:call-template>
-
+  
       <xsl:apply-templates/>
     </xsl:element>
   </xsl:template>
@@ -95,10 +87,29 @@
   <xsl:template match="tagnorm"/>
 
   <xsl:template match="resourcelist">
+      <xsl:call-template name="forwardBack">
+        <xsl:with-param name="offset"
+                        select="/tagpage/tag/resourcelist/@offset"/>
+        <xsl:with-param name="reslength"
+                        select="count(/tagpage/tag/resourcelist/resource)"/>
+        <xsl:with-param name="tagnorm"
+                        select="/tagpage/tag/tagnorm"/>
+      </xsl:call-template>
+
     <xsl:element name="ul">
       <xsl:attribute name="class">resourcelist</xsl:attribute>
       <xsl:apply-templates/>
     </xsl:element>
+
+      <xsl:call-template name="forwardBack">
+        <xsl:with-param name="offset"
+                        select="/tagpage/tag/resourcelist/@offset"/>
+        <xsl:with-param name="reslength"
+                        select="count(/tagpage/tag/resourcelist/resource)"/>
+        <xsl:with-param name="tagnorm"
+                        select="/tagpage/tag/tagnorm"/>
+      </xsl:call-template>
+
   </xsl:template>
   
   <xsl:template match="resource">
@@ -202,10 +213,11 @@
               </xsl:when>
             </xsl:choose>
           </xsl:attribute>
+          <xsl:text>prÃ©cÃ©dent &lt; &lt; &lt; </xsl:text>
         </xsl:element>
       </xsl:if>
 
-      <xsl:if test="$reslength = 50">
+      <xsl:if test="$reslength &gt; 48">
         <!-- if reslength is less than 50, we are already at the end -->
         <xsl:element name="a">
           <xsl:attribute name="class">next-res</xsl:attribute>
@@ -213,6 +225,7 @@
             <xsl:value-of
                 select="concat('http://www.fabula.org/tag/', $tagnorm, '/offset/', $offset + 50)"/>
           </xsl:attribute>
+          <xsl:text> &gt; &gt; &gt; suivantes </xsl:text>
         </xsl:element>
       </xsl:if>
 
