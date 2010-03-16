@@ -20,6 +20,7 @@
       '((number . "8170")
         (poesie . "poésie")
         (tagone . "tagone")
+        (dyn1 . "dyn1")
         (communication . "communication")
         (gustav . "gustav-2010-001")))
 
@@ -104,7 +105,7 @@
 
 (fk-run-req (fk-build-get
              "http://localhost/tag.php?folksotag="
-             'tagone
+             'dyn1
              '("folksofancy" . "1")
              '("folksodatatype" . "xml")))
 
@@ -112,6 +113,7 @@
              "http://www.fabula.org/tags/tag.php?folksotag="
              'poesie
              '("folksofancy" . "1")
+             '("folksooffset" . "50")))
              '("folksofeed" . "atom")))
 
 (fk-run-req (fk-build-get
