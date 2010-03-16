@@ -238,7 +238,9 @@ function tagCloudLocalPop (folksoQuery $q, folksoDBconnect $dbc, folksoSession $
     while ($row = $i->result->fetch_object()) {
       $r->t($dd->line($row->cloudweight, 
                       "resourceview.php?tagthing=".
-                      $row->tagid, $row->tagdisplay)."\n");
+                      $row->tagid, 
+                      htmlspecialchars($row->tagdisplay, ENT_NOQUOTES, 'UTF-8'),
+                      )."\n");
     }
     $r->t($dd->endform());
     return $r;
