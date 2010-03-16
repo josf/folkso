@@ -369,6 +369,7 @@ function fancyResource (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks
       "date_format(created, '%Y-%m-%dT%TZ') as tagdate, "
       . "'dummy' as realtime "
       . "FROM tag \n\t";
+
     if (is_numeric($q->tag)) {
       $querytagtitle .= ' WHERE id = ' . $q->tag . ' ';
     }
@@ -404,9 +405,17 @@ function fancyResource (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks
 
     $queryend = ' group by r.id order by realtime desc ';
     if ($r->styleSheet) {
-      $queryend .= ' limit 20';
+      $queryend .= ' limit 21'; // 20 + 1 because first row is popped
     }
-
+    else { // 50 + 1 because first row is popped
+      if (($off = $q->get_param('offset')) &&
+          is_numeric($off)) {
+        $queryend .= sprintf(' limit %d, 51 ', $off); 
+      }
+      else {
+        $queryend .= 'limit 51 ';
+      }
+    }
 
     //  $queryend = " LIMIT 100";
     $querywhere = '';
@@ -451,12 +460,13 @@ function fancyResource (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks
   //  $r->t($dd->title($row1->title));
   $r->t(sprintf("<tagtitle>%s</tagtitle>\n<tagid>%d</tagid>\n<tagnorm>%s</tagnorm>"
                 ."\n<created>%s</created>"
-                ."\n<resourcelist>\n",
+                ."\n<resourcelist offset='%s'>\n",
                 htmlspecialchars($row1->title, ENT_COMPAT, 'UTF-8'),
                 $row1->id,
                 htmlspecialchars($row1->href, ENT_COMPAT, 'UTF-8'),
-                htmlspecialchars($row1->tagdate, ENT_COMPAT, 'UTF-8')));
-
+                htmlspecialchars($row1->tagdate, ENT_COMPAT, 'UTF-8'),
+                $q->get_param('offset') ? $q->get_param('offset') : 0
+                ));
   while ($row = $i->result->fetch_object()) {
 
     $innerTagList = htmlspecialchars($row->tags, ENT_COMPAT, 'UTF-8');

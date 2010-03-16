@@ -198,6 +198,49 @@ class testOffolksotag extends  UnitTestCase {
 
    }
 
+   function testFancyListLength () {
+     $r = fancyResource(new folksoQuery(array(),
+                                        array('folksotag' => 'dyn1'),
+                                        array()),
+                        $this->dbc,
+                        $this->fks);
+     $this->assertEqual($r->status, 200,
+                        'Should get 200 response for tag dyn1, not: '
+                        . $r->status . ' ' . $r->statusMessage);
+     $xml = new DOMDocument();
+     $this->assertTrue($xml->loadXML($r->body()),
+                       'bad xml');
+     $xp = new DOMXpath($xml);
+     $resources = $xp->query('//tag/resourcelist/resource');
+
+     /*
+      * There are 125 total resources tagged as dyn.
+      */
+     $this->assertEqual($resources->length, 50,
+                        'There should be 50 resources tagged with dyn1 returned, not: '
+                        . $resources->length);
+     $rlimit = fancyResource(new folksoQuery(array(),
+                                             array('folksotag' => 'dyn1',
+                                                   'folksooffset' => '100'),
+                                             array()),
+                             $this->dbc,
+                             $this->fks);
+     $xml2 = new DOMDocument();
+     $this->assertTrue($xml2->loadXML($rlimit->body()),
+                      'bad xml in request with offset');
+     $xp2  =  new DOMXpath($xml2);
+     $offset = $xp2->query('//tag/resourcelist/resource');
+     $this->assertEqual($offset->length, 25,
+                        'Offset of 100 should have length of 25, not: '
+                        . $offset->length);
+     $off_param = $xp2->query('//tag/resourcelist');
+     $offful = $off_param->item(0)->attributes->getNamedItem('offset')->nodeValue;
+     $this->assertEqual($offful, 100,
+                        'Not retrieving offset value from XML, getting: '
+                        . $offful);
+
+   }
+
 
    function testAtomFancyResource () {
      $q = new folksoQuery(array(),
@@ -239,7 +282,7 @@ class testOffolksotag extends  UnitTestCase {
                           'atom output does not look like it is an Atom feed '
                           .' (Did not find the string "Atom" in feed');
      $r->prepareHeaders();
-     print $r->debug;
+     //     print $r->debug;
 
    }
 
@@ -509,14 +552,14 @@ class testOffolksotag extends  UnitTestCase {
 
      $resp = fancyResource($q, $this->dbc, $this->fks);
      $this->assertEqual($resp->status, 200, "fancy query not returning 200");
-     print '<pre>fancy' . htmlentities($resp->body()) . '</pre>';
+     //     print '<pre>fancy' . htmlentities($resp->body()) . '</pre>';
 
      $this->assertIsA($r, folksoResponse, 'Pb with object creation');
      $this->assertPattern('/<tagpage>/',
                           $r->body(),
                           'XML boilerplate missing from tagPage response');
      //     print '<pre><code>' . htmlentities($r->body()) . '</code></pre>';
-     print '<pre><code> ' . htmlentities($r->bodyXsltTransform()) . '</pre></code>';
+     //     print '<pre><code> ' . htmlentities($r->bodyXsltTransform()) . '</pre></code>';
 
 
    }

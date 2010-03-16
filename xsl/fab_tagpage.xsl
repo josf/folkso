@@ -62,6 +62,15 @@
         </xsl:element>
       </xsl:element>
 
+      <xsl:call-template name="forwardBack">
+        <xsl:with-param name="offset"
+                        select="/tagpage/tag/resourcelist/@offset"/>
+        <xsl:with-param name="reslength"
+                        select="count(/tagpage/tag/resourcelist/resource)"/>
+        <xsl:with-param name="tagnorm"
+                        select="/tagpage/tag/tagnorm"/>
+      </xsl:call-template>
+
       <xsl:apply-templates/>
     </xsl:element>
   </xsl:template>
@@ -165,5 +174,50 @@
     </xsl:choose>
   </xsl:template>
 
+
+  <xsl:template name="forwardBack">
+    <xsl:param name="offset"/>
+
+    <!-- total number of resource items in current document -->
+    <xsl:param name="reslength"/>
+
+     <xsl:param name="tagnorm"/>
+    <xsl:element name="div">
+      <xsl:attribute name="class">prev-next</xsl:attribute>
+
+      <!-- previous link -->
+      <xsl:if test="$offset != 0">      
+        <xsl:element name="a">
+          <xsl:attribute name="class">previous-res</xsl:attribute>
+          <xsl:attribute name="href">
+            <xsl:choose>
+              <xsl:when test="$offset &lt; 51">
+                <xsl:value-of 
+                    select="concat('http://www.fabula.org/tag/', $tagnorm)"/>
+              </xsl:when>
+              
+              <xsl:when test="$offset &gt; 50">
+                <xsl:value-of 
+                    select="concat('http://www.fabula.org/tag/', $tagnorm, '/offset/', $offset - 50)"/>
+              </xsl:when>
+            </xsl:choose>
+          </xsl:attribute>
+        </xsl:element>
+      </xsl:if>
+
+      <xsl:if test="$reslength = 50">
+        <!-- if reslength is less than 50, we are already at the end -->
+        <xsl:element name="a">
+          <xsl:attribute name="class">next-res</xsl:attribute>
+          <xsl:attribute name="href">
+            <xsl:value-of
+                select="concat('http://www.fabula.org/tag/', $tagnorm, '/offset/', $offset + 50)"/>
+          </xsl:attribute>
+        </xsl:element>
+      </xsl:if>
+
+
+    </xsl:element>
+  </xsl:template>
 
 </xsl:stylesheet>

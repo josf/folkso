@@ -31,7 +31,6 @@ function test_db_init() {
 
 
     foreach($user as $k => $v){
-      print $k;
       $i->sp_query(sprintf("call create_user('%s', '%s', %d, '%s', '%s', '%s', '', '', '')",
                            $k, $v[4], $v[3], $v[0], $v[1], $v[2]));
       print $i->error_info();
@@ -71,13 +70,19 @@ function test_db_init() {
                       'http://dynamic.example.com/15' => array('dyn1', 'dyn8'),
                       'http://dynamic.example.com/16' => array('dyn1'),
                       'http://dynamic.example.com/17' => array('dyn1'),
-                      'http://dynamic.example.com/18' => array('dyn1'),
+                      'http://dynamic.example.com/18' => array('dyn1', 'dyn2', 'dyn3'),
                       'http://dynamic.example.com/19' => array('dyn1'),
                       'http://dynamic.example.com/20' => array('dyn1'),
                       'http://dynamic.example.com/21' => array('dyn1'),
                       'http://dynamic.example.com/22' => array('dyn1'),
                       'http://dynamic.example.com/23' => array('dyn1'),
-                      'http://dynamic.example.com/24' => array('dyn1'));
+                      'http://dynamic.example.com/24' => array('dyn1'),
+                      'http://dynamic.example.com/25' => array('dyn1'));
+
+  for ($megadyncounter = 0; $megadyncounter < 100; $megadyncounter++) {
+    $dynreslist['http://megadyn.example.com/' . $megadyncounter] 
+      = array('dyn1', 'dyn2');
+  }
 
   $restitles = array('one', 'two', 'three', 'four', 'five');
   $tags = array('tagone', 'tagtwo', 'tagthree', 'tagfour', 'tagfive');
