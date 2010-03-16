@@ -211,8 +211,10 @@ function tagMenuCleanupFunc(lis, tag) {
              folksoean13: '1',
              folksodatatype: 'xml'},
            success: tagMenuFromXmlFunction,
-           error: function(xhr, msg) {
-             alert("An error here: " + xhr.statusText);
+           error: function(xhr, msg, error) {
+             alert("An error here: " + xhr.status + " " 
+                   +  xhr.statusText + " exc: " + error);
+               
            }});
 }
 
