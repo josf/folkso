@@ -394,20 +394,15 @@ function fancyResource (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks
        JOIN tagevent te2 ON t2.id = te2.tag_id
        JOIN resource r2 ON r2.id = te2.resource_id
        WHERE r2.id = r.id
-       ) AS tags,
-  td.firsttag as tagdate,
-  te.tagtime as realtime
+       ) AS tags, '
+      ."  date_format(min(tagtime), '%Y-%m-%dT%TZ') as tagdate, "
+      .'  te.tagtime as realtime
   FROM resource r
   JOIN tagevent te ON r.id = te.resource_id
-  JOIN tag t ON te.tag_id = t.id'
-      .' join ('
-      .' select '
-      .'tag_id, resource_id, '
-      ." date_format(min(tagtime),'%Y-%m-%dT%TZ') as firsttag, "
-      .' min(tagtime) as realtime '
-      .' from tagevent group by tag_id) as td on td.tag_id = t.id';
+  JOIN tag t ON te.tag_id = t.id';
 
-    $queryend = ' order by realtime desc ';
+
+    $queryend = ' group by r.id order by realtime desc ';
     if ($r->styleSheet) {
       $queryend .= ' limit 20';
     }
