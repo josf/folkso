@@ -753,7 +753,7 @@ function byalpha (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
     while ($row = $i->result->fetch_object()) {
       $r->t($dd->line($row->id, 
                       $row->tagnorm,
-                      $row->tagdisplay,
+                      htmlspecialchars($row->tagdisplay, ENT_QUOTES, 'UTF-8'),
                       $row->popularity,
                       '') . "\n"); // empty field because there are no metatags here
     }
