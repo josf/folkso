@@ -426,9 +426,9 @@ function tagResource (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) 
 
 function unTag (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
-  $u = $fks->userSession(null, 'folkso', 'tag');
+  $u = $fks->userSession(null, 'folkso', 'redac');
   if ((! $u instanceof folksoUser) ||
-      (! $u->checkUserRight('folkso', 'tag'))){
+      (! $u->checkUserRight('folkso', 'redac'))){
     return $r->unAuthorized($u);
   }
 
@@ -720,9 +720,9 @@ function deleteEan13 (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) 
  */
 function addNote (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
-  $u = $fks->userSession(null, 'folkso', 'tag');
+  $u = $fks->userSession(null, 'folkso', 'redac');
   if ((! $u instanceof folksoUser) ||
-      (! $u->checkUserRight('folkso', 'tag'))) {
+      (! $u->checkUserRight('folkso', 'redac'))) {
     return $r->unAuthorized($u);
   }
 
