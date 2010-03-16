@@ -405,15 +405,15 @@ function fancyResource (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks
 
     $queryend = ' group by r.id order by realtime desc ';
     if ($r->styleSheet) {
-      $queryend .= ' limit 21'; // 20 + 1 because first row is popped
+      $queryend .= ' limit 20';
     }
-    else { // 50 + 1 because first row is popped
+    else { 
       if (($off = $q->get_param('offset')) &&
           is_numeric($off)) {
-        $queryend .= sprintf(' limit %d, 51 ', $off); 
+        $queryend .= sprintf(' limit %d, 50 ', $off); 
       }
       else {
-        $queryend .= 'limit 51 ';
+        $queryend .= 'limit 50 ';
       }
     }
 
@@ -426,7 +426,11 @@ function fancyResource (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks
       $querywhere = "WHERE t.tagnorm = normalize_tag('" . 
         $i->dbescape($q->tag) . "') ";
     }
-    $total_query = $querytagtitle . " UNION \n" .  $querystart . ' '  . $querywhere . ' ' . $queryend;
+
+    $total_query = sprintf("(%s) UNION \n (%s %s %s)",
+                           $querytagtitle, $querystart, 
+                           $querywhere, $queryend);
+
     $r->debug = $total_query;
     $i->query($total_query);
   }
