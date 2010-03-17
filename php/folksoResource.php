@@ -130,9 +130,9 @@ function getTagsIds (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
     while ($row = $i->result->fetch_object()) {
       $r->t($xf->line($row->id,
                       $row->tagnorm,
-                      $row->tagdisplay,
+                      htmlspecialchars($row->tagdisplay),
                       $row->popularity,
-                      $row->meta)
+                      htmlspecialchars($row->meta))
             );
     }
     $r->t($xf->endform());
