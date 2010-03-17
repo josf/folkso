@@ -244,10 +244,10 @@ class folksoResponse {
       $type =  'text/text';
       break;
     case 'html':
-      $type =  'text/html';
+      $type =  'application/xhtml+xml';
       break;
     default: 
-      $type =  'text/text';
+      $type =  'text/html';
     }
    return 'Content-Type: ' . $type;
   }
