@@ -215,6 +215,7 @@ class folksoQuery {
                      'html' => 'html',
                      'xhtml' => 'html',
                      'xhtml-xml' => 'html',
+                     'xhtml+xml' => 'html',
                      'json' => 'json',
                      'text' => 'text');
     foreach ($parts as $accept) {
