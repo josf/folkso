@@ -116,6 +116,10 @@
              '("folksooffset" . "50")))
              '("folksofeed" . "atom")))
 
+(fk-run-req "http://www.fabula.org/tags/resource.php?folksores=65700&folksodatatype=xml&folksoean13=1")
+             
+
+
 (fk-run-req (fk-build-get
              "http://localhost/tag.php?folksotag="
              'tagone
