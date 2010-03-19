@@ -2,7 +2,7 @@
 
 require_once('folksoTags.php');
 
-function test_db_init() {
+function test_db_init($megadynDefault = 10) {
 
   $tables = array('ean13', 'exclude', 'tagevent',
                   'memoize_tagnormal', 
@@ -79,7 +79,7 @@ function test_db_init() {
                       'http://dynamic.example.com/24' => array('dyn1'),
                       'http://dynamic.example.com/25' => array('dyn1'));
 
-  for ($megadyncounter = 0; $megadyncounter < 100; $megadyncounter++) {
+  for ($megadyncounter = 0; $megadyncounter < $megadynDefault; $megadyncounter++) {
     $dynreslist['http://megadyn.example.com/' . $megadyncounter] 
       = array('dyn1', 'dyn2');
   }
@@ -166,13 +166,13 @@ function test_db_init() {
     }
 
     $i->query("insert into users_rights (userid, rightid) values "
-              ."('rambo-2010-001', 'tag'), "
+              ."('rambo-2010-001', 'redac'), "
               ."('rambo-2010-001', 'create'), "
               ."('marcelp-2010-001', 'tag'), "
               ."('marcelp-2010-001', 'create'), "
               ."('marcelp-2010-001', 'redac'), "
               ."('vicktr-2010-001', 'admin'), "
-              ."('gustav-2010-001', 'tag')");
+              ."('gustav-2010-001', 'redac')");
 
 
 
