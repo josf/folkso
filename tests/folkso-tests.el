@@ -4,7 +4,7 @@
 (setq fktest-resources 
       '((rembrandt . "http://www.fabula.org/actualites/article13644.php")
         (numero3 . "http://www.fabula.org/actualites/article22002.php")
-        (yokel . "20634")))
+        (yokel . "http://example.com/1")))
       
 
 (defun fk-build-resource-get (base key &rest apairs)
@@ -44,7 +44,7 @@
 (fk-run-req 
   "http://www.fabula.org/tags/resource.php?folksores=http://www.fabula.org/actualites/article13644.php&folksodatatype=xml&folksoclouduri=1")
 
-
+(fk-run-req "http://localhost/resource.php?folksoclouduri=1&folksores=http://example.com/1")
 
 (fk-run-req "http://localhost/user.php?_=1265366823256&folksotag=dyn1&folksouid=gustav-2010-001&folksodatatype=json")
 
@@ -115,6 +115,10 @@
              '("folksofancy" . "1")
              '("folksooffset" . "50")))
              '("folksofeed" . "atom")))
+
+(fk-run-req "http://www.fabula.org/tags/resource.php?folksores=65700&folksodatatype=xml&folksoean13=1")
+             
+
 
 (fk-run-req (fk-build-get
              "http://localhost/tag.php?folksotag="

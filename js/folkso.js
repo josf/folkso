@@ -212,11 +212,10 @@ function tagMenuCleanupFunc(lis, tag) {
              folksodatatype: 'xml'},
            success: tagMenuFromXmlFunction,
            error: function(xhr, msg, error) {
-             alert("An error here: " + xhr.status + " " 
+             alert("An error here: " + xhr.status + " "
                    +  xhr.statusText + " exc: " + error);
-               
-           }});
-}
+             }});
+ }
 
 /**
  * Returns a function closed over "place", allowing us to get

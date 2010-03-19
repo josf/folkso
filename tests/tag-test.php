@@ -9,7 +9,7 @@ class testOffolksotag extends  UnitTestCase {
  
   public $dbc;
   function setUp() {
-    test_db_init();
+    test_db_init(100);
     /** not using teardown because this function does a truncate
         before starting. This way we can look at DB after the last
         test, too. Note that all other tests have no effect on DB

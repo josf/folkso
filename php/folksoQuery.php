@@ -32,6 +32,14 @@ class folksoQuery {
    */
   public $fk_content_type;
 
+  /*
+   * The original form of the content type that was selected. So if,
+   * after parsing the Accept header, we choose 'application/xml',
+   * $fk_content_type will be 'xml' and $chosenContentType will be
+   * 'application/xml'.
+   */
+  public $chosenContentType;
+
   /**
    * String. If a valid string is present (ie. 'atom' or 'rss'), and
    * if the folksoResponse object has registered an output variant
@@ -40,6 +48,17 @@ class folksoQuery {
    * stylesheet before returning it.
    */
   public $applyOutput;
+  /**
+   * String. To be accessed through $q->subType() function. 
+   *
+   * Replacement for $q->applyOutput.
+   */
+  public $subType;
+
+  /**
+   * @brief folksoQueryAcceptType object.
+   */
+  public $acceptType;
   
   private $fk_params = array(); //will contain only folkso related parameters
 
@@ -121,7 +140,8 @@ class folksoQuery {
                   if (($param_val == 'atom') ||
                       ($param_val == 'rss')) {
                     $this->fk_content_type = 'xml';
-                    $this->applyOutput = $param_val;
+                    $this->applyOutput = $param_val; //deprecated
+                    $this->subType = $param_val; 
                   }
                   break;
                 case 'folksodatatype':
@@ -203,48 +223,214 @@ class folksoQuery {
    * Parses the string to see which datatype will become the content
    * type. Returns one of the basic internal datatypes.
    *
-   * Loop problem
+   * Defaults to 'html' when string is empty.
    *
    * @param $content String Contents of HTTP_ACCEPT 
-   * @todo There is a logical problem here. The loop is useless.
    */
   public function parse_content_type($content) {
-    $parts = explode(',', $content);
-    $returns = array('xml' => 'xml',
-                     'xml' => 'xml',
-                     'html' => 'html',
-                     'xhtml' => 'html',
-                     'xhtml-xml' => 'html',
-                     'xhtml+xml' => 'html',
-                     'json' => 'json',
-                     'text' => 'text');
-    foreach ($parts as $accept) {
-      $acc = $accept; // default is to keep the whole thing, just in case.
+    if (strlen($content) == 0) {
+      return 'html';
+    }
 
-      // otherwise, get rid of the 'text' or 'application' part...
-      if (strpos($accept, '/')) {
-        $acc = substr($accept, strpos($accept, '/') + 1);
-      }
-      if ($returns[$acc]) {
-        return $returns[$acc];
-      }
-      elseif (preg_match('/rss/i', $acc)) {
-        $this->applyOutput = 'rss';
-        return 'xml';
-      }
-      elseif (preg_match('/atom/i', $acc)) {
-        $this->applyOutput = 'atom';
-        return 'xml';
-      }
-      else { 
-        /** default case: just return 2nd part of the original
-            http_accept string **/
-        return $acc;
+    $this->acceptType = $this->chooseContentType($this->buildAcceptArray($content));
+    if (! $this->acceptType instanceof folksoQueryAcceptType) {
+      return 'html';
+    }
+    $ret = $this->acceptType->fkType();
+
+    $this->chosenContentType = $this->acceptType->accept();
+    if ($this->acceptType->subType){ // subtype does not get set until fkType is called.
+      $this->applyOuput = $this->acceptType->subType; // deprecated
+      $this->subType = $this->acceptType->subType;
+    }
+    return $ret;
+  }
+
+  /**
+   * The subType is for variations on xml output, in particular atom
+   * and rss, so that additional xslt stylesheets can be called on the 
+   * internal XML output.
+   */
+  public function subType() {
+    if (is_string($this->subType)) {
+      return $this->subType;
+    }
+    
+    if ($this->acceptType instanceof folksoQueryAcceptType) {
+      $this->subType = $this->acceptType->subType;
+      return $this->subType;
+    }
+    else {
+      $this->parse_content_type($this->req_content_type);
+      if ($this->acceptType instanceof folksoQueryAcceptType) {
+        $this->subType = $this->acceptType->subType;
+        return $this->subType;
       }
     }
+    return '';
+  }
+  
+
+  /**
+   * Parse accept header into an array of folkoQueryAcceptType
+   * objects.
+   *
+   * @param $content String Complete http_accept header
+   * @return Array
+   */
+   public function buildAcceptArray ($content) {
+     $acc = array('xml' => array(),
+                  'html' => array(),
+                  'json' => array(),
+                  'text' => array());
+     $counter = 0;
+    foreach (explode(',', $content) as $accept) {
+      $fkAcc = new folksoQueryAcceptType($accept, $counter);
+      $counter++;
+
+      if ($fkAcc->fkType()) {
+        $acc[$fkAcc->fkType()][] = $fkAcc;
+      }
+    }
+    $acc = array_filter($acc, array($this, 'countTest'));
+    return $acc;
    }
+  
+   /**
+    * @brief Choose a content type
+    * @param $types Array Output from $q->buildAcceptArray()
+    */
+    public function chooseContentType ($types) {
+    
+      /** case 1: only one content category  and one type**/
+      if (count($types) == 1)  {
+        $keys = array_keys($types);
+        $type = $keys[0];
+        return $this->selectTypeFromArray($types[$type]);
+      }
+
+      if (count($types) > 1) {
+        if (is_array($types['xml']) && is_array($types['html'])) {
+          $bestXML = $this->selectTypeFromArray($types['xml']);
+          $bestHTML = $this->selectTypeFromArray($types['html']);
+
+          /** By putting $bestHTML first here, it means that we
+           *  DEFAULT to HTML if $bestXML does not have a superior
+           *  weight.  This is currently done on purpose to compensate
+           *  for the strange Accept headers in webkit browsers.
+           *
+           * NB: This particular part of the algorithm does not take
+           * into account which of these occurred first in the
+           * original string.
+           */
+          return $this->selectTypeFromArray(array($bestHTML, $bestXML));
+        }
+        
+        $all = array();
+        foreach ($types as $key => $val) {
+          if (is_array($types[$key])) {
+            $all = array_merge($types[$key], $all);
+          }
+        }
+        $paramTypes = array_filter($all, array($this, 'hasWeight'));
+        if (count($paramTypes) > 0) {
+          usort($paramTypes, array($this, 'fkQatSorter'));
+          return $paramTypes[0];
+        }
+        else {
+          usort($all, array($this, 'fkQatIndexSorter'));
+          return $all[0];
+        }
+
+      }
+    }
+
+    /**
+     * Choose the "best" type from an array of possible types.
+     *
+     * @param $types Array An array of 0 or more fkQueryAcceptType objs
+     */
+     public function selectTypeFromArray ($types) {
+       $paramTypes = array_filter($types, array($this, 'hasWeight'));
+       if (count($paramTypes) > 0) {
+         usort($paramTypes, array($this, 'fkQatSorter'));
+         return $paramTypes[0];
+       }
+       return $types[0];
+     }
+    
+     public function hasWeight(folksoQueryAcceptType $fkQaT) {
+       if ($fkQaT->weight() > 0) {
+         return true;
+       }
+       return false;
+     }
 
 
+     public function fkQatSorter(folksoQueryAcceptType $a,
+                                 folksoQueryAcceptType $b) {
+       if ($a->weight() > $b->weight()) {
+         return -1;
+       }
+       if ($a->weight() == $b->weight()) {
+         return 0;
+       }
+       if ($b->weight() > $a->weight()) {
+         return 1;
+       }
+     }
+
+     public function fkQatIndexSorter(folksoQueryAcceptType $a,
+                                      folksoQueryAcceptType $b) {
+       // NB: we are sorting lowest first. We assume that indexes are unique.
+       if ($a->index() > $b->index()) {
+         return 1;
+       }
+       return -1;
+     }
+
+
+  /**
+   * For use in parse_content_type array_filter. Returns true if the
+   * array is not empty.
+   */
+  public function countTest ($arr) {
+    if (count($arr) > 0) {
+      return true;
+    }
+    return false;
+  }
+
+
+  public function contentTypeComp ($a, $b) {
+    if ((! isset($a['weight']) && (! isset($b['weight'])))) {
+      return 0;
+    }
+
+    if ($a['weight'] === $b['weight']) {
+      return 0;
+    }
+
+    if (isset($a['weight']) && (! isset($b['weight']))) {
+      return -1;
+    }
+
+    if (isset($b['weight']) && (! isset($a['weight']))) {
+      return 1;
+    }
+
+    if ($a['weight'] > $b['weight']) {
+      return -1;
+    }
+    
+    if ($b['weight'] > $a['weight']) {
+      return 1;
+    }
+  }
+
+  public function removeOnWeight($arr) {
+    return isset($arr['weight']);
+  }
 
   /**
    * Returns the method used. In smallcaps, which should be the norm
@@ -378,5 +564,147 @@ class folksoQuery {
   }
   }// end class
 
+/**
+ * An AcceptType is one of the items in an HTTP_ACCEPT header,
+ * eg. text/html. 
+ */
+class folksoQueryAcceptType {
+  /**
+   * @brief The content type as received.
+   */
+  public $raw;
 
-?>
+  /**
+   * @brief Map between content type and folkso datatype.
+   *
+   * Map between the second part of the raw content-type (eg. 'html'
+   * in 'text/html') and the internal (folkso) datatype.
+   */
+  public $equivs;
+  
+  /**
+   * The value of either the "q" or "level" parameter, if present.
+   */
+  public $weight;
+
+  /**
+   * 'html' in 'text/html'
+   */
+  public $type_part;
+  
+  /**
+   * Index to retain order of content-types in Accept header.
+   */
+  public $index;
+
+  /**
+   * Internal type.
+   */
+  public $fkType;
+
+  /**
+   * Currently either 'atom' or 'rss'.
+   */
+  public $subType;
+
+
+  public function __construct($str, $index) {
+    $this->raw = trim($str); $this->index = $index;
+
+    $this->equivs = array('xml' => 'xml',
+                          'html' => 'html',
+                          'xhtml' => 'html',
+                          'xhtml-xml' => 'html', //???
+                          'xhtml+xml' => 'html',
+                          'atom+xml' => 'xml',
+                          'rss+xml' => 'xml',
+                          'rss' => 'xml', // support 'text/rss'
+                          'atom' => 'xml',
+                          'json' => 'json',
+                          'text' => 'text');
+    
+  }
+
+  public function type_part () {
+    if (is_string($this->type_part)) {
+      return $this->type_part;
+    }
+    $this->type_part = substr($this->accept(), strpos($this->accept(), '/') + 1);
+    return $this->type_part;
+  }
+
+
+  public function accept() {
+    if (is_string($this->accept)) {
+      return $this->accept;
+    }
+    if (strpos($this->raw, ';')) {
+      $this->accept = substr($this->raw, 
+                             0,
+                             strpos($this->raw, ';'));
+    }
+    else {
+      $this->accept = $this->raw;
+    }
+    return $this->accept;
+  }
+
+  /**
+   * @brief Calculate and return the q or level parameter. 
+   *
+   * Returns 0 if parameter is absent.
+   */
+  public function weight() {
+    if ($this->weight) {
+      return $this->weight;
+    }
+    $this->weight = 0; 
+    if ($this->param()) {
+      if (preg_match('/(?:q|level)=(.+)$/', $this->param(), $match)) {
+        $this->weight = $match[1];
+      }
+    }
+    return $this->weight;
+  }
+
+
+  public function param () {
+    if (strpos($this->raw, ';') === false) {
+      return '';
+    }
+    return substr($this->raw, strpos($this->raw, ';'));
+  }
+
+  /**
+   * Calculates internal type.
+   *
+   * Also sets subType when appropriate.
+   *
+   * @return String One of the internal types: xml, json, text, html
+   */
+  public function fkType() {
+    if ($this->fkType) {
+      return $this->fkType;
+    }
+
+    if (isset($this->equivs[$this->type_part()])) {
+      $this->fkType = $this->equivs[$this->type_part()];
+    }
+
+    if ($this->fkType == 'xml') {
+      if (preg_match('/atom/', $this->type_part())) {
+        $this->subType = 'atom';
+      }
+      elseif (preg_match('/rss/', $this->type_part())) {
+        $this->subType = 'rss';
+      }
+    }
+    return $this->fkType;
+  }
+
+
+  public function index() {
+    return $this->index;
+  }
+}
+

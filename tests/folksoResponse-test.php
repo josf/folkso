@@ -59,12 +59,13 @@ class testOffolksoResponse extends  UnitTestCase {
                        'XML content type not correctly determined');
     $r2 = new folksoResponse();
     $this->assertEqual($r2->contentType(),
-                       'Content-Type: text/text',
-                       'Default content type not correctly selected');
+                       'Content-Type: application/xhtml+xml',
+                       'Default content type not correctly selected: '
+                       .$r2->contentType());
     $r3 = new folksoResponse();
     $r3->setType('html');
     $this->assertEqual($r3->contentType(),
-                       'Content-Type: text/html',
+                       'Content-Type: application/xhtml+xml',
                        'HTML content type not correctly determined');
 
     $r4 = new folksoResponse();
