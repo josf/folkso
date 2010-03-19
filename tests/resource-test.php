@@ -132,8 +132,9 @@ class testOfResource extends  UnitTestCase {
      $r = tagCloudLocalPop($q, $dbc, $this->fks);
      $this->assertIsA($r, folksoResponse, 
                       'tagCloudLocalPop is not returning a folksoResponse object');
-     $this->assertEqual($r->status, 406, 
-                        'Incorrect status returned by tagCloudLocalPop');
+     $this->assertEqual($r->status, 200, 
+                        'Incorrect status returned by tagCloudLocalPop. Expecting 200, got: ' 
+                        . $r->status . ' ' . $r->statusMessage);
      $q2 = new folksoQuery(array(),
                            array('folksoclouduri' => 1,
                                  'folksodatatype' => 'xml',
