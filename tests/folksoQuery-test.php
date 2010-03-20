@@ -137,7 +137,7 @@ class testOffolksoQuery extends  UnitTestCase {
                        'subType not set with atom query');
 
     $q2 = new folksoQuery(array('HTTP_ACCEPT' => 
-                                'application/xml, application/xhtml+xml', 'text/html'),
+                                'application/xml, application/xhtml+xml, text/html'),
                           array('folksores' => 'bogus.com'),
                           array());
     $q2->parse_content_type($q2->req_content_type);
@@ -167,7 +167,7 @@ class testOffolksoQuery extends  UnitTestCase {
                        count($quark['html']));
 
     $quirk = $q->buildAcceptArray('application/xml;q=0.6, application/xhtml+xml;q=0.9,'
-                                  . 'text/html;level=0.2');
+                                  . 'text/html;q=0.2');
     $this->assertEqual(count($quirk), 2,
                        'Using q params: should have 2 datatypes here, not: ' .
                        count($quirk));
@@ -185,6 +185,8 @@ class testOffolksoQuery extends  UnitTestCase {
     $quatom = $q->buildAcceptArray('application/atom+xml');
     $this->assertEqual($quatom['xml'][0]->subType, 'atom');
     $this->assertEqual($quatom['xml'][0]->type_part, 'atom+xml');
+
+
   }
 
 
@@ -208,12 +210,11 @@ class testOffolksoQuery extends  UnitTestCase {
 
   function testSelectTypeFromArray() {
     $q = new folksoQuery(array(), array(), array());
-    $xml = new folksoQueryAcceptType('application/xml', 0);
-    $atom = new folksoQueryAcceptType('application/atom+xml;q=0.5', 0);
-    $rss = new folksoQueryAcceptType('application/rss+xml;q=0.9', 0);
+    $xml = new folksoQueryAcceptType('application/xml;q=0.9', 0);
+    $atom = new folksoQueryAcceptType('application/atom+xml;q=0.5', 1);
+    $rss = new folksoQueryAcceptType('application/rss+xml', 2);
 
-    $arr = array($xml, $atom, $rss);
-    $best = $q->selectTypeFromArray($arr);
+    $best = $q->selectTypeFromArray(array($xml, $atom, $rss));
     $this->assertEqual($best->accept(), 'application/rss+xml',
                        'Should have sorted to rss feed in this example: ' 
                        . $best->accept());
@@ -225,13 +226,13 @@ class testOffolksoQuery extends  UnitTestCase {
 
   function testChooseContentType () {
     $q = new folksoQuery(array(), array(), array());
-    $xml = new folksoQueryAcceptType('application/xml', 1);
-    $atom = new folksoQueryAcceptType('application/atom+xml;q=0.5', 2);
+    $xml = new folksoQueryAcceptType('application/xml;q=0.5', 1);
+    $atom = new folksoQueryAcceptType('application/atom+xml', 2);
     $rss = new folksoQueryAcceptType('application/rss+xml;q=0.9', 3);
     $html = new folksoQueryAcceptType('text/html', 4);
 
     $best1 = $q->chooseContentType(array('xml' => array($xml, $atom),
-                                'html' => $html));
+                                         'html' => array($html)));
     $this->assertIsA($best1, folksoQueryAcceptType,
                      'chooseContentType should return a folksoQueryAcceptType object');
     $this->assertEqual($best1->accept(), 'application/atom+xml',
@@ -257,15 +258,16 @@ class testOffolksoQuery extends  UnitTestCase {
     $best3 = $q->chooseContentType(array('xml' => array($xml2),
                                          'html' => array($apph, $html3),
                                          'text' => array($text2)));
-    $this->assertEqual($best3->accept(), 'application/xhtml+xml');
+    $this->assertEqual($best3->accept(), 'application/xhtml+xml',
+                       'Expecting application/xhtml+xml, not: ' . $best3->accept());
 
     $html4 = new folksoQueryAcceptType('text/html;q=0.9', 5);
 
     $best4 = $q->chooseContentType(array('xml' => array($xml2),
                                          'html' => array($apph, $html3, $html4),
-                                         'text' => $text2));
-    $this->assertEqual($best4->accept(), 'text/html',
-                       'Should pick text/html here because of q param');
+                                         'text' => array($text2)));
+    $this->assertEqual($best4->accept(), 'application/xhtml+xml',
+                       'Expecting application/xhtml+xml, not: ' . $best4->accept());
 
     $atom = new folksoQueryAcceptType('application/atom+xml', 0);
     $bestAtom = $q->chooseContentType(array('xml' => array($atom)));
@@ -274,6 +276,16 @@ class testOffolksoQuery extends  UnitTestCase {
     $fkt = $bestAtom->fkType();
     $this->assertEqual($bestAtom->subType, 'atom',
                        'subtype not set: ' . $bestAtom->subType);
+
+
+    $q5 = new folksoQuery(array(), array(), array());
+    $firef = $q5->buildAcceptArray('text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8');
+    $fireChoose = $q5->chooseContentType($firef);
+    $this->assertIsA($fireChoose, folksoQueryAcceptType,
+                     'Firefox accept: chooseContentType not returning fkQaT obj');
+    $this->assertEqual($fireChoose->accept(), 'text/html',
+                       'Real firefox 3.6 accept header should evaluate to text/html, not: ' 
+                       . $fireChoose->accept());
   }
 
   function testAcceptTypeClass () {
@@ -283,8 +295,8 @@ class testOffolksoQuery extends  UnitTestCase {
                        'type_part not parsing correctly: ' . $ac->type_part());
     $this->assertEqual($ac->accept(), 'application/xml',
                        '$ac->accept incorrect on simple accept: ' . $ac->accept());
-    $this->assertEqual($ac->weight(), 0,
-                       'Weight not defaulting to 0');
+    $this->assertEqual($ac->weight(), 1,
+                       'Weight not defaulting to 1');
 
     $this->assertEqual($ac->fkType(), 'xml',
                        'Should get "xml" as fkType here, not: ' . $ac->fkType());
