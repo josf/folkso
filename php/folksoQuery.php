@@ -302,6 +302,10 @@ class folksoQuery {
     */
     public function chooseContentType ($types) {
     
+      if (count($types) == 0) {
+        return null;
+      }
+
       /** case 1: only one content category  and one type**/
       if (count($types) == 1)  {
         $keys = array_keys($types);
@@ -309,40 +313,20 @@ class folksoQuery {
         return $this->selectTypeFromArray($types[$type]);
       }
 
-      if (count($types) > 1) {
-        if (is_array($types['xml']) && is_array($types['html'])) {
-          $bestXML = $this->selectTypeFromArray($types['xml']);
-          $bestHTML = $this->selectTypeFromArray($types['html']);
-
-          /** By putting $bestHTML first here, it means that we
-           *  DEFAULT to HTML if $bestXML does not have a superior
-           *  weight.  This is currently done on purpose to compensate
-           *  for the strange Accept headers in webkit browsers.
-           *
-           * NB: This particular part of the algorithm does not take
-           * into account which of these occurred first in the
-           * original string.
-           */
-          return $this->selectTypeFromArray(array($bestHTML, $bestXML));
-        }
-        
-        $all = array();
-        foreach ($types as $key => $val) {
-          if (is_array($types[$key])) {
-            $all = array_merge($types[$key], $all);
-          }
-        }
-        $paramTypes = array_filter($all, array($this, 'hasWeight'));
-        if (count($paramTypes) > 0) {
-          usort($paramTypes, array($this, 'fkQatSorter'));
-          return $paramTypes[0];
-        }
-        else {
-          usort($all, array($this, 'fkQatIndexSorter'));
-          return $all[0];
-        }
-
+      // choose best in each category
+      $champs = array();
+      foreach ($types as $key => $val) {
+        $champs[$key] = $this->selectTypeFromArray($val);
       }
+      
+      /** special case for xml and html **/
+      if (($champs['xml'] instanceof folksoQueryAcceptType) &&
+          ($champs['html'] instanceof folksoQueryAcceptType) &&
+          ($champs['xml']->accept() == 'application/xml') &&
+          ($champs['xml']->weight() <= $champs['html'])) {
+        return $champs['html'];
+      }
+      return $this->selectTypeFromArray(array_values($champs));
     }
 
     /**
@@ -351,24 +335,34 @@ class folksoQuery {
      * @param $types Array An array of 0 or more fkQueryAcceptType objs
      */
      public function selectTypeFromArray ($types) {
-       $paramTypes = array_filter($types, array($this, 'hasWeight'));
-       if (count($paramTypes) > 0) {
-         usort($paramTypes, array($this, 'fkQatSorter'));
-         return $paramTypes[0];
+       $noParamTypes = array_filter($types, array($this, 'weightOne'));
+       if (count($noParamTypes) > 0) {
+         usort($noParamTypes, array($this, 'fkQatIndexSorter'));
+         return $noParamTypes[0];
        }
-       return $types[0];
+       else {
+         usort($types, array($this, 'fkQatWeightSorter'));
+         return $types[0];         
+       }
      }
     
-     public function hasWeight(folksoQueryAcceptType $fkQaT) {
-       if ($fkQaT->weight() > 0) {
+     public function hasWeight(folksoQueryAcceptType $accT) {
+       if ($accT->weight() > 0) {
+         return true;
+       }
+       return false;
+     }
+
+     public function weightOne(folksoQueryAcceptType $accT){
+       if ($accT->weight() >= 1) {
          return true;
        }
        return false;
      }
 
 
-     public function fkQatSorter(folksoQueryAcceptType $a,
-                                 folksoQueryAcceptType $b) {
+     public function fkQatWeightSorter(folksoQueryAcceptType $a,
+                                       folksoQueryAcceptType $b) {
        if ($a->weight() > $b->weight()) {
          return -1;
        }
@@ -380,13 +374,14 @@ class folksoQuery {
        }
      }
 
+
      public function fkQatIndexSorter(folksoQueryAcceptType $a,
                                       folksoQueryAcceptType $b) {
-       // NB: we are sorting lowest first. We assume that indexes are unique.
-       if ($a->index() > $b->index()) {
-         return 1;
+       // NB: we are sorting lowest first. 
+       if ($a->index() == $b->index()) {
+         return 0;
        }
-       return -1;
+       return ($a->index() > $b->index()) ? 1 : -1;
      }
 
 
@@ -650,17 +645,18 @@ class folksoQueryAcceptType {
   }
 
   /**
-   * @brief Calculate and return the q or level parameter. 
+   * @brief Calculate and return the weight, taking into account the q
+   * parameter if present.
    *
-   * Returns 0 if parameter is absent.
+   * Default weight is 1.
    */
   public function weight() {
     if ($this->weight) {
       return $this->weight;
     }
-    $this->weight = 0; 
+    $this->weight = 1; 
     if ($this->param()) {
-      if (preg_match('/(?:q|level)=(.+)$/', $this->param(), $match)) {
+      if (preg_match('/q=(.+)$/', $this->param(), $match)) {
         $this->weight = $match[1];
       }
     }
