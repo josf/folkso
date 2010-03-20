@@ -59,6 +59,7 @@ function autocomplete (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks)
         $r->t( $row->tagdisplay . "\n");
       }
     }
+    $r->setType('text');
     return $r;
     break;
   }
