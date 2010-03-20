@@ -26,6 +26,8 @@ $srv->Respond();
 function autocomplete (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $i = new folksoDBinteract($dbc);
   $r = new folksoResponse();
+  $r->setType('text');
+
   if ($i->db_error()) {
     $r->dbConnectionError($i->error_info());
     return $r;
@@ -59,7 +61,6 @@ function autocomplete (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks)
         $r->t( $row->tagdisplay . "\n");
       }
     }
-    $r->setType('text');
     return $r;
     break;
   }
