@@ -57,6 +57,7 @@
           </xsl:attribute>
           <xsl:element name="img">
             <xsl:attribute name="src">http://www.fabula.org/tags/rssbutton.png</xsl:attribute>
+            <xsl:attribute name="alt">Bouton RSS</xsl:attribute>
           </xsl:element>
           <xsl:text>RSS</xsl:text>
         </xsl:element>
