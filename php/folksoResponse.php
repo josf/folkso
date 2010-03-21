@@ -253,7 +253,7 @@ class folksoResponse {
       $type =  'application/xhtml+xml';
       break;
     default: 
-      $type =  'application/xhtml+xml';
+      $type =  'text/text';
     }
    return 'Content-Type: ' . $type;
   }
