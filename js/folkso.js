@@ -764,9 +764,10 @@ function infoMessage(elem) {
 
 function tagMenuCleanupFunc(lis, tag) {
   return function() {
-    lis.attr("class", "tagged");
-    lis.find("inbox.tagbox").val('');
-    currentTagsUpdate(tag, lis);
+      lis.attr("class", "tagged");
+      lis.find("inbox.tagbox").val('');
+      $("select.metatagbox", lis).val('');
+      currentTagsUpdate(tag, lis);
   };
 }
 
