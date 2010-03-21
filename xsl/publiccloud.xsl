@@ -14,10 +14,12 @@
     <xsl:attribute name="class">tagcloud</xsl:attribute>
     <xsl:element name="ul">
       <xsl:attribute name="class">cloudlist</xsl:attribute>
-    <xsl:attribute name="id">
-      <xsl:value-of select="concat('tc', /tagcloud/@resource)"/>
-    </xsl:attribute>
-    <xsl:apply-templates/>
+      <xsl:attribute name="xmlns">http://commontag.org/ns#</xsl:attribute>
+      <xsl:attribute name="rel">ctag:tagged</xsl:attribute>
+      <xsl:attribute name="id">
+        <xsl:value-of select="concat('tc', /tagcloud/@resource)"/>
+      </xsl:attribute>
+      <xsl:apply-templates/>
     </xsl:element>
   </xsl:element>
 </xsl:template>
@@ -26,6 +28,16 @@
   <xsl:element name="li">
     
     <xsl:element name="a">
+        <xsl:attribute name="typeof">ctag:Tag</xsl:attribute>
+        <xsl:attribute name="rel">ctag:means</xsl:attribute>
+        <xsl:attribute name="resource">
+          <xsl:value-of 
+              select="concat('http://www.fabula.org/tag/', ./tagnorm)"/>
+        </xsl:attribute>
+        <xsl:attribute name="property">ctag:label</xsl:attribute>
+        <xsl:attribute name="content">
+          <xsl:value-of select="./display"/>
+        </xsl:attribute>
       <xsl:attribute name="href">
         <xsl:value-of select="concat($tagviewbase, ./tagnorm)"/>
       </xsl:attribute>
