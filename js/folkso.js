@@ -894,58 +894,40 @@ function deleteButtonPrepare () {
 
   button.click(
     function(event) {
-      event.preventDefault();
-      infoMessage(deleteResourceMessage(resid, lis));
-    });
-}
-
-function deleteResourceMessage(resid, lis) {
-  var thediv = $("<div class='innerinfobox'>");
-  thediv.append($("<h3>Suppression définitive d'une resource</h3>"));
-  thediv.append($("<p>Cette ressource sera effacée, ainsi que toutes"
-                  + " ses associations avec des tags. La ressource ne "
-                  + "sera plus réindexée. Cette action est définitive.</p>" ));
-
-  thediv.append($("<p>Supprimer définitivement <em>\""
-                  + lis.find("a.restitle").text()
-                  + "\"</em> ?</p>"));
-
-  var lastpar = $("<p>");
-  var yesbutton = $("<a class=\"yesno\" href=\"#\">Oui</a>");
-  yesbutton.click(
-    function(event) {
-      event.preventDefault();
-      $.ajax({url: document.folksonomie.postbase + 'resource.php',
-              type: 'post',
-              datatype: 'text/text',
-              data: {
-                folksores: resid,
-                folksodelete: 1
-              },
-              error: function(xhr, msg){
-                alert(xhr.statusText);
-                $("#superscreen").hide();
-                thediv.html("");
-              },
-              success: function(data, msg){
-                lis.hide();
-                $("#superscreen").hide();
-                thediv.html("");
-              }
-             });
-    });
-  lastpar.append(yesbutton);
-  var nobutton = $("<a class=\"yesno\" href=\"#\">Non</a>").
-    click(
-      function(event){
         event.preventDefault();
-        thediv.html("");
-        $("superscreen").hide();
-        } );
-  lastpar.append(nobutton);
-  thediv.append(lastpar);
-  return thediv;
+        var button = $(this), 
+        resDestroy = function() 
+        {      
+            $.ajax({url: document.folksonomie.postbase + 'resource.php',
+                    type: 'post',
+                    datatype: 'text/text',
+                    data: {
+                        folksores: resid,
+                        folksodelete: 1
+                    },
+                    error: function(xhr, msg){
+                        alert(xhr.statusText);
+                    },
+                    success: function(data, msg){
+                        lis.hide();
+                    }
+                   });
+        };
+
+        button.dialog({ title: "Suppression définitive d'une ressource",
+                        modal: true,
+                        buttons: {"Supprimer?" : function() {
+                                      resDestroy();
+                                      button.dialog("close");
+                                  },
+                                  "Laisser?" : function() {
+                                      button.dialog("close");
+                                  }
+                                 }});
+    });
 }
+
+
 
 function noteEditBox(resid) {
   var edit = $("<div class='noteedit'>");
