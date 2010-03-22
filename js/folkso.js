@@ -391,45 +391,58 @@ function makeEan13PostModFunc(ean13number, resid, onsuccess) {
  */
 
 function postNewEan13(button) {
-  var inp = $(button.siblings("input.ean13addbox")[0]);
-  var ean13 = inp.val();
-  if (! ean13validate(ean13)){
-    alert("Le code EAN13 proposé n\'est pas correcte. ["
-      + ean13clean(ean13) + "] " + ean13clean(ean13).length );
-    return null;
-  }
-  var lis = $(button.parents("li.resitem")[0]);
-  var resid = button.resid();
+    var inp = $(button.siblings("input.ean13addbox")[0]);
+    var ean13 = inp.val();
+    if (! ean13validate(ean13)){
+        alert("Le code EAN13 proposé n\'est pas correcte. ["
+              + ean13clean(ean13) + "] " + ean13clean(ean13).length );
+        return null;
+    }
+    var lis = $(button.parents("li.resitem")[0]), resid = button.resid();
+    lis.bind('eanPost', function(ev, status) {
+                 //update title ean13 paragraph
+                 ean13append($($(".currentean13", lis)[0]), ean13);
+                 //clear text box
+                 inp.val("");
+                 //insert into list
+                 getTagMenu($(".emptytags", lis), resid);
+             });
+    var success = function(data, status, xhr) {
+        if (window.console) console.log("Going to trigger. lis is " + lis.length);
+        lis.trigger('eanPost');
+    };
 
-  return  $.ajax({
-           url: document.folksonomie.postbase + 'resource.php',
-           type: 'post',
-           data: {
-             folksores: resid,
-             folksoean13: ean13clean(ean13)
-           },
-           success: function(data) {
-             var cean = lis.find("span.currentean13");
-             if (cean.text().length > 0) {
-               cean.text(cean.text() + ", " + ean13dashDisplay(ean13));
-             }
-             else {
-               cean.text(ean13dashDisplay(ean13));
-             }
-             lis.find("input.ean13addbox").val("");
-           },
-           error: function(xhr, msg) {
-             if (xhr.status == 409) {
-               alert("Le numéro EAN13 " + ean13
-                     + " est déjà associé à cette ressource.");
-             }
-               else {
-                 alert("Error posting new ean13 "
-                 + msg + " status " + xhr.status
-                 + " " + xhr.statusText);
+
+    $.ajax({
+               url: document.folksonomie.postbase + 'resource.php',
+               type: 'post',
+               data: {
+                   folksores: resid,
+                   folksoean13: ean13clean(ean13)
+               },
+               success: success,
+               error: function(xhr, msg) {
+                   if (xhr.status == 409) {
+                       alert("Le numéro EAN13 " + ean13
+                             + " est déjà associé à cette ressource.");
+                   }
+                   else {
+                       alert("Error posting new ean13 "
+                             + msg + " status " + xhr.status
+                             + " " + xhr.statusText);
+                   }
                }
-           }
-         });
+           });
+}
+
+function ean13append ($target, e13) {
+    if ($target.text().length > 1) {
+        var cur = $target.text();
+        $target.text(cur + ', ' + e13);
+    }
+    else {
+        $target.text(e13);
+    }
 }
 
 
