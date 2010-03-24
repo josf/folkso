@@ -98,8 +98,8 @@ class testOffolksotag extends  UnitTestCase {
                                  array()),
                         $this->dbc,
                         $this->fks);
-     $this->assertEqual($r->status, 403,
-                        'Unknown user should provoke a 403 on singlePostTag:' . $r->status);
+     $this->assertEqual($r->status, 401,
+                        'Unknown user should provoke a 401 on singlePostTag:' . $r->status);
 
      $this->fks2->startSession('marcelp-2010-001', true);
      $r2 = singlePostTag(new folksoQuery(array(),
@@ -366,7 +366,7 @@ class testOffolksotag extends  UnitTestCase {
    }
 
    function testTagMerge() {
-     $this->fks->startSession('rambo-2010-001', true);
+     $this->fks->startSession('michl-2010-001', true);
      $r = tagMerge(new folksoQuery(array(),
                                    array('folksotag' => 'tagone',
                                          'folksotarget' => 'tagtwo'),
@@ -376,7 +376,8 @@ class testOffolksotag extends  UnitTestCase {
      $this->assertIsA($r, folksoResponse,
                       'Problem with object creation');
      $this->assertEqual($r->status, 403,
-                        'Rimbaud does not get to merge tags');
+                        'Michel de Montaigne does not get to merge tags, should get 403 here, not: '
+                        . $r->status);
 
      $this->fks2->startSession('marcelp-2010-001', true);
      $r2 = tagMerge(new folksoQuery(array(),
@@ -422,8 +423,8 @@ class testOffolksotag extends  UnitTestCase {
      $this->assertIsA($r, folksoResponse,
                       'problem with object creation');
 
-     $this->assertEqual($r->status, 403,
-                        'anonymous delete tag should return 403');
+     $this->assertEqual($r->status, 401,
+                        'anonymous delete tag should return 401');
      $this->fks->startSession('vicktr-2010-001', true);
      $r2 = deleteTag(new folksoQuery(array(),
                                      array('folksotag' => 'tagone'),
@@ -456,8 +457,8 @@ class testOffolksotag extends  UnitTestCase {
                                         array()),
                         $this->dbc,
                         $this->fks);
-     $this->assertEqual($r->status, 403,
-                        'Unknown user should provoke 403: ' . $r->status);
+     $this->assertEqual($r->status, 401,
+                        'Unknown user should provoke 401: ' . $r->status);
      $this->fks2->startSession('gustav-2010-001', true);
      $r2 = userDeleteTag(new folksoQuery(array(),
                                          array('folksotag' => 'tagone'),
@@ -513,8 +514,8 @@ class testOffolksotag extends  UnitTestCase {
                     $this->fks);
      $this->assertIsA($r, folksoResponse,
                       'Problem with object creation');
-     $this->assertEqual($r->status, 403,
-                        'Anonymous user should fail with 403: ' . $r->status);
+     $this->assertEqual($r->status, 401,
+                        'Anonymous user should fail with 401: ' . $r->status);
 
      $this->fks2->startSession('vicktr-2010-001', true);
      $r2 = renameTag(new folksoQuery(array(),

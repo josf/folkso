@@ -152,11 +152,18 @@ class folksoResponse {
   /**
    * @param $user optional A folksoUser object
    */
-   public function unAuthorized ($user = null) {
-     $this->setError(403, "Forbidden");
-     //     $this->setLoginRedirect();
-     return $this;
+  public function unAuthorized ($user = null) {
+    $this->setError(401, "Unauthorized");
+    $this->errorBody('This action is reserved for known users. Please log in first.');
+    return $this;
    }
+
+  public function insufficientPrivileges($user = null) {
+    $this->setError(403, 'Insufficient Privileges');
+    $this->errorBody('Your user account does not give you the right to execute '
+                     .' this action.');
+    return $this;
+  }
   
 
   public function setOk ($status, $message = null){
@@ -278,14 +285,22 @@ class folksoResponse {
   
 
   /**
-   * In case of an error, we make sure that the old body is not
-   * output.
+   * Adds $str to errorBody content. Without an argument, returns $r->error_body
    * 
    * @param $str String
    */
-  public function errorBody($str) {
-    $this->debug_body = $this->body;
-    $this->body = $str;
+  public function errorBody($str = null) {
+    if ($str) {
+      if (strlen($this->error_body) > 1) {
+        $this->error_body = sprintf("%s\n%s",
+                                    $this->error_body,
+                                    $str);
+      }
+      else {
+        $this->error_body = $str;
+      }
+    }
+    return $this->error_body;
   }
 
 /**

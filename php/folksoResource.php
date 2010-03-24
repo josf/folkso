@@ -428,10 +428,12 @@ function tagResource (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) 
 
 function unTag (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
-  $u = $fks->userSession(null, 'folkso', 'redac');
-  if ((! $u instanceof folksoUser) ||
-      (! $u->checkUserRight('folkso', 'redac'))){
+  $u = $fks->userSession();
+  if (! $u instanceof folksoUser) {
     return $r->unAuthorized($u);
+  }
+  elseif (! $u->checkUserRight('folkso', 'redac')) {
+    return $r->insufficientPrivileges($u);
   }
 
   try {
@@ -490,10 +492,12 @@ function unTag (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
  */
 function rmRes (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
-  $u = $fks->userSession(null, 'folkso', 'admin');
-  if ((! $u instanceof folksoUser) ||
-      (! $u->checkUserRight('folkso', 'admin'))) {
+  $u = $fks->userSession();
+  if (! $u instanceof folksoUser){
     return $r->unAuthorized($u);
+  }
+  elseif (! $u->checkUserRight('folkso', 'admin')) {
+    return $r->insufficientPrivileges($u);
   }
 
   try {
@@ -539,10 +543,12 @@ function rmRes (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
  */
 function assocEan13 (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
-  $u = $fks->userSession(null, 'folkso', 'redac');
-  if ((! $u instanceof folksoUser) ||
-      (! $u->checkUserRight('folkso', 'redac'))){
+  $u = $fks->userSession();
+  if (! $u instanceof folksoUser){
     return $r->unAuthorized($u);
+  }
+  elseif (! $u->checkUserRight('folkso', 'redac')){
+    return $r->insufficientPrivileges($u);
   }
 
   try {
@@ -609,10 +615,12 @@ function assocEan13 (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
  */
 function modifyEan13 (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
-  $u = $fks->userSession(null, 'folkso', 'redac');
-  if ((! $u instanceof folksoUser) ||
-      (! $u->checkUserRight('folkso', 'redac'))) {
+  $u = $fks->userSession();
+  if (! $u instanceof folksoUser){
     return $r->unAuthorized($u);
+  }
+  elseif (! $u->checkUserRight('folkso', 'redac')) {
+    return $r->insufficientPrivileges($u);
   }
 
   try {
@@ -667,10 +675,12 @@ function modifyEan13 (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) 
  */
 function deleteEan13 (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
-  $u = $fks->userSession(null, 'folkso', 'redac');
-  if ((! $u instanceof folksoUser) ||
-      (! $u->checkUserRight('folkso', 'redac'))) {
+  $u = $fks->userSession();
+  if (! $u instanceof folksoUser) {
     return $r->unAuthorized($u);
+  }
+  elseif  (! $u->checkUserRight('folkso', 'redac')) {
+    return $r->insufficientPrivileges($u);
   }
 
   try {
@@ -722,10 +732,12 @@ function deleteEan13 (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) 
  */
 function addNote (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
-  $u = $fks->userSession(null, 'folkso', 'redac');
-  if ((! $u instanceof folksoUser) ||
-      (! $u->checkUserRight('folkso', 'redac'))) {
+  $u = $fks->userSession();
+  if (! $u instanceof folksoUser) {
     return $r->unAuthorized($u);
+  }
+  elseif (! $u->checkUserRight('folkso', 'redac')) {
+    return $r->insufficientPrivileges($u);
   }
 
   try {
@@ -825,11 +837,14 @@ function getNotes (folksoquery $q, folksoDBconnect $dbc, folksoSession $fks){
  */
 function rmNote (folksoquery $q, folksoDBconnect $dbc, folksoSession $fks){
   $r = new folksoResponse();
-  $u = $fks->userSession(null, 'folkso', 'redac');
-  if ((! $u instanceof folksoUser) ||
-      (! $u->checkUserRight('folkso', 'redac'))){
+  $u = $fks->userSession();
+  if (! $u instanceof folksoUser) {
     return $r->unAuthorized($u);
   }
+  elseif (! $u->checkUserRight('folkso', 'redac')){
+    return $r->insufficientPrivileges($u);
+  }
+
   try {
     $i = new folksoDBinteract($dbc);
     if (! is_numeric($q->get_param('note'))){

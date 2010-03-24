@@ -305,8 +305,8 @@ class testOfResource extends  UnitTestCase {
      $this->assertIsA($r, folksoResponse,
                       'Not even getting a response object back');
 
-     $this->assertEqual($r->status, 403,
-                        'Not getting 403 back on unauthorized user'); 
+     $this->assertEqual($r->status, 401,
+                        'Not getting 401 back on unauthorized user'); 
 
    }
 

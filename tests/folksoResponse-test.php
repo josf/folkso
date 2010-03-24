@@ -50,6 +50,14 @@ class testOffolksoResponse extends  UnitTestCase {
     $this->assertEqual($r3->statusMessage, "Not Found",
                        "Problem setting default 404 error status message:". $r3->statusMessage.":");
 
+    $r4 = new folksoResponse();
+    $r4->insufficientPrivileges();
+    $this->assertEqual($r4->status, 403,
+                       'Incorrect status with insufficient Privileges, expecting 403: '
+                       . $r4->status);
+    $this->assertPattern('/^Your user account/',
+                         $r4->error_body,
+                         'Incorrect error body: ' . $r4->error_body);
   }
 
   function testContentType () {
@@ -59,7 +67,7 @@ class testOffolksoResponse extends  UnitTestCase {
                        'XML content type not correctly determined');
     $r2 = new folksoResponse();
     $this->assertEqual($r2->contentType(),
-                       'Content-Type: application/xhtml+xml',
+                       'Content-Type: text/text',
                        'Default content type not correctly selected: '
                        .$r2->contentType());
     $r3 = new folksoResponse();
@@ -145,15 +153,16 @@ class testOffolksoResponse extends  UnitTestCase {
     $r2->handleDBexception(new dbQueryException(234, 'select * from peeps',
                                                 'Something horrible just happened'));
     $r2->prepareHeaders();
-    $this->assertEqual($r->status, 500,
+    $this->assertEqual($r2->status, 500,
                        'dbQueryException not producing a 500');
-    $this->assertPattern('/peeps/', $r2->body(),
+    $this->assertPattern('/peeps/', $r2->errorBody(),
                          'Not getting correct exception information in body for query exception');
 
     $r3 = new folksoResponse();
     $r3->handleUserException(new badUseridException('Who are you?'));
     $this->assertEqual($r3->status, 403,
                        'Bad userid not returning 403');
+
 
   }
 
