@@ -50,6 +50,14 @@ class testOffolksoResponse extends  UnitTestCase {
     $this->assertEqual($r3->statusMessage, "Not Found",
                        "Problem setting default 404 error status message:". $r3->statusMessage.":");
 
+    $r4 = new folksoResponse();
+    $r4->insufficientPrivileges();
+    $this->assertEqual($r4->status, 403,
+                       'Incorrect status with insufficient Privileges, expecting 403: '
+                       . $r4->status);
+    $this->assertPattern('/^Your user account/',
+                         $r4->error_body,
+                         'Incorrect error body: ' . $r4->error_body);
   }
 
   function testContentType () {
@@ -154,6 +162,7 @@ class testOffolksoResponse extends  UnitTestCase {
     $r3->handleUserException(new badUseridException('Who are you?'));
     $this->assertEqual($r3->status, 403,
                        'Bad userid not returning 403');
+
 
   }
 

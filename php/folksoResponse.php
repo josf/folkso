@@ -152,11 +152,18 @@ class folksoResponse {
   /**
    * @param $user optional A folksoUser object
    */
-   public function unAuthorized ($user = null) {
-     $this->setError(403, "Forbidden");
-     //     $this->setLoginRedirect();
-     return $this;
+  public function unAuthorized ($user = null) {
+    $this->setError(403, "Forbidden");
+    $this->errorBody('This action is reserved to known users');
+    return $this;
    }
+
+  public function insufficientPrivileges($user = null) {
+    $this->setError(403, 'Insufficient Privileges');
+    $this->errorBody('Your user account does not give you the right to execute '
+                     .' this action.');
+    return $this;
+  }
   
 
   public function setOk ($status, $message = null){
