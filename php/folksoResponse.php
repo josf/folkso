@@ -278,14 +278,22 @@ class folksoResponse {
   
 
   /**
-   * In case of an error, we make sure that the old body is not
-   * output.
+   * Adds $str to errorBody content. Without an argument, returns $r->error_body
    * 
    * @param $str String
    */
-  public function errorBody($str) {
-    $this->debug_body = $this->body;
-    $this->body = $str;
+  public function errorBody($str = null) {
+    if ($str) {
+      if (strlen($this->error_body) > 1) {
+        $this->error_body = sprintf("%s\n%s",
+                                    $this->error_body,
+                                    $str);
+      }
+      else {
+        $this->error_body = $str;
+      }
+    }
+    return $this->error_body;
   }
 
 /**

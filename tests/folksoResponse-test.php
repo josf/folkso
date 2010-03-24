@@ -145,9 +145,9 @@ class testOffolksoResponse extends  UnitTestCase {
     $r2->handleDBexception(new dbQueryException(234, 'select * from peeps',
                                                 'Something horrible just happened'));
     $r2->prepareHeaders();
-    $this->assertEqual($r->status, 500,
+    $this->assertEqual($r2->status, 500,
                        'dbQueryException not producing a 500');
-    $this->assertPattern('/peeps/', $r2->body(),
+    $this->assertPattern('/peeps/', $r2->errorBody(),
                          'Not getting correct exception information in body for query exception');
 
     $r3 = new folksoResponse();
