@@ -314,15 +314,16 @@ function relatedTags (folksoQuery $q, folksoDBConnect $dbc, folksoSession $fks) 
  */
 function singlePostTag (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
-  $u = $fks->userSession(null, 'folkso', 'redac');
-  if ((! $u instanceof folksoUser) ||
-      (! $u->checkUserRight('folkso', 'redac'))){
-    return $r->unAuthorized($u);
+  $u = $fks->userSession();
+  if (! $u instanceof folksoUser){
+    return $r->unAuthorized();
+  }
+  elseif (! $u->checkUserRight('folkso', 'redac')) {
+    return $r->insufficientPrivileges($u);
   }
 
   try {
     $i = new folksoDBinteract($dbc);
-
     $sql = 
       "CALL new_tag('" . 
       $i->dbescape(stripslashes($q->get_param('folksonewtag'))) . "')";
@@ -556,10 +557,12 @@ function autoCompleteTags (folksoQuery $q, folksoDBconnect $dbc, folksoSession $
 
 function tagMerge (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse(); 
-  $u = $fks->userSession(null, 'folkso', 'redac');
-  if ((! $u instanceof folksoUser) ||
-      (! $u->checkUserRight('folkso', 'redac'))) {
+  $u = $fks->userSession();
+  if (! $u instanceof folksoUser) {
     return $r->unAuthorized($u);
+  }
+  elseif (! $u->checkUserRight('folkso', 'redac')) {
+    return $r->insufficientPrivileges($u);
   }
 
   try {
@@ -627,10 +630,12 @@ function tagMerge (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
  */
 function deleteTag  (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
-  $u = $fks->userSession(null, 'folkso', 'admin');
-  if ((! $u instanceof folksoUser) ||
-      (! $u->checkUserRight('folkso', 'admin'))){
-    return $r->unAuthorized($u);
+  $u = $fks->userSession();
+  if (! $u instanceof folksoUser) {
+    return $r->unAuthorized();
+  }
+  elseif (! $u->checkUserRight('folkso', 'admin')) {
+    return $r->insufficientPrivileges($u);
   }
 
   try {
@@ -784,10 +789,12 @@ function byalpha (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
  */
 function renameTag (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
-  $u = $fks->userSession(null, 'folkso', 'admin');
-  if ((! $u instanceof folksoUser) ||
-      (! $u->checkUserRight('folkso', 'admin'))) {
+  $u = $fks->userSession();
+  if (! $u instanceof folksoUser){
     return $r->unAuthorized($u);
+  }
+  elseif (! $u->checkUserRight('folkso', 'admin')) {
+    return $r->insufficientPrivileges($u);
   }
 
   try {

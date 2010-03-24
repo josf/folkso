@@ -153,8 +153,8 @@ class folksoResponse {
    * @param $user optional A folksoUser object
    */
   public function unAuthorized ($user = null) {
-    $this->setError(403, "Forbidden");
-    $this->errorBody('This action is reserved to known users');
+    $this->setError(401, "Unauthorized");
+    $this->errorBody('This action is reserved for known users. Please log in first.');
     return $this;
    }
 
