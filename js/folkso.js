@@ -215,7 +215,8 @@ function tagMenuCleanupFunc(lis, tag) {
              alert("An error here: " + xhr.status + " "
                    +  xhr.statusText + " exc: " + error);
            }});
-}
+ }
+
 
 /**
  * Returns a function closed over "place", allowing us to get
