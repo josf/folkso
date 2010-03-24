@@ -52,7 +52,7 @@
  (fk-build-resource-get
   fktest-base 'rembrandt '("folksodatatype" . "xml") '("folksoclouduri" . "1")))
 
-(url-retrieve-synchronously
+(fk-run-req 
  (fk-build-resource-get 
   "http://localhost/" 'numero3 '("folksodatatype" . "xml") '("folksoclouduri" . "1")))
 
@@ -85,6 +85,12 @@
 
 (fk-run-req "http://www.fabula.org/tags/user.php?folksouid=jfahey-2009-001&folksomytags=1&folksodatatype=json")
 
+
+(fk-run-req
+ "http://www.fabula.org/tag/poesie/cloud/datatype/xml")
+
+(fk-run-req 
+ "http://www.fabula.org/tags/resource.php?folksores=http://www.fabula.org/actualites/article21902.php&folksoclouduri=1&folksodatatype=xml")
 (switch-to-buffer (url-retrieve-synchronously
                    (fk-build-get
                     "http://localhost/resource.php" 
