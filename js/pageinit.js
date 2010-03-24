@@ -106,6 +106,7 @@ fK.fb.onLogin = function() {
                                   postResUrl: hostAndPath + 'resource.php',
                                   getResUrl: hostAndPath + 'resource.php',
                                   getUserUrl: hostAndPath + 'user.php',
+                                  postTagUrl: hostAndPath + 'tag.php',
                                   oIdLogoPath: "/tags/logos/",
                                   oIdPath: '/tags/fdent/'
                             });
