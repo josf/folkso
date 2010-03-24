@@ -429,6 +429,9 @@
                      if (tagbox.val().length < 2) {
                          alert("Il faut choisir un tag d'abord"); return;
                      }
+
+//                     var tagAjax = function() {}; // dummy var placeholder
+
                      var tag = tagbox.val(),
                      onSuccess = function(xml, status, xhr) { 
                          tagbox.val("");                         
@@ -440,12 +443,43 @@
                      error404 = function(xhr, msg)
                      {
                          if (/Tag does not exist/i.test(xhr.statusText)) {
-                             alert("Le tag '" + tag + "' n'existe pas encore");
+                             if (/create the tag/i.test(xhr.responseText)) {
+                                 var tagFn = fK.fn.tagCreate(tag, tagAjax),
+                                 $dia = $("<p>Le tag " + tag + " n'existe pas. "
+                                          + " souhaitez-vous le créer ?</p>");
+                                 
+                                 target.append($dia);
+                                 $dia.dialog({ title: "Création d'un nouveau tag",
+                                               modal: true,
+                                               buttons: {
+                                                   "Abandonner": function() {
+                                                       $dia.dialog("close");
+                                                   },
+                                                   "Créer": function() {
+                                                       tagFn();
+                                                       dia.dialog("close");
+                                                   }
+                                               }
+                                             });
+                             }
+                             else {
+                                 alert("Le tag '" + tag + "' n'existe pas encore");
+                             }
                          }
                          else {
                              alert("Erreur : cette page n'est pas encore indexée");
                          }
                      },
+                     tagAjax = function() {
+                         $.ajax( fK.fn.resPostObject({folksotag: tag,
+                                                      folksores: url },
+                                                     onSuccess,
+                                                     fK.fn.errorChoose(error404,
+                                                                       error403,
+                                                                       errorOther))); 
+                     },
+
+
                      error401 = function(xhr, msg) { alert("Loggez-vous"); },
                      errorOther = function(xhr, msg) {
                          alert("Erreur: " + xhr.statusText);
@@ -454,14 +488,30 @@
 //                     alert("tag " + tag + " and url " + url );
 
 
-                     $.ajax( fK.fn.resPostObject({folksotag: tag,
-                                                 folksores: url },
-                                                onSuccess,
-                                                fK.fn.errorChoose(error404,
-                                                                  error403,
-                                                                  errorOther))); 
+
                  };
              },
+
+             /**
+              * Returns a function that will post a new tag.
+              * 
+              * @param tag String Name of tag to create
+              * @param success Function Continuation function to call
+              * @return Function 
+              */
+             tagCreate: function (tag, success) {
+                 return function() {
+                     $.ajax( fK.fn. tagPostObject({folksotag: tag},
+                                             success,
+                                             function(xhr, msg) 
+                                             {
+                                                 alert("Tag creation error: "
+                                                       + xhr.status + " " 
+                                                       + xhr.statusText);
+                                             }));
+                 };
+             },
+
              /**
               * Get tag cloud and add each tag as an individual <li> to the 
               * target elemnt
