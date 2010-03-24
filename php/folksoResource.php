@@ -401,8 +401,11 @@ function tagResource (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) 
       }
       elseif (strpos($e->getMessage(), 'tag_id')) {
         $r->setError(404, 'Tag does not exist',
-                     "Tag ". $q->tag . " does not exist. "
-                     . $i->error_info());
+                     "Tag ". $q->tag . " does not exist. ");
+
+        if ($u->checkUserRight('folkso', 'redac')) {
+          $r->errorBody("You must create the tag before using it.");
+        }
       }
     }
     else {
