@@ -446,7 +446,7 @@
                              alert("Erreur : cette page n'est pas encore indexée");
                          }
                      },
-                     error403 = function(xhr, msg) { alert("Loggez-vous"); },
+                     error401 = function(xhr, msg) { alert("Loggez-vous"); },
                      errorOther = function(xhr, msg) {
                          alert("Erreur: " + xhr.statusText);
                      };
