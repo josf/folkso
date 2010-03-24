@@ -55,8 +55,18 @@ if (! $user->checkUserRight('folkso', 'redac')) {
 </link>
   
 
+<link rel="stylesheet" 
+  type="text/css" 
+  href="/tags/css/jquery-ui-1.8-custom.css" media="screen">
+</link>
 <script type="text/javascript" 
         src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.js"></script>
+
+<script 
+  type="text/javascript"
+  src="/tags/js/jquery-ui-1.8.custom.min.js">
+</script>
+
 <script type="text/javascript" src="js/jquery.autocomplete.js">
   </script>
 

@@ -214,8 +214,9 @@ function tagMenuCleanupFunc(lis, tag) {
            error: function(xhr, msg, error) {
              alert("An error here: " + xhr.status + " "
                    +  xhr.statusText + " exc: " + error);
-             }});
+           }});
  }
+
 
 /**
  * Returns a function closed over "place", allowing us to get
@@ -391,45 +392,58 @@ function makeEan13PostModFunc(ean13number, resid, onsuccess) {
  */
 
 function postNewEan13(button) {
-  var inp = $(button.siblings("input.ean13addbox")[0]);
-  var ean13 = inp.val();
-  if (! ean13validate(ean13)){
-    alert("Le code EAN13 proposé n\'est pas correcte. ["
-      + ean13clean(ean13) + "] " + ean13clean(ean13).length );
-    return null;
-  }
-  var lis = $(button.parents("li.resitem")[0]);
-  var resid = button.resid();
+    var inp = $(button.siblings("input.ean13addbox")[0]);
+    var ean13 = inp.val();
+    if (! ean13validate(ean13)){
+        alert("Le code EAN13 proposé n\'est pas correcte. ["
+              + ean13clean(ean13) + "] " + ean13clean(ean13).length );
+        return null;
+    }
+    var lis = $(button.parents("li.resitem")[0]), resid = button.resid();
+    lis.bind('eanPost', function(ev, status) {
+                 //update title ean13 paragraph
+                 ean13append($($(".currentean13", lis)[0]), ean13);
+                 //clear text box
+                 inp.val("");
+                 //insert into list
+                 getTagMenu($(".emptytags", lis), resid);
+             });
+    var success = function(data, status, xhr) {
+        if (window.console) console.log("Going to trigger. lis is " + lis.length);
+        lis.trigger('eanPost');
+    };
 
-  return  $.ajax({
-           url: document.folksonomie.postbase + 'resource.php',
-           type: 'post',
-           data: {
-             folksores: resid,
-             folksoean13: ean13clean(ean13)
-           },
-           success: function(data) {
-             var cean = lis.find("span.currentean13");
-             if (cean.text().length > 0) {
-               cean.text(cean.text() + ", " + ean13dashDisplay(ean13));
-             }
-             else {
-               cean.text(ean13dashDisplay(ean13));
-             }
-             lis.find("input.ean13addbox").val("");
-           },
-           error: function(xhr, msg) {
-             if (xhr.status == 409) {
-               alert("Le numéro EAN13 " + ean13
-                     + " est déjà associé à cette ressource.");
-             }
-               else {
-                 alert("Error posting new ean13 "
-                 + msg + " status " + xhr.status
-                 + " " + xhr.statusText);
+
+    $.ajax({
+               url: document.folksonomie.postbase + 'resource.php',
+               type: 'post',
+               data: {
+                   folksores: resid,
+                   folksoean13: ean13clean(ean13)
+               },
+               success: success,
+               error: function(xhr, msg) {
+                   if (xhr.status == 409) {
+                       alert("Le numéro EAN13 " + ean13
+                             + " est déjà associé à cette ressource.");
+                   }
+                   else {
+                       alert("Error posting new ean13 "
+                             + msg + " status " + xhr.status
+                             + " " + xhr.statusText);
+                   }
                }
-           }
-         });
+           });
+}
+
+function ean13append ($target, e13) {
+    if ($target.text().length > 1) {
+        var cur = $target.text();
+        $target.text(cur + ', ' + e13);
+    }
+    else {
+        $target.text(e13);
+    }
 }
 
 
@@ -679,7 +693,7 @@ function groupTagRest(tag, meta) {
                  folksometa: meta
                },
                success: function(str){
-                 lis.attr("class", "tagged");
+                 lis.addClass("tagged").removeClass("nottagged");
                  currentTagsUpdate(tag, lis);
                }
              });
@@ -720,41 +734,85 @@ function infoMessage(elem) {
 
      lis.find("a.tagbutton").click(
          function(event) {
-           event.preventDefault();
-           var meta = lis.find(".tagger select.metatagbox").val();
+             event.preventDefault();
+             var meta = lis.find(".tagger select.metatagbox").val();
 
-           if (tgbx.val()) {
-             var cleanup = tagMenuCleanupFunc(lis, tgbx.val());
-             $.ajax({
-                      url: document.folksonomie.postbase + 'resource.php',
-                      type: 'post',
-                      datatype: 'text/text',
-                      data: {
-                        folksores: url,
-                        folksotag: tgbx.val(),
-                        folksometa: meta},
-                      error: function(xhr, msg) {
-                        if (xhr.status == 404) {
-                          if (xhr.statusText.indexOf('ag does not exist') != -1) {
-                            infoMessage(createTagMessage(tgbx.val(), url, meta, lis));
-                          }
-                          else {
-                            alert("Erreur:  ressource non indexée. 404 "
-                                  + xhr.statusText);
-                          }
-                        }
-                        else {
-                          alert('Erreur interne ' + xhr.statusText);
-                        }
-                      },
-                      success: function (str) {
+             // prepare
+             if (tgbx.val()) {
+                 var tag = tgbx.val(),
+                 cleanup = tagMenuCleanupFunc(lis, tgbx.val()),
+                 success = function(data, status, xhr) {
                         cleanup();
                         getTagMenu(
                           lis.find("div.emptytags"),
                           lis.attr("id").substring(3));
-                        tgbx.val('');
-                      }
-                    });
+                        tgbx.val('');                     
+                 },
+
+                 postTag = function() {
+
+                     $.ajax({
+                                url: document.folksonomie.postbase + 'resource.php',
+                                type: 'post',
+                                datatype: 'text/text',
+                                data: {
+                                    folksores: url,
+                                    folksotag: tag,
+                                    folksometa: meta},
+                                error: function(xhr, msg) {
+                                    if (xhr.status == 404) {
+                                        if (xhr.statusText.indexOf('ag does not exist') != -1) {
+                                            var dia = $("<p>Le tag "
+                                                        + tag + 
+                                                        "n'existe pas. Faut-il le créer?</p>");
+                                            lis.append(dia);
+                                            dia.dialog({ title: "Création d'un nouveau tag",
+                                                         modal: true,
+                                                         buttons: {
+                                                             "Abandonner": function() {
+                                                                 dia.dialog("close");
+                                                             },
+                                                             "Créer": function() {
+                                                                 tagBuild();
+                                                                 dia.dialog("close");
+                                                             }
+                                                         }
+                                                       });
+                                        }
+                                        else {
+                                            alert("Erreur:  ressource non indexée. 404 "
+                                                  + xhr.statusText);
+                                        }
+                                    }
+                                    else {
+                                        alert('Erreur interne ' + xhr.statusText);
+                                    }
+                                },
+                                success: success
+                            });
+
+
+
+                 },
+                 
+                 tagBuild = function() {
+                     $.ajax({
+                                url: document.folksonomie.postbase + 'tag.php',
+                                type: 'post',
+                                datatype: 'text/text',
+                                data: {
+                                    folksonewtag: tag
+                                },
+                                error: function(xhr, msg){
+                                    alert(xhr.statusText + " " + msg);
+                                },
+                                success: postTag // same as for initial query
+                            });
+                 };
+
+                 // fire away
+                 postTag();
+
            }
            else {
              alert('Il faut choisir un tag d\'abord');
@@ -809,18 +867,7 @@ function createTagMessage(tag, url, meta, lis, successfunc) {
   yesbutton.click(
     function(event){
       event.preventDefault();
-      $.ajax({
-               url: document.folksonomie.postbase + 'tag.php',
-               type: 'post',
-               datatype: 'text/text',
-               data: {
-                 folksonewtag: tag
-               },
-               error: function(xhr, msg){
-                 alert(xhr.statusText + " " + msg);
-               },
-               success: onSuccessFunc
-             });
+
       });
     var lastpar = $("<p>");
 
@@ -881,58 +928,40 @@ function deleteButtonPrepare () {
 
   button.click(
     function(event) {
-      event.preventDefault();
-      infoMessage(deleteResourceMessage(resid, lis));
-    });
-}
-
-function deleteResourceMessage(resid, lis) {
-  var thediv = $("<div class='innerinfobox'>");
-  thediv.append($("<h3>Suppression définitive d'une resource</h3>"));
-  thediv.append($("<p>Cette ressource sera effacée, ainsi que toutes"
-                  + " ses associations avec des tags. La ressource ne "
-                  + "sera plus réindexée. Cette action est définitive.</p>" ));
-
-  thediv.append($("<p>Supprimer définitivement <em>\""
-                  + lis.find("a.restitle").text()
-                  + "\"</em> ?</p>"));
-
-  var lastpar = $("<p>");
-  var yesbutton = $("<a class=\"yesno\" href=\"#\">Oui</a>");
-  yesbutton.click(
-    function(event) {
-      event.preventDefault();
-      $.ajax({url: document.folksonomie.postbase + 'resource.php',
-              type: 'post',
-              datatype: 'text/text',
-              data: {
-                folksores: resid,
-                folksodelete: 1
-              },
-              error: function(xhr, msg){
-                alert(xhr.statusText);
-                $("#superscreen").hide();
-                thediv.html("");
-              },
-              success: function(data, msg){
-                lis.hide();
-                $("#superscreen").hide();
-                thediv.html("");
-              }
-             });
-    });
-  lastpar.append(yesbutton);
-  var nobutton = $("<a class=\"yesno\" href=\"#\">Non</a>").
-    click(
-      function(event){
         event.preventDefault();
-        thediv.html("");
-        $("superscreen").hide();
-        } );
-  lastpar.append(nobutton);
-  thediv.append(lastpar);
-  return thediv;
+        var button = $(this), 
+        resDestroy = function() 
+        {      
+            $.ajax({url: document.folksonomie.postbase + 'resource.php',
+                    type: 'post',
+                    datatype: 'text/text',
+                    data: {
+                        folksores: resid,
+                        folksodelete: 1
+                    },
+                    error: function(xhr, msg){
+                        alert(xhr.statusText);
+                    },
+                    success: function(data, msg){
+                        lis.hide();
+                    }
+                   });
+        };
+
+        button.dialog({ title: "Suppression définitive d'une ressource",
+                        modal: true,
+                        buttons: {"Supprimer?" : function() {
+                                      resDestroy();
+                                      button.dialog("close");
+                                  },
+                                  "Laisser?" : function() {
+                                      button.dialog("close");
+                                  }
+                                 }});
+    });
 }
+
+
 
 function noteEditBox(resid) {
   var edit = $("<div class='noteedit'>");

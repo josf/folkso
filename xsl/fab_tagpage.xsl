@@ -10,7 +10,6 @@
 
   <xsl:template match="/">
     <xsl:element name="html">
-      <xsl:attribute name="xmlns">http://www.w3.org/1999/xhtml</xsl:attribute>
       <xsl:call-template name="fabhead">
         <xsl:with-param name="pageTitle"
                         select="concat('Fabula. Tag : ', ./tagpage/tag/tagtitle)"/>
@@ -216,7 +215,7 @@
               </xsl:when>
             </xsl:choose>
           </xsl:attribute>
-          <xsl:text>prÃ©cÃ©dent &lt; &lt; &lt; </xsl:text>
+          <xsl:text>précédentes &lt; &lt; &lt; </xsl:text>
         </xsl:element>
       </xsl:if>
 
