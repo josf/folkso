@@ -693,8 +693,9 @@ function groupTagRest(tag, meta) {
                  folksometa: meta
                },
                success: function(str){
-                 lis.addClass("tagged").removeClass("nottagged");
-                 currentTagsUpdate(tag, lis);
+                   lis.addClass("tagged");
+                   lis.removeClass("nottagged");
+                   currentTagsUpdate(tag, lis);
                }
              });
     });
