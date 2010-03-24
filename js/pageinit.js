@@ -33,6 +33,16 @@ fK.fb.onLogin = function() {
 
                         // setup according to login state
                         fK.cf.container = $("#folksocontrol");
+                        
+                        // temporary (Open Id disabled)
+                        $(".fKLoginButton", fK.cf.container).hide();
+                        $("#fbstuff").hide();
+                        $(".firstLogin", fK.cf.container).click( function(ev)
+                            {
+                                ev.preventDefault();
+                                $("#fbstuff").show();
+                            });
+                        
 
                         $('body').bind('loggedIn',
                                        function() {
@@ -90,7 +100,7 @@ fK.fb.onLogin = function() {
                                    );
                         }
 
-                        var hostAndPath = 'http://www.fabula.org/tags/', tagAddTarget;
+                        var hostAndPath = 'http://www.fabula.org/tags/';
                         fK.init({
                                   autocompleteUrl: hostAndPath + 'tagcomplete.php',
                                   postResUrl: hostAndPath + 'resource.php',
@@ -107,6 +117,9 @@ fK.fb.onLogin = function() {
                         };
                       }
 
+                        /**
+                         * Called by the Open Id popup window on Open Id login.
+                         */
                       window.handleOpenIDResponse = function (openid_args){
                         $("#bucket").html("Verifying OpenID response");
                         $.ajax({type: "get",
