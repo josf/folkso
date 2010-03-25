@@ -284,7 +284,7 @@ function tagCloudLocalPop (folksoQuery $q, folksoDBconnect $dbc, folksoSession $
  * 
  */
 function visitPage (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
-  $ic = new folksoIndexCache('/tmp/cachetest', 5);  
+  $ic = new folksoIndexCache('/tmp/cachetest', 100);  
   $r = new folksoResponse();
   $page = new folksoUrl($q->res, 
                         $q->is_single_param('urititle') ? $q->get_param('urititle') : '' );
@@ -297,6 +297,11 @@ function visitPage (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   try {
     if ($ic->cache_check()) {
       $pages_to_parse = $ic->retreive_cache();
+
+       if (!($lfh = fopen('/tmp/folksologfile', 'a'))){
+        $r->setError(500, 'Internal server error: could not open logfile');
+      }
+
       $i = new folksoDBinteract($dbc);
 
       $urls = array();
@@ -305,7 +310,10 @@ function visitPage (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
         $item = unserialize($raw);
         if ($item instanceof folksoUrl) {
           $urls[] = $i->dbescape($item->get_url());
-          $titles[] = $item->get_title();
+          $titles[] = $i->dbescape($item->get_title());
+        }
+        else {
+          fwrite($lfh, 'unserialize failed: ' . $raw . "\n");
         }
       }
 
@@ -314,17 +322,18 @@ function visitPage (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
         implode('&&&&&', $urls) . "', '".
         implode('&&&&&', $titles) . "', 1)";
 
-      if (!($lfh = fopen('/tmp/folksologfile', 'a'))){
-        $r->setError(500, 'Internal server error: could not open logfile');
-      }
+
       fwrite($lfh, implode("\n", $urls) . "\n");
-      fclose($lfh);
+      fwrite($lfh, $sql . "\n\n");
 
       $i->query($sql);
       if ($i->result_status == 'DBERR') {
         $r->dbQueryError($i->error_info());
+        fwrite($lfh, 'DB error: ' . $i->error_info() . "\n");
+        fclose($lfh);
         return $r;
       }
+      fwrite("success 200\n");
       $r->setOk(200, "200 Read cache'");
       $r->t("updated db");
     }
@@ -334,8 +343,10 @@ function visitPage (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
     }
   }
   catch (dbException $e) {
+    fclose($lfh);
     return $r->handleDBexception($e);
   }
+  fclose($lfh);
   return $r;
 }
 

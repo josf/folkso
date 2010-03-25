@@ -1,14 +1,14 @@
-/* 
- * Copyright (c) 2010 Joseph Fahey 
+/*
+ * Copyright (c) 2010 Joseph Fahey
  * GNU Public Licence.
- * 
+ *
  * Common lib for folksonomie related javascript
- * 
+ *
  * Requires jQuery
- * 
+ *
  * These functions should eventually be used by all the folksonomie js
  *  as a common way for setting up interactive pages.
- * 
+ *
  */
 
 
@@ -17,9 +17,9 @@
 
          /**
           * Setup all the other functions based on user input
-          * 
+          *
           * config should look like:
-          * 
+          *
           * { simpleResTemplate: selector,
           *   simpleTagTemplate: selector,
           *   getTagUrl: url,
@@ -28,25 +28,25 @@
           *   postResUrl: url,
           *   userLevel: number // user is just user (1), or redacteur(2), or admin?
           *  }
-          *  
+          *
           * * Templates
-          * 
+          *
           * Templates must be included in the html page itself, in the form
-          * of <script> elements having an unknown type (ie. not text/javascript) 
-          * and an id that will allow us to retreive them. There must be an individual 
+          * of <script> elements having an unknown type (ie. not text/javascript)
+          * and an id that will allow us to retreive them. There must be an individual
           * <script> element for each template.
-          * 
+          *
           * When the templates are used, they are wrapped into a containing element,
-          * a list item for example, designated by a config item (name of template 
-          * followed by "Wrap": simpleTagWrap for example). Defaults are provided 
-          * in the templating functions. The config item should be something that can 
+          * a list item for example, designated by a config item (name of template
+          * followed by "Wrap": simpleTagWrap for example). Defaults are provided
+          * in the templating functions. The config item should be something that can
           * be plugged into a jQuery $(), such as $("<li class=\"tagitem">).
-          * 
+          *
           * * Templates and events
-          * 
-          * Templates should have elements with appropriate classes that will be 
+          *
+          * Templates should have elements with appropriate classes that will be
           * automatically associated with the appropriate events.
-          * 
+          *
           */
          init: function(config) {
              jQuery.ajaxSettings.traditional = true;
@@ -74,9 +74,9 @@
           *  be run when the user is logged in from the beginning.
           */
          onLoggedIn: [],
-         attrs: {simpleResTemplate: 'jQuery id of the template element', 
+         attrs: {simpleResTemplate: 'jQuery id of the template element',
                  simpleTagTemplate: 'jQuery id of the template element',
-                 getTagUrl: 'url', getResUrl: 'url', 
+                 getTagUrl: 'url', getResUrl: 'url',
                  postTagUrl: 'url', postResUrl: 'userLevel',
                  getUserUrl: 'url', autocompleteUrl: 'url',
                  simpleTagWrap: 'html string for element creation',
@@ -87,7 +87,7 @@
 
          /**
           * Config information set on init.
-          * 
+          *
           * Other scripts could use this for their data, maybe.
           */
          cf: {
@@ -99,26 +99,26 @@
          },
 
          /**
-          * The ufn "namespace" is for functions to be defined in other scripts, 
-          * ie. page specific functions that override some of functions in the 
+          * The ufn "namespace" is for functions to be defined in other scripts,
+          * ie. page specific functions that override some of functions in the
           * fK.fn "namespace".
-          * 
-          * Be warned: if you put anything beside functions in this namespace, 
-          * there will be trouble. Functions will test for existence of functions 
-          * here, but will not check to see if the variables are indeed functions. 
+          *
+          * Be warned: if you put anything beside functions in this namespace,
+          * there will be trouble. Functions will test for existence of functions
+          * here, but will not check to see if the variables are indeed functions.
           * So just put functions here, nothing else.
-          * 
-          * The only exception is the "hooks" sub-object, which should contain 
+          *
+          * The only exception is the "hooks" sub-object, which should contain
           * only functions.
           */
-         ufn: { 
-             hooks: {} 
+         ufn: {
+             hooks: {}
          },
 
          /**
           * @target {jQuery} Element that the new element will be appended to
           */
-         simpleres: function(target, display, url, id) 
+         simpleres: function(target, display, url, id)
          {
              var resdata = { display: display,
                              url: url,
@@ -128,7 +128,7 @@
                  .jqote(resdata)
                  .appendTo(wrapper);
 
-             var dropresfn = fK.ufn.dropres_react ? 
+             var dropresfn = fK.ufn.dropres_react ?
                  fK.ufn.dropres_react(resdata) : fK.fn.dropres_react(resdata);
 
              wrapper.data("fKres", resdata);
@@ -140,18 +140,18 @@
              target.append(wrapper);
          },
          /**
-          * Classes and actions: 
-          * 
+          * Classes and actions:
+          *
           * ul.tag_resources => list of resources (filled via ajax)
           * a.droptag => erase this tag (from this users tags)
           * a.expandtag => see the resources (via ajax)
           * a.hidereslist => hide the resources
-          * 
+          *
           * @target {jQuery} Element that the new element will be appended to
           */
-         simpletag: function(target, display, tagnorm, id) 
+         simpletag: function(target, display, tagnorm, id)
          {
-             var 
+             var
              tagdata = { display: display,
                          tagnorm: tagnorm,
                          id: id},
@@ -165,13 +165,13 @@
              wrapper.data("fKtag", tagdata);
              var resUL = $(".tag_resources", wrapper);
 
-             var 
+             var
              droptagfn = fK.fn.droptag_react(tagdata),
              expandtagfn = fK.fn.expandtag_react(tagdata, resUL);
 
              $("a.droptag", wrapper).click(droptagfn);
              $("a.expandtag", wrapper).click(expandtagfn);
-             $("a.hidereslist", wrapper).click(function(ev) 
+             $("a.hidereslist", wrapper).click(function(ev)
                                                { ev.preventDefault();
                                                  resUL.hide();
                                                });
@@ -180,15 +180,15 @@
          },
 
          /**
-          * Internal functions (not really "private" I guess, but users shouldn't 
-          * be using them 
+          * Internal functions (not really "private" I guess, but users shouldn't
+          * be using them
           */
          fn: {
              /**
               * Takes any number of functions as arguments. Last argument must  be
-              * an integer corresponding to an HTTP error code. Each function except 
+              * an integer corresponding to an HTTP error code. Each function except
               * the last  must have an "errorcode" value (ie. fn.errorcode = 404).
-              * 
+              *
               */
              errorChoose: function(fn) {
                  var lastFn = arguments[arguments.length - 1],
@@ -206,9 +206,9 @@
                  fn.errorcode = code;
                  return fn;
              },
-             
+
              /**
-              * 
+              *
               */
              tagGetObject: function(data, success, error) {
                  return { url: fK.cf.getTagUrl, type: "get",
@@ -245,23 +245,23 @@
              droptag_react: function() {
                  var funcs = {}, tdata = arguments[0];
                  funcs.displaySuccess = function(){ tdata.element.remove(); };
-                 funcs.error403 = function(xhr, msg) { 
+                 funcs.error403 = function(xhr, msg) {
                      alert("Il faut vous loguer d'abord."); };
                  funcs.error403.errorcode = 403;
                  funcs.error404 = function(xhr, msg) { alert("Le tag n'existe pas."); };
                  funcs.error404.errorcode = 404;
-                 funcs.errorOther = function(xhr, msg) { alert("Erreur serveur: " 
+                 funcs.errorOther = function(xhr, msg) { alert("Erreur serveur: "
                                                                + xhr.status); };
-                 
+
                  var ajOb = fK.fn.tagDeleteObject(
                      {folksotag: tdata.tagnorm || tdata.id},
                      funcs.displaySuccess,
-                     fK.fn.errorChoose(funcs.error403, 
-                                       funcs.error404, 
+                     fK.fn.errorChoose(funcs.error403,
+                                       funcs.error404,
                                        funcs.errorOther));
-                                                   
-                 return function(ev) 
-                 { 
+
+                 return function(ev)
+                 {
                      ev.preventDefault();
                      // consider attaching funcs to the DOM here (via $(this))
                      $.ajax(ajOb);
@@ -270,12 +270,12 @@
 
 
              expandtag_react: function() {
-                 var 
+                 var
                  tdata = arguments[0],
                  target = arguments[1],
                  displaySuccess = fK.fn.displayJsonResList(target),
-                 errorOther = function(xhr, msg) {alert("Erreur serveur " 
-                                                        + xhr.status + " " 
+                 errorOther = function(xhr, msg) {alert("Erreur serveur "
+                                                        + xhr.status + " "
                                                         + tdata.tagnorm); };
 
                  var ajOb = fK.fn.userGetObject(
@@ -299,12 +299,12 @@
                  };
              },
              /**
-              * 
+              *
               * Sets "reslist", "starting" and "ending" in the target's $().data
-              * 
+              *
               * @param target {jQuery}
               * @return Returns a function taking one argument.
-              * 
+              *
               */
              displayJsonResList: function() {
                  var target = arguments[0];
@@ -312,14 +312,14 @@
                      target.data("reslist", json);
                      target.data("starting", 0);
                      for (var i = 0; (i < fK.cf.tagListMax) && (i < json.length); i++) {
-                         fK.simpleres(target, json[i].title, 
+                         fK.simpleres(target, json[i].title,
                                       json[i].url, json[i].resid);
                      }
                      if (json.length > fK.cf.tagListMax) {
                          target.data("ending", fK.cf.tagListMax - 1);
                      }
                      else {
-                         target.data("ending", json.length - 1);    
+                         target.data("ending", json.length - 1);
                      }
                      if (fK.ufn.hooks.displayJsonResList) {
                          fK.ufn.hooks.displayJsonResList(target);
@@ -327,16 +327,16 @@
                  };
              },
              /**
-              * Scroll forward through a list 
-              * 
+              * Scroll forward through a list
+              *
               * @param ul {jQuery} The element we are scrolling inside of
-              * @param endFn {function} (Optional) Function to be called when 
+              * @param endFn {function} (Optional) Function to be called when
               * we can no longer scroll forward
               */
              advance1: function(ul, endFn)
              {
                  // do something if we don't have data?
-                 var json = ul.data("reslist"), start = ul.data("starting"), 
+                 var json = ul.data("reslist"), start = ul.data("starting"),
                  end = ul.data("ending");
 
                  if (($("li:visible", ul).length == json.length) ||
@@ -360,12 +360,12 @@
              },
              /**
               * Scroll backwards
-              * 
+              *
               */
              rewind1: function(ul, endFn)
              {
 
-                 var json = ul.data("reslist"), start = ul.data("starting"), 
+                 var json = ul.data("reslist"), start = ul.data("starting"),
                  end = ul.data("ending");
 
                  if (start == 0) {
@@ -380,29 +380,29 @@
                              firstNotHidden = i; i = lis.length;
                          }
                  }
-                 
+
 //                 if (firstNotHidden == 0) return; // should not be necessary...
                  lis.eq(firstNotHidden - 1).show();
                  $("li:visible:last", ul).hide();
-                 
+
                  ul.data("ending", end - 1);
                  ul.data("starting", start - 1);
              },
-                 
+
              /**
               * Returns a function that removes a resource from a user's list of
-              *  tagged resources. 
-              * 
-              * @param cred Optional (Usually the browser cookie should suffice, 
+              *  tagged resources.
+              *
+              * @param cred Optional (Usually the browser cookie should suffice,
               * might be useful for testing.
               */
              dropres_react: function() {
-                 var 
+                 var
                  resdata = arguments[0],
                  displaySuccess = function() { resdata.element.remove(); },
                  error204 = function(xhr, msg) { alert("You do not have this tag"); },
                  errorOther = function(xhr, msg) { alert("Could not remove resource");};
-                 
+
                  error204.errorcode = 204;
 
                  var ajOb = fK.fn.resDeleteObject(
@@ -419,10 +419,12 @@
              },
 
              tagres_react: function() {
-                 var 
+                 var
                  tagbox = arguments[0],
                  target = arguments[1],
                  url = arguments[2] || window.location;
+
+                 if (window.console) console.log("setting up tagres_react");
 
                  return function(ev) {
                      ev.preventDefault();
@@ -433,21 +435,28 @@
 //                     var tagAjax = function() {}; // dummy var placeholder
 
                      var tag = tagbox.val(),
-                     onSuccess = function(xml, status, xhr) { 
-                         tagbox.val("");                         
-                         target.append("<li><a href=\"" 
-                                       + $("tag", xml).text() 
+                     onSuccess = function(xml, status, xhr) {
+                         tagbox.val("");
+                         target.append("<li><a href=\""
+                                       + $("tag", xml).text()
                                        + "\">"
-                                       + tag + "</a></li>"); 
+                                       + tag + "</a></li>");
                      },
                      error404 = function(xhr, msg)
                      {
                          if (/Tag does not exist/i.test(xhr.statusText)) {
                              if (/create the tag/i.test(xhr.responseText)) {
+<<<<<<< HEAD:js/folksonomie.js
                                  var tagFn = fK.fn.tagCreate(tag, tagAjax),
                                  $dia = $("<p>Le tag " + tag + " n'existe pas. "
                                           + " souhaitez-vous le créer ?</p>");
-                                 
+=======
+                                 if (window.console) console.log("Inside error404");
+                                 var tagFn = fK.fn.tagCreate(tag, tagAjax),
+                                 $dia = $("<p>Le tag « " + tag + " » n'existe pas. "
+                                          + " Souhaitez-vous le créer ?</p>");
+>>>>>>> 9d485f2266713c57097cc62f6fc9745f0c663b02:js/folksonomie.js
+
                                  target.append($dia);
                                  $dia.dialog({ title: "Création d'un nouveau tag",
                                                modal: true,
@@ -457,7 +466,11 @@
                                                    },
                                                    "Créer": function() {
                                                        tagFn();
+<<<<<<< HEAD:js/folksonomie.js
                                                        dia.dialog("close");
+=======
+                                                       $dia.dialog("close");
+>>>>>>> 9d485f2266713c57097cc62f6fc9745f0c663b02:js/folksonomie.js
                                                    }
                                                }
                                              });
@@ -475,8 +488,12 @@
                                                       folksores: url },
                                                      onSuccess,
                                                      fK.fn.errorChoose(error404,
+<<<<<<< HEAD:js/folksonomie.js
                                                                        error403,
-                                                                       errorOther))); 
+=======
+                                                                       error401,
+>>>>>>> 9d485f2266713c57097cc62f6fc9745f0c663b02:js/folksonomie.js
+                                                                       errorOther)));
                      },
 
 
@@ -484,58 +501,57 @@
                      errorOther = function(xhr, msg) {
                          alert("Erreur: " + xhr.statusText);
                      };
-                     error404.errorcode = 404; error403.errorcode = 403;
+                     error404.errorcode = 404; error401.errorcode = 401;
 //                     alert("tag " + tag + " and url " + url );
 
-
-
+                     tagAjax();
                  };
              },
 
              /**
               * Returns a function that will post a new tag.
-              * 
+              *
               * @param tag String Name of tag to create
               * @param success Function Continuation function to call
-              * @return Function 
+              * @return Function
               */
              tagCreate: function (tag, success) {
                  return function() {
-                     $.ajax( fK.fn. tagPostObject({folksotag: tag},
+                     $.ajax( fK.fn.tagPostObject({folksonewtag: tag},
                                              success,
-                                             function(xhr, msg) 
+                                             function(xhr, msg)
                                              {
                                                  alert("Tag creation error: "
-                                                       + xhr.status + " " 
+                                                       + xhr.status + " "
                                                        + xhr.statusText);
                                              }));
                  };
              },
 
              /**
-              * Get tag cloud and add each tag as an individual <li> to the 
+              * Get tag cloud and add each tag as an individual <li> to the
               * target elemnt
-              * 
+              *
               * testxml is _very_ optional (testing only, bypasses the ajax call)
               */
              buildCloud: function(target, url, testxml) {
-                 
+
                  var success =
                      function(xml, status, xhr) {
                          $("tag", xml)
-                             .each(function() 
+                             .each(function()
                                    {
                                        var elem = $(this);
-                                       target.append($("<li><a href=\"" 
+                                       target.append($("<li><a href=\""
                                                        + $("link", elem).attr("href")
-                                                       + "\" class=\"cloudclass" 
+                                                       + "\" class=\"cloudclass"
                                                        + $("weight", elem).text()
-                                                       + "\">" 
+                                                       + "\">"
                                                        + $("display", elem).text()
                                                        + "</a></li>"));
 
                                    });
-                     }, 
+                     },
                  fail = function (xhr, status, errorThrown){
                      alert(xhr.status + " " + xhr.statusText + " " + xhr.responseText);
                  };
@@ -543,7 +559,7 @@
                  if (testxml) {
                      success(testxml, "Bogus status");
                  }
-                 else 
+                 else
                  {
 
                      $.ajax(fK.fn.resGetObject( {folksores: url || window.location,
@@ -589,7 +605,7 @@
               */
              checkFBuserid: function(uid, okFunc, badFunc) {
 
-                 var 
+                 var
                  error406 = function() {
                      alert("Erreur système: identifiant Facebook malformé");
                      badFunc();
@@ -599,15 +615,15 @@
                      badFunc();
                  },
                  errorOther = function(xhr, msg) {
-                     alert("Problème: " + xhr.status 
+                     alert("Problème: " + xhr.status
                            + " " + xhr.statusText
                            + " " + msg);
                      badFunc();
                  };
 
                  error406.errorcode = 406; error404.errorcode = 404;
-                 
-                 var aj = 
+
+                 var aj =
                      fK.fn.userGetObject({folksofbuid: uid,
                                     folksocheck: "1"},
                                    function() { okFunc();},
@@ -618,20 +634,20 @@
              },
 
              /**
-              * Log a Facebook user in, creating new account if necessary. 
+              * Log a Facebook user in, creating new account if necessary.
               * This assumes that the FB Connect stuff is done.
               */
              completeFBlogin: function(okFunc, badFunc) {
                  var
-                 error400 = 
+                 error400 =
                      fK.fn.defErrorFn(400,
-                                      function(xhr, msg) 
+                                      function(xhr, msg)
                                       {
                                           alert("Erreur système: informations insuffisantes");
                                           badFunc();
                                       }),
                  error500 = fK.fn.defErrorFn(500,
-                                             function(xhr, msg) 
+                                             function(xhr, msg)
                                              {
                                                  alert("Erreur interne du système des utilisateurs "
                                                        + xhr.status + " " + xhr.statusText);
@@ -641,7 +657,7 @@
                      alert("Erreur inattendue: " + xhr.status + " " + xhr.statusText);
                      badFunc();
                  };
-                 
+
                  var aj =
                      fK.fn.userGetObject({folksofblogin: "1"},
                                          okFunc,
@@ -653,6 +669,6 @@
 
          }
      };
-     
+
 
 })();
