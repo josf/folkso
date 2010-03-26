@@ -132,7 +132,8 @@ function getTagsIds (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
                       $row->tagnorm,
                       htmlspecialchars($row->tagdisplay),
                       $row->popularity,
-                      htmlspecialchars($row->meta))
+                      htmlspecialchars($row->meta),
+                      htmlspecialchars($row->user))
             );
     }
     $r->t($xf->endform());
