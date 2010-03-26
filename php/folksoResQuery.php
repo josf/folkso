@@ -196,11 +196,14 @@ group by tag_id;
                          "SELECT DISTINCT "
                           ." t.id as id, t.tagdisplay as tagdisplay, " 
                      . " t.tagnorm as tagnorm, t.popularity as popularity, "
-                     . " meta.tagdisplay as meta "
+                     . " meta.tagdisplay as meta, "
+                     . " concat(ud.firstname, ' ', ud.lastname) as user "
                      . " FROM tag t "
                      . " JOIN tagevent te ON t.id = te.tag_id "
                      . " JOIN metatag meta ON te.meta_id = meta.id "
                      . " JOIN resource r ON r.id = te.resource_id "
+                     . " join users u on te.userid = u.userid "
+                     . " join user_data ud on u.userid = ud.userid "
                      . " WHERE "),
                
                array('type' => 'isnum',
@@ -218,7 +221,7 @@ group by tag_id;
                      'sql' =>     " UNION "
                      ." SELECT DISTINCT "
                      ." ean13 AS id, convert(ean13, char) AS tagdisplay, "
-                     ." convert(ean13, char) AS tagnorm, 1 AS popularity, 'EAN13' AS meta "
+                     ." convert(ean13, char) AS tagnorm, 1 AS popularity, 'EAN13' AS meta, 'ean13-user' as user "
                      ." FROM ean13 "
                      ." WHERE resource_id = "),
 
