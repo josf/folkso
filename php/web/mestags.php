@@ -10,10 +10,16 @@ require_once('folksoDBconnect.php');
 require_once('folksoDBinteract.php');
 require_once('folksoFabula.php');
 require_once('folksoClient.php');
-
+require_once('folksoUserServ.php');
 
 require("/var/www/dom/fabula/commun3/head_libs.php");
 require("/var/www/dom/fabula/commun3/head_folkso.php");
+
+$loggedIn = false;
+if ($fbu && ($fbu instanceof folksoUser) && ($fbu->exists()) {
+    $loggedIn = true;
+}
+
 require("/var/www/dom/fabula/commun3/head_dtd.php");
 
 print "<html>\n<head>";
@@ -39,6 +45,42 @@ require("/var/www/dom/fabula/commun3/html_start.php");
 /** your stuff here **/
 
 
+  if (!$loggedIn) {
 
+    // display login buttons
+  }
+  else { 
+?>
+
+<h1>Les tags de <?php echo $fbu->firstName . ' ' . $fbu->lastName ?></h1>
+
+<?php 
+      /*
+       * This assumes that we are on the same server, so instead of a
+       * real HTTP request, we just pretend and call the function directly. 
+       */
+
+      $loc = new folksoFabula();
+      $r = userSubscriptions(new folksoQuery(array(), array(), array()),
+                             $loc->locDBC(),
+                             $fks);
+
+      if ($r->status == 204) {
+        ?><p>Vous n'avez pas d'abonnement encore.</p> <?php
+      }
+      elseif ($r->status == 200) {
+
+        $xml = new DOMDocument();
+        $xml->loadXML($r->body());
+
+        $xsl = new DOMDocument();
+        $xsl->load($this->loc->xsl_dir . "user_subscribed_tags.xsl");
+        $proc = new XsltProcessor();
+        $xsl = $proc->importStylesheet($xsl);
+
+        $mytags = $proc->transformToDoc($xml);
+        print $mytags->saveXML();
+      }
+      }
 
 include("/var/www/dom/fabula/commun3/foot.php");
