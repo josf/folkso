@@ -2,7 +2,8 @@
 require_once('unit_tester.php');
 require_once('reporter.php');
 require_once('folksoTags.php');
-require_once('/var/www/user.php');
+//require_once('/var/www/user.php');
+require_once('folksoUserServ.php');
 require_once('dbinit.inc');
 
 class testOfuser extends  UnitTestCase {
