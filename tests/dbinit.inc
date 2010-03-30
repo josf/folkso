@@ -4,7 +4,7 @@ require_once('folksoTags.php');
 
 function test_db_init($megadynDefault = 10) {
 
-  $tables = array('ean13', 'exclude', 'tagevent',
+  $tables = array('user_subscription', 'ean13', 'exclude', 'tagevent',
                   'memoize_tagnormal', 
                   'note', 'replace_characters', 'resource',
                   'tag',  'urltest',
@@ -174,7 +174,10 @@ function test_db_init($megadynDefault = 10) {
               ."('vicktr-2010-001', 'admin'), "
               ."('gustav-2010-001', 'redac')");
 
-
+    $i->query('insert into user_subscription (userid, tag_id) values '
+              . " ('rambo-2010-001', 1), "
+              . " ('rambo-2010-001', 2), "
+              . " ('rambo-2010-001', 3)");
 
     //    $i->query("insert into fb_ids (userid, fb_uid) values "
     //              ." ('rambo-2010-001', 123456) ");

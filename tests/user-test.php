@@ -192,6 +192,32 @@ class testOfuser extends  UnitTestCase {
                         . $r2->status);
 
    }
+
+
+   function testGetSubscriptions () {
+     $this->fks->startSession('gustav-2010-001', true);
+     $r = userSubscriptions(new folksoQuery(array(), array(), array()),
+                            $this->dbc,
+                            $this->fks);
+     $this->assertIsA($r, folksoResponse,
+                      "No response obj from userSubscriptions");
+     $this->assertEqual($r->status, 204,
+                        'Expecting 204 status (no subscriptions for gustav): ' 
+                        . $r->status);
+
+     $this->fks2->startSession('rambo-2010-001', true);
+     $r2 = userSubscriptions(new folksoQuery(array(), array(), array()),
+                             $this->dbc,
+                             $this->fks2);
+     $this->assertIsA($r2, folksoResponse,
+                      "No response ob from userSubscriptions with valid subscriptions");
+     $this->assertEqual($r2->status, 200,
+                         "Should return 200 for valid subscriptions: " . $r2->status);
+                                            
+
+
+
+   }
    
 }//end class
 

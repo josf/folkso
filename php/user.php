@@ -282,7 +282,57 @@ function loginFBuser (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) 
     }
   }
 }
-  
+
+
+function userSubscriptions (folksoQuery $q, 
+                            folksoDBconnect $dbc, 
+                            folksoSession $fks) {  
+
+  $r = new folksoResponse();
+  $u = $fks->userSession();
+
+  if (! $u instanceof folksoUser) {
+    return $r->unAuthorized($u);
+  }
+
+  try {
+    $i = new folksoDBinteract($dbc);
+    $sql = sprintf(
+                   'select t.tagnorm, t.id, t.tagdisplay '
+                   .' from tag t '
+                   .' join user_subscription us on us.tag_id = t.id '
+                   ." where us.userid = '%s'",
+                   $i->dbescape($u->userid));
+    $i->query($sql);
+  }
+  catch (dbException $e) {
+    return $r->handleDBexception($e);
+  }
+
+  if ($i->result_status == 'NOROWS') {
+    return $r->setOk(204, 'No subscribed tags');
+  }
+
+  $df = new folksoDisplayFactory();
+  $dd = $df->simpleTagList();
+  $dd->activate_style('xml');
+  $r->setType('xml');
+  $r->t($dd->startform());
+
+  while ($row = $i->result->fetch_object()) {
+    $link = new folksoTagLink($row->tagnorm);
+    $r->t($dd->line($row->id,
+                    $row->tagnorm,
+                    htmlspecialchars($link->getLink()),
+                    htmlspecialchars($row->tagdisplay),
+                    '')
+          );
+  }
+  $r->t($dd->endform);
+  $r->setOk(200, 'Subscribed tags found');
+  return $r;
+
+}
   
 
 
