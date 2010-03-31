@@ -1,11 +1,16 @@
 
-
 test("a test of nothing", function() {
        ok(true, "this test is fine");
      });
 
 
 $(document).ready(function() {
+
+QUnit.reset = function() {
+    $("#main").children().detach();
+};
+
+
                       module("Checking that jQuery works");
                       test("Get qunit-header", function() 
                            {
