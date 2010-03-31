@@ -557,7 +557,140 @@ $(document).ready(
 
 
         module("Kontroller");
+         test("Simple Kontrol",
+              function() {
+                  ok(fK.Ktl,
+                     "Ktl should be defined");
+
+                  var K = new fK.Ktl();
+                  ok($.isFunction(K.addControl),
+                     "addControl should be a function");
+
+                  K.addControl("stuff", {selector: "input.mybox"});
+                  equal(K.fields.stuff.selector, 
+                        "input.mybox",
+                        "Should find selector here");
+
+
+              });
         
+         test("Setup",
+              function() 
+              {
+                  
+                  var K = new fK.Ktl($("#main"), 
+                                     {resid: 234});
+                  equal(K.data.resid, 234,
+                        "Should retrieve resid value of 234 here");
+
+              });
+         test("setfield",
+              function() {
+                  var K = new fK.Ktl($("#main"),
+                                          {resid: 234});
+                  K.addControl("stuff", {selector: "input.mybox"});
+                  ok(K.fields.stuff,
+                     "K.fields.stuff should be defined here");
+
+                  var ff = K.setfield("stuff");
+                  ok($.isFunction(ff),
+                     "setfield should return a function");
+
+                  ff("hello");
+                  equal(K.fields.stuff['newval'], "hello",
+                        "newvalue should be set to 'hello' here: " + 
+                        K.fields.stuff.newval);
+
+              });
+
+
+         test("updateAll",
+              function() {
+                  $("#main").html("<p class='zork'>Original</p>");
+                  ok($("#main .zork").length == 1,
+                    "We need a zork");
+                  ok($(".zork", "#main").length == 1);
+
+                  var K = new fK.Ktl($("#main"),
+                                          {resid: 234});
+                  K.addControl("stuff", {selector: ".zork"});
+                  var ff = K.setfield("stuff");
+                  equal(K.fields.stuff.selector, ".zork",
+                        "selector is incorrect");
+
+                  
+                  ff("New content");
+
+                  equal(K.fields.stuff['newval'], "New content",
+                        "newvalue should be 'New content'" + 
+                        K.fields.stuff.newval);
+
+                  K.updateAllNew();
+                  equal(K.fields.stuff.value, "New content",
+                        'value field should be set to "New content" ' + 
+                        K.fields.stuff.value);
+
+                  equal($("#main .zork").text(), "New content",
+                        "should find new content in DOM");
+
+              });
+
+         test("trigger update",
+              function() {
+                  
+                  $("#main").html("<p class='zork'>Original</p>");
+                  var K = new fK.Ktl($("#main"),
+                                          {resid: 234});
+
+                  K.addControl("stuff", {selector: ".zork"});
+                  var ff = K.setfield("stuff");
+                  ff("New content");
+
+                  $(K).trigger("update");
+                  equal($("#main .zork").text(), "New content",
+                        "Update should have happened here");
+              });
+
+        test("appending",
+             function(){
+                 $("#main").html("<ul>");
+                 var K = new fK.Ktl($("#main"));
+                 K.addControl("stuff", {selector: "ul",
+                                        callback: 
+                                        function(txt) {
+                                            return "<li>" + txt + "</li>";
+                                        }});
+
+                 /** test setup **/
+                 equal($(K.fields.stuff.selector, K.$place).length, 1,
+                      "Problem with internal selectors");
+
+                 ok($.isFunction(K.fields.stuff.callback),
+                    "callback should be a function");
+                 
+                 var appendix = K.appendField("stuff");
+                 ok($.isFunction(appendix),
+                    "appendix is not a function!");
+
+                 appendix("Hello");
+
+                 $(K).trigger("update");
+                 ok(K.fields.stuff, "stuff field not defined");
+                 equal(K.fields.stuff.appendval, "Hello",
+                       "appendval not being set");
+
+
+                 var built = K.fields.stuff.callback(K.fields.stuff.appendval);
+                 equal(built, '<li>Hello</li>',
+                       "callback should be building li here");
+
+                 equal($("#main li").length, 1,
+                       "An li should be there");
+
+                 equal($("#main ul li").text(), "Hello",
+                       "Should really say 'Hello', not: " 
+                      + $("#main ul li").text());
+             });
 
     });
 

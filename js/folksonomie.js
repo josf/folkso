@@ -116,6 +116,110 @@
          },
 
          /**
+          * Controller for a given part of the DOM. Ajax requests update the 
+          * data in the controller object and it updates the DOM.
+          */
+         Ktl: function (jQplace, dataOb) {
+             var 
+             data = this.data = dataOb, fields = this.fields =  {},
+             $place = this.$place = jQplace;
+
+
+             /**
+              * 
+              */
+             this.addControl = function(name, props) {
+                 if (fields[name]) {
+                     throw new Error("field " + name + " already exists");
+                 } 
+                 else {
+                     var requireds = ["value", "newval", "selector", "callback"];
+                     for (var i = 0; i < requireds.length; i++) {
+                         if (props[requireds[i]] === undefined) {
+                             props[requireds[i]] = null;
+                         }
+                     }
+                     fields[name] = props;
+                 }
+             };
+
+
+             /**
+              * @return Function for updating field value
+              * 
+              * Writes over previous value
+              */
+             this.setfield = function(fieldname) {
+                 if (fields[fieldname]) {
+                     return function(value) {
+                         fields[fieldname].newval = value;
+                     };
+                 }
+                 else if (window.console) {
+                     console.log("Undefined Kontroler field: " + fieldname);
+                 }
+                 else {
+                     alert("Undefined Kontroler field: " + fieldname);
+                 }
+                 return false;
+             };
+
+
+             this.appendField = function(fieldname) {
+                 if (fields[fieldname]) {
+                     return function (newthing) {
+                         fields[fieldname].newval = null;
+                         fields[fieldname].appendval = newthing;
+                     };
+                 }
+                 else if (window.console) {
+                     console.log("Undefined Kontroler field: " + fieldname);
+                 }
+                 else {
+                     alert("Undefined Kontroler field: " + fieldname);
+                 }
+                 return false;
+             },
+
+
+             this.updateAllNew = function() {
+                 for (var fieldname in fields) {
+                     with(fields[fieldname]) {
+                         if (newval && newval !== value) {
+                             value = newval; newval = null;
+                             if (callback) {
+                                 $(selector, $place).html(callback(value));
+                             }
+                             else {
+                                 $(selector, $place).html(value);
+                             }
+                         }
+                         else if (appendval) {
+                             if (window.console) console.log("We have appendval "
+                                                             + appendval);
+                             if (callback) {
+                                 var fromcall = callback(appendval);
+                                 if (fromcall instanceof jQuery) {
+                                     if (window.console) console.log("going to append jQuery obj directly");
+                                     $(selector, $place).append(fromcall);
+                                 }
+                                 else {
+                                     if (window.console) console.log("going to append building jQuery ob first");
+                                     $(selector, $place).append($(fromcall));
+                                 }
+                             }
+                             else {
+                                 $(selector, $place).append(appendval);
+                             }
+                         }
+                     }
+                 }
+             };
+             $(this).bind("update", this.updateAllNew);
+         },
+
+
+         /**
           * @target {jQuery} Element that the new element will be appended to
           */
          simpleres: function(target, display, url, id) 
@@ -556,6 +660,29 @@
                                                 fail));
                  }
              },
+
+             /**
+              * Returns simple list item
+              * 
+              * 
+              * Sample xml tag item (simpleTagList)
+              * 
+              * <tag>
+              * <numid>1</numid>
+              * <tagnorm>tagone</tagnorm>
+              * <link>http://localhost/tag/tagone</link>
+              * <display>tagone</display>
+              * <count/>
+              * </tag>
+              * 
+              */
+             formatSimpleTagListItem: function(itemOb) {
+                 with (itemOb) {
+                     return "<li><a href=\"" + link + ">"
+                     + display + "</a></li>";
+                 }
+             },
+
 
              /**
               * This function allows us to listen for the addition of
