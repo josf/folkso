@@ -441,21 +441,17 @@
                                        + $("tag", xml).text()
                                        + "\">"
                                        + tag + "</a></li>");
+                         target.parent().show();
+                         target.show();
                      },
                      error404 = function(xhr, msg)
                      {
                          if (/Tag does not exist/i.test(xhr.statusText)) {
                              if (/create the tag/i.test(xhr.responseText)) {
-<<<<<<< HEAD:js/folksonomie.js
-                                 var tagFn = fK.fn.tagCreate(tag, tagAjax),
-                                 $dia = $("<p>Le tag " + tag + " n'existe pas. "
-                                          + " souhaitez-vous le créer ?</p>");
-=======
                                  if (window.console) console.log("Inside error404");
                                  var tagFn = fK.fn.tagCreate(tag, tagAjax),
                                  $dia = $("<p>Le tag « " + tag + " » n'existe pas. "
                                           + " Souhaitez-vous le créer ?</p>");
->>>>>>> 9d485f2266713c57097cc62f6fc9745f0c663b02:js/folksonomie.js
 
                                  target.append($dia);
                                  $dia.dialog({ title: "Création d'un nouveau tag",
@@ -466,11 +462,7 @@
                                                    },
                                                    "Créer": function() {
                                                        tagFn();
-<<<<<<< HEAD:js/folksonomie.js
-                                                       dia.dialog("close");
-=======
                                                        $dia.dialog("close");
->>>>>>> 9d485f2266713c57097cc62f6fc9745f0c663b02:js/folksonomie.js
                                                    }
                                                }
                                              });
@@ -488,11 +480,7 @@
                                                       folksores: url },
                                                      onSuccess,
                                                      fK.fn.errorChoose(error404,
-<<<<<<< HEAD:js/folksonomie.js
-                                                                       error403,
-=======
                                                                        error401,
->>>>>>> 9d485f2266713c57097cc62f6fc9745f0c663b02:js/folksonomie.js
                                                                        errorOther)));
                      },
 
