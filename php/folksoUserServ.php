@@ -306,7 +306,7 @@ function userSubscriptions (folksoQuery $q,
                     '')
           );
   }
-  $r->t($dd->endform);
+  $r->t($dd->endform());
   $r->setOk(200, 'Subscribed tags found');
   return $r;
 
