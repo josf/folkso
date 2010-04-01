@@ -181,7 +181,7 @@ class folksoDisplayFactory {
                                         'end' => '</taglist>',
                                         'lineformat' => 
                                         "<tag>\n\t"
-                                        ."<numid>>XXX</numid>\n\t"
+                                        ."<numid>XXX</numid>\n\t"
                                         ."<tagnorm>XXX</tagnorm>\n\t"
                                         ."<link>XXX</link>\n\t"
                                         ."<display>XXX</display>\n\t"
