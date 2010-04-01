@@ -54,33 +54,14 @@ require("/var/www/dom/fabula/commun3/html_start.php");
 
 <h1>Les tags de <?php echo $fbu->firstName . ' ' . $fbu->lastName ?></h1>
 
-<?php 
-      /*
-       * This assumes that we are on the same server, so instead of a
-       * real HTTP request, we just pretend and call the function directly. 
-       */
+<div id="subscriptions">
+<ul>
+</ul>
+</div>
 
-      $loc = new folksoFabula();
-      $r = userSubscriptions(new folksoQuery(array(), array(), array()),
-                             $loc->locDBC(),
-                             $fks);
 
-      if ($r->status == 204) {
-        ?><p>Vous n'avez pas d'abonnement encore.</p> <?php
-      }
-      elseif ($r->status == 200) {
+<?php
 
-        $xml = new DOMDocument();
-        $xml->loadXML($r->body());
-
-        $xsl = new DOMDocument();
-        $xsl->load($this->loc->xsl_dir . "user_subscribed_tags.xsl");
-        $proc = new XsltProcessor();
-        $xsl = $proc->importStylesheet($xsl);
-
-        $mytags = $proc->transformToDoc($xml);
-        print $mytags->saveXML();
-      }
       }
 
 include("/var/www/dom/fabula/commun3/foot.php");
