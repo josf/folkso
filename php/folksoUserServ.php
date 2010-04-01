@@ -312,3 +312,59 @@ function userSubscriptions (folksoQuery $q,
 
 }
 
+function addSubscription (folksoQuery $q, 
+                            folksoDBconnect $dbc, 
+                            folksoSession $fks) {  
+
+  $r = new folksoResponse();
+  $u = $fks->userSession();
+
+  if (! $u instanceof folksoUser) {
+    return $r->unAuthorized($u);
+  }
+
+  try {
+    $i = new folksoDBinteract($dbc);
+    $uq = new folksoUserQuery();
+    $i->query($uq->addSubscriptionSQL($q->tag, $u->userid));
+  }
+  catch (dbException $e) {
+    if ($e instanceof dbQueryException) {
+      if ($e->sqlcode == 1048) {
+        return $r->setError(404, "Tag not found", "Tag '" 
+                            . $q->tag 
+                            . "' does not exist yet");
+      }
+      elseif ($e->sqlcode == 1062) {
+        return $r->setOk(204, "Already subscribed");
+      }
+      else {
+        return $r->handleDBexception($e);
+      }
+    }
+  }
+
+
+
+  $r->setOk(200, "Subscribed");
+  try {
+    $i->query($uq->singleTagRepresentation($q->tag));
+  }
+  catch( dbException $e) {
+    return $r->handleDBexception($e);
+  }
+
+  $row = $i->result->fetch_object();
+  $r->t('<?xml version="1.0"?>');
+  $link = new folksoTagLink($row->tagnorm);
+  $r->t(sprintf("<tag>\n\t<numid>%s</numid>\n\t<tagnorm>%s</tagnorm>\n\t"
+                ."<link>%s</link>\n\t<display>%s</display></tag>",
+                $row->id,
+                htmlspecialchars($row->tagnorm),
+                htmlspecialchars($link->getLink()),
+                htmlspecialchars($row->display, ENT_NOQUOTES, 'UTF-8')
+                )
+        );
+  return $r;
+}
+

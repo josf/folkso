@@ -214,7 +214,29 @@ class testOfuser extends  UnitTestCase {
                       "No response ob from userSubscriptions with valid subscriptions");
      $this->assertEqual($r2->status, 200,
                          "Should return 200 for valid subscriptions: " . $r2->status);
-                                            
+
+   }
+
+
+   function testAddSubscription () {
+     $this->fks->startSession('rambo-2010-001', true);
+     $r = addSubscription(new folksoQuery(array(), array('folksotag' => 'dyn3'), 
+                                          array()),
+                          $this->dbc,
+                          $this->fks);
+     $this->assertIsA($r, folksoResponse,
+                      "No response object from addSubscription");
+     $this->assertEqual($r->status, 200,
+                        "Add subscription should be successful: " . $r->status . " "
+                        . $r->statusMessage . " " . $r->errorBody());
+     print $r->body();
+
+     $check = userSubscriptions(new folksoQuery(array(), array(), array()),
+                                $this->dbc2,
+                                $this->fks);
+     $this->assertPattern('/dyn3/', $check->body(),
+                          'Should find freshly subscribed tag here: ' . $check->body());
+                                          
 
 
 
