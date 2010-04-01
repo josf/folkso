@@ -43,11 +43,359 @@ $(document).ready(
                  equal($(".ardvark:not(:hidden)").length, 1,
                        "Ardvar is :not hidden");
              });
+        
+        test("bool Comp",
+             function() 
+             {
+                 var no = function() {return false;};
+                 var yes = fK.fn.boolComp(no);
+                 ok(yes(), "yes should be yes");
+
+
+             });
+
+        module("Kontroller");
+         test("Simple Kontrol",
+              function() {
+                  ok(fK.Ktl,
+                     "Ktl should be defined");
+
+                  var K = new fK.Ktl();
+                  ok($.isFunction(K.addControl),
+                     "addControl should be a function");
+
+                  K.addBasic("stuff", {selector: "p.mypar",
+                                         init: function(sel, $place, data) {
+                                           $(sel, $place)
+                                               .append($("<em>" + data + "</em>"));
+                                       },
+                                       update: function(sel, $place, data) {
+                                           $(sel, $place).find("em").html(data);
+                                       }, 
+                                       deleteElem: function(sel, $place, data) {
+                                           $(sel, $place).find("em").detach();
+                                       }
+                                      });
+
+                  equal(K.fields.stuff.selector, 
+                        "p.mypar",
+                        "Should find selector here");
+
+                  ok($.isFunction(K.fields.stuff.deleteElem),
+                     "deleteElem not a function");
+
+
+              });
+        
+         test("Setup",
+              function() 
+              {
+                  
+                  var K = new fK.Ktl($("#main"), 
+                                     {resid: 234});
+                  equal(K.data.resid, 234,
+                        "Should retrieve resid value of 234 here");
+
+              });
+         test("setfield",
+              function() {
+                  var K = new fK.Ktl($("#main"),
+                                          {resid: 234});
+                  K.addBasic("stuff", {selector: "p.mypar",
+                                       init: function(sel, $place, data) {
+                                           $(sel, $place)
+                                               .append($("<em>" + data + "</em>"));
+                                       },
+                                       update: function(sel, $place, data) {
+                                           $(sel, $place).find("em").html(data);
+                                       }, 
+                                       deleteElem: function(sel, $place, data) {
+                                           $(sel, $place).find("em").detach();
+                                       }
+                                      });
+                  ok(K.fields.stuff,
+                     "K.fields.stuff should be defined here");
+
+                  var ff = K.setfield("stuff");
+                  ok($.isFunction(ff),
+                     "setfield should return a function");
+
+                  ff("hello");
+                  equal(K.fields.stuff['newval'], "hello",
+                        "newvalue should be set to 'hello' here: " + 
+                        K.fields.stuff.newval);
+
+              });
+
+
+         test("updateAll (basic control)",
+              function() {
+                  $("#main").html("<p class='zork'>Original</p>");
+                  ok($("#main .zork").length == 1,
+                    "We need a zork");
+                  ok($(".zork", "#main").length == 1);
+
+                  var K = new fK.Ktl($("#main"),
+                                          {resid: 234});
+                  K.addBasic("stuff", {selector: ".zork",
+                                         init: function(sel, $place, data) {
+                                             $(sel, $place)
+                                                 .append($("<em>" + data + "</em>"));
+                                         },
+                                         update: function(sel, $place, data) {
+                                             $(sel, $place).find("em").html(data);
+                                         }, 
+                                         deleteElem: function(sel, $place, data) {
+                                             console.log("Just wanto delete");
+                                             $(sel + " em", $place).detach();
+                                         }
+                                      });
+                  var ff = K.setfield("stuff");
+                  equal(K.fields.stuff.selector, ".zork",
+                        "selector is incorrect");
+
+                  
+                  ff("New content");
+
+                  equal(K.fields.stuff['newval'], "New content",
+                        "newvalue should be 'New content'" + 
+                        K.fields.stuff.newval);
+
+                  K.updateAllNew();
+                  equal(K.fields.stuff.value, "New content",
+                        'value field should be set to "New content" ' + 
+                        K.fields.stuff.value);
+
+
+                  ok(K.fields.stuff.initialized,
+                     "init call should set initialized to true");
+                  equal($(K.fields.stuff.selector, K.$place).length, 1,
+                        "selectors not selecting right");
+                  equal($("#main .zork em").text(), "New content",
+                        "should find new content in DOM");
+
+
+                  /** delete **/
+                  var del = K.deletefield("stuff");
+                  ok($.isFunction(del), "deletefield does not return function");
+                  del();
+                  
+                  K.updateAllNew();
+
+                  equal($("#main .zork em").length, 0,
+                       "content should be gone: " + $("#main .zork em").text());
+                  
+              });
+
+         test("trigger update",
+              function() {
+                  
+                  $("#main").html("<p class='zork'></p>");
+                  var K = new fK.Ktl($("#main"),
+                                          {resid: 234});
+
+                  K.addBasic("stuff", {selector: ".zork",
+                                         init: function(sel, $place, data) {
+                                             $(sel, $place)
+                                                 .append($("<em>" + data + "</em>"));
+                                         },
+                                         update: function(sel, $place, data) {
+                                             $(sel, $place).find("em").html(data);
+                                         }, 
+                                         deleteElem: function(sel, $place, data) {
+                                             $(sel, $place).find("em").detach();
+                                         }
+                                      });
+                  var ff = K.setfield("stuff");
+                  ff("New content");
+
+                  $(K).trigger("update");
+                  equal($("#main .zork").text(), "New content",
+                        "Update should have happened here");
+              });
+
+        test("appending",
+             function(){
+                 $("#main").html("<ul>");
+                 var K = new fK.Ktl($("#main"));
+                 K.addList("stuff", {selector: "ul",
+                                     init: function(sel, $place, data) {
+                                         $(sel, $place)
+                                             .append($("<li>" + data + "</li>"));
+                                     }, 
+                                     match: function(data) {
+                                         return function(item, i) {
+                                             return item == data;
+                                         };
+                                     },
+                                     update: function($ob, data) {
+                                         $ob.text(data);
+                                     }
+                                    });
+
+                 /** test setup **/
+                 equal($(K.fields.stuff.selector, K.$place).length, 1,
+                      "Problem with internal selectors");
+                 
+                 var appendix = K.appendField("stuff");
+                 ok($.isFunction(appendix),
+                    "appendix is not a function!");
+
+                 appendix("Hello");
+
+                 equal(K.fields.stuff.appendval, "Hello",
+                       "appendval not being set");
+
+                 $(K).trigger("update");
+                 ok(K.fields.stuff, "stuff field not defined");
+
+
+                 equal($("#main li").length, 1,
+                       "An li should be there");
+
+                 equal($("#main ul li").text(), "Hello",
+                       "Should really say 'Hello', not: " 
+                      + $("#main ul li").text());
+
+             });
+
+        test("appending (mostly deleting)",
+             function()
+             {
+
+                 $("#main").html("<ul>");
+                 var K = new fK.Ktl($("#main"));
+                 K.addList("stuff", {selector: "ul",
+                                     init: function(sel, $place, data) {
+                                         $(sel, $place)
+                                             .append($("<li>" + data + "</li>"));
+                                     }, 
+                                     match: function(data) {
+                                         return function(item, i) {
+                                             return item == data;
+                                         };
+                                     },
+                                     update: function($ob, data) {
+                                         $ob.text(data);
+                                     }
+                                    });
+
+
+                 var matcher = K.fields.stuff.match("zork");
+                 ok(matcher("zork", 1),
+                    "Matcher function should match what matches");
+
+
+                 var things = ["Hello", "Goodbye"],
+                 newth = $.grep(things, function(th, idx) { 
+                                    return th == "Hello"; 
+                                });
+                 ok($.inArray(newth, "Hello"),
+                    "Hello should still be there");
+
+
+                 var newthth = $.grep(things, function(th, idx) {
+                                          return th == "Goodbye"; 
+                                          });
+                 ok($.inArray(newthth, "Hello"),
+                    "Hello should still be there");
+
+
+                 
+
+
+                 var appendix = K.appendField("stuff");
+                 var deletix = K.deletefield("stuff");
+                 ok($.isFunction(deletix), "Delete field should return a function");
+
+                 deletix("Hello");
+                 equal(K.fields.stuff.removeVal, "Hello",
+                       "removeVal should have be updated by the deletefield function");
+
+                 $(K).trigger("update");
+                 equal($("#main ul li").length, 0,
+                       "deleting should remove the elements");
+
+                 appendix("Hello");
+                 appendix("Goodbye");
+
+                 equal(K.fields.stuff.appendval.length, 2,
+                       "After multiple appends, should have appendval array length of 2");
+
+                 $(K).trigger("update");
+
+                 equal(K.fields.stuff.value.length, 2,
+                       "Value array should be extended too");
+
+                 equal($("#main ul li").length, 2,
+                       "Successive appends should keep adding list items");
+
+                 deletix("Hello");
+
+                 $(K).trigger("update");
+
+                 equal(K.fields.stuff.value.length, 1,
+                       "value array should be shortened on delete");
+
+                 equal($("#main ul li").length, 1,
+                       "Deleting should still work");
+
+                 $(K).trigger("update");
+                 deletix("Goodbye");
+
+                 $(K).trigger("update");
+                 equal($("#main ul li").length, 0,
+                       "Deleting should still work (second delete)");
+
+             });
+
+
+        test("appending (mostly updating)",
+             function() 
+             {
+
+                 $("#main").html("<ul>");
+                 var K = new fK.Ktl($("#main"));
+                 K.addList("stuff", {selector: "ul",
+                                     init: function(sel, $place, data) {
+                                         $(sel, $place)
+                                             .append($("<li>" + data + "</li>"));
+                                     }, 
+                                     match: function(data) {
+                                         return function(item, i) {
+                                             return item == data;
+                                         };
+                                     },
+                                     update: function($ob, data) {
+                                         $ob.text(data);
+                                     }
+                                    });
+                 var appendix = K.appendField("stuff");
+                 appendix("Hello");
+                 appendix("Goodbye");
+                 $(K).trigger("update");
+
+                 var updatix = K.updateField("stuff");
+                 updatix("Goodbye", "So long");
+
+                 ok($.isFunction(updatix),
+                    "updateField did not produce a function");
+
+                 equal(K.fields.stuff.updateVals[0].newthing, "So long",
+                       "update data should be in updateVals");
+
+                 $(K).trigger("update");
+                 ok(/So long/.test($("#main ul li").text()),
+                    "Updated text not appearing: " + $("#main ul li").text());
+                 
+                 
+
+             });
+
 
         module("Trying Functional.js");
         test("Simple Functional", function()
              {
-                 expect(2);
                  ok(Functional,
                     "No 'Functional' object");
                  function zork() {
@@ -58,6 +406,7 @@ $(document).ready(
                  // Functional breaks jQuery
                  ok(typeof zork.partial == "function",
                     "No partial in prototype");
+
              });
 
 
@@ -556,145 +905,8 @@ $(document).ready(
                   });
 
 
-        module("Kontroller");
-         test("Simple Kontrol",
-              function() {
-                  ok(fK.Ktl,
-                     "Ktl should be defined");
-
-                  var K = new fK.Ktl();
-                  ok($.isFunction(K.addControl),
-                     "addControl should be a function");
-
-                  K.addControl("stuff", {selector: "input.mybox"});
-                  equal(K.fields.stuff.selector, 
-                        "input.mybox",
-                        "Should find selector here");
-
-
-              });
-        
-         test("Setup",
-              function() 
-              {
-                  
-                  var K = new fK.Ktl($("#main"), 
-                                     {resid: 234});
-                  equal(K.data.resid, 234,
-                        "Should retrieve resid value of 234 here");
-
-              });
-         test("setfield",
-              function() {
-                  var K = new fK.Ktl($("#main"),
-                                          {resid: 234});
-                  K.addControl("stuff", {selector: "input.mybox"});
-                  ok(K.fields.stuff,
-                     "K.fields.stuff should be defined here");
-
-                  var ff = K.setfield("stuff");
-                  ok($.isFunction(ff),
-                     "setfield should return a function");
-
-                  ff("hello");
-                  equal(K.fields.stuff['newval'], "hello",
-                        "newvalue should be set to 'hello' here: " + 
-                        K.fields.stuff.newval);
-
-              });
-
-
-         test("updateAll",
-              function() {
-                  $("#main").html("<p class='zork'>Original</p>");
-                  ok($("#main .zork").length == 1,
-                    "We need a zork");
-                  ok($(".zork", "#main").length == 1);
-
-                  var K = new fK.Ktl($("#main"),
-                                          {resid: 234});
-                  K.addControl("stuff", {selector: ".zork"});
-                  var ff = K.setfield("stuff");
-                  equal(K.fields.stuff.selector, ".zork",
-                        "selector is incorrect");
-
-                  
-                  ff("New content");
-
-                  equal(K.fields.stuff['newval'], "New content",
-                        "newvalue should be 'New content'" + 
-                        K.fields.stuff.newval);
-
-                  K.updateAllNew();
-                  equal(K.fields.stuff.value, "New content",
-                        'value field should be set to "New content" ' + 
-                        K.fields.stuff.value);
-
-                  equal($("#main .zork").text(), "New content",
-                        "should find new content in DOM");
-
-              });
-
-         test("trigger update",
-              function() {
-                  
-                  $("#main").html("<p class='zork'>Original</p>");
-                  var K = new fK.Ktl($("#main"),
-                                          {resid: 234});
-
-                  K.addControl("stuff", {selector: ".zork"});
-                  var ff = K.setfield("stuff");
-                  ff("New content");
-
-                  $(K).trigger("update");
-                  equal($("#main .zork").text(), "New content",
-                        "Update should have happened here");
-              });
-
-        test("appending",
-             function(){
-                 $("#main").html("<ul>");
-                 var K = new fK.Ktl($("#main"));
-                 K.addControl("stuff", {selector: "ul",
-                                        callback: 
-                                        function(txt) {
-                                            return "<li>" + txt + "</li>";
-                                        }});
-
-                 /** test setup **/
-                 equal($(K.fields.stuff.selector, K.$place).length, 1,
-                      "Problem with internal selectors");
-
-                 ok($.isFunction(K.fields.stuff.callback),
-                    "callback should be a function");
-                 
-                 var appendix = K.appendField("stuff");
-                 ok($.isFunction(appendix),
-                    "appendix is not a function!");
-
-                 appendix("Hello");
-
-                 $(K).trigger("update");
-                 ok(K.fields.stuff, "stuff field not defined");
-                 equal(K.fields.stuff.appendval, "Hello",
-                       "appendval not being set");
-
-
-                 var built = K.fields.stuff.callback(K.fields.stuff.appendval);
-                 equal(built, '<li>Hello</li>',
-                       "callback should be building li here");
-
-                 equal($("#main li").length, 1,
-                       "An li should be there");
-
-                 equal($("#main ul li").text(), "Hello",
-                       "Should really say 'Hello', not: " 
-                      + $("#main ul li").text());
-             });
 
     });
-
-
 
 
 

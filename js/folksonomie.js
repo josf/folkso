@@ -128,26 +128,66 @@
              /**
               * 
               */
-             this.addControl = function(name, props) {
+             this.addControl = function(type, name, props) {
                  if (fields[name]) {
                      throw new Error("field " + name + " already exists");
                  } 
                  else {
-                     var requireds = ["value", "newval", "selector", "callback"];
+                     /**
+                      * remove is an internal flag, true of false, deleteElem is 
+                      * the function that does the deleting.
+                      * 
+                      * removeVal is the list counterpart of remove, but takes a value 
+                      * for matching against existing values.
+                      */
+                     var requireds = ["value", "newval", "selector", 
+                                      "init", "update", "deleteElem", "remove", "removeVal",
+                                      "element"];
                      for (var i = 0; i < requireds.length; i++) {
                          if (props[requireds[i]] === undefined) {
                              props[requireds[i]] = null;
                          }
                      }
+                     props.type = type; // must be either basic or list
+                     if (props.type == 'list') {
+                         props.value = [];
+                         props.appendval = [];
+                         props.removeVal = [];
+                         props.updateVals = [];
+                     }
+
+                     /*
+                      * We redefine init to be closed over the "initialized" 
+                      * flag, allowing us to check on whether the element has been
+                      * initialized or not.
+                      */
+                     props.initialized = false;
+                     if ($.isFunction(props.init)) {
+                         var oldinit = props.init;
+                         props.init = function() {
+                             var args = Array.prototype.slice.call(arguments, 0);
+                             props.initialized = true;
+                             oldinit.apply(this, args);
+                         };
+                     }
+
                      fields[name] = props;
                  }
              };
 
 
+             this.addBasic = function(name, props) {
+               this.addControl('basic', name, props);  
+             };
+
+             this.addList = function(name, props) {
+                 this.addControl('list', name, props);
+             };
+
              /**
               * @return Function for updating field value
               * 
-              * Writes over previous value
+              * Writes over previous value. Use only for basic elements.
               */
              this.setfield = function(fieldname) {
                  if (fields[fieldname]) {
@@ -164,12 +204,39 @@
                  return false;
              };
 
+             /**
+              * @param fieldname String 
+              * @param data Optional 
+              * 
+              * "data" is the data argument to be matched to determine deletion 
+              * from list. Only applicable for list elements.
+              */
+             this.deletefield = function(fieldname) {
+                 if (fields[fieldname]) {
+                     with (fields[fieldname]) {
+                     if (type == 'basic') {
+                         return function() {
+                             remove = true;
+                         };
+                     }
+                         else { // list type
+                             return function(data) {
+                               removeVal.push(data);
+                             };
+                         }
+                     }
+                 }
+                 else {
+                     throw new Error("Undeclared field");
+                 }
+             };
+
 
              this.appendField = function(fieldname) {
-                 if (fields[fieldname]) {
+                 if (fields[fieldname] && fields[fieldname].type == 'list') {
                      return function (newthing) {
                          fields[fieldname].newval = null;
-                         fields[fieldname].appendval = newthing;
+                         fields[fieldname].appendval.push(newthing);
                      };
                  }
                  else if (window.console) {
@@ -182,34 +249,86 @@
              },
 
 
+             this.updateField = function(fieldname) {
+                 if (fields[fieldname] && fields[fieldname].type == 'list') {
+                     return function(oldthing, newthing) {
+                         fields[fieldname].updateVals.push({oldthing: oldthing,
+                                                            newthing: newthing});
+                     };
+                 }
+                 else {
+                     throw new Error("Bad fieldname (" + 
+                                     fieldname + 
+                                     ") or else this is not a list field");
+                 }
+             },
+
              this.updateAllNew = function() {
                  for (var fieldname in fields) {
+                     console.log("Trying fieldname: " + fieldname);
                      with(fields[fieldname]) {
-                         if (newval && newval !== value) {
-                             value = newval; newval = null;
-                             if (callback) {
-                                 $(selector, $place).html(callback(value));
-                             }
-                             else {
-                                 $(selector, $place).html(value);
-                             }
-                         }
-                         else if (appendval) {
-                             if (window.console) console.log("We have appendval "
-                                                             + appendval);
-                             if (callback) {
-                                 var fromcall = callback(appendval);
-                                 if (fromcall instanceof jQuery) {
-                                     if (window.console) console.log("going to append jQuery obj directly");
-                                     $(selector, $place).append(fromcall);
+                         if (type == 'basic') {
+                             if (newval && newval !== value) {
+                                 value = newval; newval = null;
+                                 if (initialized) {
+                                     update(selector, $place, value);
                                  }
                                  else {
-                                     if (window.console) console.log("going to append building jQuery ob first");
-                                     $(selector, $place).append($(fromcall));
+                                     init(selector, $place, value);
                                  }
                              }
-                             else {
-                                 $(selector, $place).append(appendval);
+                             else if (remove) {
+                                 deleteElem(selector, $place, value);
+                             }
+                         }
+                         else { // type is therefore 'list'
+                             if (appendval.length > 0) {
+                                 $.each(appendval,
+                                        function(index, thing) {
+                                            value.push(thing);
+                                            $(selector, $place)
+                                                .append(init(selector, $place, thing));
+                                        });
+                                 appendval = [];
+                             }
+                             
+                             if (removeVal.length > 0){
+                                 // remove from values first
+                                 $.each(removeVal,
+                                        function(idx, thing) {
+                                            value = $.grep(value, match(thing), true); // true means: invert
+                                        });
+
+                                 // then remove and rebuild list from values
+                                 $(selector, $place).children().detach();
+                                 $.each(value, 
+                                        function(index, val) {
+                                            $(selector, $place)
+                                                .append(init(selector, $place, val));
+                                        });
+                                 removeVal = [];
+                             }
+
+                             if (updateVals.length > 0) {
+                                 $.each(updateVals,
+                                        function(idx, ob) {
+                                            value = $.map(value, 
+                                                          function (val, i) {
+                                                              var matcher = match(ob.oldthing);
+                                                              if (matcher(val)) {
+                                                                  return ob.newthing;
+                                                              }
+                                                              return val;
+                                                          });
+                                                });
+
+                                 $(selector, $place).children().detach();
+                                 $.each(value, 
+                                        function(index, val) {
+                                            $(selector, $place)
+                                                .append(init(selector, $place, val));
+                                        });
+                                 updateVals = [];
                              }
                          }
                      }
@@ -288,6 +407,14 @@
           * be using them 
           */
          fn: {
+
+             boolComp: function(fn) {
+                 return function() {
+                     return !fn.apply(null, arguments);
+                 };
+             },
+
+
              /**
               * Takes any number of functions as arguments. Last argument must  be
               * an integer corresponding to an HTTP error code. Each function except 
