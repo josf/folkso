@@ -469,6 +469,11 @@
                  return {url: fK.cf.getUserUrl, type: "get",
                          data: data, cache: false, dataType: "json", success: success, error: error };
              },
+             userPostObject: function (data, success, error) {
+                 return {url: fK.cf.postUserUrl || fK.cf.getUserUrl,
+                         type: "post", data: data, dataType: "xml",
+                         success: success, error: error };
+             },
 
              /**
               * Returns a function to be associated with droptag events
