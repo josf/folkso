@@ -429,3 +429,67 @@ function removeSubscription (folksoQuery $q,
   return $r;
 }
             
+/**
+ * Returns a list of resources corresponding to the most recent tag events
+ * using tags that the user has subscribed to.
+ */
+
+function recentlyTagged  (folksoQuery $q, 
+                          folksoDBconnect $dbc, 
+                          folksoSession $fks) {  
+
+  $r = new folksoResponse();
+  $u = $fks->userSession();
+
+  if (! $u instanceof folksoUser) {
+    return $r->unAuthorized($u);
+  }
+
+  /* First we get data about the tag so that we can send the tag data
+     back to the client. */
+  try {
+    $i = new folksoDBinteract($dbc);
+    $i->query(sprintf(
+                      "select res.id, res.uri_raw, res.title, count(res.id) as weight
+from resource res
+join 
+(select resource_id as red
+from tagevent te
+where te.tag_id in
+(select tag_id
+from user_subscription us
+where us.userid = '%s')) as inside 
+on inside.red = res.id
+join tagevent tev on tev.resource_id = res.id
+group by res.id
+order by tev.tagtime, weight desc
+limit 50",
+
+                      $i->dbescape($u->userid)));
+  }
+  catch(dbException $e) {
+    return $r->handleDBexception($e);
+  }
+
+  if ($i->result_status == 'NOROWS'){
+    return $r->setOk(204, 'No resources tagged yet');
+  }
+  $r->setOk(200, 'Resources found');
+  $r->setType('xml');
+
+  $df = new folksoDisplayFactory();
+  $rl = $df->ResourceList('xml');
+  $r->t($rl->startform());
+  
+  while ($row = $i->result->fetch_object()) {
+    $r->t($rl->line(
+                    $row->id,
+                    htmlspecialchars($row->url),
+                    htmlspecialchars($row->title)
+                    )
+          );
+  }
+  $r->t($rl->endform());
+  return $r;
+}
+

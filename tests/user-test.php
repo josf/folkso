@@ -272,6 +272,21 @@ class testOfuser extends  UnitTestCase {
                             'tagone should be gone');
 
    }
+
+   function testRecentlyTagged() {
+     $this->fks->startSession('rambo-2010-001', true);
+     $r = recentlyTagged(new folksoQuery(array(), array(), array()),
+                         $this->dbc,
+                         $this->fks);
+     $this->assertIsA($r, folksoResponse, "ob prob");
+     $this->assertEqual($r->status, 200, "Not getting 200: "
+                        . $r->status . " " . $r->statusMessage . " " 
+                        . $r->errorBody());
+     $xxx = new DOMDocument();
+     $this->assertTrue($xxx->loadXML($r->body()),
+                       'xml failure');
+
+   }
    
 }//end class
 
