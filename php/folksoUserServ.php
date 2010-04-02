@@ -368,3 +368,64 @@ function addSubscription (folksoQuery $q,
   return $r;
 }
 
+
+function removeSubscription (folksoQuery $q, 
+                            folksoDBconnect $dbc, 
+                            folksoSession $fks) {  
+
+  $r = new folksoResponse();
+  $u = $fks->userSession();
+
+  if (! $u instanceof folksoUser) {
+    return $r->unAuthorized($u);
+  }
+
+  /* First we get data about the tag so that we can send the tag data
+     back to the client. */
+  try {
+    $i = new folksoDBinteract($dbc);
+    $uq = new folksoUserQuery();
+    $i->query($uq->singleTagRepresentation($i->dbescape($q->tag)));
+  }
+  catch( dbException $e) {
+    return $r->handleDBexception($e);
+  }
+  if ($i->result_status == 'NOROWS') {
+    return $r->setError(404, "Tag not found", 
+                        "The tag your subscribed to may not exist anymore");
+  }
+
+  $row = $i->result->fetch_object();
+  $link = new folksoTagLink($row->tagnorm);
+  $taginfo = sprintf('<?xml version="1.0"?>'
+                     ."\n<deletedSubscription><tag>\n<numid>%s</numid>"
+                     ."\n<tagnorm>%s</tagnorm>\n"
+                     ."<link>%s</link>\n\t<display>%s</display></tag>"
+                     ."</deletedSubscription>",
+                     $row->id,
+                     htmlspecialchars($row->tagnorm),
+                     htmlspecialchars($link->getLink()),
+                     htmlspecialchars($row->display, ENT_NOQUOTES, 'UTF-8')
+                     );
+
+
+  $tag_id = $row->id;
+ 
+  try {
+    $i->query(sprintf("delete from user_subscription "
+                      ." where userid = '%s'"
+                      .' and '
+                      ." tag_id = %d",
+                      $u->userid,
+                      $tag_id));
+  }
+  catch( dbException $e) {
+    return $r->handleDBexception($e);
+  }
+
+  $r->setOk(200, 'Unsubscribed');
+  $r->setType('xml');
+  $r->t($taginfo);
+  return $r;
+}
+            
