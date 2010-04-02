@@ -68,15 +68,15 @@ function test_db_init($megadynDefault = 10) {
                       'http://dynamic.example.com/14' => 
                       array('dyn1', 'dyn2', 'dyn3', 'dyn4', 'dyn5', 'dyn6', 'dyn7', 'dyn8'),
                       'http://dynamic.example.com/15' => array('dyn1', 'dyn8'),
-                      'http://dynamic.example.com/16' => array('dyn1'),
-                      'http://dynamic.example.com/17' => array('dyn1'),
+                      'http://dynamic.example.com/16' => array('dyn1', 'dyn8'),
+                      'http://dynamic.example.com/17' => array('dyn1', 'dyn5'),
                       'http://dynamic.example.com/18' => array('dyn1', 'dyn2', 'dyn3'),
-                      'http://dynamic.example.com/19' => array('dyn1'),
-                      'http://dynamic.example.com/20' => array('dyn1'),
-                      'http://dynamic.example.com/21' => array('dyn1'),
-                      'http://dynamic.example.com/22' => array('dyn1'),
-                      'http://dynamic.example.com/23' => array('dyn1'),
-                      'http://dynamic.example.com/24' => array('dyn1'),
+                      'http://dynamic.example.com/19' => array('dyn1', 'dyn5', 'dyn8'),
+                      'http://dynamic.example.com/20' => array('dyn1', 'dyn2', 'dyn3'),
+                      'http://dynamic.example.com/21' => array('dyn1', 'dyn8', 'tagone'),
+                      'http://dynamic.example.com/22' => array('dyn1', 'dyn6', 'dyn3'),
+                      'http://dynamic.example.com/23' => array('dyn1', 'dyn5', 'dyn6'),
+                      'http://dynamic.example.com/24' => array('dyn1', 'dyn2', 'dyn8'),
                       'http://dynamic.example.com/25' => array('dyn1'));
 
   for ($megadyncounter = 0; $megadyncounter < $megadynDefault; $megadyncounter++) {
@@ -177,7 +177,9 @@ function test_db_init($megadynDefault = 10) {
     $i->query('insert into user_subscription (userid, tag_id) values '
               . " ('rambo-2010-001', 1), "
               . " ('rambo-2010-001', 2), "
-              . " ('rambo-2010-001', 3)");
+              . " ('rambo-2010-001', 3), "
+              . " ('rambo-2010-001', 8), "
+              . " ('rambo-2010-001', 14) ");
 
     //    $i->query("insert into fb_ids (userid, fb_uid) values "
     //              ." ('rambo-2010-001', 123456) ");
