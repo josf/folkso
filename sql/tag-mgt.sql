@@ -531,7 +531,8 @@ DELIMITER ;
 
 
 -- 
--- tagmerge
+-- tagmerge: combine one tag with another, while combining 
+-- their resources.
 -- 
 -- Four arguments so that either tag_ids or strings can be used.
 -- 
@@ -582,6 +583,18 @@ CASE
        UPDATE tagevent
          SET tag_id = target_id
          WHERE tag_id = source_id;
+
+         -- IGNORE keyword does nothing if the update would violate
+         -- a constraint
+       update ignore user_subscription
+         set tag_id = target_id
+         where tag_id = source_id;
+
+         -- So because of IGNORE, we have to delete in case the update left
+         -- some rows with the old id.
+       delete from user_subscription 
+       where tag_id = source_id;
+
        DELETE 
          FROM tag 
          WHERE id = source_id;
