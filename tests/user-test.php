@@ -288,6 +288,25 @@ class testOfuser extends  UnitTestCase {
 
    }
    
+
+   function testStoreUserData () {
+     $this->fks->startSession('vicktr-2010-001', true);
+     $r = storeUserData(new folksoQuery(array(), array('folksosetfirstname' => 'Vick',
+                                                       'folksosetlastname' => 'Hugo',
+                                                       'folksosetnick' => 'vickh',
+                                                       'folksosetemail' => 'victor@miserables.com',
+                                                       'folksosetinstitution' => 'A lui tout seul'), array()),
+                        $this->dbc,
+                        $this->fks);
+     $this->assertIsA($r, folksoResponse, "ob prob");
+     $this->assertEqual($r->status, 200,
+                        "Expected 200: " . $r->status . " " . $r->statusMessage
+                        . " " . $r->errorBody());
+     $xxx = new DOMDocument();
+     $this->assertTrue($xxx->loadXML($r->body()),
+                       'xml failure:' .$r->body());
+   }
+
 }//end class
 
 $test = &new testOfuser();

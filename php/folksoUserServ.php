@@ -493,3 +493,124 @@ limit 50",
   return $r;
 }
 
+
+function storeUserData (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {  
+
+  $r = new folksoResponse();
+  $u = $fks->userSession();
+
+  if (! $u instanceof folksoUser) {
+    return $r->unAuthorized($u);
+  }
+
+
+  $fields = array('firstname' => true, 
+                  'lastname' => true, 
+                  'nick' => false, 
+                  'email' => false, 
+                  'institution' => false, 
+                  'pays' => false, 
+                  'fonction' => false);
+
+  /* First we get data about the tag so that we can send the tag data
+     back to the client. */
+
+    $sql = '';
+
+    $reqFields = array();
+
+    try {
+      $i = new folksoDBinteract($dbc);
+    }
+    catch(dbException $e) {
+      return $r->handleDBexception($e);
+    }
+
+
+    foreach ($fields as $fieldName => $isRequired) {
+      if ($q->is_param('set' . $fieldName)) {
+        $reqFields[$fieldName] = $i->dbescape($q->get_param('set' . $fieldName));
+      }
+      elseif ($isRequired) {
+        return $r->setError(400, "Insufficient data", 
+                            "Firstname and lastname are required");
+      }
+      else {
+        $reqFields[$fieldName] = 'NULL';
+      }
+    }
+
+
+    // check if user already has entry in user_data. Probably does,
+    // but we still might need to insert rather than update.
+    try {
+      $i->query("select userid from user_data where userid = '"
+                . $i->dbescape($u->userid) . "'");
+    }
+    catch(dbException $e) {
+      return $r->handleDBexception($e);
+    }
+
+    if ($i->result_status == 'NOROWS') {
+
+      // add userid field only for inserts
+      $reqFields['userid'] = $u->userid;
+      $sql .=
+        ' insert into user_data ('
+        . implode(', ', array_keys($reqFields))
+        .") values ('"
+        . implode("', '", array_values($values))
+        ."')";
+    }
+    else {
+      $sql .= ' update user_data set ';
+
+      $parts = array();
+      foreach ($reqFields as $k => $v) {
+        $parts[] = sprintf("%s = '%s'",
+                           $k, $v);
+      }
+      $sql .= implode(', ', $parts);
+      $sql .= " where userid = '" . $u->userid . "'";
+    }
+
+    try {
+      $i->query($sql);
+    }
+    catch(dbException $e) {
+      return $r->handleDBexception($e);
+    }
+    
+    try {
+      $i->query('select userid, firstname, lastname, nick, email, '
+                .' institution, pays, fonction '
+                .' from user_data '
+                ." where userid = '" . $u->userid . "'");
+    }
+    catch(dbException $e) {
+      return $r->handleDBexception($e);
+    }
+
+    $r->setOk(200, 'User data stored');
+
+    // return xml representation of userdata
+    $df = new folksoDisplayFactory();
+    $ud = $df->userData();
+    $r->t($ud->startform());
+    
+    $row = $i->result->fetch_object();
+    $r->t($ud->line(
+                    $r->userid,
+                    htmlspecialchars($row->firstname),
+                    htmlspecialchars($row->lastname),
+                    htmlspecialchars($row->nick),
+                    htmlspecialchars($row->email),
+                    htmlspecialchars($row->institution),
+                    htmlspecialchars($row->pays),
+                    htmlspecialchars($row->fonction)
+                    ));
+    $r->t($ud->endform());
+    $r->setType('xml');
+    return $r;
+}
+
