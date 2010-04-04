@@ -60,6 +60,57 @@ require("/var/www/dom/fabula/commun3/html_start.php");
 </div>
 
 
+<div id="userinfo">
+<p class="firstname">
+  Prénom : 
+  <span class="firstname">
+  </span>
+  <input type="text" class="firstnamebox">
+  </input>
+</p>
+
+<p class="lastname">
+  Nom de famille :
+  <span class="lastname">
+  </span>
+  <input type="text" class="lastnamebox">
+  </input>
+</p>
+
+<p class="email">
+  Courrier électronique :
+  <span class="email">
+  </span>
+  <input type="text" class="emailbox">
+  </input>
+</p>
+
+<p class="institution">
+  Institution :
+  <span class="institution">
+  </span>
+  <input type="text" class="insitutionbox">
+  </input>
+</p>
+
+<p class="pays">
+  Pays :
+  <span class="pays">
+  </span>
+  <input type="text" class="paysbox">
+  </input>
+</p>
+
+<p class="fonction">
+  Fonction : 
+  <span class="fonction">
+  </span>
+  <input type="text" class="fonctionbox">
+  </input>
+</p>
+<p><a href="#" id="userdata-send">Valider</a></p>
+</div>
+
 <?php
 
       }
