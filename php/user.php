@@ -34,6 +34,10 @@ $srv->addResponseObj(new folksoResponder('get',
                                                'exclude' => array('fblogin', 'check', 'tag')),
                                          'userSubscriptions'));
 
+$srv->addResponseObj(new folksoResponder('get',
+                                         array('required' => array('userdata')),
+                                         'getUserData'));
+                                               
 $srv->addResponseObj(new folksoResponder('post',
                                          array('required' => array('addsubcription', 'tag')),
                                          'addSubscription'));
@@ -41,7 +45,11 @@ $srv->addResponseObj(new folksoResponder('post',
 $srv->addResponseObj(new folksoResponder('post',
                                          array('required' => array('rmsub', 'tag')),
                                          'removeSubscription'));
-
+$srv->addResponseObj(new folksoResponder('post',
+                                         array('required' => array('setfirstname',
+                                                                   'setlastname'),
+                                               'exclude' => array('rmsub', 'tag')),
+                                         'storeUserData'));
                                                
 $srv->Respond();
   
