@@ -307,6 +307,29 @@ class testOfuser extends  UnitTestCase {
                        'xml failure:' .$r->body());
    }
 
+   function testGetUserData  () {
+     $this->fks->startSession('gustav-2010-001', true);
+     $r = getUserData(new folksoQuery(array(), array(), array()),
+                      $this->dbc, 
+                      $this->fks);
+     $this->assertIsA($r, folksoResponse, "ob prob");
+     $this->assertEqual($r->status, 200,
+                        "Error, expected 200: " . $r->status . " " . $r->statusMessage
+                        . " " . $r->errorBody());
+     $xxx = new DOMDocument();
+     $this->assertTrue($xxx->loadXML($r->body()),
+                       'xml failure: ' . $r->body());
+
+     $this->assertPattern('/Gustave/', $r->body(),
+                          "Did not find first name in xml: ". $r->body());
+     $this->assertPattern('/>Flaubert</', $r->body(),
+                          "Did not find last name in xml". $r->body());
+     $this->assertPattern('/sentimental\.edu/', $r->body(),
+                          "Did not find email in xml: " . $r->body());
+
+   }
+
+
 }//end class
 
 $test = &new testOfuser();

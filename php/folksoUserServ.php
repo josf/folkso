@@ -614,3 +614,45 @@ function storeUserData (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks
     return $r;
 }
 
+
+function getUserData (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
+  $r = new folksoResponse();
+  $u = $fks->userSession();
+
+  if (! $u instanceof folksoUser) {
+    return $r->unAuthorized($u);
+  }
+
+  try {
+    $i = new folksoDBinteract($dbc);
+    $i->query('select userid, firstname, lastname, nick, email, '
+              .' institution, pays, fonction '
+              .' from user_data '
+              ." where userid = '" . $u->userid . "'");
+  }
+  catch(dbException $e) {
+    return $r->handleDBexception($e);
+  }
+
+  $r->setOk(200, 'User data found');
+
+  // return xml representation of userdata
+  $df = new folksoDisplayFactory();
+  $ud = $df->userData();
+  $r->t($ud->startform());
+    
+  $row = $i->result->fetch_object();
+  $r->t($ud->line(
+                  $r->userid,
+                  htmlspecialchars($row->firstname),
+                  htmlspecialchars($row->lastname),
+                  htmlspecialchars($row->nick),
+                  htmlspecialchars($row->email),
+                  htmlspecialchars($row->institution),
+                  htmlspecialchars($row->pays),
+                  htmlspecialchars($row->fonction)
+                  ));
+  $r->t($ud->endform());
+  $r->setType('xml');
+    return $r;
+}
