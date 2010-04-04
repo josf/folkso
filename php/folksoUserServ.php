@@ -528,7 +528,8 @@ function storeUserData (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks
 
 
     foreach ($fields as $fieldName => $isRequired) {
-      if ($q->is_param('set' . $fieldName)) {
+      if ($q->is_param('set' . $fieldName) &&
+          (strlen(trim($q->get_param('set' . $fieldName))) > 0)) {
         $reqFields[$fieldName] = $i->dbescape($q->get_param('set' . $fieldName));
       }
       elseif ($isRequired) {
