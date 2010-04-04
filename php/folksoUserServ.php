@@ -602,17 +602,29 @@ function storeUserData (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks
     $row = $i->result->fetch_object();
     $r->t($ud->line(
                     $r->userid,
-                    htmlspecialchars($row->firstname),
-                    htmlspecialchars($row->lastname),
-                    htmlspecialchars($row->nick),
-                    htmlspecialchars($row->email),
-                    htmlspecialchars($row->institution),
-                    htmlspecialchars($row->pays),
-                    htmlspecialchars($row->fonction)
+                    htmlspecialchars(excludeSQLnullKeyWord($row->firstname)),
+                    htmlspecialchars(excludeSQLnullKeyWord($row->lastname)),
+                    htmlspecialchars(excludeSQLnullKeyWord($row->nick)),
+                    htmlspecialchars(excludeSQLnullKeyWord($row->email)),
+                    htmlspecialchars(excludeSQLnullKeyWord($row->institution)),
+                    htmlspecialchars(excludeSQLnullKeyWord($row->pays)),
+                    htmlspecialchars(excludeSQLnullKeyWord($row->fonction))
                     ));
     $r->t($ud->endform());
     $r->setType('xml');
     return $r;
+}
+
+
+/**
+ * Helper function for userData functions
+ */
+
+function excludeSQLnullKeyWord ($txt) {
+  if ($txt == 'NULL') {
+    return '';
+  }
+  return $txt;
 }
 
 
@@ -645,13 +657,15 @@ function getUserData (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) 
   $row = $i->result->fetch_object();
   $r->t($ud->line(
                   $r->userid,
-                  htmlspecialchars($row->firstname),
-                  htmlspecialchars($row->lastname),
-                  htmlspecialchars($row->nick),
-                  htmlspecialchars($row->email),
-                  htmlspecialchars($row->institution),
-                  htmlspecialchars($row->pays),
-                  htmlspecialchars($row->fonction)
+                    $r->userid,
+                    htmlspecialchars(excludeSQLnullKeyWord($row->firstname)),
+                    htmlspecialchars(excludeSQLnullKeyWord($row->lastname)),
+                    htmlspecialchars(excludeSQLnullKeyWord($row->nick)),
+                    htmlspecialchars(excludeSQLnullKeyWord($row->email)),
+                    htmlspecialchars(excludeSQLnullKeyWord($row->institution)),
+                    htmlspecialchars(excludeSQLnullKeyWord($row->pays)),
+                    htmlspecialchars(excludeSQLnullKeyWord($row->fonction))
+
                   ));
   $r->t($ud->endform());
   $r->setType('xml');
