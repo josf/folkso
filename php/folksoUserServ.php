@@ -362,9 +362,10 @@ function addSubscription (folksoQuery $q,
                 $row->id,
                 htmlspecialchars($row->tagnorm),
                 htmlspecialchars($link->getLink()),
-                htmlspecialchars($row->display, ENT_NOQUOTES, 'UTF-8')
+                htmlspecialchars($row->tagdisplay, ENT_NOQUOTES, 'UTF-8')
                 )
         );
+  $r->setType("xml");
   return $r;
 }
 

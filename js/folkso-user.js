@@ -6,8 +6,18 @@ $(document).ready(
     function()
     {
 
-        fK.init({getUserUrl: "http://localhost/user.php"});
-       
+        var hostAndPath = 'http://localhost/';
+//        var hostAndPath = 'http://www.fabula.org/tags/';
+        fK.init({
+                    autocompleteUrl: hostAndPath + 'tagcomplete.php',
+                    postResUrl: hostAndPath + 'resource.php',
+                    getResUrl: hostAndPath + 'resource.php',
+                    getUserUrl: hostAndPath + 'user.php',
+                    oIdLogoPath: "/tags/logos/",
+                    oIdPath: '/tags/fdent/'
+                });
+
+        $("input.fKTaginput", fK.cf.container).autocomplete(fK.cf.autocompleteUrl);       
         var K = window.K = new fK.Ktl("#subscriptions");
         K.addList("subscribed",
                   {selector: "ul",
@@ -77,9 +87,13 @@ $(document).ready(
                                               folksosession: cesspool,
                                               folksotag: undefined},
                                              gotList,
-                                             function() {
+                                             function(xhr, status, e) {
                                                  alert("Add subscription failed");
                                              });
+        addSub_aj.complete = function(xhr, status) {
+            $("#newsubbox").val("");
+        };
+        
 
         var removeSub_aj = fK.fn.userPostObject({folksormsub: 1,
                                                  folksosession: cesspool,
@@ -92,6 +106,25 @@ $(document).ready(
 
         getList_aj.dataType = "xml";
         $.ajax(getList_aj);
+
+
+        /*
+         * Add subscription
+         */
+        $("#addsub").click(
+            function(ev) {
+                ev.preventDefault();
+                var box = $("#newsubbox"), newtag = box.val();
+
+                if (newtag.length == 0) {
+                    alert("Il faut d'abord saisir un tag");
+                }
+                else {
+                    addSub_aj.data.folksotag = newtag;                    
+                    $.ajax(addSub_aj);
+                }
+            });
+
 
         /*
          * Remove subscription
