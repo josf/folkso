@@ -22,11 +22,17 @@ $(document).ready(
 
 
         /*
+         * Do nothing: basic error function for when ajax calls return no data.
+         */
+        var err204 = fK.fn.defErrorFn(204, function() { });
+
+
+        /*******************************************************************
          * Recently tagged list
          * 
          * This is defined first because some of the other functions refer 
          * to this on updates.
-         */
+         *******************************************************************/
         var R = window.R =  new fK.Ktl("#recently");
         R.addList("resources",
                   {selector: "ul",
@@ -66,13 +72,11 @@ $(document).ready(
         var getRecently_aj = fK.fn.userGetObject({folksorecent: 1,
                                                   folksosession: cesspool},
                                                  gotResList,
-                                                 function(xhr, status, e) {
-                                                     if (window.console) {
-                                                         console.log(status);
-                                                         console.log(e);
-                                                     }
-                                                     alert("Resource update error");
-                                                 });
+                                                 fK.fn.errorChoose(err204,
+                                                             function() {
+                                                                 alert("Resource list problem");
+                                                                 })
+                                                 );
         getRecently_aj.dataType = "xml";
         $.ajax(getRecently_aj);
 
@@ -139,11 +143,11 @@ $(document).ready(
         var getList_aj = fK.fn.userGetObject({folksosubscribed: 1,
                                               folksosession: cesspool},
                                              gotList,
-                                             function(xhr, textStatus, e) { 
-                                                 if (xhr.status != 204) {
-                                                     alert("list getting failed"); 
-                                                 }
-                                             });
+                                             fK.fn.errorChoose(err204,
+                                                         function(xhr, textStatus, e) { 
+                                                             alert("list getting failed"); 
+                                                 })
+                                             );
 
         // tag needs to be defined before using this
         var addSub_aj = fK.fn.userPostObject({folksoaddsubscription: 1,
@@ -357,7 +361,7 @@ $(document).ready(
             fK.fn.userGetObject(
                 {folksouserdata: 1, folksosession: cesspool },
                 userDataUpdateSuccess,
-                function() { alert("something went haywire"); });
+                function() { alert("Error retrieving user data"); });
         getUser_aj.dataType = "xml";
         $.ajax(getUser_aj);
 
