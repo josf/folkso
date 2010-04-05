@@ -425,6 +425,7 @@
                  var lastFn = arguments[arguments.length - 1],
                      fns = Array.prototype.slice.call(arguments, 0, -1);
                  return function(xhr, textStatus, errThrown) {
+                     if (window.console) console.log(xhr.status, textStatus);
                      for (var i = 0; i < fns.length; i++) {
                          if (fns[i].errorcode == xhr.status) {
                              return fns[i](xhr, textStatus, errThrown);
