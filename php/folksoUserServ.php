@@ -485,7 +485,7 @@ limit 50",
   while ($row = $i->result->fetch_object()) {
     $r->t($rl->line(
                     $row->id,
-                    htmlspecialchars($row->url),
+                    htmlspecialchars($row->uri_raw),
                     htmlspecialchars($row->title)
                     )
           );

@@ -37,6 +37,11 @@ $srv->addResponseObj(new folksoResponder('get',
 $srv->addResponseObj(new folksoResponder('get',
                                          array('required' => array('userdata')),
                                          'getUserData'));
+
+$srv->addResponseObj(new folksoResponder('get',
+                                         array('required' => array('recent')),
+                                         'recentlyTagged'));
+
                                                
 $srv->addResponseObj(new folksoResponder('post',
                                          array('required' => array('addsubscription', 'tag')),

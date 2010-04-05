@@ -17,7 +17,69 @@ $(document).ready(
                     oIdPath: '/tags/fdent/'
                 });
 
-        $("input.fKTaginput", fK.cf.container).autocomplete(fK.cf.autocompleteUrl);       
+        var cesspool = "c90ebfcb5c59219a98aa372daa0e70ca8e1d27a120ad19bf0ea2627d11c6fbae";
+        $("input.fKTaginput", fK.cf.container).autocomplete(fK.cf.autocompleteUrl);     
+
+
+        /*
+         * Recently tagged list
+         * 
+         * This is defined first because some of the other functions refer 
+         * to this on updates.
+         */
+        var R = window.R =  new fK.Ktl("#recently");
+        R.addList("resources",
+                  {selector: "ul",
+                   init: function(sel, $place, data) {
+                       $(sel, $place)
+                           .append($("<li><a class='reslink' href='" + data.url +
+                                     "'>" + data.title + 
+                                     "</a>"));
+                   },
+                   match: function(data) {
+                       return function (item, i) {
+                           return item.url == data.url;
+                       };
+                   }
+                  });
+        var appendResource = R.appendField("resources");
+
+        /*
+         *  Build initial list or append to existing list.
+         */
+        var gotResList = function(xml, status, xhr) 
+        {
+            $("#recently li").remove();
+            $("resource", xml)
+                    .each(function()
+                          {
+                              var res = {}, $resob = $(this);
+                              res.numid = $("numid", $resob).text();
+                              res.url = $("url", $resob).text();
+                              res.title = $("title", $resob).text();
+                              appendResource(res);
+                          });
+            $(R).trigger("update");
+        };
+
+
+        var getRecently_aj = fK.fn.userGetObject({folksorecent: 1,
+                                                  folksosession: cesspool},
+                                                 gotResList,
+                                                 function(xhr, status, e) {
+                                                     if (window.console) {
+                                                         console.log(status);
+                                                         console.log(e);
+                                                     }
+                                                     alert("Resource update error");
+                                                 });
+        getRecently_aj.dataType = "xml";
+        $.ajax(getRecently_aj);
+
+
+        /*
+         *  Current subscription list
+         */
         var K = window.K = new fK.Ktl("#subscriptions");
         K.addList("subscribed",
                   {selector: "ul",
@@ -70,9 +132,10 @@ $(document).ready(
             tag.display = $("display", xml).text();
             unsubTag(tag);
             $(K).trigger("update");
+            $.ajax(getRecently_aj);
         };
 
-        var cesspool = "e470b9de7ed755b752ad8bae1c618fe4216ff508bfd0375b03e98df0af2e475d";
+
         var getList_aj = fK.fn.userGetObject({folksosubscribed: 1,
                                               folksosession: cesspool},
                                              gotList,
@@ -122,6 +185,7 @@ $(document).ready(
                 else {
                     addSub_aj.data.folksotag = newtag;                    
                     $.ajax(addSub_aj);
+                    $.ajax(getRecently_aj);
                 }
             });
 
@@ -140,6 +204,7 @@ $(document).ready(
                                              console.log("going to remove");
                                              console.log(removeSub_aj);
                                              $.ajax(removeSub_aj);
+                                             $.ajax(getRecently_aj);
                                          }
                                      });
 

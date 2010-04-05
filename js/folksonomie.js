@@ -300,7 +300,7 @@
                                         });
 
                                  // then remove and rebuild list from values
-                                 $(selector, $place).children().detach();
+                                 $(selector, $place).children().remove();
                                  $.each(value, 
                                         function(index, val) {
                                             $(selector, $place)
@@ -322,7 +322,7 @@
                                                           });
                                                 });
 
-                                 $(selector, $place).children().detach();
+                                 $(selector, $place).children().remove();
                                  $.each(value, 
                                         function(index, val) {
                                             $(selector, $place)
