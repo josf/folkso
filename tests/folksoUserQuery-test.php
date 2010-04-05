@@ -31,6 +31,18 @@ class testOffolksoUserQuery extends  UnitTestCase {
                               'conditional query building not working with alphabetical tag');
 
    }
+
+
+   function testAddSubscription () {
+     $uq = new folksoUserQuery();
+     $sql = $uq->addSubscriptionSQL('dyn9', 'rambo-2010-001');
+     $this->assertPattern("/normalize_tag\('dyn9'\)/", $sql,
+                          "Did not find normalize_tag('dyn9') in sql");
+
+     print $sql;
+
+
+   }
 }//end class
 
 $test = &new testOffolksoUserQuery();

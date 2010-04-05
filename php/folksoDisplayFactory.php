@@ -181,7 +181,7 @@ class folksoDisplayFactory {
                                         'end' => '</taglist>',
                                         'lineformat' => 
                                         "<tag>\n\t"
-                                        ."<numid>>XXX</numid>\n\t"
+                                        ."<numid>XXX</numid>\n\t"
                                         ."<tagnorm>XXX</tagnorm>\n\t"
                                         ."<link>XXX</link>\n\t"
                                         ."<display>XXX</display>\n\t"
@@ -329,6 +329,33 @@ class folksoDisplayFactory {
                                       ."\t<resource>XXX</resource>\n",
                                       'argsperline' => 2));
  }
+
+
+/**
+ * 
+ */
+ public function userData () {
+   return new folksoDataDisplay(
+                                array('type' => 'xml',
+                                      'start' =>
+                                      '<?xml version="1.0"?>'
+                                      ."\n<user>\n",
+                                      'titleformat' => '',
+                                      'lineformat' => 
+                                      "\t<userid>XXX</userid>\n"
+                                      ."\t<firstname>XXX</firstname>\n"
+                                      ."\t<lastname>XXX</lastname>\n"
+                                      ."\t<nick>XXX</nick>\n"
+                                      ."\t<email>XXX</email>\n"
+                                      ."\t<institution>XXX</institution>\n"
+                                      ."\t<pays>XXX</pays>\n"
+                                      ."\t<fonction>XXX</fonction>\n",
+                                      'end' => '</user>',
+                                      'argsperline' => 8));
+
+
+ }
+
 
 }
 ?>

@@ -29,6 +29,32 @@ $srv->addResponseObj(new folksoResponder('get',
                                          array('required' =>
                                                array('fblogin')),
                                          'loginFBuser'));
+$srv->addResponseObj(new folksoResponder('get',
+                                         array('required' => array('subscribed'),
+                                               'exclude' => array('fblogin', 'check', 'tag')),
+                                         'userSubscriptions'));
+
+$srv->addResponseObj(new folksoResponder('get',
+                                         array('required' => array('userdata')),
+                                         'getUserData'));
+
+$srv->addResponseObj(new folksoResponder('get',
+                                         array('required' => array('recent')),
+                                         'recentlyTagged'));
+
+                                               
+$srv->addResponseObj(new folksoResponder('post',
+                                         array('required' => array('addsubscription', 'tag')),
+                                         'addSubscription'));
+     
+$srv->addResponseObj(new folksoResponder('post',
+                                         array('required' => array('rmsub', 'tag')),
+                                         'removeSubscription'));
+$srv->addResponseObj(new folksoResponder('post',
+                                         array('required' => array('setfirstname',
+                                                                   'setlastname'),
+                                               'exclude' => array('rmsub', 'tag')),
+                                         'storeUserData'));
                                                
 $srv->Respond();
   

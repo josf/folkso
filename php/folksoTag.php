@@ -644,18 +644,20 @@ function deleteTag  (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
     /* Check to see if tag is there. This might not be necessary: if the
      * tag does not exist, we just continue */
     if (!$i->tagp($q->tag)) {
-      $r->setError(404, 'Could not delete - tag not found',
-                   $q->tag . " does not exist in the database");
-      return $r;
+      return $r->setError(404, 'Could not delete - tag not found',
+                          $q->tag . " does not exist in the database");
     }
 
     // delete 1 : remove tagevents
+    // delete 1.5: remove from user_subscription
     // delete 2 : remove the tag itself
     $delete1 = '';
+    $delete1_5 = 'delete from user_subscription';
     $delete2 = "DELETE FROM tag  ";
 
     if (is_numeric($q->tag)) {
       $delete1 .= ' DELETE FROM tagevent WHERE tag_id='. $q->tag;
+      $delete1_5 .= ' where tag_id = ' . $q->tag;
       $delete2 .= ' WHERE id='. $q->tag;
     }
     else {
@@ -664,6 +666,9 @@ function deleteTag  (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
         ." where tag.id = tagevent.tag_id and "
         ." tag.tagnorm = normalize_tag('" . $i->dbescape($q->tag) . "')";    
 
+      $delete1_5 .= " using tag, user_subscription "
+        ." where tag.id = user_subscription.tag_id and "
+        ." tag.tagnorm = normalize_tag('" . $i->dbescape($q->tag) . "')";
       $delete2 .= " WHERE tagnorm = normalize_tag('" . $i->dbescape($q->tag) . "')";
     }
 
@@ -677,6 +682,15 @@ function deleteTag  (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   }
   catch (dbException $e) {
     return $r->handleDBexception($e);
+  }
+
+  try { 
+    $i->query($delete1_5); 
+  }
+  catch (dbQueryException $e) {
+    return $r->setError(500, 'Database error',
+                        'Subscription delete failed ' . $e->getMessage() . " "
+                        . $e->sqlquery);
   }
 
   /** second delete: the tag itself **/

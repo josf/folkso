@@ -49,5 +49,51 @@ class folksoUserQuery  {
                                         $tag,
                                         array('uid' => array('value' => $userid)));
   } 
+
+
+  /**
+   * @param $tag, $userid
+   */
+   public function addSubscriptionSQL ($tag, $userid) {
+     $a = array(
+                array('type' => 'common',
+                      'sql' =>
+                      'insert into user_subscription '
+                      .' (userid, tag_id) ' 
+                      .' values '
+                      ." ('<<<uid>>>', "),
+                array('type' => 'isnum',
+                      'sql' => '<<<x>>>'),
+                array('type' => 'notnum',
+                      'sql' => 
+                      " (select id from tag where tagnorm = normalize_tag('<<<x>>>')))")
+                );
+
+     return $this->qb->build($a,
+                             $tag,
+                             array('uid' => array('value' => $userid)));
+   }
+  
+
+   public function singleTagRepresentation($tag) {
+     $a = array(
+                array('type' => 'common',
+                      'sql' =>
+                      'select id, tagnorm, tagdisplay from tag '
+                      . ' where '
+                      .' id = '),
+                array('type' => 'isnum',
+                      'sql' => '<<<x>>>'),
+                array('type' => 'notnum',
+                      'sql' =>
+                      ' (select id from tag where tagnorm ='
+                      ." normalize_tag('<<<x>>>')) "));
+     return $this->qb->build($a,
+                             $tag,
+                             array());
+
+
+   }
+
 }
   

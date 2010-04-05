@@ -212,7 +212,7 @@ class folksoServer {
     /**
      * $sid: session ID
      */
-    $sid = $_COOKIE['folksosess'] ? $_COOKIE['folksosess'] : $q->get_param('session');;
+    $sid = $q->get_param('session') ? $q->get_param('session') : $_COOKIE['folksosess'];
 
     try {
       $fks->setSid($sid);

@@ -116,6 +116,229 @@
          },
 
          /**
+          * Controller for a given part of the DOM. Ajax requests update the 
+          * data in the controller object and it updates the DOM.
+          */
+         Ktl: function (jQplace, dataOb) {
+             var 
+             data = this.data = dataOb, fields = this.fields =  {},
+             $place = this.$place = jQplace;
+
+
+             /**
+              * 
+              */
+             this.addControl = function(type, name, props) {
+                 if (fields[name]) {
+                     throw new Error("field " + name + " already exists");
+                 } 
+                 else {
+                     /**
+                      * remove is an internal flag, true of false, deleteElem is 
+                      * the function that does the deleting.
+                      * 
+                      * removeVal is the list counterpart of remove, but takes a value 
+                      * for matching against existing values.
+                      */
+                     var requireds = ["value", "newval", "selector", 
+                                      "init", "update", "deleteElem", "remove", "removeVal",
+                                      "element"];
+                     for (var i = 0; i < requireds.length; i++) {
+                         if (props[requireds[i]] === undefined) {
+                             props[requireds[i]] = null;
+                         }
+                     }
+                     props.type = type; // must be either basic or list
+                     if (props.type == 'list') {
+                         props.value = [];
+                         props.appendval = [];
+                         props.removeVal = [];
+                         props.updateVals = [];
+                     }
+
+                     /*
+                      * We redefine init to be closed over the "initialized" 
+                      * flag, allowing us to check on whether the element has been
+                      * initialized or not.
+                      */
+                     props.initialized = false;
+                     if ($.isFunction(props.init)) {
+                         var oldinit = props.init;
+                         props.init = function() {
+                             var args = Array.prototype.slice.call(arguments, 0);
+                             props.initialized = true;
+                             oldinit.apply(this, args);
+                         };
+                     }
+
+                     fields[name] = props;
+                 }
+             };
+
+
+             this.addBasic = function(name, props) {
+               this.addControl('basic', name, props);  
+             };
+
+             this.addList = function(name, props) {
+                 this.addControl('list', name, props);
+             };
+
+             /**
+              * @return Function for updating field value
+              * 
+              * Writes over previous value. Use only for basic elements.
+              */
+             this.setfield = function(fieldname) {
+                 if (fields[fieldname]) {
+                     return function(value) {
+                         fields[fieldname].newval = value;
+                     };
+                 }
+                 else if (window.console) {
+                     console.log("Undefined Kontroler field: " + fieldname);
+                 }
+                 else {
+                     alert("Undefined Kontroler field: " + fieldname);
+                 }
+                 return false;
+             };
+
+             /**
+              * @param fieldname String 
+              * @param data Optional 
+              * 
+              * "data" is the data argument to be matched to determine deletion 
+              * from list. Only applicable for list elements.
+              */
+             this.deletefield = function(fieldname) {
+                 if (fields[fieldname]) {
+                     with (fields[fieldname]) {
+                     if (type == 'basic') {
+                         return function() {
+                             remove = true;
+                         };
+                     }
+                         else { // list type
+                             return function(data) {
+                               removeVal.push(data);
+                             };
+                         }
+                     }
+                 }
+                 else {
+                     throw new Error("Undeclared field");
+                 }
+             };
+
+
+             this.appendField = function(fieldname) {
+                 if (fields[fieldname] && fields[fieldname].type == 'list') {
+                     return function (newthing) {
+                         fields[fieldname].newval = null;
+                         fields[fieldname].appendval.push(newthing);
+                     };
+                 }
+                 else if (window.console) {
+                     console.log("Undefined Kontroler field: " + fieldname);
+                 }
+                 else {
+                     alert("Undefined Kontroler field: " + fieldname);
+                 }
+                 return false;
+             },
+
+
+             this.updateField = function(fieldname) {
+                 if (fields[fieldname] && fields[fieldname].type == 'list') {
+                     return function(oldthing, newthing) {
+                         fields[fieldname].updateVals.push({oldthing: oldthing,
+                                                            newthing: newthing});
+                     };
+                 }
+                 else {
+                     throw new Error("Bad fieldname (" + 
+                                     fieldname + 
+                                     ") or else this is not a list field");
+                 }
+             },
+
+             this.updateAllNew = function() {
+                 for (var fieldname in fields) {
+                     console.log("Trying fieldname: " + fieldname);
+                     with(fields[fieldname]) {
+                         if (type == 'basic') {
+                             if (newval && newval !== value) {
+                                 value = newval; newval = null;
+                                 if (initialized) {
+                                     update(selector, $place, value);
+                                 }
+                                 else {
+                                     init(selector, $place, value);
+                                 }
+                             }
+                             else if (remove) {
+                                 deleteElem(selector, $place, value);
+                             }
+                         }
+                         else { // type is therefore 'list'
+                             if (appendval.length > 0) {
+                                 $.each(appendval,
+                                        function(index, thing) {
+                                            value.push(thing);
+                                            $(selector, $place)
+                                                .append(init(selector, $place, thing));
+                                        });
+                                 appendval = [];
+                             }
+                             
+                             if (removeVal.length > 0){
+                                 // remove from values first
+                                 $.each(removeVal,
+                                        function(idx, thing) {
+                                            value = $.grep(value, match(thing), true); // true means: invert
+                                        });
+
+                                 // then remove and rebuild list from values
+                                 $(selector, $place).children().remove();
+                                 $.each(value, 
+                                        function(index, val) {
+                                            $(selector, $place)
+                                                .append(init(selector, $place, val));
+                                        });
+                                 removeVal = [];
+                             }
+
+                             if (updateVals.length > 0) {
+                                 $.each(updateVals,
+                                        function(idx, ob) {
+                                            value = $.map(value, 
+                                                          function (val, i) {
+                                                              var matcher = match(ob.oldthing);
+                                                              if (matcher(val)) {
+                                                                  return ob.newthing;
+                                                              }
+                                                              return val;
+                                                          });
+                                                });
+
+                                 $(selector, $place).children().remove();
+                                 $.each(value, 
+                                        function(index, val) {
+                                            $(selector, $place)
+                                                .append(init(selector, $place, val));
+                                        });
+                                 updateVals = [];
+                             }
+                         }
+                     }
+                 }
+             };
+             $(this).bind("update", this.updateAllNew);
+         },
+
+
+         /**
           * @target {jQuery} Element that the new element will be appended to
           */
          simpleres: function(target, display, url, id)
@@ -184,6 +407,14 @@
           * be using them
           */
          fn: {
+
+             boolComp: function(fn) {
+                 return function() {
+                     return !fn.apply(null, arguments);
+                 };
+             },
+
+
              /**
               * Takes any number of functions as arguments. Last argument must  be
               * an integer corresponding to an HTTP error code. Each function except
@@ -194,6 +425,7 @@
                  var lastFn = arguments[arguments.length - 1],
                      fns = Array.prototype.slice.call(arguments, 0, -1);
                  return function(xhr, textStatus, errThrown) {
+                     if (window.console) console.log(xhr.status, textStatus);
                      for (var i = 0; i < fns.length; i++) {
                          if (fns[i].errorcode == xhr.status) {
                              return fns[i](xhr, textStatus, errThrown);
@@ -237,6 +469,11 @@
              userGetObject: function (data, success, error) {
                  return {url: fK.cf.getUserUrl, type: "get",
                          data: data, cache: false, dataType: "json", success: success, error: error };
+             },
+             userPostObject: function (data, success, error) {
+                 return {url: fK.cf.postUserUrl || fK.cf.getUserUrl,
+                         type: "post", data: data, dataType: "xml",
+                         success: success, error: error };
              },
 
              /**
@@ -557,6 +794,29 @@
                                                 fail));
                  }
              },
+
+             /**
+              * Returns simple list item
+              * 
+              * 
+              * Sample xml tag item (simpleTagList)
+              * 
+              * <tag>
+              * <numid>1</numid>
+              * <tagnorm>tagone</tagnorm>
+              * <link>http://localhost/tag/tagone</link>
+              * <display>tagone</display>
+              * <count/>
+              * </tag>
+              * 
+              */
+             formatSimpleTagListItem: function(itemOb) {
+                 with (itemOb) {
+                     return "<li><a href=\"" + link + ">"
+                     + display + "</a></li>";
+                 }
+             },
+
 
              /**
               * This function allows us to listen for the addition of

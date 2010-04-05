@@ -306,9 +306,369 @@ function userSubscriptions (folksoQuery $q,
                     '')
           );
   }
-  $r->t($dd->endform);
+  $r->t($dd->endform());
   $r->setOk(200, 'Subscribed tags found');
   return $r;
 
 }
 
+function addSubscription (folksoQuery $q, 
+                            folksoDBconnect $dbc, 
+                            folksoSession $fks) {  
+
+  $r = new folksoResponse();
+  $u = $fks->userSession();
+
+  if (! $u instanceof folksoUser) {
+    return $r->unAuthorized($u);
+  }
+
+  try {
+    $i = new folksoDBinteract($dbc);
+    $uq = new folksoUserQuery();
+    $i->query($uq->addSubscriptionSQL($q->tag, $u->userid));
+  }
+  catch (dbException $e) {
+    if ($e instanceof dbQueryException) {
+      if ($e->sqlcode == 1048) {
+        return $r->setError(404, "Tag not found", "Tag '" 
+                            . $q->tag 
+                            . "' does not exist yet");
+      }
+      elseif ($e->sqlcode == 1062) {
+        return $r->setOk(204, "Already subscribed");
+      }
+      else {
+        return $r->handleDBexception($e);
+      }
+    }
+  }
+
+
+
+  $r->setOk(200, "Subscribed");
+  try {
+    $i->query($uq->singleTagRepresentation($q->tag));
+  }
+  catch( dbException $e) {
+    return $r->handleDBexception($e);
+  }
+
+  $row = $i->result->fetch_object();
+  $r->t('<?xml version="1.0"?>');
+  $link = new folksoTagLink($row->tagnorm);
+  $r->t(sprintf("<tag>\n\t<numid>%s</numid>\n\t<tagnorm>%s</tagnorm>\n\t"
+                ."<link>%s</link>\n\t<display>%s</display></tag>",
+                $row->id,
+                htmlspecialchars($row->tagnorm),
+                htmlspecialchars($link->getLink()),
+                htmlspecialchars($row->tagdisplay, ENT_NOQUOTES, 'UTF-8')
+                )
+        );
+  $r->setType("xml");
+  return $r;
+}
+
+
+function removeSubscription (folksoQuery $q, 
+                            folksoDBconnect $dbc, 
+                            folksoSession $fks) {  
+
+  $r = new folksoResponse();
+  $u = $fks->userSession();
+
+  if (! $u instanceof folksoUser) {
+    return $r->unAuthorized($u);
+  }
+
+  /* First we get data about the tag so that we can send the tag data
+     back to the client. */
+  try {
+    $i = new folksoDBinteract($dbc);
+    $uq = new folksoUserQuery();
+    $i->query($uq->singleTagRepresentation($i->dbescape($q->tag)));
+  }
+  catch( dbException $e) {
+    return $r->handleDBexception($e);
+  }
+  if ($i->result_status == 'NOROWS') {
+    return $r->setError(404, "Tag not found", 
+                        "The tag your subscribed to may not exist anymore");
+  }
+
+  $row = $i->result->fetch_object();
+  $link = new folksoTagLink($row->tagnorm);
+  $taginfo = sprintf('<?xml version="1.0"?>'
+                     ."\n<deletedSubscription><tag>\n<numid>%s</numid>"
+                     ."\n<tagnorm>%s</tagnorm>\n"
+                     ."<link>%s</link>\n\t<display>%s</display></tag>"
+                     ."</deletedSubscription>",
+                     $row->id,
+                     htmlspecialchars($row->tagnorm),
+                     htmlspecialchars($link->getLink()),
+                     htmlspecialchars($row->display, ENT_NOQUOTES, 'UTF-8')
+                     );
+
+
+  $tag_id = $row->id;
+ 
+  try {
+    $i->query(sprintf("delete from user_subscription "
+                      ." where userid = '%s'"
+                      .' and '
+                      ." tag_id = %d",
+                      $u->userid,
+                      $tag_id));
+  }
+  catch( dbException $e) {
+    return $r->handleDBexception($e);
+  }
+
+  $r->setOk(200, 'Unsubscribed');
+  $r->setType('xml');
+  $r->t($taginfo);
+  return $r;
+}
+            
+/**
+ * Returns a list of resources corresponding to the most recent tag events
+ * using tags that the user has subscribed to.
+ */
+
+function recentlyTagged  (folksoQuery $q, 
+                          folksoDBconnect $dbc, 
+                          folksoSession $fks) {  
+
+  $r = new folksoResponse();
+  $u = $fks->userSession();
+
+  if (! $u instanceof folksoUser) {
+    return $r->unAuthorized($u);
+  }
+
+  /* First we get data about the tag so that we can send the tag data
+     back to the client. */
+  try {
+    $i = new folksoDBinteract($dbc);
+    $i->query(sprintf(
+                      "select res.id, res.uri_raw, res.title, count(res.id) as weight
+from resource res
+join 
+(select resource_id as red
+from tagevent te
+where te.tag_id in
+(select tag_id
+from user_subscription us
+where us.userid = '%s')) as inside 
+on inside.red = res.id
+join tagevent tev on tev.resource_id = res.id
+group by res.id
+order by tev.tagtime, weight desc
+limit 50",
+
+                      $i->dbescape($u->userid)));
+  }
+  catch(dbException $e) {
+    return $r->handleDBexception($e);
+  }
+
+  if ($i->result_status == 'NOROWS'){
+    return $r->setOk(204, 'No resources tagged yet');
+  }
+  $r->setOk(200, 'Resources found');
+  $r->setType('xml');
+
+  $df = new folksoDisplayFactory();
+  $rl = $df->ResourceList('xml');
+  $r->t($rl->startform());
+  
+  while ($row = $i->result->fetch_object()) {
+    $r->t($rl->line(
+                    $row->id,
+                    htmlspecialchars($row->uri_raw),
+                    htmlspecialchars($row->title)
+                    )
+          );
+  }
+  $r->t($rl->endform());
+  return $r;
+}
+
+
+function storeUserData (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {  
+
+  $r = new folksoResponse();
+  $u = $fks->userSession();
+
+  if (! $u instanceof folksoUser) {
+    return $r->unAuthorized($u);
+  }
+
+
+  $fields = array('firstname' => true, 
+                  'lastname' => true, 
+                  'nick' => false, 
+                  'email' => false, 
+                  'institution' => false, 
+                  'pays' => false, 
+                  'fonction' => false);
+
+  /* First we get data about the tag so that we can send the tag data
+     back to the client. */
+
+    $sql = '';
+
+    $reqFields = array();
+
+    try {
+      $i = new folksoDBinteract($dbc);
+    }
+    catch(dbException $e) {
+      return $r->handleDBexception($e);
+    }
+
+
+    foreach ($fields as $fieldName => $isRequired) {
+      if ($q->is_param('set' . $fieldName) &&
+          (strlen(trim($q->get_param('set' . $fieldName))) > 0)) {
+        $reqFields[$fieldName] = $i->dbescape($q->get_param('set' . $fieldName));
+      }
+      elseif ($isRequired) {
+        return $r->setError(400, "Insufficient data", 
+                            "Firstname and lastname are required");
+      }
+      else {
+        $reqFields[$fieldName] = 'NULL';
+      }
+    }
+
+
+    // check if user already has entry in user_data. Probably does,
+    // but we still might need to insert rather than update.
+    try {
+      $i->query("select userid from user_data where userid = '"
+                . $i->dbescape($u->userid) . "'");
+    }
+    catch(dbException $e) {
+      return $r->handleDBexception($e);
+    }
+
+    if ($i->result_status == 'NOROWS') {
+
+      // add userid field only for inserts
+      $reqFields['userid'] = $u->userid;
+      $sql .=
+        ' insert into user_data ('
+        . implode(', ', array_keys($reqFields))
+        .") values ('"
+        . implode("', '", array_values($values))
+        ."')";
+    }
+    else {
+      $sql .= ' update user_data set ';
+
+      $parts = array();
+      foreach ($reqFields as $k => $v) {
+        $parts[] = sprintf("%s = '%s'",
+                           $k, $v);
+      }
+      $sql .= implode(', ', $parts);
+      $sql .= " where userid = '" . $u->userid . "'";
+    }
+
+    try {
+      $i->query($sql);
+    }
+    catch(dbException $e) {
+      return $r->handleDBexception($e);
+    }
+    
+    try {
+      $i->query('select userid, firstname, lastname, nick, email, '
+                .' institution, pays, fonction '
+                .' from user_data '
+                ." where userid = '" . $u->userid . "'");
+    }
+    catch(dbException $e) {
+      return $r->handleDBexception($e);
+    }
+
+    $r->setOk(200, 'User data stored');
+
+    // return xml representation of userdata
+    $df = new folksoDisplayFactory();
+    $ud = $df->userData();
+    $r->t($ud->startform());
+    
+    $row = $i->result->fetch_object();
+    $r->t($ud->line(
+                    $r->userid,
+                    htmlspecialchars(excludeSQLnullKeyWord($row->firstname)),
+                    htmlspecialchars(excludeSQLnullKeyWord($row->lastname)),
+                    htmlspecialchars(excludeSQLnullKeyWord($row->nick)),
+                    htmlspecialchars(excludeSQLnullKeyWord($row->email)),
+                    htmlspecialchars(excludeSQLnullKeyWord($row->institution)),
+                    htmlspecialchars(excludeSQLnullKeyWord($row->pays)),
+                    htmlspecialchars(excludeSQLnullKeyWord($row->fonction))
+                    ));
+    $r->t($ud->endform());
+    $r->setType('xml');
+    return $r;
+}
+
+
+/**
+ * Helper function for userData functions
+ */
+
+function excludeSQLnullKeyWord ($txt) {
+  if ($txt == 'NULL') {
+    return '';
+  }
+  return $txt;
+}
+
+
+function getUserData (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
+  $r = new folksoResponse();
+  $u = $fks->userSession();
+
+  if (! $u instanceof folksoUser) {
+    return $r->unAuthorized($u);
+  }
+
+  try {
+    $i = new folksoDBinteract($dbc);
+    $i->query('select userid, firstname, lastname, nick, email, '
+              .' institution, pays, fonction '
+              .' from user_data '
+              ." where userid = '" . $u->userid . "'");
+  }
+  catch(dbException $e) {
+    return $r->handleDBexception($e);
+  }
+
+  $r->setOk(200, 'User data found');
+
+  // return xml representation of userdata
+  $df = new folksoDisplayFactory();
+  $ud = $df->userData();
+  $r->t($ud->startform());
+    
+  $row = $i->result->fetch_object();
+  $r->t($ud->line(
+                  $r->userid,
+                    $r->userid,
+                    htmlspecialchars(excludeSQLnullKeyWord($row->firstname)),
+                    htmlspecialchars(excludeSQLnullKeyWord($row->lastname)),
+                    htmlspecialchars(excludeSQLnullKeyWord($row->nick)),
+                    htmlspecialchars(excludeSQLnullKeyWord($row->email)),
+                    htmlspecialchars(excludeSQLnullKeyWord($row->institution)),
+                    htmlspecialchars(excludeSQLnullKeyWord($row->pays)),
+                    htmlspecialchars(excludeSQLnullKeyWord($row->fonction))
+
+                  ));
+  $r->t($ud->endform());
+  $r->setType('xml');
+    return $r;
+}

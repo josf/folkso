@@ -389,7 +389,7 @@ class testOffolksotag extends  UnitTestCase {
 
      $this->assertEqual(204, $r2->status,
                         sprintf('tagmerge returns error: %d %s %s',
-                                $r2->status, $r2->status_message, $r2->body()));
+                                $r2->status, $r2->status_message, $r2->errorBody()));
      $h = headCheckTag(new folksoQuery(array(),
                                        array('folksotag' => 'tagone'),
                                        array()),

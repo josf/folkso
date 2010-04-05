@@ -17,3 +17,12 @@ grant select, delete, insert, update, drop on users_rights to 'tester_dude'@'loc
 grant select, delete, insert, update, drop on users to 'tester_dude'@'localhost';
 
 grant execute on procedure testostonomie.create_user to 'tester_dude'@'localhost';
+
+grant execute on function normalize_tag to 'tester_dude'@'localhost';
+grant execute on procedure new_tag to 'tester_dude'@'localhost';
+grant execute on procedure tag_resource to 'tester_dude'@'localhost';
+grant execute on procedure cloudy to 'tester_dude'@'localhost';
+grant execute on procedure cloud_by_timestamp to 'tester_dude'@'localhost';
+grant execute on procedure tagmerge to 'tester_dude'@'localhost';
+grant execute on procedure metamod to 'tester_dude'@'localhost';
+grant execute on procedure tagrank to 'tester_dude'@'localhost';

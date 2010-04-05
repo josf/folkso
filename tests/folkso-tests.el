@@ -152,7 +152,8 @@
                                  
                                  
 
-(switch-to-buffer (url-retrieve-synchronously
+
+
 
                     
 

@@ -214,12 +214,122 @@ class testOfuser extends  UnitTestCase {
                       "No response ob from userSubscriptions with valid subscriptions");
      $this->assertEqual($r2->status, 200,
                          "Should return 200 for valid subscriptions: " . $r2->status);
-                                            
+
+   }
+
+
+   function testAddSubscription () {
+     $this->fks->startSession('rambo-2010-001', true);
+     $r = addSubscription(new folksoQuery(array(), array('folksotag' => 'dyn3'), 
+                                          array()),
+                          $this->dbc,
+                          $this->fks);
+     $this->assertIsA($r, folksoResponse,
+                      "No response object from addSubscription");
+     $this->assertEqual($r->status, 200,
+                        "Add subscription should be successful: " . $r->status . " "
+                        . $r->statusMessage . " " . $r->errorBody());
+
+                                          
+     $xxx = new DOMDocument();
+     $this->assertTrue($xxx->loadXML($r->body()),
+                       'xml failed to load');
+
+
+     $check = userSubscriptions(new folksoQuery(array(), array(), array()),
+                                $this->dbc2,
+                                $this->fks);
+     $this->assertPattern('/dyn3/', $check->body(),
+                          'Should find freshly subscribed tag here: ' . $check->body());
 
 
 
    }
+
+   function testRemoveSubscription () {
+     $this->fks->startSession('rambo-2010-001', true);
+     $r = removeSubscription(new folksoQuery(array(), array('folksotag' => 1), array()),
+                             $this->dbc,
+                             $this->fks);
+     $this->assertIsA($r, folksoResponse,
+                      'not a response obj');
+     $this->assertEqual($r->status, 200,
+                       "Expecting 200 on successful subscription removal: "
+                       . $r->status . " " . $r->statusMessage . " " .
+                        $r->errorBody());
+
+     $xxx = new DOMDocument();
+     $this->assertTrue($xxx->loadXML($r->body()),
+                       'xml failed to load');
+
+     $check = userSubscriptions(new folksoQuery(array(), array(), array()),
+                                $this->dbc2,
+                                $this->fks);
+     $check = userSubscriptions(new folksoQuery(array(), array(), array()),
+                                $this->dbc2,
+                                $this->fks);
+     $this->assertNoPattern('/tagone/', $check->body(),
+                            'tagone should be gone');
+
+   }
+
+   function testRecentlyTagged() {
+     $this->fks->startSession('rambo-2010-001', true);
+     $r = recentlyTagged(new folksoQuery(array(), array(), array()),
+                         $this->dbc,
+                         $this->fks);
+     $this->assertIsA($r, folksoResponse, "ob prob");
+     $this->assertEqual($r->status, 200, "Not getting 200: "
+                        . $r->status . " " . $r->statusMessage . " " 
+                        . $r->errorBody());
+     $xxx = new DOMDocument();
+     $this->assertTrue($xxx->loadXML($r->body()),
+                       'xml failure');
+
+   }
    
+
+   function testStoreUserData () {
+     $this->fks->startSession('vicktr-2010-001', true);
+     $r = storeUserData(new folksoQuery(array(), array('folksosetfirstname' => 'Vick',
+                                                       'folksosetlastname' => 'Hugo',
+                                                       'folksosetnick' => 'vickh',
+                                                       'folksosetemail' => 'victor@miserables.com',
+                                                       'folksosetinstitution' => 'A lui tout seul'), array()),
+                        $this->dbc,
+                        $this->fks);
+     $this->assertIsA($r, folksoResponse, "ob prob");
+     $this->assertEqual($r->status, 200,
+                        "Expected 200: " . $r->status . " " . $r->statusMessage
+                        . " " . $r->errorBody());
+     $xxx = new DOMDocument();
+     $this->assertTrue($xxx->loadXML($r->body()),
+                       'xml failure:' .$r->body());
+   }
+
+   function testGetUserData  () {
+     $this->fks->startSession('gustav-2010-001', true);
+     $r = getUserData(new folksoQuery(array(), array(), array()),
+                      $this->dbc, 
+                      $this->fks);
+     $this->assertIsA($r, folksoResponse, "ob prob");
+     $this->assertEqual($r->status, 200,
+                        "Error, expected 200: " . $r->status . " " . $r->statusMessage
+                        . " " . $r->errorBody());
+     $xxx = new DOMDocument();
+     $this->assertTrue($xxx->loadXML($r->body()),
+                       'xml failure: ' . $r->body());
+
+     $this->assertPattern('/Gustave/', $r->body(),
+                          "Did not find first name in xml: ". $r->body());
+     $this->assertPattern('/>Flaubert</', $r->body(),
+                          "Did not find last name in xml". $r->body());
+     $this->assertPattern('/sentimental\.edu/', $r->body(),
+                          "Did not find email in xml: " . $r->body());
+
+   }
+
+
 }//end class
 
 $test = &new testOfuser();

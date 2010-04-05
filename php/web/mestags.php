@@ -54,33 +54,65 @@ require("/var/www/dom/fabula/commun3/html_start.php");
 
 <h1>Les tags de <?php echo $fbu->firstName . ' ' . $fbu->lastName ?></h1>
 
-<?php 
-      /*
-       * This assumes that we are on the same server, so instead of a
-       * real HTTP request, we just pretend and call the function directly. 
-       */
+<div id="subscriptions">
+<ul>
+</ul>
+</div>
 
-      $loc = new folksoFabula();
-      $r = userSubscriptions(new folksoQuery(array(), array(), array()),
-                             $loc->locDBC(),
-                             $fks);
 
-      if ($r->status == 204) {
-        ?><p>Vous n'avez pas d'abonnement encore.</p> <?php
-      }
-      elseif ($r->status == 200) {
+<div id="userinfo">
+<p class="firstname">
+  Prénom : 
+  <span class="firstname">
+  </span>
+  <input type="text" class="firstnamebox">
+  </input>
+</p>
 
-        $xml = new DOMDocument();
-        $xml->loadXML($r->body());
+<p class="lastname">
+  Nom de famille :
+  <span class="lastname">
+  </span>
+  <input type="text" class="lastnamebox">
+  </input>
+</p>
 
-        $xsl = new DOMDocument();
-        $xsl->load($this->loc->xsl_dir . "user_subscribed_tags.xsl");
-        $proc = new XsltProcessor();
-        $xsl = $proc->importStylesheet($xsl);
+<p class="email">
+  Courrier électronique :
+  <span class="email">
+  </span>
+  <input type="text" class="emailbox">
+  </input>
+</p>
 
-        $mytags = $proc->transformToDoc($xml);
-        print $mytags->saveXML();
-      }
+<p class="institution">
+  Institution :
+  <span class="institution">
+  </span>
+  <input type="text" class="insitutionbox">
+  </input>
+</p>
+
+<p class="pays">
+  Pays :
+  <span class="pays">
+  </span>
+  <input type="text" class="paysbox">
+  </input>
+</p>
+
+<p class="fonction">
+  Fonction : 
+  <span class="fonction">
+  </span>
+  <input type="text" class="fonctionbox">
+  </input>
+</p>
+<p><a href="#" id="userdata-send">Valider</a></p>
+</div>
+
+<?php
+
       }
 
 include("/var/www/dom/fabula/commun3/foot.php");
