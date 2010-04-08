@@ -106,6 +106,7 @@ fK.fb.onLogin = function() {
                                   postResUrl: hostAndPath + 'resource.php',
                                   getResUrl: hostAndPath + 'resource.php',
                                   getUserUrl: hostAndPath + 'user.php',
+                                  postTagUrl: hostAndPath + 'tag.php',
                                   oIdLogoPath: "/tags/logos/",
                                   oIdPath: '/tags/fdent/'
                             });
@@ -143,25 +144,29 @@ fK.fb.onLogin = function() {
 
                         $("input.fKTaginput", fK.cf.container).autocomplete(fK.cf.autocompleteUrl);
 
+
+                        if ($("#bloc_orange ul").length == 0) {
+                            $("#bloc_orange").hide();
+                        }
+
                         function tagAddTarget() {
                             if ($("#bloc_orange ul").length > 0) {
                                 return $("#bloc_orange ul");
                             }
                             else {
-                                var newbox = $('<div id="bloc_orange">'
-                                           + '<b class="niftycorners">'
-                                           + '<h3>Mots clés : </h3>'
-                                           + '<div class="tagcloud">'
-                                           + '<ul class="cloudlist">'
-                                           + '</ul></div></div>');
-//                                fK.fn.buildCloud($("ul", newbox));
-                                $("#bloc_folkso").after(newbox);
-                                return $("ul", newbox);
+                                $("#bloc_orange").append($("<div class='tagcloud'><ul class='cloudlist'></ul></div>"));
+                                return $("#bloc_orange ul");
                             }
                         }
 
                       $(".fKTagbutton").click(fK.fn.tagres_react($("input.fKTaginput"),
                                                                  tagAddTarget()));
+                        $(".fKTagbutton").click(
+                            function() {
+                                $("#bloc_orange").show();
+                        });
+
+
                     });
 
 

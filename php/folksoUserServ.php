@@ -642,7 +642,7 @@ function getUserData (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) 
     $i->query('select userid, firstname, lastname, nick, email, '
               .' institution, pays, fonction '
               .' from user_data '
-              ." where userid = '" . $u->userid . "'");
+              ." where userid = '" . $i->dbescape($u->userid) . "'");
   }
   catch(dbException $e) {
     return $r->handleDBexception($e);
@@ -657,7 +657,6 @@ function getUserData (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) 
     
   $row = $i->result->fetch_object();
   $r->t($ud->line(
-                  $r->userid,
                     $r->userid,
                     htmlspecialchars(excludeSQLnullKeyWord($row->firstname)),
                     htmlspecialchars(excludeSQLnullKeyWord($row->lastname)),
@@ -670,5 +669,5 @@ function getUserData (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) 
                   ));
   $r->t($ud->endform());
   $r->setType('xml');
-    return $r;
+  return $r;
 }

@@ -278,7 +278,7 @@ function relatedTags (folksoQuery $q, folksoDBConnect $dbc, folksoSession $fks) 
                         $row->tagnorm,
                         $row->display,
                         $row->popularity,
-                        '');
+                        '', '');
   }
 
   $accum .= $dd->endform();
