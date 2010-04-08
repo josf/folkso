@@ -6,8 +6,8 @@ $(document).ready(
     function()
     {
 
-        var hostAndPath = 'http://localhost/';
-//        var hostAndPath = 'http://www.fabula.org/tags/';
+//        var hostAndPath = 'http://localhost/';
+        var hostAndPath = '/tags/';
         fK.init({
                     autocompleteUrl: hostAndPath + 'tagcomplete.php',
                     postResUrl: hostAndPath + 'resource.php',
@@ -17,8 +17,11 @@ $(document).ready(
                     oIdPath: '/tags/fdent/'
                 });
 
-        var cesspool = "c90ebfcb5c59219a98aa372daa0e70ca8e1d27a120ad19bf0ea2627d11c6fbae";
-        $("input.fKTaginput", fK.cf.container).autocomplete(fK.cf.autocompleteUrl);     
+
+        /*
+         * Autocompletion for tag input
+         */
+        $("#newsubbox").autocomplete(fK.cf.autocompleteUrl);     
 
 
         /*
@@ -33,6 +36,10 @@ $(document).ready(
          * This is defined first because some of the other functions refer 
          * to this on updates.
          *******************************************************************/
+
+        /*
+         * Initialize controller
+         */
         var R = window.R =  new fK.Ktl("#recently");
         R.addList("resources",
                   {selector: "ul",
