@@ -257,9 +257,23 @@
                  }
              },
 
+             this.restartList = function(fieldname) {
+                 if (fields[fieldname] && fields[fieldname].type == 'list') {
+                     return function() {
+                       with( fields[fieldname] ) {
+                           $(selector, $place).children().remove();
+                           value = [];
+                       }
+                     };
+                 }
+                 else {
+                     throw new Error("restartList does not work with non list fields");
+                 }
+             },
+
+
              this.updateAllNew = function() {
                  for (var fieldname in fields) {
-                     console.log("Trying fieldname: " + fieldname);
                      with(fields[fieldname]) {
                          if (type == 'basic') {
                              if (newval && newval !== value) {
