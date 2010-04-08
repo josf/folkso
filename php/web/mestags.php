@@ -11,12 +11,18 @@ require_once('folksoDBinteract.php');
 require_once('folksoFabula.php');
 require_once('folksoClient.php');
 require_once('folksoUserServ.php');
+require_once('folksoPage.php');
+
+if ((! $fp) || (! $fp instanceof folksoPage)) {
+  $fp = new folksoPage();
+} 
+
 
 require("/var/www/dom/fabula/commun3/head_libs.php");
 require("/var/www/dom/fabula/commun3/head_folkso.php");
 
 $loggedIn = false;
-if ($fbu && ($fbu instanceof folksoUser) && ($fbu->exists()) {
+if ($fks->status()) {
     $loggedIn = true;
 }
 
