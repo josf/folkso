@@ -195,9 +195,6 @@
                          fields[fieldname].newval = value;
                      };
                  }
-                 else if (window.console) {
-                     console.log("Undefined Kontroler field: " + fieldname);
-                 }
                  else {
                      alert("Undefined Kontroler field: " + fieldname);
                  }
@@ -238,9 +235,6 @@
                          fields[fieldname].newval = null;
                          fields[fieldname].appendval.push(newthing);
                      };
-                 }
-                 else if (window.console) {
-                     console.log("Undefined Kontroler field: " + fieldname);
                  }
                  else {
                      alert("Undefined Kontroler field: " + fieldname);
@@ -425,7 +419,10 @@
                  var lastFn = arguments[arguments.length - 1],
                      fns = Array.prototype.slice.call(arguments, 0, -1);
                  return function(xhr, textStatus, errThrown) {
-                     if (window.console) console.log(xhr.status, textStatus);
+/*                     if (window.console){
+                         console.log(xhr.status, textStatus);
+                         console.log(e);
+                     }*/
                      for (var i = 0; i < fns.length; i++) {
                          if (fns[i].errorcode == xhr.status) {
                              return fns[i](xhr, textStatus, errThrown);
@@ -661,8 +658,6 @@
                  target = arguments[1],
                  url = arguments[2] || window.location;
 
-                 if (window.console) console.log("setting up tagres_react");
-
                  return function(ev) {
                      ev.preventDefault();
                      if (tagbox.val().length < 2) {
@@ -683,7 +678,6 @@
                      {
                          if (/Tag does not exist/i.test(xhr.statusText)) {
                              if (/create the tag/i.test(xhr.responseText)) {
-                                 if (window.console) console.log("Inside error404");
                                  var tagFn = fK.fn.tagCreate(tag, tagAjax),
                                  $dia = $("<p>Le tag « " + tag + " » n'existe pas. "
                                           + " Souhaitez-vous le créer ?</p>");
