@@ -55,14 +55,15 @@ $(document).ready(
                        };
                    }
                   });
-        var appendResource = R.appendField("resources");
+        var appendResource = R.appendField("resources"),
+        dropResourceList = R.restartList("resources");        
 
         /*
          *  Build initial list or append to existing list.
          */
         var gotResList = function(xml, status, xhr) 
         {
-            $("#recently li").remove();
+            dropResourceList();
             $("resource", xml)
                     .each(function()
                           {
@@ -76,16 +77,19 @@ $(document).ready(
         };
 
 
-        var getRecently_aj = fK.fn.userGetObject({folksorecent: 1,
-                                                  folksosession: cesspool},
-                                                 gotResList,
-                                                 fK.fn.errorChoose(err204,
-                                                             function() {
-                                                                 alert("Resource list problem");
-                                                                 })
-                                                 );
+        var getRecently_aj = 
+            fK.fn.userGetObject({folksorecent: 1},
+                                gotResList,
+                                fK.fn.errorChoose(
+                                    fK.fn.defErrorFn(204,
+                                                     function () {
+                                                         dropResourceList();
+                                                     },
+                                                     function() {
+                                                         alert("Resource list problem");
+                                                     })));
         getRecently_aj.dataType = "xml";
-        $.ajax(getRecently_aj);
+
 
 
         /*
@@ -109,14 +113,16 @@ $(document).ready(
                   });
 
         var appendTag = K.appendField("subscribed"), 
-        unsubTag = K.deletefield("subscribed");
+        unsubTag = K.deletefield("subscribed"),
+        dropList = K.restartList("subscribed");
 
         /**
          * "Success" function for retrieval of a list of current
-         *  subscribed tags
+         *  subscribed tags. Replaces current list.
          */
         var gotList = function (xml, status, xhr) 
         {
+            dropList();
             $("tag", xml)
                 .each(function()
                       {
@@ -131,11 +137,33 @@ $(document).ready(
         };
 
         /**
+         * "success" function for appending to list of current subscribed
+         * tags. 
+         */
+        var addListItem = function (xml, status, xhr) 
+        {
+            $("tag", xml)
+                .each(function()
+                      {
+                          var tag = {}, $tagob = $(this);
+                          tag.numid = $("numid", $tagob).text();
+                          tag.tagnorm = $("tagnorm", $tagob).text();
+                          tag.link = $("link", $tagob).text();
+                          tag.display = $("display", $tagob).text();
+                          appendTag(tag);
+                      });
+            $(K).trigger("update");
+        };
+        
+
+        /**
          * "Success" function for tag removal.
          */
         var rmSub = function(xml, status, xhr) 
         {
-            console.log("I got removed");
+/*            if (window.console) {
+                console.log("I got removed");
+            }*/
             var tag = {};
             tag.numid = $("numid", xml).text();
             tag.tagnormm = $("tagnorm", xml).text();
@@ -147,20 +175,19 @@ $(document).ready(
         };
 
 
-        var getList_aj = fK.fn.userGetObject({folksosubscribed: 1,
-                                              folksosession: cesspool},
+        var getList_aj = fK.fn.userGetObject({folksosubscribed: 1},
                                              gotList,
                                              fK.fn.errorChoose(err204,
-                                                         function(xhr, textStatus, e) { 
-                                                             alert("list getting failed"); 
+                                                               function(xhr, textStatus, e) { 
+                                                                   alert(e);     
+                                                                   alert("list getting failed"); 
                                                  })
                                              );
 
         // tag needs to be defined before using this
         var addSub_aj = fK.fn.userPostObject({folksoaddsubscription: 1,
-                                              folksosession: cesspool,
                                               folksotag: undefined},
-                                             gotList,
+                                             addListItem,
                                              function(xhr, status, e) {
                                                  alert("Add subscription failed");
                                              });
@@ -170,16 +197,15 @@ $(document).ready(
         
 
         var removeSub_aj = fK.fn.userPostObject({folksormsub: 1,
-                                                 folksosession: cesspool,
                                                  folksotag: undefined},
                                                 rmSub,
                                                 function(xhr, status, e) {
-                                                    console.log(e);
+//                                                    if (window.console) console.log(e);
                                                     alert(status + " Failed to remove subscription");
                                                 });
 
         getList_aj.dataType = "xml";
-        $.ajax(getList_aj);
+        getList_aj.cache = false;
 
 
         /*
@@ -212,8 +238,10 @@ $(document).ready(
                                              ev.preventDefault();
                                              removeSub_aj.data.folksotag  
                                                  = $("a.taglink", parent).text();
-                                             console.log("going to remove");
-                                             console.log(removeSub_aj);
+/*                                             if (window.console) {
+                                                 console.log("going to remove");
+                                                 console.log(removeSub_aj);
+                                             }*/
                                              $.ajax(removeSub_aj);
                                              $.ajax(getRecently_aj);
                                          }
@@ -357,8 +385,7 @@ $(document).ready(
                            folksosetemail: $("input.emailbox", pardiv).val(),
                            folksosetinstitution: $("input.institutionbox", pardiv).val(),
                            folksosetpays: $("input.paysbox", pardiv).val(),
-                           folksosetfonction: $("input.fonctionbox", pardiv).val(),
-                           folksosession: cesspool
+                           folksosetfonction: $("input.fonctionbox", pardiv).val()
                            };
 
                        $.ajax(fK.fn.userPostObject(data, userDataUpdateSuccess, 
@@ -366,10 +393,39 @@ $(document).ready(
                    });
         var getUser_aj = 
             fK.fn.userGetObject(
-                {folksouserdata: 1, folksosession: cesspool },
+                {folksouserdata: 1},
                 userDataUpdateSuccess,
                 function() { alert("Error retrieving user data"); });
         getUser_aj.dataType = "xml";
-        $.ajax(getUser_aj);
+        getUser_aj.cache = false;
+        getRecently_aj.cache = false;
 
+
+
+
+        /*
+         *  Page load actions
+         */
+
+        if (fK.loginStatus !== false) {
+//            if (window.console) console.log("loginStaus ok");
+            $("h1.not-logged").hide();
+            $.ajax(getList_aj);
+            $.ajax(getRecently_aj);
+            $.ajax(getUser_aj);
+        }
+        else {
+  //          if (window.console) console.log("loginStaus not ok, hiding stuff");
+            $("div.login-only").hide();
+            $("#fbstuff").show();
+        }
+
+        $('body').bind('loggedIn',
+                       function() {
+                           $("div.login-only").show();
+                           $("h1.not-logged").hide();
+                           $.ajax(getList_aj);
+                           $.ajax(getRecently_aj);
+                           $.ajax(getUser_aj);
+                       });
     });
