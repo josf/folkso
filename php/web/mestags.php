@@ -59,8 +59,12 @@ require("/var/www/dom/fabula/commun3/html_start.php");
 </ul>
 </div>
 
+<div id="recently">
+<ul></ul>
+</div>
 
-<div id="userinfo">
+
+<div id="userdata">
 <p class="firstname">
   Prénom : 
   <span class="firstname">
