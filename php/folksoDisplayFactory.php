@@ -357,5 +357,31 @@ class folksoDisplayFactory {
  }
 
 
+ /**
+  * Very complete user data for admin interface
+  */
+  public function AdminUserView () {
+    return new folksoDataDisplay(
+                                 array('type' => 'xml',
+                                       'start' =>
+                                       '<?xml version="1.0"?>'
+                                       ."\n<user>\n",
+                                       'titleformat' => '',
+                                       'lineformat' =>
+                                       "\t<userid>XXX</userid>\n"
+                                       ."\t<firstname>XXX</firstname>\n"
+                                       ."\t<lastname>XXX</lastname>\n"
+                                       ."\t<nick>XXX</nick>\n"
+                                       ."\t<email>XXX</email>\n"
+                                       ."\t<institution>XXX</institution>\n"
+                                       ."\t<pays>XXX</pays>\n"
+                                       ."\t<fonction>XXX</fonction>\n"
+                                       ." XXX ", // attention, must insert xml element here!
+                                       'end' => '</user>',
+                                       'argsperline' => 9)
+                                 );
+  }
+ 
+
 }
 ?>
