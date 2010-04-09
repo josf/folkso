@@ -59,6 +59,14 @@ class folksoRight {
      public function fullName () {
        return $this->getService() . '/' . $this->getRight();
      }
+
+     public function asXmlFrag (){
+       return sprintf("<right>\n"
+                      ."\t<service>%s</service>\n"
+                      ."\t<type>%s</type>\n"
+                      ."</right>",
+                      $this->service, $this->right);
+     }
     
 }
 
@@ -176,4 +184,23 @@ class folksoRightStore {
        }
        return $this->aliases[$fullname];
      }
+
+     /**
+      * @return String : XML representation of a user's rights.
+      * @param $doctype Boolean True if you want the xml doctype, defaults to false.
+      */
+     public function xmlRights ($doctype = null) {
+       $xml = '<?xml version="1.0"?>';
+       if (is_null($doctype)) {
+         $xml = '';
+       }
+       $xml .= "<userRights>";
+       foreach (array_keys($this->store) as $serviceRight) {
+         $right = $this->store[$serviceRight];
+         $xml .= "\n" . $right->asXmlFrag();
+        }
+       $xml .= "</userRights>";
+       return $xml;
+      }
+     
 }

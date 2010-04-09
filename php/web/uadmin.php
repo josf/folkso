@@ -91,6 +91,14 @@ print $fp->facebookConnectButton();
 
 ?>
 
+<div id="usersearch">
+<h2>Recherche d'utilisateur</h2> <!-- ' -->
+<input id="searchbox" type="text"></input>
+<a href="#" id="searchok">OK</a>
+</div>
+
+<div id="userlist">
+</div>
 
 
 </div>

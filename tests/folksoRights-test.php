@@ -26,6 +26,8 @@ class testOffolksoRights extends  UnitTestCase {
      $this->assertEqual($dr->getService(),
                         'folkso',
                         'Not retreiving service name correctly');
+     $this->assertPattern('/<service>/', $dr->asXmlFrag(),
+                          "asXmlFrag does not contain service tag");
 
    }
 
@@ -61,6 +63,18 @@ class testOffolksoRights extends  UnitTestCase {
 
 
    }
+   function testXml () {
+     $st = new folksoRightStore();
+     $st->addRight(new folksoRight('folkso', 'redac'));
+     $st->addRight(new folksoRight('folkso', 'admin'));
+     $xxx = new DOMDocument();
+     $this->assertTrue($xxx->loadXML($st->xmlRights()),
+                       "Failed to load as XML");
+     $this->assertPattern('/<userRights>/', $st->xmlRights(),
+                          "Did not find userRights tag");
+
+   }
+
 }//end class
 
 $test = &new testOffolksoRights();
