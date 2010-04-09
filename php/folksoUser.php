@@ -283,6 +283,9 @@ class folksoUser {
    return $this;
   }
 
+
+
+
   /**
    * Slight different from the subclass versions of exists(). Takes
    * userid as argument rather than login id.
