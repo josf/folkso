@@ -48,7 +48,7 @@ class folksoAdmin {
      "if ('folksonomie' in Document) {\n".
      "\tdocument.folksonomie.basicAuthUser = '" 
      . $_SERVER['PHP_AUTH_USER'] . "';\n"
-     ."\tDocuemnt.folksonomie.basicAuthPasswd = '"
+     ."\tDocument.folksonomie.basicAuthPasswd = '"
      .$_SERVER['PHP_AUTH_PW']."';\n}\n";
 
      $return .=  

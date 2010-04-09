@@ -228,7 +228,7 @@ class folksoSession {
        .' from sessions s '
        .' join users u on u.userid = s.userid '
        .' left join user_data ud on ud.userid = u.userid '
-       ." where s.token = '" . $sid . "'"
+       ." where s.token = '" . $i->dbescape($sid) . "'"
        ." and s.started > now() - 1209600 ";
    }
    else {
