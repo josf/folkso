@@ -486,6 +486,16 @@
                          type: "post", data: data, dataType: "xml",
                          success: success, error: error };
              },
+             adminGetObject: function (data, success, error) {
+                 return {url: fK.cf.getAdminUrl,
+                         type: "get", data: data, dataType: "xml",
+                         success: success, error: error};
+             },
+             adminPostObject: function (data, success, error) {
+                 return {url: fK.cf.postAdminUrl || fK.cf.getAdminUrl,
+                         type: "post", data: data, dataType: "xml",
+                         success: success, error: error };
+             },
 
              /**
               * Returns a function to be associated with droptag events
