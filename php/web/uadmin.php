@@ -56,7 +56,7 @@ require("/var/www/dom/fabula/commun3/head_javascript_folkso.php");
 ?> 
 
 <script type="text/javascript" 
-  src="/tags/js/folkso-user.js">
+  src="/tags/js/folkso-admin.js">
 </script>
 <?php
 
@@ -113,6 +113,9 @@ else {
 </div>
 
 <div id="userlist">
+<ul>
+
+</ul>
 </div>
 
 
