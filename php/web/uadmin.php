@@ -122,7 +122,7 @@ else {
 </div>
 </div>
 <?php
-
+    }
 include("/var/www/dom/fabula/commun3/foot.php");
 
 ?>
