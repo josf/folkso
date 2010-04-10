@@ -365,10 +365,11 @@ class folksoDisplayFactory {
                                  array('type' => 'xml',
                                        'start' =>
                                        '<?xml version="1.0"?>'
-                                       ."\n<user>\n",
+                                       ."\n<userList>\n",
                                        'titleformat' => '',
                                        'lineformat' =>
-                                       "\t<userid>XXX</userid>\n"
+                                       "\n<user>\n"
+                                       ."\t<userid>XXX</userid>\n"
                                        ."\t<firstname>XXX</firstname>\n"
                                        ."\t<lastname>XXX</lastname>\n"
                                        ."\t<nick>XXX</nick>\n"
@@ -376,8 +377,9 @@ class folksoDisplayFactory {
                                        ."\t<institution>XXX</institution>\n"
                                        ."\t<pays>XXX</pays>\n"
                                        ."\t<fonction>XXX</fonction>\n"
-                                       ." XXX ", // attention, must insert xml element here!
-                                       'end' => '</user>',
+                                       ." XXX "
+                                       ."</user>", // attention, must insert xml element here!
+                                       'end' => '</userList>',
                                        'argsperline' => 9)
                                  );
   }
