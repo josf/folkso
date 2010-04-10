@@ -22,8 +22,13 @@ require("/var/www/dom/fabula/commun3/head_libs.php");
 require("/var/www/dom/fabula/commun3/head_folkso.php");
 
 $loggedIn = false;
+$authorized = false; //ie. logged in and has required privileges
 if ($fks->status()) {
     $loggedIn = true;
+    if (($u instanceof folksoUser) &&
+        $u->checkUserRight('folkso', 'admin')) {
+      $authorized = true;
+    }
 }
 
 require("/var/www/dom/fabula/commun3/head_dtd.php");
@@ -88,7 +93,17 @@ print $fp->facebookConnectButton();
 <?php 
 
   }
+elseif (! $authorized) {
+?>
+<h1>Accés refusé</h1>
 
+<p>Vous ne disposez pas des privilèges nécessaires pour accéder à l'interface 
+d'administration. Veuillez contacter les administrateurs du site si vous pensez 
+qu'il s'agit d'une erreur. <!-- ' --></p>
+
+<?php
+}
+else {
 ?>
 
 <div id="usersearch">
