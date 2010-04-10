@@ -84,10 +84,10 @@ $(document).ready(
                                     fK.fn.defErrorFn(204,
                                                      function () {
                                                          dropResourceList();
-                                                     },
-                                                     function() {
-                                                         alert("Resource list problem");
-                                                     })));
+                                                     }),
+                                    function() {
+                                        alert("Resource list problem");
+                                    }));
         getRecently_aj.dataType = "xml";
 
 
@@ -179,7 +179,6 @@ $(document).ready(
                                              gotList,
                                              fK.fn.errorChoose(err204,
                                                                function(xhr, textStatus, e) { 
-                                                                   alert(e);     
                                                                    alert("list getting failed"); 
                                                  })
                                              );
