@@ -98,6 +98,11 @@ print $fp->facebookConnectButton();
 </ul>
 </div>
 
+<div id="recently">
+<ul></ul>
+</div>
+
+
 
 <div id="newsubscriptions" class="login-only">
 <h2>M'abonner</h2> <!-- ' -->
@@ -114,6 +119,7 @@ print $fp->facebookConnectButton();
     <p>En renseignant les champs "courrier électronique", 
       "institution", "pays" ou "fonction", 
       j'accepte de figurer dans l'annuaire Fabula</p>
+
 
 <p class="firstname">
   Prénom : 

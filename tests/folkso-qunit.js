@@ -146,7 +146,6 @@ $(document).ready(
                                              $(sel, $place).find("em").html(data);
                                          }, 
                                          deleteElem: function(sel, $place, data) {
-                                             console.log("Just wanto delete");
                                              $(sel + " em", $place).detach();
                                          }
                                       });
@@ -256,6 +255,12 @@ $(document).ready(
                  equal($("#main ul li").text(), "Hello",
                        "Should really say 'Hello', not: " 
                       + $("#main ul li").text());
+
+                 var dropList = K.restartList("stuff");
+                 dropList();
+
+                 equal($("#main li").length, 0,
+                       "restartList function should remove all list items");
 
              });
 
