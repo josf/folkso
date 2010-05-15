@@ -119,16 +119,16 @@ abstract class folksoSearchKeyWordSet {
      return true;
    }
   
-/**
- * @param $str
- */
- public function isWord ($str) {
-   if (is_string($str) &&
-       (strlen($str) > $this->minWordLength)) {
-     return true;
+   /**
+    * @param $str
+    */
+   public function isWord ($str) {
+     if (is_string($str) &&
+         (strlen($str) > $this->minWordLength)) {
+       return true;
+     }
+     return false;
    }
-   return false;
- }
 
 
 }
