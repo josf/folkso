@@ -85,9 +85,11 @@ require("/var/www/dom/fabula/commun3/html_start.php");
     // display login buttons
 
 ?><h1 class="not-logged">Il faut vous identifier d'abord</h1> 
+
 <div id="fbstuff">
 <?php //'
 print $fp->facebookConnectButton(); 
+
 ?>
 </div>
 <?php 
