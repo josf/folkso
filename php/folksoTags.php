@@ -13,4 +13,3 @@ require_once('folksoLink.php');
 require_once('folksoResourceLink.php');
 require_once('folksoTagLink.php');
 require_once('folksoException.php');
-?>
