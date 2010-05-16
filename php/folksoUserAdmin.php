@@ -53,31 +53,7 @@ function getUsersByQuery (folksoQuery $q, folksoDBconnect $dbc, folksoSession $f
               'fname:' => 'ud.firstname',
               'uid:' => 'u.userid');
 
-    $where_elements = array();
-    foreach ($column_equivs as $kw => $val) {
-      if (is_array($req[$kw])) {
-        if (is_array($val)) {
-          foreach ($val as $col) {
-            foreach ($req[$kw] as $word) {
-              array_push($where_elements, 
-                         sprintf("%s = '%s'",
-                                 $col, $i->dbescape($word)));
-            }
-          }
-        }
-        else {
-          foreach ($req[$val] as $word) {
-            array_push($where_elements,
-                       sprintf("%s = '%s'",
-                               $val, $i->dbescape($word)));
-          }
-        }
-      }
-
-    } 
-  
-    $sql .= implode(' or ', $where_elements); 
-
+    $sql = $sq->whereClause($req, $column_equivs);
     $r->deb($sql);
     $i->query($sql);
   }

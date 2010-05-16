@@ -8,7 +8,7 @@ require('dbinit.inc');
 class testOffolksoSearch extends  UnitTestCase {
  
   function setUp() {
-    test_db_init();
+    test_db_init(1);
     /** not using teardown because this function does a truncate
         before starting. **/
      $this->dbc = new folksoDBconnect('localhost', 'tester_dude', 
@@ -57,6 +57,11 @@ class testOffolksoSearch extends  UnitTestCase {
      $this->assertTrue($kw->isKeyWord("name:"),
                        "isKeyWord should return true for name:");
 
+     $this->assertTrue($kw->isKeyWord("fname:"),
+                       "isKeyWord should return true for fname:");
+     $this->assertTrue($kw->isKeyWord("default:"),
+                       "isKeyWord should return true for default:");
+
      $this->assertTrue($kw->isNotStopWord("bob"),
                        "isNotStopWord should return true for 'bob'");
      
@@ -88,7 +93,46 @@ class testOffolksoSearch extends  UnitTestCase {
      $this->assertEqual($mich['default:'][0], "michel", 
                         "Incorrect results for 'default: Michel':" 
                         . $mich['default:'][0]);
-     print_r($mich);
+
+     $mich2 = $s->parseString('Michel');
+     $this->assertEqual($mich2['default:'][0], "michel",
+                        "Incorrect results for implied default, expecting michel: " .
+                        $mich2['default:'][0]);
+
+     $complex = $s->parseString('montaigne fname: michel');
+     $this->assertEqual($complex['default:'][0], 'montaigne',
+                        "Not finding default montaigne");
+     $this->assertEqual($complex['fname:'][0], 'michel',
+                        "Not finding fname: keyword args");
+   }
+
+
+   function testWhereClause () {
+     $kw = new folksoSearchKeyWordSetUserAdmin();
+     $s = new folksoSearchQueryParser($kw);
+     $col_eq = array('default:' => array('ud.lastname','ud.firstname'),
+              'lname:' => 'ud.lastname',
+              'fname:' => 'ud.firstname',
+              'uid:' => 'u.userid');
+     $i = new folksoDBinteract($this->dbc);
+
+     $test_query1 = 'smith fname: bob';
+     $parsed = $s->parseString($test_query1);
+     $this->assertTrue(array_key_exists('fname:', $parsed),
+                       "No fname: array key");
+     $this->assertTrue(array_key_exists('default:', $parsed),
+                       "No default: array key");
+
+     $where = $s->whereClause($parsed,
+                              $col_eq,
+                              $i);
+     $this->assertTrue(strlen($where) > 1,
+                       "Where clause is empty");
+     $this->assertPattern('/ud\.firstname/',
+                          $where,
+                          "Did not find ud.firstname in where clause");
+
+     print $where;
    }
 
 }//end class

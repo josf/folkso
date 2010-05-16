@@ -28,7 +28,14 @@ class folksoSearchQueryParser {
    }
 
   /**
+   * Parse a query string into a simple "tree", where the keys are the
+   * search keywords and the values are lists of words.
+   *
+   * If a keyword is present but has no arguments, it is associated
+   * with an empty array.
+   * 
    * @param $str
+   * @return Assoc array of arrays. (HoA in Perl)
    */
    public function parseString ($str) {
      $filtered = $this->cleanQueryString($str);
@@ -39,6 +46,7 @@ class folksoSearchQueryParser {
 
      if (! $this->keywords->isKeyWord($filtered[0])) {
        $currentKeyWord = 'default:';
+       $result['default:'] = array();
      }
 
      foreach ($filtered as $word) {
@@ -58,6 +66,7 @@ class folksoSearchQueryParser {
 
    /**
     * @param $str
+    * @return Array List of words from parse string.
     */
     public function cleanQueryString ($str) {
       $str = strtolower($str);
@@ -76,6 +85,53 @@ class folksoSearchQueryParser {
       return $filtered;
     }
    
+
+    /**
+     * Generate a where clause from a parsed query string. All parts
+     * are chained together with 'OR'.
+     *
+     * $column_equivs establishes the relationships between search
+     * query keywords and table column names. The value passed in must
+     * be an assoc array of query keywords. Their values can be either
+     * strings (simply the name of the column in the query you want to
+     * build) or arrays of column-name strings. In the second case,
+     * each column will be compared.
+     *
+     * @param $tree
+     * @param $column_equivs
+     * @param folksoDBinteract $i 
+     */
+    public function whereClause ($tree, $column_equivs, folksoDBinteract $i) {
+       
+      $where_elements = array();
+      foreach ($column_equivs as $kw => $val) {
+        if (is_array($tree[$kw])) {
+
+          /* Multiple columns in column equivs */
+          if (is_array($val)) {
+            foreach ($val as $col) {
+              foreach ($tree[$kw] as $word) {
+                array_push($where_elements, 
+                           sprintf("%s = '%s'",
+                                   $col, $i->dbescape($word)));
+              }
+            }
+          }
+          /* Single column name */
+          else {
+            foreach ($tree[$kw] as $word) {
+              array_push($where_elements,
+                         sprintf("%s = '%s'",
+                                 $val, $i->dbescape($word)));
+            }
+          }
+        }
+      } 
+  
+      $sql = implode(' or ', $where_elements); 
+      return $sql;
+    }
+    
 
     /**
      * Makes sure there is at least one keyword field in parse result $tree.
