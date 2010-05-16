@@ -18,3 +18,5 @@ $srv = new folksoServer(array( 'methods' => array('POST', 'GET', 'HEAD', 'DELETE
 $srv->addResponseObj(new folksoResponder('get',
                                          array('required' => array('folksosearch')),
                                          'getUsersByQuery'));
+
+$srv->Respond();
