@@ -71,6 +71,20 @@ class testOffolksoUserAdmin extends  UnitTestCase {
      $this->assertPattern('/Gustave/', $r->body(),
                           "Not finding Gustave Flaubert");
    }
+
+   function testEmptyResponse() {
+     $this->fks->startSession('vicktr-2010-001', true);
+     $r = getUsersByQuery(new folksoQuery(array(), array(), 
+                                          array("folksosearch" 
+                                                => "nothing")),
+                          $this->dbc, $this->fks);
+
+     $this->assertEqual($r->status, 204,
+                        "Expecting 204 for empty result, got: " 
+                        . $r->status);
+
+
+   }
 }//end class
 
 $test = &new testOffolksoUserAdmin();
