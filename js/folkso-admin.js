@@ -8,7 +8,9 @@ $(document).ready(
                     autocompleteUrl:    hostAndPath + 'tagcomplete.php',
                     postResUrl:         hostAndPath + 'resource.php',
                     getResUrl:          hostAndPath + 'resource.php',
-                    getUserUrl:         hostAndPath + 'user.php'
+                    getUserUrl:         hostAndPath + 'user.php',
+                    getAdminUrl:        hostAndPath + 'admin.php',
+                    postAdminUrl:       hostAndPath + 'admin.php'
                 });
 
 

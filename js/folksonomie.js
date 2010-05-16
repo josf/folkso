@@ -79,6 +79,7 @@
                  getTagUrl: 'url', getResUrl: 'url',
                  postTagUrl: 'url', postResUrl: 'userLevel',
                  getUserUrl: 'url', autocompleteUrl: 'url',
+                 getAdminUrl: 'url', postAdminUrl: 'url',
                  simpleTagWrap: 'html string for element creation',
                  simpleResWrap: 'html string for element creation',
                  oIdLogoPath: 'string or empty string: path to logos',
