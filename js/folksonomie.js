@@ -479,7 +479,8 @@
              },
              userGetObject: function (data, success, error) {
                  return {url: fK.cf.getUserUrl, type: "get",
-                         data: data, cache: false, dataType: "json", success: success, error: error };
+                         data: data, cache: false, dataType: "json", 
+                         success: success, error: error };
              },
              userPostObject: function (data, success, error) {
                  return {url: fK.cf.postUserUrl || fK.cf.getUserUrl,
