@@ -55,7 +55,21 @@ class testOffolksoUserAdmin extends  UnitTestCase {
                        "xml parsing failure");
      $this->assertPattern('/<userRights>/', $r->body(),
                           "Missing <userRights> tag in xml output");
+
+   }
+
+
+   function testMultiQuery () {
+     $this->fks->startSession('vicktr-2010-001', true);
+     $r = getUsersByQuery(new folksoQuery(array(), array(), 
+                                          array("folksosearch" => "default: Marcel lname: Flaubert")),
+                          $this->dbc, $this->fks);
+     $this->assertEqual($r->status, 200,
+                        "Not getting 200 for combined query (marcel or flaubert) " .
+                        $r->status);
      print "<pre><code>" . htmlspecialchars($r->body()) . "</code></pre>";
+     $this->assertPattern('/Gustave/', $r->body(),
+                          "Not finding Gustave Flaubert");
    }
 }//end class
 

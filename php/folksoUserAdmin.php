@@ -53,7 +53,7 @@ function getUsersByQuery (folksoQuery $q, folksoDBconnect $dbc, folksoSession $f
               'fname:' => 'ud.firstname',
               'uid:' => 'u.userid');
 
-    $sql = $sq->whereClause($req, $column_equivs);
+    $sql .= $sq->whereClause($req, $column_equivs, $i);
     $r->deb($sql);
     $i->query($sql);
   }
