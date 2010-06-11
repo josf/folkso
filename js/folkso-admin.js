@@ -113,6 +113,7 @@ $(document).ready(
          */
         var formatUserListItem =
             function(data) {
+                data = removeNullFields(data);
                 var ar =
                 ["<li>" ,
                  "<p class='identity'>",
@@ -121,7 +122,7 @@ $(document).ready(
                  "<span class='userid'>", data.userid, "</span>",
                  "</p>",
 
-                 "<ul> class='details>",
+                 "<ul> class='details'>",
                  "<li><span class='detail-category'>Email : </span>",
                  "<span class='detail-data'>",
                  data.email,
@@ -145,5 +146,14 @@ $(document).ready(
 
             };
 
+        var removeNullFields = 
+            function(data) {
+                for (var prop in data) {
+                    if (data.prop === 'NULL') {
+                        data.prop = '';
+                    }
+                }
+                return data;
+            };
 
     });
