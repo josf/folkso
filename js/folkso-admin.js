@@ -20,8 +20,7 @@ $(document).ready(
                   {selector: "ul",
                    init: function(sel, $place, data) {
                        $(sel, $place)
-                       .append($("<li>" + data.firstname + " " + data.lastname 
-                                 + "</li>"));
+                       .append(formatUserListItem(data));
                    },
                    match: function(data) {
                        return function (item, i) {
