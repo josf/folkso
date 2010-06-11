@@ -105,4 +105,46 @@ $(document).ready(
 
 
 
+        /** Formatting functions **/
+
+
+        /**
+         * Formats a list item. Returns complete list item as a
+         * string, including the <li>.
+         */
+        var formatUserListItem =
+            function(data) {
+                var ar =
+                ["<li>" ,
+                 "<p class='identity'>",
+                 "<span class='realname'>",  data.firstname, " " ,
+                 data.lastname,  "</span> ",
+                 "<span class='userid'>", data.userid, "</span>",
+                 "</p>",
+
+                 "<ul> class='details>",
+                 "<li><span class='detail-category'>Email : </span>",
+                 "<span class='detail-data'>",
+                 data.email,
+                 "</span></li>",
+                 "<li><span class='detail-category'>Institution : </span>",
+                 "<span class='detail-data'>",
+                 data.institution,
+                 "</span></li>",
+                 "<li><span class='detail-category'>Pays : </span>",
+                 "<span class='detail-data'>",
+                 data.pays,
+                 "</span><li>",
+                 "<li><span class='detail-category'>Fonction : </span>",
+                 "<span class='detail-data'>",
+                 data.fonction,
+                 "</span><li>",
+                 "<ul>",
+                 "</li>"];
+
+                return ar.join("");
+
+            };
+
+
     });
