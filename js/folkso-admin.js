@@ -149,8 +149,8 @@ $(document).ready(
         var removeNullFields = 
             function(data) {
                 for (var prop in data) {
-                    if (data.prop === 'NULL') {
-                        data.prop = '';
+                    if (data[prop] === 'NULL') {
+                        data[prop] = '';
                     }
                 }
                 return data;
