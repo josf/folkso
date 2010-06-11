@@ -34,6 +34,9 @@ $(document).ready(
         appendUser =            U.appendField("users"),
         dropUserList =      U.restartList("users"),
 
+        /**
+         * On successful AJAX request for complete list.
+         */
         gotUserList = function(xml, status, xhr)
         {
             dropUserList();
