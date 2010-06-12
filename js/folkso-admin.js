@@ -122,7 +122,7 @@ $(document).ready(
                  "<span class='userid'>", data.userid, "</span>",
                  "</p>",
 
-                 "<ul> class='details'>",
+                 "<ul class='details'>",
                  "<li><span class='detail-category'>Email : </span>",
                  "<span class='detail-data'>",
                  data.email,
@@ -139,7 +139,7 @@ $(document).ready(
                  "<span class='detail-data'>",
                  data.fonction,
                  "</span><li>",
-                 "<ul>",
+                 "</ul>",
                  "</li>"];
 
                 return ar.join("");
