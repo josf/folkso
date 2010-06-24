@@ -1,4 +1,6 @@
 *~
+build/*
+dist/*
 info/afaire.txt
 php/folksoFabula.php
 php/html/*
