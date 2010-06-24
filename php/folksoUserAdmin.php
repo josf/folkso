@@ -83,11 +83,13 @@ function getUsersByQuery (folksoQuery $q, folksoDBconnect $dbc, folksoSession $f
                           'fonction' => $row->fonction,
                           'email' => $row->email));
 
-    /** OK, we are still doing an select per row here, but this is
-        just the admin interface, so we assume that it is low
+    /** OK, we are still doing a select per row here, but this is just
+        the admin interface, so we assume that it is low
         traffic. Other solution would be to load right data via a left
         join, concatenate it and unpack it here. That seems like a lot
-        to do when  we already have the methods built. **/
+        to do when we already have the methods built. (Just learned
+        that Drupal installs can have hundreds of DB queries per page.)
+    **/
     $newU->loadAllRights();
     $r->t($ud->line(
                     $newU->userid,
@@ -99,7 +101,6 @@ function getUsersByQuery (folksoQuery $q, folksoDBconnect $dbc, folksoSession $f
                     htmlspecialchars($newU->pays),
                     htmlspecialchars($newU->fonction),
                     $newU->rights->xmlRights()  // careful here, no containing xml element in template                
-
                     ));
   //
   }
