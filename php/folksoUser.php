@@ -224,7 +224,40 @@ class folksoUser {
   }
 
 
+  public function userFromUserId ($uid) {
+    if ($this->validateUid($uid) === false) {
+      throw new userException("Invalid user id");
+    }
 
+    $i = new folksoDBinteract($this->dbc);
+    $sql = 
+      "select u.userid as userid, u.urlbase as urlbase, ud.lastname, ud.firstname, "
+      . " ud.email, ud.institution, ud.pays, ud.fonction "
+      . " from "
+      . " users u join user_data ud on ud.userid = u.userid "
+      . " where u.userid = '" . $i->dbescape($uid) . "'";
+    
+    $i->query($sql);
+    switch ($i->result_status) {
+    case 'NOROWS':
+      print "User not found";
+      return false;
+      break;
+    case 'OK':
+      $res = $i->result->fetch_object();
+      $this->loadUser(array(
+                            'userid' => $res->userid,
+                            'urlbase' => $res->urlbase,
+                            'firstname' => $res->firstname,
+                            'lastname' => $res->lastname,
+                            'email' => $res->email,
+                            'userid' => $res->userid,
+                            'institution' => $res->institution,
+                            'pays' => $res->pays,
+                            'fonction' => $res->fonction));
+    }
+    return $this;
+  }
 
   public function userFromLogin_base ($id, $view, $login_column, 
                                       $service = null, $right = null) {

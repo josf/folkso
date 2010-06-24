@@ -101,6 +101,17 @@ class testOffolksoUser extends  UnitTestCase {
      $this->assertEqual($u->userid, 'marcelp-2010-001');
 
    }
+
+   function testUserFromUserId () {
+     $u = new folksoUser($this->dbc);
+     $u->userFromUserId('marcelp-2010-001');
+
+     $this->assertEqual($u->firstName, 'Marcel',
+                        "First name is absent");
+
+
+   }
+   
 }//end class
 
 $test = &new testOffolksoUser();
