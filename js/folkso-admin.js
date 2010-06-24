@@ -134,11 +134,11 @@ $(document).ready(
                  "<li><span class='detail-category'>Pays : </span>",
                  "<span class='detail-data'>",
                  data.pays,
-                 "</span><li>",
+                 "</span></li>",
                  "<li><span class='detail-category'>Fonction : </span>",
                  "<span class='detail-data'>",
                  data.fonction,
-                 "</span><li>",
+                 "</span></li>",
                  "</ul>",
                  "</li>"];
 
