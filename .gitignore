@@ -60,3 +60,7 @@ folksologfile
 /js/deps/temp.js
 /js/folksonomie.max.js
 /xsl/atomtest.xml
+/tests/#dbinit.inc#
+/tests/#folkso-tests.el#
+/tests/.#dbinit.inc
+/tests/.#folkso-tests.el
