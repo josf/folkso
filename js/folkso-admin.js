@@ -20,7 +20,8 @@ $(document).ready(
                   {selector: "ul",
                    init: function(sel, $place, data) {
                        $(sel, $place)
-                       .append(formatUserListItem(data));
+                       .append($(formatUserListItem(data))
+                              .click(userModClickHandler));
                    },
                    match: function(data) {
                        return function (item, i) {
@@ -114,6 +115,7 @@ $(document).ready(
         var formatUserListItem =
             function(data) {
                 data = removeNullFields(data);
+
                 var ar =
                 ["<li>" ,
                  "<p class='identity'>",
@@ -121,6 +123,10 @@ $(document).ready(
                  data.lastname,  "</span> ",
                  "<span class='userid'>", data.userid, "</span>",
                  "</p>",
+                 '<div class="userrights">',
+                 '<span class="detail-category">Niveau d\'accès :</span> ',
+                 
+                 rightRadioButtons(data.rights),
 
                  "<ul class='details'>",
                  "<li><span class='detail-category'>Email : </span>",
@@ -154,6 +160,96 @@ $(document).ready(
                     }
                 }
                 return data;
-            };
+            },
+
+        /*
+         * This would need to be updated if we have more than 3 types
+         * of privileges.
+         */
+        maxRight =
+            function(arr) {
+                if (arr.length === 1 && 
+                    (arr[0] === 'admin') ||
+                    (arr[0] === 'redac')) {
+                    return arr[0];
+                }
+                else {
+                    var best;
+                    for (var i = 0; i < arr.length; i++) {
+                        if (arr[i] === 'admin') {
+                            return 'admin';
+                        }
+                        else if (arr[i] === 'redac') {
+                            best = 'redac';
+                        }
+                    }
+                    return best; // if neither redac nor admin, best is empty
+                }
+            },
+
+        /* Returns string for the rights part. Takes the list of rights (data.rights)
+         * 
+         */
+                  rightRadioButtons =
+                  function(rightlist) {
+                      var highestRight = maxRight(rightlist);
+                      var html = 
+                          '<span class="currentright">' 
+                          + highestRight
+                          + '</span>'
+                          + '<div class="rightmod">Modifier: ';
+
+                      var rights = ['user', 'redacteur', 'admin'];
+                      for (var i = 0; i < 3;i++) {
+                          var closing = 
+                              (rights[i] === highestRight) ? ' checked="checked"/>' : '/>';
+                          html = 
+                              html 
+                              + '<input type="radio" name="rightmod" value="'
+                              + rights[i] + '"'
+                              + closing + " " + rights[i] + " ";
+                      }
+                      html = html + '<a href="#" class="rightModButton">Modifier</a></div>';
+                      return html;
+                  },
+
+
+                  userModClickHandler = 
+                  function (ev) {
+                      /**
+                       * $list is the entire list output by formatUserListItem()
+                       */
+                      var $target = $(ev.target), $list = $(this);
+
+                      if ($target.hasClass("rightModButton")) {
+                          ev.preventDefault(); 
+                          rightMod_aj($target, $list);
+                      }
+                  },
+
+                  rightMod_aj =
+                  function($button, $list) {
+                      var 
+                      rightRadioButtons = $button.closest("div.rightmod")
+                          .find("input"),
+                      newRight = $button.closest("div.rightmod")
+                          .find("input:checked").val();
+
+                      jQuery.ajax(fK.fn.adminPostObject(
+                                      {folksouser: $("span.userid", $list).text(),
+                                       folksonewright: newRight},
+
+                                      /*success */
+                                      function(xml, status, xhr) {
+                                          $("span.currentright", $list).text(newRight);
+                                      },
+
+                                      /* failure */
+                                      function() {
+                                          alert("Failed to update right");
+                                      }
+
+                                  ));
+                  };
 
     });
