@@ -76,6 +76,7 @@ class folksoRight {
 class folksoRightStore {
   private $store;
   public $aliases;
+  public $rightValues;
   private $loc;
 
   /**
@@ -88,6 +89,12 @@ class folksoRightStore {
                             'folkso/tagdelete' => array('folkso/admin'),
                             'folkso/redac' => array('folkso/admin')
                             );
+     $this->rightValues = array('folkso/redac' => 1,
+                                'folkso/create' => 1,
+                                'folkso/delete' => 1,
+                                'folkso/tagdelete' => 2,
+                                'folkso/admin' => 2);
+     
    }
    
    /**
@@ -106,11 +113,22 @@ class folksoRightStore {
     */
     public function addRight (folksoRight $dr) {
       if ($this->store[$dr->fullName()] instanceof folksoRight){
-        throw new Exception('Cannot add right because it is already present');
+        throw new rightException('Cannot add right because it is already present');
       }
       $this->store[$dr->fullName()] = $dr;
     }
-   
+
+    /**
+     * @return An array of all the current rights (without service)
+     */
+     public function rightsAsArray () {
+       $arr = array();
+       foreach ($this->store as $right) {
+         $arr[] = $right->getRight();
+       }
+       return $arr;
+     }
+    
 
     /**
      * Deletes the right. Exception on missing right.
@@ -126,6 +144,24 @@ class folksoRightStore {
       }
     }
 
+
+    /**
+     * @param Integer or string  $rightValue Maximum right value the store should contain.
+     *
+     * All others will be removed.
+     */
+     public function removeRightsAbove ($rightValue) {
+       if (! is_numeric($rightValue)) {
+         $rightValue = $this->rightValues[$rightValue];
+       }
+       foreach ($this->store as $right) {
+         if ($this->rightValues[$right->fullName()] > $rightValue) {
+           $this->removeRight($right);
+         }
+       }
+     }
+    
+
     /**
      * Throws exception if right to modifiy has not been assigned yet.
      *
@@ -136,16 +172,25 @@ class folksoRightStore {
          $this->store[$dr->fullName()] = $dr;
        }
        else {
-         throw new Exception('Cannot modify right that has not been added');
+         throw new rightException('Cannot modify right that has not been added');
        }
      }
 
      /**
+      * Always returns true for "folkso/user"
+      *
       * @param $service String Name of the service we are checking
       * @param $right String Name of the right we are checking
       * @return Bool True if authorized, false if not.
       */
      public function checkRight ($service, $right) {
+       
+       /* A slight hack, but sometimes we need to be able to say "user" even though
+          user is the absence of rights */
+       if (($service == 'folkso') && ($right == 'user')) {
+         return true;
+       }
+
        if ($this->store[$service . '/' . $right] instanceof folksoRight){
          return true;
        }
@@ -157,6 +202,34 @@ class folksoRightStore {
          }
        return false;
        }
+
+
+     /**
+      * @param $service
+      *
+      * Relies on $rs->rightValues
+      */
+      public function maxRight () {
+        $currentBest = 0;
+        foreach ($this->store as $right) {
+          if (array_key_exists($right->fullName(), $this->rightValues) &&
+              ($this->rightValues[$right->fullName()] > $currentBest)) {
+            $currentBest = $this->rightValues[$right->fullName()];
+          }
+        }
+        switch ($currentBest) {
+        case 0:
+          return 'user';
+          break;
+        case 1:
+          return 'redac';
+          break;
+        case 2:
+          return 'admin';
+          break;
+        }
+      }
+     
 
      /**
       * Like checkRight() but returns a folksoRight object when
@@ -201,6 +274,45 @@ class folksoRightStore {
         }
        $xml .= "</userRights>";
        return $xml;
+      }
+
+     /**
+      * Write current state of rights to database
+      *
+      * @param folksoUser $u
+      */
+      public function synchDB (folksoUser $u) {
+          $i = new folksoDBinteract($u->dbc);
+          $i->query('delete from users_rights '
+                    .' where '
+                    ." userid = '" . $i->dbescape($u->userid) . "'"
+                    ." and "
+                    ." rightid not in ('"
+                    . implode("', '", $this->rightsAsArray())
+                    ."')");
+          
+          /**
+           * We filter out "user" here because it is not an actual
+           * right, but the absence of rights. This setup was a
+           * mistake, user should be a right but I do not have time to
+           * change it right now.
+           */
+          $rightsArray = array_filter($this->rightsAsArray(),
+                                      create_function('$a',
+                                                      'if ($a != "user") { return true; }'));
+          if (count($rightsArray) > 0) {
+
+            $valueBits = array();
+            foreach ($rightsArray as $rg) {
+              $valueBits[] = sprintf("('%s', '%s')",
+                                     $i->dbescape($u->userid),
+                                     $rg);
+            }
+            $i->query('insert ignore into users_rights '
+                      .' (userid, rightid) '
+                      ." values "
+                      .  implode(", ", $valueBits));
+          }
       }
      
 }

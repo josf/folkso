@@ -75,6 +75,99 @@ class testOffolksoRights extends  UnitTestCase {
 
    }
 
+   function testMax () {
+     $st = new folksoRightStore();
+     $st->addRight(new folksoRight('folkso', 'redac'));
+     $st->addRight(new folksoRight('folkso', 'admin'));
+
+     $this->assertEqual($st->maxRight(), 'admin',
+                        'Should get "admin" as max right here, not: ' . $st->maxRight());
+
+     $st2 = new folksoRightStore();
+     $this->assertEqual($st2->maxRight(), 'user',
+                        "Empty right store should have 'user' as max right, not: "
+                        . $st2->maxRight());
+   }
+
+
+
+
+   function testRightsAsArray() {
+     $st = new folksoRightStore();
+     $st->addRight(new folksoRight('folkso', 'admin'));
+     $arr = $st->rightsAsArray();
+     $this->assertTrue(is_array($arr), 'rightsAsArray not returning array');
+     $this->assertEqual($arr[0], 'admin', 
+                        'Not getting single right in $arr[0]. '
+                        . 'expecting "admin", got ' . $arr[0]);
+     
+
+   }
+
+
+   function testRemoveRightsAbove() {
+     $st = new folksoRightStore();
+     $st->addRight(new folksoRight('folkso', 'admin'));
+     print_r($st);
+     $this->assertTrue($st->checkRight('folkso', 'admin'));
+     $st->removeRightsAbove(1);
+     $this->assertFalse($st->checkRight('folkso', 'admin'),
+                        "Admin right should be gone now");
+
+
+     $st->addRight(new folksoRight('folkso', 'redac'));
+     $st->removeRightsAbove(0);
+     $this->assertFalse($st->checkRight('folkso', 'redac',
+                                        "redac should be gone now"));
+
+     $this->assertEqual($st->rightValues['folkso/redac'], 1,
+                        "expecting 1 as right value for redac, not: " . 
+                        $st->rightValues['folkso/redac']);
+     $this->assertEqual($st->rightValues['folkso/admin'], 2,
+                        "expecting 2 as right val for admin, not: " . 
+                        $st->rightValues['folkso/redac']);
+
+     $st2 = new folksoRightStore();
+     $st2->addRight(new folksoRight('folkso', 'admin'));
+     $st2->removeRightsAbove('redac');
+     $this->assertFalse($st2->checkRight('folkso', 'admin'),
+                        "removeRightsAbove failed with string arg");
+   }
+
+
+   function testSynchDB () {
+     $u = new folksoUser($this->dbc);
+     $u->userFromUserId('vicktr-2010-001');
+     $u->loadAllRights();
+
+     $this->assertTrue($u->checkUserRight('folkso', 'admin'),
+                       "Victor does not have admin right to start with");
+
+     $u->rights->removeRight(new folksoRight('folkso', 'admin'));
+
+     try {
+       $u->rights->synchDB($u);
+     }
+     catch (dbException $e) {
+       print '<p>' . $e->sqlquery . '</p>';
+     }
+
+     $u2 = new folksoUser($this->dbc);
+     $u2->userFromUserId('vicktr-2010-001');
+     $u2->loadAllRights();
+     $this->assertFalse($u2->checkUserRight('folkso', 'admin'),
+                        "Expecting false on right check for removed right");
+
+     $u->rights->addRight(new folksoRight('folkso', 'redac'));
+     $u->rights->synchDB($u);
+     $u3 = new folksoUser($this->dbc);
+     $u3->userFromUserId('vicktr-2010-001');
+     $u3->loadAllRights();
+     $this->assertTrue($u3->checkUserRight('folkso', 'redac'),
+                       "expecting true on right check for added right (redac)");
+
+   }
+
 }//end class
 
 $test = &new testOffolksoRights();
