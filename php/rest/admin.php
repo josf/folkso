@@ -19,4 +19,9 @@ $srv->addResponseObj(new folksoResponder('get',
                                          array('required' => array('folksosearch')),
                                          'getUsersByQuery'));
 
+$srv->addResponseObj(new folksoResponder('post',
+                                         array('required' => array('folksouser',
+                                                                   'folksonewright')),
+                                         'newMaxRight'));
+
 $srv->Respond();

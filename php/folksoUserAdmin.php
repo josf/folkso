@@ -107,3 +107,69 @@ function getUsersByQuery (folksoQuery $q, folksoDBconnect $dbc, folksoSession $f
   $r->t($ud->endform());
   return $r;
 }
+
+
+function newMaxRight (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
+  $r = new folksoResponse();
+  try {
+    $u = $fks->userSession(null, 'folkso', 'admin');
+    if (! $u instanceof folksoUser) {
+      return $r->insufficientPrivileges();
+    }
+  }
+  catch (dbException $e) {
+    return $r->handleDBexception($e);
+  }
+
+  $user = new folksoUser($dbc); // the user we work on, not the user we are
+
+  $right = new folksoRight('bogus', 'right');
+
+  try {
+    if (! $user->validateUid($q->get_param('user'))) {
+      return $r->setError(400, "Invalid user id",
+                          "The user id received is formally invalid.");
+    }
+
+    if (! $user->userFromUserId($q->get_param('user'))) {
+      return $r->setError(404, "User not found",
+                          "This user does not seem to exist currently");
+
+    }
+
+    if (! $right->validateRight($q->get_param('newright'))) {
+      return $r->setError(400, "Invalid right",
+                          "This right is invalid or malformed.");
+    }
+    $user->loadAllRights();
+  }
+  catch (dbException $e) {
+    return $r->handleDBexception($e);
+  }
+
+  if ($user->rights->checkRight('folkso', $q->get_param('newright'))) {
+    $user->rights->removeRightsAbove($q->get_param('newright'));
+    try {
+      $user->rights->synchDB($user);
+    }
+    catch (dbException $e) {
+      return $r->handleDBexception($e);
+    }
+    return $r->setOk(200, 'OK, rights removed', "Rights removed, set to: " . $q->get_param('newright'));
+  }
+  else {
+    try {
+      $user->rights->addRight(new folksoRight('folkso', $q->get_param('newright')));
+    }
+    catch (rightException $e) {
+      // do nothing (the exception means right is already there, so we are fine)
+    }
+    try {
+      $user->rights->synchDB($user);
+      return $r->setOk(200, 'OK, rights added', "Right established: " . $q->get_param('newright'));
+    }
+    catch (dbException $e) {
+      return $r->handleDBexception($e);
+    }
+  }
+}

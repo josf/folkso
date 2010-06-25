@@ -85,6 +85,54 @@ class testOffolksoUserAdmin extends  UnitTestCase {
 
 
    }
+
+
+   function testRightStuff () {
+     $this->fks->startSession('vicktr-2010-001', true);
+     
+     // pretest
+     $gus = new folksoUser($this->dbc);
+     $gus->userFromUserId('gustav-2010-001');
+     $this->assertFalse($gus->checkUserRight('folkso', 'admin'),
+                        'gustav should not have admin rights yet. pb with test?');
+
+     $r = newMaxRight(new folksoQuery(array(), array(),
+                                      array("folksonewright" => "admin",
+                                            "folksouser" => "gustav-2010-001")),
+                      $this->dbc, $this->fks);
+     $this->assertIsA($r, folksoResponse,
+                      "Ob prob");
+     $this->assertEqual($r->status, 200,
+                        "Should have 200 status, not: " . $r->status . " " .
+                        $r->statusMessage . " " . $r->error_body);
+
+     print $r->statusMessage;
+     $gus2 = new folksoUser($this->dbc2);
+     $gus2->userFromUserId('gustav-2010-001');
+     $gus2->loadAllRights();
+     print_r($gus2->rights);
+
+     $this->assertTrue($gus2->checkUserRight('folkso', 'admin'),
+                        'gustav should have admin rights now');
+     
+     $r2 = newMaxRight(new folksoQuery(array(), array(),
+                                      array("folksonewright" => "user",
+                                            "folksouser" => "gustav-2010-001")),
+                      $this->dbc, $this->fks);
+
+     $this->assertEqual($r2->status, 200,
+                        "Expecting 200 status, not: " . $r2->status . " " 
+                        . $r2->statusMessage . " " . $r2->error_body);
+
+     $gus3 = new folksoUser($this->dbc2);
+     $gus3->userFromUserId('gustav-2010-001');
+     $gus3->loadAllRights();
+     $this->assertFalse($gus3->checkUserRight('folkso', 'redac'),
+                        'gustav should not have redac rights, only user');
+     print_r($gus3->rights);
+
+
+   }
 }//end class
 
 $test = &new testOffolksoUserAdmin();
