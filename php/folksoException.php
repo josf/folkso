@@ -43,3 +43,4 @@ class dbSessionQueryException extends dbQueryException { }
 class userException extends Exception {}
 class badUseridException extends userException { }
 class badUrlbaseException extends userException { }
+class rightException extends userException { }
