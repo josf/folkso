@@ -155,7 +155,9 @@ function newMaxRight (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) 
     catch (dbException $e) {
       return $r->handleDBexception($e);
     }
-    return $r->setOk(200, 'OK, rights removed', "Rights removed, set to: " . $q->get_param('newright'));
+    $r->setOk(200, 'OK, rights removed');
+    $r->t("Rights removed, set to: " . $q->get_param('newright'));
+    return $r;
   }
   else {
     try {
@@ -166,7 +168,9 @@ function newMaxRight (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) 
     }
     try {
       $user->rights->synchDB($user);
-      return $r->setOk(200, 'OK, rights added', "Right established: " . $q->get_param('newright'));
+      $r->setOk(200, 'OK, rights added');
+      $r->t("Right established: " . $q->get_param('newright'));
+      return $r;
     }
     catch (dbException $e) {
       return $r->handleDBexception($e);
