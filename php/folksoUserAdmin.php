@@ -41,9 +41,10 @@ function getUsersByQuery (folksoQuery $q, folksoDBconnect $dbc, folksoSession $f
 
     $sql = ' select u.userid, u.urlbase, '
       . ' ud.firstname, ud.lastname, ud.email, ud.nick, ud.institution, '
-      . ' ud.pays, ud.fonction ' 
+      . ' ud.pays, ud.fonction, count(te.tag_id) as tagacts ' 
       . ' from users u '
-      . ' join user_data ud on ud.userid = u.userid '
+      . ' left join user_data ud on ud.userid = u.userid '
+      . ' left join tagevent te on te.userid = u.userid '
       . ' where ';
 
     $column_equivs 
@@ -53,6 +54,7 @@ function getUsersByQuery (folksoQuery $q, folksoDBconnect $dbc, folksoSession $f
               'uid:' => 'u.userid');
 
     $sql .= $sq->whereClause($req, $column_equivs, $i);
+    $sql .= " group by u.userid ";
     $r->deb($sql);
     $i->query($sql);
   }
