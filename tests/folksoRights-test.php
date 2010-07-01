@@ -90,6 +90,16 @@ class testOffolksoRights extends  UnitTestCase {
    }
 
 
+   function testRightExists () {
+     $st = new folksoRightStore();
+     $this->assertTrue($st->rightExists('folkso', 'redac'),
+                       "redac exists, this should return true here");
+     $this->assertFalse($st->rightExists('folkso', 'florkdork'),
+                        "fake right should return false here");
+                                         
+
+
+   }
 
 
    function testRightsAsArray() {
@@ -132,6 +142,15 @@ class testOffolksoRights extends  UnitTestCase {
      $st2->removeRightsAbove('redac');
      $this->assertFalse($st2->checkRight('folkso', 'admin'),
                         "removeRightsAbove failed with string arg");
+   }
+
+   function testRemoveRightsAboveDeux () {
+     $st = new folksoRightStore();
+     $st->addRight(new folksoRight('folkso', 'admin'));
+     
+     $this->assertEqual(count($st->store), 1,
+                        "Store should have one item now, not: " . count($st->store));
+
    }
 
 

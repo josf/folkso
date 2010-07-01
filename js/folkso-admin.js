@@ -1,7 +1,196 @@
 
+(function(){
+     var fK = window.fK;
+     fK.admin = {
+         /** Formatting functions **/
+
+
+         /**
+          * Formats a list item. Returns complete list item as a
+          * string, including the <li>.
+          */
+         formatUserListItem:
+         function(data) {
+             data = fK.admin.removeNullFields(data);
+
+             var ar =
+                 ["<li>" ,
+                  "<p class='identity'>",
+                  "<span class='realname'>",  data.firstname, " " ,
+                  data.lastname,  "</span> ",
+                  "<span class='userid'>", data.userid, "</span>",
+                  "</p>",
+                  '<div class="userrights">',
+                  '<span class="detail-category">Niveau d\'accès :</span> ',
+                  
+                  fK.admin.rightRadioButtons(data.rights),
+
+                  "<ul class='details'>",
+                  "<li><span class='detail-category'>Email : </span>",
+                  "<span class='detail-data'>",
+                  data.email,
+                  "</span></li>",
+                  "<li><span class='detail-category'>Institution : </span>",
+                  "<span class='detail-data'>",
+                  data.institution,
+                  "</span></li>",
+                  "<li><span class='detail-category'>Pays : </span>",
+                  "<span class='detail-data'>",
+                  data.pays,
+                  "</span></li>",
+                  "<li><span class='detail-category'>Fonction : </span>",
+                  "<span class='detail-data'>",
+                  data.fonction,
+                  "</span></li>",
+                  "</ul>",
+                  "</li>"];
+
+             return ar.join("");
+
+         },
+
+         removeNullFields:
+         function(data) {
+             for (var prop in data) {
+                 if (data[prop] === 'NULL') {
+                     data[prop] = '';
+                 }
+             }
+             return data;
+         },
+
+         /*
+          * This would need to be updated if we have more than 3 types
+          * of privileges.
+          */
+         maxRight:
+         function(arr) {
+             if (arr.length === 1 && 
+                 (arr[0] === 'admin') ||
+                 (arr[0] === 'redac')) {
+                 return arr[0];
+             }
+             else {
+                 var best;
+                 for (var i = 0; i < arr.length; i++) {
+                     if (arr[i] === 'admin') {
+                         return 'admin';
+                     }
+                     else if (arr[i] === 'redac') {
+                         best = 'redac';
+                     }
+                 }
+                 return best; // if neither redac nor admin, best is empty
+             }
+         },
+
+         /* Returns string for the rights part. Takes the list of rights (data.rights)
+          * 
+          */
+         rightRadioButtons:
+         function(rightlist) {
+             var 
+             highestRight = rightlist ? fK.admin.maxRight(rightlist) : 'user',
+             html = 
+                 '<span class="currentright">' 
+                 + highestRight
+                 + '</span>'
+                 + '<div class="rightmod">Modifier: ',
+
+             rights = ['user', 'redacteur', 'admin'];
+
+             if (highestRight === 'redac') {
+                 highestRight = 'redacteur';
+             }
+
+             for (var i = 0; i < 3;i++) {
+                 var closing = 
+                     (rights[i] === highestRight) ? ' checked="checked"/>' : '/>';
+                 html = 
+                     html 
+                     + '<input type="radio" name="rightmod" value="'
+                     + rights[i] + '"'
+                     + closing + " " + rights[i] + " ";
+             }
+             html = html + '<a href="#" class="rightModButton">Modifier</a></div>';
+             return html;
+         },
+
+         /*
+          * Handler for all clicks in the user data fields. 
+          */
+         userModClickHandler:
+         function (ev) {
+             /**
+              * $list is the entire list output by formatUserListItem()
+              */
+             var $target = $(ev.target), $list = $("#userlist");
+
+             if ($target.hasClass("rightModButton")) {
+                 ev.preventDefault(); 
+                 fK.admin.rightMod_aj($target, $list);
+             }
+         },
+
+         /*
+          * @return Array List of strings naming the user's rights. 
+          * @param xml Any xml that contains only one user rights list. Can also be a jQuery object.
+          * 
+          * You cannot call this on an entire user list.
+          * 
+          * Empty array means "user". 
+          */
+         parseUserRights: 
+         function (xml) {
+             var $xml = xml.jquery ? xml : $(xml), rights = ["user"]; 
+             if ($("right", $xml).length > 0) {
+                 $("right", $xml).each(
+                     function() {
+                         rights.push($("type", $(this)).text()); 
+                     });
+             }
+             return rights;
+         },
+
+         rightMod_aj:
+         function($button, $list) {
+             var 
+             rightRadioButtons = $button.closest("div.rightmod")
+                 .find("input"),
+             newRight = $button.closest("div.rightmod")
+                 .find("input:checked").val();
+             
+             if (newRight === 'redacteur') {
+                 newRight = 'redac';
+             }
+             var aj_ob = fK.fn.adminPostObject(
+                 {folksouser: $("span.userid", $list).text(),
+                  folksonewright: newRight},
+
+                 function(xml, status, xhr) {
+                     var rights = fK.admin.parseUserRights(xml);
+                     $button.closest("div.userrights").find("span.currentright")
+                         .text(rights[rights.length - 1]);
+                 },
+
+                 function() {
+                     alert("Failed to update right");
+                 });
+             //                aj_ob.dataType = 'text';
+             jQuery.ajax(aj_ob);
+         }
+     };
+
+})();
+
+
+
+
 $(document).ready(
     function()
     {
+
+        var f = fK.admin; //shortcut for our functions
 
         var hostAndPath = '/tags/';
         fK.init({
@@ -20,8 +209,8 @@ $(document).ready(
                   {selector: "ul",
                    init: function(sel, $place, data) {
                        $(sel, $place)
-                       .append($(formatUserListItem(data))
-                              .click(userModClickHandler));
+                       .append($(f.formatUserListItem(data))
+                              .click(f.userModClickHandler));
                    },
                    match: function(data) {
                        return function (item, i) {
@@ -54,15 +243,7 @@ $(document).ready(
                         user.pays       = $("pays", $usob).text();
                         user.fonction   = $("fonction", $usob).text();
 
-                        if ($("right", $usob).length > 0) {
-                            user.rights = [];
-                            $("right", $usob)
-                                .each(
-                                    function () {
-                                        user.rights.push($("type", $(this)).text());   
-                                    });
-                        }
-
+                        user.rights = f.parseUserRights($usob);
                         appendUser(user);
                     });
             $(U).trigger("update");
@@ -98,171 +279,12 @@ $(document).ready(
                     alert("Vous devez saisir une requête d'abord");
                 }
                 else {
+                    var $currentList = $("ul", "#userlist");
                     getUsers_aj.data.folksosearch = searchtext;
                     $.ajax(getUsers_aj);
                 }
             });
 
-
-
-        /** Formatting functions **/
-
-
-        /**
-         * Formats a list item. Returns complete list item as a
-         * string, including the <li>.
-         */
-        var formatUserListItem =
-            function(data) {
-                data = removeNullFields(data);
-
-                var ar =
-                ["<li>" ,
-                 "<p class='identity'>",
-                 "<span class='realname'>",  data.firstname, " " ,
-                 data.lastname,  "</span> ",
-                 "<span class='userid'>", data.userid, "</span>",
-                 "</p>",
-                 '<div class="userrights">',
-                 '<span class="detail-category">Niveau d\'accès :</span> ',
-                 
-                 rightRadioButtons(data.rights),
-
-                 "<ul class='details'>",
-                 "<li><span class='detail-category'>Email : </span>",
-                 "<span class='detail-data'>",
-                 data.email,
-                 "</span></li>",
-                 "<li><span class='detail-category'>Institution : </span>",
-                 "<span class='detail-data'>",
-                 data.institution,
-                 "</span></li>",
-                 "<li><span class='detail-category'>Pays : </span>",
-                 "<span class='detail-data'>",
-                 data.pays,
-                 "</span></li>",
-                 "<li><span class='detail-category'>Fonction : </span>",
-                 "<span class='detail-data'>",
-                 data.fonction,
-                 "</span></li>",
-                 "</ul>",
-                 "</li>"];
-
-                return ar.join("");
-
-            };
-
-        var removeNullFields = 
-            function(data) {
-                for (var prop in data) {
-                    if (data[prop] === 'NULL') {
-                        data[prop] = '';
-                    }
-                }
-                return data;
-            },
-
-        /*
-         * This would need to be updated if we have more than 3 types
-         * of privileges.
-         */
-        maxRight =
-            function(arr) {
-                if (arr.length === 1 && 
-                    (arr[0] === 'admin') ||
-                    (arr[0] === 'redac')) {
-                    return arr[0];
-                }
-                else {
-                    var best;
-                    for (var i = 0; i < arr.length; i++) {
-                        if (arr[i] === 'admin') {
-                            return 'admin';
-                        }
-                        else if (arr[i] === 'redac') {
-                            best = 'redac';
-                        }
-                    }
-                    return best; // if neither redac nor admin, best is empty
-                }
-            },
-
-        /* Returns string for the rights part. Takes the list of rights (data.rights)
-         * 
-         */
-        rightRadioButtons =
-            function(rightlist) {
-                var 
-                highestRight = rightlist ? maxRight(rightlist) : 'user',
-                html = 
-                    '<span class="currentright">' 
-                    + highestRight
-                    + '</span>'
-                    + '<div class="rightmod">Modifier: ',
-
-                rights = ['user', 'redacteur', 'admin'];
-
-                if (highestRight === 'redac') {
-                    highestRight = 'redacteur';
-                }
-
-                for (var i = 0; i < 3;i++) {
-                    var closing = 
-                        (rights[i] === highestRight) ? ' checked="checked"/>' : '/>';
-                    html = 
-                        html 
-                        + '<input type="radio" name="rightmod" value="'
-                        + rights[i] + '"'
-                        + closing + " " + rights[i] + " ";
-                }
-                html = html + '<a href="#" class="rightModButton">Modifier</a></div>';
-                return html;
-            },
-
-        /*
-         * Handler for all clicks in the user data fields. 
-         */
-        userModClickHandler = 
-            function (ev) {
-                /**
-                 * $list is the entire list output by formatUserListItem()
-                 */
-                var $target = $(ev.target), $list = $(this);
-
-                if ($target.hasClass("rightModButton")) {
-                    ev.preventDefault(); 
-                    rightMod_aj($target, $list);
-                }
-            },
-
-        rightMod_aj =
-            function($button, $list) {
-                var 
-                rightRadioButtons = $button.closest("div.rightmod")
-                    .find("input"),
-                newRight = $button.closest("div.rightmod")
-                    .find("input:checked").val();
-                
-                if (newRight === 'redacteur') {
-                    newRight = 'redac';
-                }
-                var aj_ob = fK.fn.adminPostObject(
-                                {folksouser: $("span.userid", $list).text(),
-                                 folksonewright: newRight});
-                aj_ob.dataType = 'text';
-
-                jQuery.ajax(aj_ob,
-
-                                /*success */
-                            function(xml, status, xhr) {
-                                $("span.currentright", $list).text(newRight);
-                                },
-
-                            /* failure */
-                            function() {
-                                alert("Failed to update right");
-                            }
-                           );
-            };
         
     });
+

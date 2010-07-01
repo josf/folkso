@@ -148,7 +148,25 @@ function newMaxRight (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) 
   }
 
   if ($user->rights->checkRight('folkso', $q->get_param('newright'))) {
+
+    $rightMessage = '';
+
+    // remove possible offending old rights...
     $user->rights->removeRightsAbove($q->get_param('newright'));
+    // ...then add a the new right in case it is not present yet.
+    try {
+      $user->rights->addRight(new folksoRight('folkso',
+                                              $q->get_param('newright')));
+      $rightMessage = "New right assigned to user";
+    }
+    catch (rightAlreadyPresentException $e) {
+      // do nothing, we are good
+      $rightMessage = "Rights removed";
+    }
+    catch (rightInvalidException $e) {
+      return $r->setError('400', 'Invalid right', 'This right was not recognized.');
+    }
+
     try {
       $user->rights->synchDB($user);
     }
@@ -156,20 +174,26 @@ function newMaxRight (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) 
       return $r->handleDBexception($e);
     }
     $r->setOk(200, 'OK, rights removed');
-    $r->t("Rights removed, set to: " . $q->get_param('newright'));
+    $r->t($user->rights->xmlRights(true));   // we want xml doctype
+    $r->setType('xml');
     return $r;
   }
-  else {
+  else {  // we are upgrading the user to better rights
+    $rightMessage = '';
+
     try {
       $user->rights->addRight(new folksoRight('folkso', $q->get_param('newright')));
+      $rightMessage = "User promoted";
     }
     catch (rightException $e) {
       // do nothing (the exception means right is already there, so we are fine)
+      $rightMessage = "User already had this right";
     }
     try {
       $user->rights->synchDB($user);
-      $r->setOk(200, 'OK, rights added');
-      $r->t("Right established: " . $q->get_param('newright'));
+      $r->setOk(200, 'OK. ' . $rightMessage);
+      $r->t($user->rights->xmlRights(true)); // true means we want xml doctype
+      $r->setType('xml');
       return $r;
     }
     catch (dbException $e) {

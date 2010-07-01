@@ -74,7 +74,7 @@ class folksoRight {
  * @package Folkso
  */
 class folksoRightStore {
-  private $store;
+  public $store;
   public $aliases;
   public $rightValues;
   private $loc;
@@ -108,12 +108,24 @@ class folksoRightStore {
     }
    
 
+    /**
+     * Check if a right exists.
+     *
+     * @param $right String
+     * @param $service String
+     * @return Boolean
+     */
+    public function rightExists ($service, $right) {
+      return array_key_exists($service . '/' . $right, $this->rightValues);
+     }
+    
+
    /**
     * @param folksoRight $dr
     */
     public function addRight (folksoRight $dr) {
       if ($this->store[$dr->fullName()] instanceof folksoRight){
-        throw new rightException('Cannot add right because it is already present');
+        throw new rightAlreadyPresentException('Cannot add right because it is already present');
       }
       $this->store[$dr->fullName()] = $dr;
     }
@@ -151,11 +163,10 @@ class folksoRightStore {
      * All others will be removed.
      */
      public function removeRightsAbove ($rightValue) {
-       if (! is_numeric($rightValue)) {
-         $rightValue = $this->rightValues[$rightValue];
-       }
+       $rightNumber = is_numeric($rightValue) ? $rightValue : $this->rightValues[$rightValue];
+       
        foreach ($this->store as $right) {
-         if ($this->rightValues[$right->fullName()] > $rightValue) {
+         if ($this->rightValues[$right->fullName()] > $rightNumber) {
            $this->removeRight($right);
          }
        }
