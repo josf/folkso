@@ -48,7 +48,11 @@ class folksoSearchQueryParser {
        $result['default:'] = array();
      }
 
+
      foreach ($filtered as $word) {
+       /*
+        * isKeyWord() takes special words too. They just get empty arrays.
+        */
        if ($this->keywords->isKeyWord($word)) {
          $currentKeyWord = $word;
          if (! is_array($result[$currentKeyWord])) {
@@ -103,6 +107,15 @@ class folksoSearchQueryParser {
      */
     public function whereClause ($tree, $column_equivs, folksoDBinteract $i) {
        
+
+      // check for special keywords first. currently, this means we ignore the rest.
+      $specialArgs = array();
+      foreach ($tree as $kw => $val) {
+        if ($this->keywords->isSpecial($kw)) {
+          $specialArgs[] = $kw;
+        }
+      }
+
       $where_elements = array();
       foreach ($column_equivs as $kw => $val) {
         if (is_array($tree[$kw])) {
@@ -128,8 +141,13 @@ class folksoSearchQueryParser {
         }
       } 
   
-      $sql = implode(' or ', $where_elements); 
-      return $sql;
+      if (count($specialArgs) == 0) {
+        $sql = implode(' or ', $where_elements); 
+        return $sql;
+      }
+      else {
+
+      }
     }
     
 
@@ -151,6 +169,9 @@ abstract class folksoSearchKeyWordSet {
 
   public $keywords;
 
+
+  public $special;
+
   /**
    * Ignore these. Assoc array structured like $this->keywords.
    */
@@ -159,7 +180,8 @@ abstract class folksoSearchKeyWordSet {
   public $minWordLength;
 
   public function isKeyWord($word) {
-    if (array_key_exists($word, $this->keywords)) {
+    if ((array_key_exists($word, $this->keywords)) ||
+        (array_key_exists($word, $this->special))){
       return true;
     }
     return false;
@@ -186,12 +208,23 @@ abstract class folksoSearchKeyWordSet {
      return false;
    }
 
-
+   /**
+    * @param $word String
+    */
+    public function isSpecial ($word) {
+      if (array_key_exists($word, $this->special)) {
+        return true;
+      }
+      return $false;
+    }
+   
+    abstract public function specialWhereclause($keyword);
 }
 
 class folksoSearchKeyWordSetUserAdmin extends folksoSearchKeyWordSet {
   public $keywords;
   public $stopwords;
+  public $special;
 
   /**
    * @param 
@@ -202,5 +235,23 @@ class folksoSearchKeyWordSetUserAdmin extends folksoSearchKeyWordSet {
                              'recent:' => null, 'default:' => null);
      $this->stopwords = array();
      $this->minWordLength = 2;
+     $this->special = array('recent:' => null);
    }
+
+   /**
+    * @param $keyword
+    */
+    public function specialWhereclause ($keyword) {
+      $wheres = array(
+                      'recent:' => ''
+
+
+                      );
+
+      if (array_key_exists($keyword, $wheres)) {
+        return $wheres[$keyword];
+      }
+   
+    }
+   
 }

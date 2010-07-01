@@ -135,6 +135,33 @@ class testOffolksoSearch extends  UnitTestCase {
      print $where;
    }
 
+   function testWhereClauseSomeMore () {
+     $kw = new folksoSearchKeyWordSetUserAdmin();
+     $s = new folksoSearchQueryParser($kw);
+     $col_eq = array('default:' => array('ud.lastname','ud.firstname'),
+              'lname:' => 'ud.lastname',
+              'fname:' => 'ud.firstname',
+              'uid:' => 'u.userid');
+     $i = new folksoDBinteract($this->dbc);
+
+     $qu1 = $s->parseString('fname: Hugo');
+     $this->assertTrue(array_key_exists('fname:', $qu1),
+                       "No fname: key");
+
+     $where = $s->whereClause($qu1, $col_eq, $i);
+     $this->assertTrue(strlen($where) > 1,
+                       "where clause is empty");
+     $this->assertEqual($where, "ud.firstname = 'hugo'",
+                        "Incorrect where clause, expecting ud.firstname = 'Hugo', ".
+                        " got " . $where);
+
+     $qu2 = $s->parseString('flaubert fname: michel');
+     print $s->whereClause($qu2, $col_eq, $i);
+
+
+
+   }
+
 }//end class
 
 $test = &new testOffolksoSearch();
