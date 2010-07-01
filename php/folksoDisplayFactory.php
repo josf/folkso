@@ -377,10 +377,11 @@ class folksoDisplayFactory {
                                        ."\t<institution>XXX</institution>\n"
                                        ."\t<pays>XXX</pays>\n"
                                        ."\t<fonction>XXX</fonction>\n"
+                                       ."\t<tagcount>XXX</tagcount>\n"
                                        ." XXX "
                                        ."</user>", // attention, must insert xml element here!
                                        'end' => '</userList>',
-                                       'argsperline' => 9)
+                                       'argsperline' => 10)
                                  );
   }
  

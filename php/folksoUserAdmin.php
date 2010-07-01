@@ -55,7 +55,11 @@ function getUsersByQuery (folksoQuery $q, folksoDBconnect $dbc, folksoSession $f
 
     $sql .= $sq->whereClause($req, $column_equivs, $i);
     $sql .= " group by u.userid ";
+
+#ifdef DEBUG
     $r->deb($sql);
+#endif
+
     $i->query($sql);
   }
   catch(dbException $e) {
@@ -85,6 +89,7 @@ function getUsersByQuery (folksoQuery $q, folksoDBconnect $dbc, folksoSession $f
                           'fonction' => $row->fonction,
                           'email' => $row->email));
 
+
     /** OK, we are still doing a select per row here, but this is just
         the admin interface, so we assume that it is low
         traffic. Other solution would be to load right data via a left
@@ -102,6 +107,7 @@ function getUsersByQuery (folksoQuery $q, folksoDBconnect $dbc, folksoSession $f
                     htmlspecialchars($newU->institution),
                     htmlspecialchars($newU->pays),
                     htmlspecialchars($newU->fonction),
+                    htmlspecialchars($row->tagacts),
                     $newU->rights->xmlRights()  // careful here, no containing xml element in template                
                     ));
   //

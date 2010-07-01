@@ -86,6 +86,18 @@ class testOffolksoUserAdmin extends  UnitTestCase {
 
    }
 
+   function testTagCount () {
+     $this->fks->startSession('vicktr-2010-001', true);
+     $r = getUsersByQuery(new folksoQuery(array(), array(), 
+                                          array('folksosearch' => 'flaubert')),
+                          $this->dbc, $this->fks);
+
+     $this->assertEqual($r->status, 200,
+                        "Testing the test. Should get 200 here, not: " . $r->status);
+     print $r->debug;
+
+   }
+
 
    function testRightStuff () {
      $this->fks->startSession('vicktr-2010-001', true);
