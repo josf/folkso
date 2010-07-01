@@ -52,7 +52,8 @@
          removeNullFields:
          function(data) {
              for (var prop in data) {
-                 if (data[prop] === 'NULL') {
+                 if ((data[prop] === 'NULL') ||
+                     (data[prop] == "0")){
                      data[prop] = '';
                  }
              }
