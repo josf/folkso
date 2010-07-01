@@ -68,7 +68,8 @@ class folksoSearchQueryParser {
     * @return Array List of words from parse string.
     */
     public function cleanQueryString ($str) {
-      $str = strtolower($str);
+      $str = strip_tags(strtolower($str));
+
       $raw = array_map('trim', explode(' ', $str));
       $filtered = array_filter($raw, array($this->keywords, 'isWord'));
 
