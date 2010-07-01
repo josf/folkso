@@ -198,3 +198,23 @@ else
 end if;
 end$$
 delimiter ;
+
+delimiter $$
+drop procedure if exists delete_user_with_tags$$
+create procedure delete_user_with_tags(
+       userid_arg varchar(255)
+       )
+
+begin
+
+        delete from user_data where userid = userid_arg;
+        delete from fb_ids where userid = userid_arg;
+        delete from oid_urls where userid = userid_arg;
+        delete from sessions where userid = userid_arg;
+        delete from users_rights where userid = userid_arg;
+        delete from tagevent where userid = userid_arg;
+        delete from users where userid = userid_arg;
+
+
+end$$
+delimiter ;      

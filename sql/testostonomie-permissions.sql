@@ -26,3 +26,4 @@ grant execute on procedure cloud_by_timestamp to 'tester_dude'@'localhost';
 grant execute on procedure tagmerge to 'tester_dude'@'localhost';
 grant execute on procedure metamod to 'tester_dude'@'localhost';
 grant execute on procedure tagrank to 'tester_dude'@'localhost';
+grant execute on procedure delete_user_with_tags to 'tester_dude'@'localhost';
