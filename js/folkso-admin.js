@@ -207,7 +207,7 @@ $(document).ready(
 
         var U = new fK.Ktl("#userlist");
         U.addList("users",
-                  {selector: "ul",
+                  {selector: "ul#masterlist",
                    init: function(sel, $place, data) {
                        $(sel, $place)
                        .append($(f.formatUserListItem(data))

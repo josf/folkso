@@ -110,12 +110,17 @@ else {
 
 <div id="usersearch">
 <h2>Recherche d'utilisateur</h2> <!-- ' -->
+
+<p>
+    Saisir un ou plusieurs noms ou prénoms. Pour affiner la recherche, vous pouvez utiliser des mots clés suivis d'un deux-points, comme <strong>fname:</strong> pour les prénoms, ou <strong>lname:</strong> pour les noms de famille. 
+</p><!-- ' -->
+
 <input id="searchbox" type="text"></input>
 <a href="#" id="searchok">OK</a>
 </div>
 
 <div id="userlist">
-<ul>
+<ul id="masterlist">
 
 </ul>
 </div>
