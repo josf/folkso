@@ -343,7 +343,14 @@ class folksoUser {
      return false;
    }
   
-
+   /**
+    * Delete user and all associated tags. This is permanent.
+    */
+    public function deleteUserWithTags () {
+      $i = new folksoDBinteract($this->dbc);
+      $i->query("call delete_user_with_tags('" . $i->dbescape($this->userid) . "')");
+    }
+   
 
 /**
  * @param 

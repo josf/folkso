@@ -111,6 +111,19 @@ class testOffolksoUser extends  UnitTestCase {
 
 
    }
+
+   function testDeleteUserWithTags () {
+     $u = new folksoUser($this->dbc);
+     $this->assertTrue($u->userFromUserId('gustav-2010-001'),
+                       "Failed to load gustav user ob");
+     $u->deleteUserWithTags();
+     $u2 = new folksoUser($this->dbc);
+     $this->assertFalse($u->userFromUserId('gustav-2010-001'),
+                        "Should no longer be able to load gustav here");
+     
+
+
+   }
    
 }//end class
 
