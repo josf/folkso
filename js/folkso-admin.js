@@ -42,6 +42,10 @@
                   "<span class='detail-data'>",
                   data.fonction,
                   "</span></li>",
+                  "<li><span class='detail-category tagcount'>Actes de taggage :</span>",
+                  "<span class='detail-data'>",
+                  data.tagcount,
+                  "</li>",
                   "</ul>",
                   "</li>"];
 
@@ -243,6 +247,7 @@ $(document).ready(
                         user.institution = $("institution", $usob).text();
                         user.pays       = $("pays", $usob).text();
                         user.fonction   = $("fonction", $usob).text();
+                        user.tagcount   = $("tagcount", $usob).text();
 
                         user.rights = f.parseUserRights($usob);
                         appendUser(user);
