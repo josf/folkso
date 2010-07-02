@@ -59,6 +59,9 @@ class folksoSearchQueryParser {
            $result[$currentKeyWord] = array();
          }
        }
+       elseif ($this->keywords->isSpecial($word)) {
+         $result[$word] = null;
+       }
        else {
          $result[$currentKeyWord][] = $word;
        }
@@ -104,19 +107,14 @@ class folksoSearchQueryParser {
      * @param $tree
      * @param $column_equivs
      * @param folksoDBinteract $i 
+     * @param $and Boolean (optional) True if you want AND logic instead of OR
      */
-    public function whereClause ($tree, $column_equivs, folksoDBinteract $i) {
-       
-
-      // check for special keywords first. currently, this means we ignore the rest.
-      $specialArgs = array();
-      foreach ($tree as $kw => $val) {
-        if ($this->keywords->isSpecial($kw)) {
-          $specialArgs[] = $kw;
-        }
-      }
-
+    public function whereClause ($tree, 
+                                 $column_equivs, 
+                                 folksoDBinteract $i) {
       $where_elements = array();
+       
+      // check for special keywords first. currently, this means we ignore the rest.
       foreach ($column_equivs as $kw => $val) {
         if (is_array($tree[$kw])) {
 
@@ -141,8 +139,14 @@ class folksoSearchQueryParser {
         }
       } 
   
+      $logic = ' or ';
+      if (array_key_exists('and:', $tree)) {
+        $logic = ' and ';
+      }
+
       if (count($specialArgs) == 0) {
-        $sql = implode(' or ', $where_elements); 
+        $sql = implode($logic,  // AND or OR
+                       $where_elements); 
         return $sql;
       }
       else {
@@ -180,8 +184,7 @@ abstract class folksoSearchKeyWordSet {
   public $minWordLength;
 
   public function isKeyWord($word) {
-    if ((array_key_exists($word, $this->keywords)) ||
-        (array_key_exists($word, $this->special))){
+    if (array_key_exists($word, $this->keywords)) {
       return true;
     }
     return false;
@@ -232,10 +235,11 @@ class folksoSearchKeyWordSetUserAdmin extends folksoSearchKeyWordSet {
    public function __construct () {
      $this->keywords = array('name:' => null, 'uid:' => null,
                              'fname:' => null, 'lname:' => null,
-                             'recent:' => null, 'default:' => null);
+                             'recent:' => null, 'default:' => null
+                             );
      $this->stopwords = array();
      $this->minWordLength = 2;
-     $this->special = array('recent:' => null);
+     $this->special = array('recent:' => null, 'and:' => null);
    }
 
    /**

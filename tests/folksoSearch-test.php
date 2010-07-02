@@ -64,6 +64,9 @@ class testOffolksoSearch extends  UnitTestCase {
 
      $this->assertTrue($kw->isNotStopWord("bob"),
                        "isNotStopWord should return true for 'bob'");
+
+     $this->assertTrue($kw->isSpecial("and:"),
+                       "and: should appear as special");
      
    }
 
@@ -104,6 +107,13 @@ class testOffolksoSearch extends  UnitTestCase {
                         "Not finding default montaigne");
      $this->assertEqual($complex['fname:'][0], 'michel',
                         "Not finding fname: keyword args");
+
+     //and 
+     $ander = $s->parseString('and: bob fred');
+     $this->assertEqual($ander['default:'][0], 'bob',
+                        "Default array does not contain first element");
+     $this->assertTrue(array_key_exists('and:', $ander),
+                       "and: array key not present");
    }
 
 
@@ -132,7 +142,16 @@ class testOffolksoSearch extends  UnitTestCase {
                           $where,
                           "Did not find ud.firstname in where clause");
 
-     print $where;
+     
+     // and 
+     $qu2 = 'and: fname: bob fname: fred';
+     $parse2 = $s->parseString($qu2);
+     $this->assertEqual($s->whereClause($parse2, $col_eq, $i),
+                        "ud.firstname = 'bob' and ud.firstname = 'fred'",
+                        "expecting 'ud.firstname = bob and ud.firstname = fred', got " . $s->whereClause($parse2,
+                                                                           $col_eq,
+                                                                           $i));
+
    }
 
    function testWhereClauseSomeMore () {
@@ -156,10 +175,14 @@ class testOffolksoSearch extends  UnitTestCase {
                         " got " . $where);
 
      $qu2 = $s->parseString('flaubert fname: michel');
-     print $s->whereClause($qu2, $col_eq, $i);
+     
 
 
-
+     $qu3 = $s->parseString('and: flaubert michel');
+     $this->assertTrue(array_key_exists('and:', $qu3),
+                       "and: keyword not showing up in where clause");
+     $this->assertPattern('/\sand\s/i', $s->whereClause($qu3, $col_eq, $i),
+                          "and not showing up in where clause");
    }
 
 }//end class
