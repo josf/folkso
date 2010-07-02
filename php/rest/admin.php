@@ -24,4 +24,9 @@ $srv->addResponseObj(new folksoResponder('post',
                                                                    'folksonewright')),
                                          'newMaxRight'));
 
+$srv->addResponseObj(new folksoResponder('post',
+                                         array('required' => array('folksouser',
+                                                                   'folksodelete')),
+                                         'deleteUserAndTags'));
+
 $srv->Respond();

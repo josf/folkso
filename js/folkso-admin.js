@@ -46,7 +46,9 @@
                   "<span class='detail-data'>",
                   data.tagcount,
                   "</li>",
+
                   "</ul>",
+                  "<p><a class='delete-user' href='#'>Supprimer l'utilisateur</a></p>",
                   "</li>"];
 
              return ar.join("");
@@ -135,6 +137,10 @@
                  ev.preventDefault(); 
                  fK.admin.rightMod_aj($target, $list);
              }
+             else if ($target.is("a.delete-user")) {
+                     ev.preventDefault();
+                     fK.admin.delUser($target, $list);
+             }
          },
 
          /*
@@ -183,6 +189,68 @@
                  });
              //                aj_ob.dataType = 'text';
              jQuery.ajax(aj_ob);
+         },
+
+         delUser: 
+         function ($target, $list) {
+
+             var 
+             userid = $("span.userid", $list).text(),
+             username = $("span.realname", $list).text(),
+             tagcount = $("span.tagcount", $list).text();
+
+             /* prepare the ajax function first */
+             var delUser_aj = 
+                 function () {
+                     var aj_ob =
+                         fK.fn.adminPostObject(
+                             {folksodelete: "1",
+                              folksouser: userid},
+
+                             /* success */
+                             function() {
+                                 $list.hide();
+                             },
+                         
+                             /* failure */
+                             function(xhr, textStatus, errThrown) {
+                                 alert("Error: " + textStatus);
+                             }
+                         );
+                     aj_ob.dataType = "text";
+                     jQuery.ajax(aj_ob);
+                 };
+
+             /*
+              * Confirmation box
+              */
+             var diaString = "<p>L'utilisateur <span class='deluser-name'>" 
+                 + username + "</span>"
+                 + " sera supprimé définitivement. ";
+
+             if (tagcount > 0) {
+                 diaString += tagcount;
+                 diaString += " tags (actes de taggage) sont associés à ce ";
+                 diaString += " compte utilisateur. Ils seront suppprimés également. ";
+             }
+             diaString += "</p>";
+
+             var $dia = $(diaString);
+             $list.append($dia);
+
+             /* prepare the dialog box */
+             $dia.dialog( {title: "Supprimer un compte utilisateur",
+                           modal: true,
+                           buttons: {
+                               "Abandoner": function () {
+                                   $dia.dialog("close");
+                               },
+                               "Supprimer": function() {
+                                   delUser_aj();
+                                   $dia.dialog("close");
+                               }
+                           }
+                          });
          }
      };
 

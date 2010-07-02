@@ -209,3 +209,35 @@ function newMaxRight (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) 
     }
   }
 }
+
+
+function deleteUserAndTags (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
+  $r = new folksoResponse();
+  try {
+    $u = $fks->userSession(null, 'folkso', 'admin');
+    if (! $u instanceof folksoUser) {
+      return $r->insufficientPrivileges();
+    }
+
+    $user = new folksoUser($dbc); // the user we work on, not the user we are
+    if ($user->validateUid($q->get_param('user'))) {
+      $victim = $q->get_param('user');
+    }
+    else {
+      return $r->setError(400, "Malformed user id", 
+                          "Something is wrong. The user parameter must be a valid "
+                          . " userid.");
+    }
+
+    if (! $user->userFromId($victim)) { // returns false when user does not exist
+      return $r->setError(404, "User not found", 
+                          "The user you tried to delete was not found.");
+    }
+    $user->deleteUserWithTags();
+    $r->t("User successfully deleted.");
+    return $r->setOK("Deleted");
+  }
+  catch (dbException $e) {
+    return $r->handleDBexception($e);
+  }
+}
