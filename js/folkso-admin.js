@@ -97,8 +97,11 @@
          rightRadioButtons:
          function(rightlist) {
              var 
-             highestRight = rightlist ? fK.admin.maxRight(rightlist) : 'user',
-             html = 
+             highestRight = fK.admin.maxRight(rightlist);
+
+             highestRight = highestRight || "user";
+             
+             var html = 
                  '<span class="currentright">' 
                  + highestRight
                  + '</span>'
@@ -169,19 +172,26 @@
              rightRadioButtons = $button.closest("div.rightmod")
                  .find("input"),
              newRight = $button.closest("div.rightmod")
-                 .find("input:checked").val();
-             
+                 .find("input:checked").val(),
+             userList = $button.closest("li");
+             /*
+#ifdef DEBUG */
+             if (window.console) {
+                 console.log("userList length: " + userList.length);
+                 console.log($("span.currentright", userList).length);
+             };
+/*
+#endif            */
              if (newRight === 'redacteur') {
                  newRight = 'redac';
              }
              var aj_ob = fK.fn.adminPostObject(
-                 {folksouser: $("span.userid", $list).text(),
+                 {folksouser: $("span.userid", userList).text(),
                   folksonewright: newRight},
 
                  function(xml, status, xhr) {
                      var rights = fK.admin.parseUserRights(xml);
-                     $button.closest("div.userrights").find("span.currentright")
-                         .text(rights[rights.length - 1]);
+                     $("span.currentright", userList).text(rights[rights.length - 1]);
                  },
 
                  function() {
@@ -195,9 +205,12 @@
          function ($target, $list) {
 
              var 
-             userid = $("span.userid", $list).text(),
-             username = $("span.realname", $list).text(),
-             tagcount = $("span.tagcount", $list).text();
+             $userLi = $target.closest("li");
+
+             var 
+             userid = $("span.userid", $userLi).text(),
+             username = $("span.realname", $userLi).text(),
+             tagcount = $("span.tagcount", $userLi).text();
 
              /* prepare the ajax function first */
              var delUser_aj = 
@@ -209,7 +222,7 @@
 
                              /* success */
                              function() {
-                                 $list.hide();
+                                 $userLi.hide();
                              },
                          
                              /* failure */
