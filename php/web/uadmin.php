@@ -16,7 +16,7 @@ require_once('folksoPage.php');
 if ((! $fp) || (! $fp instanceof folksoPage)) {
   $fp = new folksoPage();
 } 
-
+$titre = "Folksonomies : gérer les utilisateurs";
 
 require("/var/www/dom/fabula/commun3/head_libs.php");
 require("/var/www/dom/fabula/commun3/head_folkso.php");
@@ -117,6 +117,9 @@ else {
 <p>
     Le mot clé <strong>and:</strong> peut s'utiliser avec <strong>fname:</strong>
     et <strong>lname:</strong> pour limiter les recherches : "and: fname: Marcel lname: Proust" exclut tous les Proust et tous les Marcel sauf "Marcel Proust".
+</p>
+<p>
+    Le mot clé <strong>recent:</strong> retourne une liste des utilisateurs les plus récemment inscrits.
 </p>
 
 <input id="searchbox" type="text"></input>

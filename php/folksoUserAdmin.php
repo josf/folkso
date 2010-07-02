@@ -44,8 +44,8 @@ function getUsersByQuery (folksoQuery $q, folksoDBconnect $dbc, folksoSession $f
       . ' ud.pays, ud.fonction, count(te.tag_id) as tagacts ' 
       . ' from users u '
       . ' left join user_data ud on ud.userid = u.userid '
-      . ' left join tagevent te on te.userid = u.userid '
-      . ' where ';
+      . ' left join tagevent te on te.userid = u.userid ';
+
 
     $column_equivs 
       = array('default:' => array('ud.lastname','ud.firstname'),
@@ -53,9 +53,16 @@ function getUsersByQuery (folksoQuery $q, folksoDBconnect $dbc, folksoSession $f
               'fname:' => 'ud.firstname',
               'uid:' => 'u.userid');
 
+    if (! array_key_exists('recent:', $req)) {
+      $sql .=  ' where ';
+      $sql .= $sq->whereClause($req, $column_equivs, $i);
+    }
+    $sql .= " group by u.userid";
     
-    $sql .= $sq->whereClause($req, $column_equivs, $i);
-    $sql .= " group by u.userid ";
+    if (array_key_exists('recent:', $req)) {
+      $sql .= ' order by u.created desc ';
+    }
+    $sql .= " limit 50 ";
 
 #ifdef DEBUG
     $r->deb($sql);
@@ -230,7 +237,7 @@ function deleteUserAndTags (folksoQuery $q, folksoDBconnect $dbc, folksoSession 
                           . " userid.");
     }
 
-    if (! $user->userFromId($victim)) { // returns false when user does not exist
+    if (! $user->userFromUserId($victim)) { // returns false when user does not exist
       return $r->setError(404, "User not found", 
                           "The user you tried to delete was not found.");
     }
