@@ -53,6 +53,7 @@ function getUsersByQuery (folksoQuery $q, folksoDBconnect $dbc, folksoSession $f
               'fname:' => 'ud.firstname',
               'uid:' => 'u.userid');
 
+    
     $sql .= $sq->whereClause($req, $column_equivs, $i);
     $sql .= " group by u.userid ";
 

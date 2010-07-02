@@ -113,7 +113,11 @@ else {
 
 <p>
     Saisir un ou plusieurs noms ou prénoms. Pour affiner la recherche, vous pouvez utiliser des mots clés suivis d'un deux-points, comme <strong>fname:</strong> pour les prénoms, ou <strong>lname:</strong> pour les noms de famille. 
-</p><!-- ' -->
+</p><!--  -->
+<p>
+    Le mot clé <strong>and:</strong> peut s'utiliser avec <strong>fname:</strong>
+    et <strong>lname:</strong> pour limiter les recherches : "and: fname: Marcel lname: Proust" exclut tous les Proust et tous les Marcel sauf "Marcel Proust".
+</p>
 
 <input id="searchbox" type="text"></input>
 <a href="#" id="searchok">OK</a>
