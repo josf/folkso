@@ -48,6 +48,45 @@ a.unsub {
 font-size: 8pt;
 }
 
+input.rightsel {
+display: inline; margin-left: 0.5em;
+}
+
+form.rightsel {
+display: inline; 
+}
+
+label.rightsel {
+display: inline;
+  margin-left: 0.2em;
+}
+
+#masterlist li {
+margin-top: 1em;
+margin-bottom: 0.3em;
+border: 1px grey solid;
+padding: 0.3em;
+}
+
+#masterlist .details li {
+margin-top: 0.2em; margin-bottom: 0.1em;
+border: none;
+padding: 0.1em;
+}
+
+span.realname {
+  font-weight: bold;
+size: 14pt;
+}
+
+a.rightModButton {
+  margin-left: 0.7em;
+}
+
+a.delete-user, a.rightModButton {
+color: #e86a24;
+  font-weight: bold;
+}
 </style>
 
 <?php
@@ -84,7 +123,7 @@ require("/var/www/dom/fabula/commun3/html_start.php");
   if (!$loggedIn) {
     // display login buttons
 
-?><h1 class="not-logged">Il faut vous identifier d'abord</h1> 
+?><h1 class="not-logged">Il faut vous identifier d'abord</h1> <!-- -->
 
 <div id="fbstuff">
 <?php //'
