@@ -91,6 +91,12 @@
              }
          },
 
+         /*
+          * rightRadioButtons uses this as a counter of the number of
+          *  radio button groups on the page
+          */
+         radioGroupCounter: 0,
+
          /* Returns string for the rights part. Takes the list of rights (data.rights)
           * 
           */
@@ -99,13 +105,25 @@
              var 
              highestRight = fK.admin.maxRight(rightlist);
 
+             /*
+#ifdef DEBUG */
+         if (window.console) console.log("highestRight " + highestRight);    
+/*
+#endif */
+
              highestRight = highestRight || "user";
-             
+         /*
+#ifdef DEBUG */
+         if (window.console) console.log("highestRight redux: " + highestRight);    
+/*
+#endif */    
              var html = 
                  '<span class="currentright">' 
                  + highestRight
                  + '</span>'
-                 + '<div class="rightmod">Modifier: ',
+                 + '<div class="rightmod">'
+                 + '<form>'
+                 + '<fieldset><legend>Modifier</legend>',
 
              rights = ['user', 'redacteur', 'admin'];
 
@@ -116,13 +134,25 @@
              for (var i = 0; i < 3;i++) {
                  var closing = 
                      (rights[i] === highestRight) ? ' checked="checked"/>' : '/>';
+/*
+#ifdef DEBUG */
+if (window.console) console.log("rights I is : " + rights[i] + " and highest is " + highestRight + " closing " + closing);                 
+
+/*
+#endif  */
                  html = 
                      html 
-                     + '<input type="radio" name="rightmod" value="'
+                     + '<input type="radio" id="rightmod' + rights[i] 
+                     + fK.admin.radioGroupCounter + '" name="rightmod' 
+                     + fK.admin.radioGroupCounter + '" class="rightsel" value="'
                      + rights[i] + '"'
-                     + closing + " " + rights[i] + " ";
+                     + closing + " " + "<label class='rightsel'>" + rights[i] + "</label> ";
              }
-             html = html + '<a href="#" class="rightModButton">Modifier</a></div>';
+             html = html
+                 + '<a href="#" class="rightModButton">Modifier</a>'
+                 + '</fieldset></form></div>';
+                 ++fK.admin.radioGroupCounter;
+
              return html;
          },
 
