@@ -671,3 +671,96 @@ function getUserData (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) 
   $r->setType('xml');
   return $r;
 }
+
+function getFavoriteTags (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
+  $r = new folksoResponse();
+  $emptyU = new folksoUser($dbc);
+
+  // Will contain the uid of the user whose tags we are getting.
+  $userid;
+
+  // $userid is either a parameter...
+  if ($q->is_param('uid')) {
+    if ($emptyU->validateUid($q->get_param('uid'))) {
+      $userid = $q->get_param('uid');
+    }
+    else {
+      return $r->setError(400, "Malformed user id", "This userid cannot be read");
+    }
+  }
+  // ... or can be obtained through the calling user.
+  else {
+    $u = $fks->userSession();
+    if ($u instanceof folksoUser) {
+      $userid = $u->userid;
+    }
+  }
+  
+  if (strlen($userid) < 5) {
+    return $r->setError(400, "No user specified", 
+                        "You must either log in or set the uid parameter");
+  }
+  elseif (! $emptyU->validateUid($userid)) {
+    return $r->setError(400, "Malformed user id",
+                        "The userid supplied cannot be read");
+  }
+  
+  try {
+    if (! $emptyU->exists($userid)) {
+      return $r->setError(404, "Unknown user",
+                          "Check your data, this user does not appear to exist");
+    }
+
+    $i = new folksoDBinteract($dbc);
+    $sql = 
+      sprintf( ' select '
+               .' count(te.resource_id) as eventCount, '
+               .' te.tag_id as tag_id, t.tagdisplay as tagdisplay, t.tagnorm as tagnorm '
+               .' from tagevent te '
+               .' join tag t on t.id = te.tag_id '
+               ." where te.userid = '%s' "
+               .' group by tag_id '
+               .' order by eventCount desc '
+               .' limit 20 ',
+               $i->dbescape($userid));
+#ifdef DEBUG
+    $r->deb($sql);
+#endif
+    $i->query($sql);
+    
+    if ($i->rowCount == 0) {
+      return $r->setOk(204, "No tags found");
+    }
+      
+    $r->setOk(200, "Tags found");
+
+    $df = new folksoDisplayFactory();
+    if ($q->content_type() == 'json') {
+      $disp = $df->json(array('tag_id', 'tagnorm', 'link', 'tagdisplay', 'count'));
+      $r->setType('json');
+    }
+    else {
+      $disp = $df->simpleTagList('xml');
+      $r->setType('xml');
+    }
+
+    $r->t($disp->startform());
+    while ($row = $i->result->fetch_object()) {
+      $link = new folksoTagLink($row->tagnorm);
+      $r->t($disp->line(htmlspecialchars($row->tag_id),
+                        htmlspecialchars($row->tagnorm),
+                        htmlspecialchars($link->getLink()),
+                        htmlspecialchars($row->tagdisplay),
+                        htmlspecialchars($row->eventCount)));
+    }
+    $r->t($disp->endform());
+    return $r;
+
+
+  }
+  catch(dbException $e) {
+    return $r->handleDBexception($e);
+  }
+
+
+}

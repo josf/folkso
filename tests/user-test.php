@@ -329,6 +329,45 @@ class testOfuser extends  UnitTestCase {
 
    }
 
+   function testFaveTags () {
+     $r = getFavoriteTags(new folksoQuery(array(), array(), 
+                                          array('folksouid' => 'gustav-2010-001')),
+                          $this->dbc,
+                          $this->fks);
+     $this->assertIsA($r, folksoResponse, "ob prob");
+     $this->assertEqual($r->status, 200, 
+                        "Status " . $r->status . ", expecting 200: "
+                        . $r->statusMessage . " " . $r->error_body);
+
+     $xxx = new DOMDocument();
+     $this->assertTrue($xxx->loadXML($r->body()),
+                       'xml failure ' . $r->body());
+
+     $r_missing_uid = getFavoriteTags(new folksoQuery(array(), array(), array()),
+                                      $this->dbc, $this->fks);
+     $this->assertEqual($r_missing_uid->status, 400, 
+                        "No uid at all should give 400, not: " . $r->missing_uid->status);
+                                                      
+
+
+     $r_maluser = getFavoriteTags(new folksoQuery(array(), array(),
+                                                  array('folksouid' => 'zorkzork')),
+                                  $this->dbc,
+                                  $this->fks);
+     $this->assertEqual($r_maluser->status, 400,
+                        'malformed uid should return 400, not: ' . $r_maluser->status);
+
+     $r_nouser = getFavoriteTags(new folksoQuery(array(), array(),
+                                                 array('folksouid' => 'nobody-2010-001')),
+                                 $this->dbc,
+                                 $this->fks);
+
+     $this->assertEqual($r_nouser->status, 404,
+                        "Should get a 404 on  noexistant user, not: " . $r_nouser->status);
+                        
+
+   }
+
 
 }//end class
 
