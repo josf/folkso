@@ -98,10 +98,6 @@ print $fp->facebookConnectButton();
 </ul>
 </div>
 
-<div id="recently">
-<ul></ul>
-</div>
-
 
 
 <div id="newsubscriptions" class="login-only">
