@@ -42,6 +42,18 @@ class testOffolksoUser extends  UnitTestCase {
 
   }
 
+
+  function testValidateUid () {
+    $u = new folksoUser($this->dbc);
+    $this->assertTrue($u->validateUid('herman-2010-004'),
+                      "valid uid should validate");
+    $this->assertFalse($u->validateUid("bobiskingoftheworld"),
+                       "invalid uid should fail");
+    $this->assertFalse($u->validateUid(""),
+                       "empty uid should fail");
+
+  }
+
    function testUser () {
      $u = new folksoUser($this->dbc);
      $u->setUid('marcelp-2010-001');
@@ -98,7 +110,8 @@ class testOffolksoUser extends  UnitTestCase {
    function testExists() {
      $u = new folksoUser($this->dbc);
      $this->assertTrue($u->exists('marcelp-2010-001'));
-     $this->assertEqual($u->userid, 'marcelp-2010-001');
+     $this->assertFalse($u->exists('ffffffff-2010-001'),
+                        "Unknown user should return false");
 
    }
 
