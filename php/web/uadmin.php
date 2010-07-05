@@ -161,6 +161,13 @@ else {
 <div id="usersearch">
 <h2>Recherche d'utilisateur</h2> <!-- ' -->
 
+<input id="searchbox" type="text"></input>
+<a href="#" id="searchok">OK</a>
+</div>
+
+<a href="#" class="show-expert">Avancé</a>
+
+<div class="doc-expert">
 <p>
     Saisir un ou plusieurs noms ou prénoms. Pour affiner la recherche, vous pouvez utiliser des mots clés suivis d'un deux-points, comme <strong>fname:</strong> pour les prénoms, ou <strong>lname:</strong> pour les noms de famille. 
 </p><!--  -->
@@ -171,10 +178,8 @@ else {
 <p>
     Le mot clé <strong>recent:</strong> retourne une liste des utilisateurs les plus récemment inscrits.
 </p>
-
-<input id="searchbox" type="text"></input>
-<a href="#" id="searchok">OK</a>
 </div>
+
 
 <div id="userlist">
 <ul id="masterlist">
