@@ -204,14 +204,11 @@ if (window.console) console.log("rights I is : " + rights[i] + " and highest is 
              newRight = $button.closest("div.rightmod")
                  .find("input:checked").val(),
              userList = $button.closest("li");
-             /*
-#ifdef DEBUG */
-             if (window.console) {
-                 console.log("userList length: " + userList.length);
-                 console.log($("span.currentright", userList).length);
-             };
-/*
-#endif            */
+             
+             /* Hide "effectué" announcement before starting new request */
+             $("span.rightmod-done", userList).hide();
+
+
              if (newRight === 'redacteur') {
                  newRight = 'redac';
              }
@@ -221,7 +218,12 @@ if (window.console) console.log("rights I is : " + rights[i] + " and highest is 
 
                  function(xml, status, xhr) {
                      var rights = fK.admin.parseUserRights(xml);
-                     $("span.currentright", userList).text(rights[rights.length - 1]);
+                     var curr = $("span.currentright", userList);
+                     curr.text(rights[rights.length - 1]);
+                     if ($("span.rightmod-done", userList).length == 0) {
+                         curr.after($("<span class='rightmod-done'>Effectué</span>"));
+                     }
+                     $("span.rightmod-done", userList).show();
                  },
 
                  function() {
@@ -402,6 +404,16 @@ $(document).ready(
                 }
             });
 
+        $("a.show-expert").toggle(
+            function (ev) {
+                $("div.doc-expert").show();
+                return false;
+            },
+            function (ev) {
+                ev.preventDefault();
+                $("div.doc-expert").hide();
+                return false;
+            });
         
     });
 
