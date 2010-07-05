@@ -336,8 +336,7 @@ class folksoUser {
                . " from users"
                . " where userid = '" . $i->dbescape($id) . "' " 
                ." limit 1 ");
-     if ($i->result_status = 'OK') {
-       $this->setUid($id);
+     if ($i->rowCount == 1) {
        return true;
      }
      return false;
