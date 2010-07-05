@@ -87,6 +87,16 @@ a.delete-user, a.rightModButton {
 color: #e86a24;
   font-weight: bold;
 }
+
+span.rightmod-done {
+size: 8pt;
+color: #e86a24;
+  margin-left: 1em;
+}
+
+div.doc-expert {
+display: none;
+}
 </style>
 
 <?php
