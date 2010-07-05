@@ -133,7 +133,8 @@ require("/var/www/dom/fabula/commun3/html_start.php");
   if (!$loggedIn) {
     // display login buttons
 
-?><h1 class="not-logged">Il faut vous identifier d'abord</h1> <!-- -->
+?><h1 class="not-logged">Il faut vous identifier</h1> <!-- -->
+<p>Veuillez <a href="http://www.fabula.org/tags/admin/adminlogin.php">vous loguer.</a></p>
 
 <div id="fbstuff">
 <?php //'
