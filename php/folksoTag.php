@@ -779,13 +779,15 @@ function byalpha (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   else {
     $r->setOk(200, 'OK');
     $df = new folksoDisplayFactory();
-    $dd = $df->TagList();
+    $dd = $df->simpleTagList();
     $dd->activate_style('xml');
     $r->setType('xml');
     $r->t($dd->startform());
     while ($row = $i->result->fetch_object()) {
+      $link = new folksoTagLink($row->tagnorm);
       $r->t($dd->line($row->id, 
                       $row->tagnorm,
+                      htmlspecialchars($link->getLink()),
                       htmlspecialchars($row->tagdisplay, ENT_QUOTES, 'UTF-8'),
                       $row->popularity,
                       '') . "\n"); // empty field because there are no metatags here
@@ -868,14 +870,16 @@ function allTags (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
 
   $r->setOk(200, 'There they are');
   $df = new folksoDisplayFactory();
-  $dd = $df->TagList();
+  $dd = $df->simpleTagList();
   $dd->activate_style('xml');
 
   $r->t($dd->startform());
   while ($row = $i->result->fetch_object()) {
+    $link = new folksoTagLink($row->tagnorm);
     $r->t($dd->line($row->tagid,
-                    $row->tagnorm,
-                    $row->display,
+                    htmlspecialchars($row->tagnorm),
+                    $link->getLink(),
+                    htmlspecialchars($row->display),
                     $row->popularity,
                     ''));
   } 
