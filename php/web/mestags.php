@@ -43,6 +43,15 @@ a.unsub {
 font-size: 8pt;
 }
 
+ul.fav-list li {
+display: inline;
+  right-margin: 0.2em;
+}
+
+ul.fav-list a {
+  font-size: 10pt;
+}
+
 </style>
 
 <?php
@@ -98,7 +107,12 @@ print $fp->facebookConnectButton();
 </ul>
 </div>
 
-
+<div id="favtags" class="login-only">
+<h2>Mes tags préférés</h2>
+<p>Les tags que j'applique le plus souvent.</p> <!-- ' -->
+<ul class="fav-list">
+</ul>
+</div>
 
 <div id="newsubscriptions" class="login-only">
 <h2>M'abonner</h2> <!-- ' -->

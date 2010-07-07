@@ -400,6 +400,47 @@ $(document).ready(
         getRecently_aj.cache = false;
 
 
+        /*
+         * Favorite tags (designed to be read-only, thus read-once: no
+         *  deletes or updates)
+         */
+
+        var Fav = new fK.Ktl("#favtags");
+        Fav.addList("favorites",
+                    {selector: "ul",
+                     init: function(sel, $place, data) {
+                         $(sel, $place)
+                         .append($("<li><a class='taglink' href='" + data.link +
+                                   "'>" + data.tagdisplay + " " + // to allow for linebreaks
+                                   "</a></li>"));
+                     },
+
+                     match: function(data) {
+                         return function( item, i) {
+                             return item.link = data.link;
+                         };
+                     }
+                    });
+
+        var appendFave = Fav.appendField("favorites");
+
+        var gotFaves = function (json, status, xhr) {
+            var len = json.length;
+            for (var i = 0; i < len; i++) {
+                appendFave(json[i]);
+            }
+            $(Fav).trigger("update");
+        };
+
+        var getFaves_aj = fK.fn.userGetObject(
+            {folksofavorites: 1},
+            gotFaves,
+            fK.fn.errorChoose(err204,
+                              function(xhr, textStatus, e) {
+                                  alert("Problem getting favorites: " + textStatus);
+                              })
+            );
+
 
 
         /*
@@ -426,5 +467,8 @@ $(document).ready(
                            $.ajax(getList_aj);
                            $.ajax(getRecently_aj);
                            $.ajax(getUser_aj);
+                           $.ajax(getFaves_aj);
                        });
+
+
     });
