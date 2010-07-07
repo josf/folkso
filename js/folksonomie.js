@@ -135,7 +135,7 @@
                  } 
                  else {
                      /**
-                      * remove is an internal flag, true of false, deleteElem is 
+                      * remove is an internal flag, true or false, deleteElem is 
                       * the function that does the deleting.
                       * 
                       * removeVal is the list counterpart of remove, but takes a value 
