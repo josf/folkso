@@ -422,53 +422,69 @@ $(document).ready(
                      }
                     });
 
-        var appendFave = Fav.appendField("favorites");
+        var appendFave = Fav.appendField("favorites"),
 
-        var gotFaves = function (json, status, xhr) {
+        /*
+         * Ajax success
+         */
+        gotFaves = function (json, status, xhr) {
             var len = json.length;
-            for (var i = 0; i < len; i++) {
+            for (var i = 0; i < len; ++i) {
                 appendFave(json[i]);
             }
             $(Fav).trigger("update");
+        },
+
+        getFaves_doAj = function () {
+            if ($("li", $("#favtags")).length == 0) {
+                $.ajax(
+                    fK.fn.userGetObject(
+                        {folksofavorites: 1},
+                        gotFaves,
+                        fK.fn.errorChoose(err204,
+                                          function(xhr, textStatus, e) {
+                                              alert("Problem getting favorites: " + textStatus);
+                                          })
+                ));
+            }
         };
 
-        var getFaves_aj = fK.fn.userGetObject(
-            {folksofavorites: 1},
-            gotFaves,
-            fK.fn.errorChoose(err204,
-                              function(xhr, textStatus, e) {
-                                  alert("Problem getting favorites: " + textStatus);
-                              })
-            );
-
+        $('body').bind('loggedIn',
+                       function() {
+                           $("div.login-only").show();
+                           $("h1.not-logged").hide();
+                       });
 
 
         /*
          *  Page load actions
          */
 
+        /* If we are already logged in, we just do the ajax calls
+         * on page load.
+         */
         if (fK.loginStatus !== false) {
-//            if (window.console) console.log("loginStaus ok");
-            $("h1.not-logged").hide();
             $.ajax(getList_aj);
             $.ajax(getRecently_aj);
             $.ajax(getUser_aj);
+            getFaves_doAj();
         }
         else {
-  //          if (window.console) console.log("loginStaus not ok, hiding stuff");
+            /*
+             * and otherwise we bind the page init calls to loggedIn
+             * in case the login state changes.
+             */
             $("div.login-only").hide();
             $("#fbstuff").show();
+            $('body').bind('loggedIn',
+                           function() {
+                               $.ajax(getList_aj);
+                               $.ajax(getRecently_aj);
+                               $.ajax(getUser_aj);
+                               getFaves_doAj();
+                           });
         }
 
-        $('body').bind('loggedIn',
-                       function() {
-                           $("div.login-only").show();
-                           $("h1.not-logged").hide();
-                           $.ajax(getList_aj);
-                           $.ajax(getRecently_aj);
-                           $.ajax(getUser_aj);
-                           $.ajax(getFaves_aj);
-                       });
 
 
     });
