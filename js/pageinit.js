@@ -44,9 +44,19 @@ fK.fb.onLogin = function() {
                             });
                         
 
+                        /*
+                         * This event should only fire when
+                         * fK.loginStatus goes from false to true. The idea is to
+                         * avoid multiple calls.
+                         */
+                        $('body').bind('justLoggedIn',
+                                       function() {
+
+                                       });
+
+
                         $('body').bind('loggedIn',
                                        function() {
-                                           fK.loginStatus = true;
                                            $("#fbkillbox", fK.cf.container).hide();
                                            $(".fKTagbutton").show();
                                            $(".fKTaginput", fK.cf.container).show();
@@ -55,8 +65,12 @@ fK.fb.onLogin = function() {
                                            $("ul.provider_list").hide();
                                            $("#fbstuff").hide();
                                            $(".firstLogin", fK.cf.container).hide();
-
+                                           if (fK.loginStatus === false) {
+                                               $('body').trigger('justLoggedIn');
+                                           }
+                                           fK.loginStatus = true;
                                        });
+
 
                         $('body').bind('loggedOut',
                                        function() { 
