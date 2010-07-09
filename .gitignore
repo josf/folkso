@@ -64,3 +64,9 @@ folksologfile
 /tests/#folkso-tests.el#
 /tests/.#dbinit.inc
 /tests/.#folkso-tests.el
+/js/yuicompressor-2.4.2.jar
+<<<<<<< HEAD:.gitignore
+/remote.deploy
+/sql.passwords
+=======
+>>>>>>> 2953d47... * .gitignore: gitig:.gitignore
