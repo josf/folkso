@@ -584,10 +584,13 @@ function storeUserData (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks
     }
     
     try {
-      $i->query('select userid, firstname, lastname, nick, email, '
-                .' institution, pays, fonction '
-                .' from user_data '
-                ." where userid = '" . $u->userid . "'");
+      $i->query('select ud.userid, ud.firstname, ud.lastname, ud.nick, ud.email, '
+                .' ud.institution, ud.pays, ud.fonction, '
+                .' count(te.resource_id) as eventCount '
+                .' from user_data ud '
+                .' join tagevent te on te.userid = ud.userid '
+                ." where ud.userid = '" . $i->dbescape($u->userid) . "' "
+                .' group by te.userid ');
     }
     catch(dbException $e) {
       return $r->handleDBexception($e);
@@ -602,14 +605,15 @@ function storeUserData (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks
     
     $row = $i->result->fetch_object();
     $r->t($ud->line(
-                    $r->userid,
+                    $row->userid,
                     htmlspecialchars(excludeSQLnullKeyWord($row->firstname)),
                     htmlspecialchars(excludeSQLnullKeyWord($row->lastname)),
                     htmlspecialchars(excludeSQLnullKeyWord($row->nick)),
                     htmlspecialchars(excludeSQLnullKeyWord($row->email)),
                     htmlspecialchars(excludeSQLnullKeyWord($row->institution)),
                     htmlspecialchars(excludeSQLnullKeyWord($row->pays)),
-                    htmlspecialchars(excludeSQLnullKeyWord($row->fonction))
+                    htmlspecialchars(excludeSQLnullKeyWord($row->fonction)),
+                    $row->eventCount
                     ));
     $r->t($ud->endform());
     $r->setType('xml');
@@ -634,15 +638,32 @@ function getUserData (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) 
   $u = $fks->userSession();
 
   if (! $u instanceof folksoUser) {
-    return $r->unAuthorized($u);
+    $u = new folksoUser($dbc);
+    if (! $q->is_param('uid')) {
+      return $r->setError(404, 'No user specified', 
+                          'You must log in or use the uid parameter');
+    }
+    elseif (! $u->validateUid($q->get_param('uid'))) {
+      return $r->setError(400, 'Malformed user id',
+                          'Check your data, something is wrong.');
+    }
+    else {
+      if (!  $u->userFromUserId($q->get_param('uid'))) {
+        return $r->setError(404, 'User not found',
+                            'This user does not appear to exist.');
+      }
+    }
   }
 
   try {
     $i = new folksoDBinteract($dbc);
-    $i->query('select userid, firstname, lastname, nick, email, '
-              .' institution, pays, fonction '
-              .' from user_data '
-              ." where userid = '" . $i->dbescape($u->userid) . "'");
+    $i->query('select ud.userid, ud.firstname, ud.lastname, ud.nick, ud.email, '
+              .' ud.institution, ud.pays, ud.fonction, '
+              .' count(te.resource_id) as eventCount '
+              .' from user_data ud '
+              .' join tagevent te on te.userid = ud.userid '
+              ." where ud.userid = '" . $i->dbescape($u->userid) . "' "
+              .' group by te.userid ');
   }
   catch(dbException $e) {
     return $r->handleDBexception($e);
@@ -657,15 +678,15 @@ function getUserData (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) 
     
   $row = $i->result->fetch_object();
   $r->t($ud->line(
-                    $r->userid,
+                    $row->userid,
                     htmlspecialchars(excludeSQLnullKeyWord($row->firstname)),
                     htmlspecialchars(excludeSQLnullKeyWord($row->lastname)),
                     htmlspecialchars(excludeSQLnullKeyWord($row->nick)),
                     htmlspecialchars(excludeSQLnullKeyWord($row->email)),
                     htmlspecialchars(excludeSQLnullKeyWord($row->institution)),
                     htmlspecialchars(excludeSQLnullKeyWord($row->pays)),
-                    htmlspecialchars(excludeSQLnullKeyWord($row->fonction))
-
+                    htmlspecialchars(excludeSQLnullKeyWord($row->fonction)),
+                    $row->eventCount
                   ));
   $r->t($ud->endform());
   $r->setType('xml');

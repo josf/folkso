@@ -329,6 +329,30 @@ class testOfuser extends  UnitTestCase {
 
    }
 
+
+   function testGetUserDataErrors () {
+     $r = getUserData( new folksoQuery(array(), array(), array()),
+                       $this->dbc,
+                       $this->fks);
+     $this->assertEqual($r->status, 404,
+                        "No user specified, should get 404 here, not: " .
+                        $r->status . " " . $r->statusMessage);
+
+     $r2 = getUserData( new folksoQuery(array(), array('folksouid' => 'bob-1999-002'),
+                                        array()),
+                        $this->dbc,
+                        $this->fks);
+     $this->assertEqual($r2->status, 404,
+                        "User unknown: should get 404, not: " . $r2->status);
+
+     $r3 = getUserData(new folksoQuery(array(), array('folksouid' => 'fred-smead'),
+                                       array()),
+                       $this->dbc,
+                       $this->fks);
+     $this->assertEqual($r3->status, 400,
+                        "Malformed uid, expecting 400, got: " . $r3->status);
+   }
+
    function testFaveTags () {
      $r = getFavoriteTags(new folksoQuery(array(), array(), 
                                           array('folksouid' => 'gustav-2010-001')),
