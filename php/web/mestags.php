@@ -82,7 +82,7 @@ require("/var/www/dom/fabula/commun3/html_start.php");
 <div id="colonnes_nouvelles">
 <div id="colonnes-un">
 
-<h1>Mes tags</h1>
+<h1>Espace tags</h1>
 
 <?php
   if (!$loggedIn) {
@@ -99,23 +99,27 @@ print $fp->facebookConnectButton();
   }
 
 ?>
+<div id="user-intro">
+<p>Bonjour <span class="userhello"></span> !</p>
+<p>Vous avez appliqué <span id="tagcount"></span> tags.</p>
+</div>
 
 <div id="subscriptions" class="login-only">
-<h2>Mes abonnements</h2>
-      <p>Les tags auxquels je suis actuellement abonné(e).</p>
+<h2>Vos abonnements</h2>
+  <p>Les tags auxquels vous êtes actuellement abonné(e) : </p>
 <ul>
 </ul>
 </div>
 
 <div id="favtags" class="login-only">
-<h2>Mes tags préférés</h2>
-<p>Les tags que j'applique le plus souvent.</p> <!-- ' -->
+<h2>Vos tags préférés</h2>
+  <p>Les tags que vous appliquez le plus souvent : </p> <!-- ' -->
 <ul class="fav-list">
 </ul>
 </div>
 
 <div id="newsubscriptions" class="login-only">
-<h2>M'abonner</h2> <!-- ' -->
+<h2>Vous abonner à de nouveaux tags</h2> <!-- ' -->
 <p>Choisir un nouveau tag:</p>
 <input type="text" id="newsubbox" size="60">
 </input>
@@ -125,10 +129,10 @@ print $fp->facebookConnectButton();
 
 
 <div id="userdata" class="login-only">
-<h2>Mes données</h2>
+<h2>Vos données</h2>
     <p>En renseignant les champs "courrier électronique", 
       "institution", "pays" ou "fonction", 
-      j'accepte de figurer dans l'annuaire Fabula</p>
+      vous acceptez de figurer dans l'annuaire Fabula</p> <!-- ' -->
 
 
 <p class="firstname">
@@ -187,7 +191,7 @@ print $fp->facebookConnectButton();
 <div id="recently" class="login-only">
 <h2>Mes ressources</h2>
 <p>Les ressources récemment taggées avec mes tags.
-   Si une ressource comporte plus d'un de mes tags, il apparaîtra
+   Si une ressource comporte plus d'un de vos tags, il apparaîtra
 plus haut dans la liste.</p> <!-- ' -->
 <ul></ul>
 </div>

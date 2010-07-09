@@ -248,6 +248,38 @@ $(document).ready(
 
 
         /*
+         *  User intro controller (Bonjour X ! vous avez appliqué n tags)
+         * 
+         * This will be called from inside the #userdata controller to avoid 
+         * multiple ajax calls for the same data. See userDataUpdateSuccess()
+         */
+
+        var W = new fK.Ktl("#user-intro");
+        W.addBasic("username",
+                   {selector: "span.userhello",
+                    init: function (sel, $place, data) {
+                        $(sel, $place).html(data);
+                    },
+                    update: function (sel, $place, data) {
+                        $(sel, $place).html(data);
+                    }
+                   });
+
+        W.addBasic("tagcount",
+                   {selector: "#tagcount",
+                    init: function (sel, $place, data) {
+                        $(sel).html(data);
+                    },
+                    update: function (sel, $place, data) {
+                        $(sel).html(data);
+                    }
+                    });
+
+        var setWelcomeName = W.setfield("username"),
+        setTagCount = W.setfield("tagcount");
+        
+
+        /*
          *   User data controller
          * 
          * It is assumed that #userdata has the correct structure
@@ -362,14 +394,25 @@ $(document).ready(
         var userDataUpdateSuccess = function(xml, status, xhr) 
         {
             if (xhr.status == 200) {
-                setFirstName($("firstname", xml).text());
-                setLastName($("lastname", xml).text());
+                var firstname = $("firstname", xml).text(),
+                lastname = $("lastname", xml).text(),
+                fullname = firstname +  " " + lastname;
+
+                setFirstName(firstname);
+                setLastName(lastname);
                 setEmail($("email", xml).text());
                 setInstitution($("institution", xml).text());
                 setPays($("pays", xml).text());
                 setFonction($("fonction", xml).text());
 
                 $(U).trigger("update");
+                
+                /*
+                 * Update fields defined in the W controller.
+                 */ 
+                setWelcomeName(fullname);
+                setTagCount($("tagcount", xml).text());
+                $(W).trigger("update");
             }
         };
 
