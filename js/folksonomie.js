@@ -238,7 +238,8 @@
                      };
                  }
                  else {
-                     alert("Undefined Kontroler field: " + fieldname);
+                     alert("Cannot append: undefined Kontroler field or " 
+                           + "field is not a list: " + fieldname);
                  }
                  return false;
              },
