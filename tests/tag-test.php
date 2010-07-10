@@ -196,6 +196,15 @@ class testOffolksotag extends  UnitTestCase {
      $this->assertTrue($xxx->loadXML($r->body()),
                        'failed to load xml');
 
+     // checking with bad tag
+     $rbad = fancyResource(new folksoQuery(array(), array(),
+                                           array('folksotag' => 'blah'),
+                                           array()),
+                           $this->dbc, $this->fks);
+     $this->assertEqual($rbad->status, 404, 
+                        'Bad tag to fancyResource. Expecting 404, got: ' .
+                        $rbad->status . ' ' . $rbad->statusMessage);
+
    }
 
    function testFancyListLength () {
@@ -561,8 +570,16 @@ class testOffolksotag extends  UnitTestCase {
      $this->assertPattern('/<tagpage>/',
                           $r->body(),
                           'XML boilerplate missing from tagPage response');
-          print '<pre><code>' . htmlentities($r->body()) . '</code></pre>';
+     print '<pre><code>' . htmlentities($r->body()) . '</code></pre>';
      //     print '<pre><code> ' . htmlentities($r->bodyXsltTransform()) . '</pre></code>';
+     $rbad = tagPage(new folksoQuery(array(), array(), array('folksotag' => 'blork',
+                                                             'folksodatatype' => 'xml')),
+                     $this->dbc, $this->fks);
+     $this->assertEqual($rbad->status, 404, 
+                        "Bad tag for tagPage. Expecting 404, got: "
+                        . $rbad->status .  ' ' . $rbad->statusMessage);
+
+          
 
 
    }

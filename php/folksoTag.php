@@ -441,11 +441,16 @@ function fancyResource (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks
 
   switch ($i->result_status) {
   case 'NOROWS':
-    $r->setOk(200, 'No resources associated with  tag');
-    return $r;
+    return $r->setError(404, 'Tag does not exist');
     break;
   case 'OK':
-    $r->setOk(200, 'Found');
+    if ($i->rowCount == 1) {
+      $r->setOk(204, 'No resources are associated with this tag');
+      return $r;
+    }
+    else {
+      $r->setOk(200, 'Found');
+    }
     break;
   default:
     $r->setError(500, 'Inexplicable error',    
