@@ -550,6 +550,8 @@ class testOffolksotag extends  UnitTestCase {
                                 'folksodatatype' => 'xml'),
                           array());
      $r = tagPage($q, $this->dbc, $this->fks);
+     $this->assertEqual($r->status, 200,
+                        "tagPage: expecting 200, got : " . $r->status . ' ' . $r->statusMessage);
 
      $resp = fancyResource($q, $this->dbc, $this->fks);
      $this->assertEqual($resp->status, 200, "fancy query not returning 200");
@@ -559,7 +561,7 @@ class testOffolksotag extends  UnitTestCase {
      $this->assertPattern('/<tagpage>/',
                           $r->body(),
                           'XML boilerplate missing from tagPage response');
-     //     print '<pre><code>' . htmlentities($r->body()) . '</code></pre>';
+          print '<pre><code>' . htmlentities($r->body()) . '</code></pre>';
      //     print '<pre><code> ' . htmlentities($r->bodyXsltTransform()) . '</pre></code>';
 
 

@@ -912,15 +912,21 @@ function tagPage  (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
                                $relatedResp->body());
   }
 
-  $r->t(
-        sprintf('<?xml version="1.0"?>'
-                ."\n<tagpage>\n<related>%s</related>\n"
-                ."%s</tagpage>",
-                $relatedXML, $resourceXML)
-        );
+  if ($resourceResp->status == 200) {
+    $r->t(
+          sprintf('<?xml version="1.0"?>'
+                  ."\n<tagpage>\n<related>%s</related>\n"
+                  ."%s</tagpage>",
+                  $relatedXML, $resourceXML)
+          );
 
-  $r->setStylesheet("fab_tagpage.xsl");
-  $r->setType('html');
-  return $r;
-  
+    $r->setOk(200, "OK");
+    $r->setStylesheet("fab_tagpage.xsl");
+    $r->setType('html');
+    return $r;
+  }
+  else {
+    return $r->setError($resourceResp->status ? $resourceResp->status : 404,
+                        $relatedResp->statusMessage ? $relatedResp->statusMessage : "Not found");
+  }
 }
