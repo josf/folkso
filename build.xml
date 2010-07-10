@@ -1,0 +1,398 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project 
+    name="folkso" 
+    default="prod" 
+    basedir=".">
+  <description>
+    Build file for the Folksonomie project
+  </description>
+
+  <property name="dist" location="dist"/>  <!-- finished product -->
+  <property name="build" location="build"/> <!-- staging area -->
+  <property name="sql.user" value="folkso"/>
+  <property name="sql.user.admin" value="folkso-admin"/>
+
+  <property file="sql.passwords"/>
+  <property file="remote.deploy"/>
+
+  <target name="init">
+    <tstamp/>
+    <mkdir dir="${dist}"/>
+    <mkdir dir="${build}"/>
+    <mkdir dir="${build}/php"/>
+    <mkdir dir="${build}/rest"/>
+    <mkdir dir="${build}/js"/>
+    <mkdir dir="${build}/sql"/>
+    <mkdir dir="${dist}/php"/>
+    <mkdir dir="${dist}/rest"/>
+    <mkdir dir="${dist}/js"/>
+    <mkdir dir="${dist}/web"/>
+    <mkdir dir="${dist}/xsl"/>
+  </target>
+
+  <target name="init.test">
+    <mkdir dir="${dist}/test"/>
+  </target>
+
+
+  <target name="prod"
+          depends="php.prod,js.prod"/>
+  <target name="dev"
+          depends="php.dev,js.dev"/>
+
+  <target name="clean">
+    <delete dir="${build}"/>
+    <delete dir="${dist}"/>
+  </target>
+
+
+
+  <!--
+      * PHP stuff
+      *
+  -->
+
+  <target name="php.dev" 
+          depends="php.preproc.debug,phpweb.preproc.debug,xsl.copy"/>
+  <target name="php.prod" 
+          depends="php.preproc.prod,phpweb.preproc.prod,xsl.copy"/>
+
+
+
+  <target name="php.preproc.prod" depends="init">
+    <apply executable="cpp" 
+           dest="${dist}/php">
+      <fileset dir="./php"
+               includes="folkso*.php"
+               excludes="folksoFabula.php">
+        <depth max="1"/>
+      </fileset>
+      <arg line="-P -C"/>
+      <srcfile/>
+      <targetfile/>
+      <mapper type="glob"
+              from="folkso*.php"
+              to="folkso*.php"/>
+    </apply>
+    <apply executable="cpp" 
+           dest="${dist}/rest">
+      <fileset dir="./php/rest"
+               includes="*.php"/>
+      <arg line="-P -C"/>
+      <srcfile/>
+      <targetfile/>
+      <mapper type="glob"
+              from="*.php"
+              to="*.php"/>
+    </apply>
+  </target>
+
+  <target name="phpweb.preproc.prod" depends="init">
+    <apply executable="cpp" 
+           dest="${dist}/web">
+      <fileset dir="./php/web"
+               includes="*.php"/>
+      <arg line="-P -C"/>
+      <srcfile/>
+      <targetfile/>
+      <mapper type="glob"
+              from="*.php"
+              to="*.php"/>
+    </apply>
+  </target>
+
+  <target name="php.preproc.debug" depends="init">
+    <apply executable="cpp" 
+           dest="${dist}/php">
+      <fileset dir="./php"
+               includes="folkso*.php"
+               excludes="folksoFabula.php"/>
+      <arg line="-P -C -DDEBUG"/>
+      <srcfile/>
+      <targetfile/>
+      <mapper type="glob"
+              from="folkso*.php"
+              to="folkso*.php"/>
+    </apply>
+    <apply executable="cpp" 
+           dest="${dist}/rest">
+      <fileset dir="./php/rest"
+               includes="*.php"/>
+      <arg line="-P -C -DDEBUG"/>
+      <srcfile/>
+      <targetfile/>
+      <mapper type="glob"
+              from="*.php"
+              to="*.php"/>
+    </apply>
+  </target>
+
+  <target name="phpweb.preproc.debug" depends="init">
+    <copy todir="${dist}/web">
+      <fileset dir="./php/web"
+               includes="*.php"/>
+    </copy>
+
+
+    <apply executable="cpp" 
+           dest="${dist}/web">
+      <fileset dir="./php/web"
+               includes="*.php"/>
+      <arg line="-P -C -DDEBUG"/>
+      <srcfile/>
+      <targetfile/>
+      <mapper type="glob"
+              from="*.php"
+              to="*.php"/>
+    </apply>
+  </target>
+  
+  <!--
+      * JAVASCRIPT stuff
+  -->
+
+  <target 
+      name="js.dev"
+      depends="js.preprocess.debug,js.folksonomie.concat,js.maxify">
+
+  </target>
+
+  <target 
+      name="js.prod" 
+      depends="js.preprocess.prod,js.minify,js.folksonomie.concat">
+  </target>
+
+
+  <target name="js.staging" depends="init">
+    <copy todir="${build}/js">
+      <fileset dir="./js"
+               includes="*.js"/>
+    </copy>
+  </target>
+
+  <target name="js.preprocess.prod" depends="js.staging">
+    <apply executable="cpp" 
+           dest="${build}/js">
+      <fileset dir="${build}/js"
+               includes="*.js"/>
+      <arg line="-P -C"/>
+      <srcfile/>
+      <targetfile/>
+      <mapper type="glob"
+              from="*.js"
+              to="pp-*.js"/>
+    </apply>
+    <antcall target="js.preprocess.rename"/>
+  </target>
+
+
+  <target name="js.preprocess.debug" depends="js.staging">
+    <apply executable="cpp" 
+           dest="${build}/js">
+      <fileset dir="./js"
+               includes="*.js"/>
+      <arg line="-P -C -DDEBUG"/>
+      <srcfile/>
+      <targetfile/>
+      <mapper type="glob"
+              from="*.js"
+              to="pp-*.js"/>
+    </apply>
+    <antcall target="js.preprocess.rename"/>
+  </target>
+
+  <target name="js.folksonomie.concat" depends="js.staging">
+    <concat destfile="${dist}/js/folksonomie.min.js">
+      <filelist dir="${build}/js"
+                files="folksonomie.js, faboid.js"/>
+    </concat>
+  </target>
+
+  <target name="js.minify" 
+          depends="js.staging">
+    <apply executable="java" 
+           parallel="false"
+           dest="${dist}/js">
+      <filelist dir="${build}/js"
+                files="folksonomie.min.js,folkso.js,folkso-admin.js,folkso-user.js,tagedit.js,resview.js,resedit.js"/>
+      <arg line="-jar"/>
+      <arg path="/home/joseph/sect/fab/js/yuicompressor-2.4.2.jar"/>
+      <srcfile/>
+      <arg line="-o"/>
+      <mapper type="glob"
+              from="*.js"
+              to="*.js"/>
+      <targetfile/>
+    </apply>
+  </target>
+
+  <target name="js.move" depends="js.staging,js.folksonomie.concat">
+
+  </target>
+
+
+  <!-- replacement for js.minify when we do not want to minify -->
+  <target name="js.maxify" depends="js.staging,js.folksonomie.concat">
+    <move todir="${dist}/js">
+      <filelist dir="${build}/js"
+                files="folkso.js,folkso-admin.js,folkso-user.js,tagedit.js,resview.js,resedit.js"/>
+    </move>    
+  </target>
+
+  <!-- no depends, must use antcall from another target 
+       renames the files after post-processing
+  -->
+  <target name="js.preprocess.rename">
+    <move todir="${build}/js">
+      <fileset dir="${build}/js"/>
+      <mapper type="glob"
+              from="pp-*.js"
+              to="*.js"/>
+    </move>
+  </target>
+
+
+
+  <!-- 
+       *
+       * SQL
+       * -->
+
+  <target name="sql.staging">
+    <copy todir="${build}/sql">
+        <fileset dir="./sql/tables"
+                 includes="*.sql"/>
+        <filterset>
+          <filter token="DBUSER" value="${sql.user}"/>
+        </filterset>
+    </copy>
+    <copy todir="${build}/sql">
+      <fileset dir="./sql"
+               includes="*.sql"/>
+      <filterset>
+        <filter token="DBUSER" value="${sql.user}"/>
+      </filterset>
+    </copy>
+
+  </target>
+
+
+
+  <target name="sql.tables.build" depends="sql.staging">
+    <concat 
+        destfile="${dist}/sql/all-tables.sql"
+        fixlastline="yes">
+      <filelist 
+          dir="${build}/sql"
+          files="tag.sql, resource.sql, metatag.sql, ean13.sql, tag-event.sql, users_sessions.sql, user_subscription.sql, exclude.sql, aux-tables.sql"/>
+
+    </concat>
+  </target>
+
+
+  <target name="sql.procedures.build">
+    <concat 
+        destfile="${dist}/sql/procedures.sql"
+        fixlastline="yes">
+      <!-- order may not be important here, but let's not take chances -->
+      <filelist
+          dir="./sql/"
+          files="normalization.sql, res-mgt.sql, tag-mgt.sql, user-mgt.sql"/>
+    </concat>
+  </target>
+
+
+
+<!-- XSLT -->
+<target name="xsl.copy">
+  <copy todir="${dist}/xsl">
+    <fileset dir="./xsl"
+             includes="*.xsl"/>
+  </copy>
+</target>
+
+
+  <!-- DEPLOY -->
+  <target name="remote.dev.php" depends="php.dev">
+    <scp remoteTodir="${rem.user}@${rem.host}:${rem.php}"
+         keyfile="${loc.keyfile}"
+         passphrase="${loc.passphrase}">
+      <fileset dir="${dist}/php"
+               includes="folkso*.php"/>
+    </scp>
+  </target>
+
+  <target name="remote.dev.web" depends="php.dev">
+    <scp remoteTodir="${rem.user}@${rem.host}:${rem.web}"
+         keyfile="${loc.keyfile}"
+         passphrase="${loc.passphrase}">
+      <fileset dir="${dist}/web"
+               includes="*.php"/>
+    </scp>
+    <scp remoteTodir="${rem.user}@${rem.host}:${rem.web}/admin"
+         keyfile="${loc.keyfile}"
+         passphrase="${loc.passphrase}">
+      <fileset dir="${dist}/web"
+               includes="admin*.php"/>
+    </scp>
+  </target>
+
+  <target name="remote.dev.php.rest" depends="php.dev">
+    <scp remoteTodir="${rem.user}@${rem.host}:${rem.tag}"
+         keyfile="${loc.keyfile}"
+         passphrase="${loc.passphrase}"
+         file="${dist}/rest/tagdex.php"/>
+    <scp remoteTodir="${rem.user}@${rem.host}:${rem.resource}"
+         keyfile="${loc.keyfile}"
+         passphrase="${loc.passphrase}"
+         file="${dist}/rest/resdex.php"/>
+    <scp remoteTodir="${rem.user}@${rem.host}:${rem.web}"
+         keyfile="${loc.keyfile}"
+         passphrase="${loc.passphrase}">
+      <fileset dir="${dist}/rest"
+               includes="*.php"
+               excludes="*dex.php"/>
+    </scp>
+  </target>
+
+  <target name="remote.prod" depends="php.prod,js.prod">
+    <scp remoteTodir="${rem.user}@${rem.host}:${rem.php}"
+         keyfile="${loc.keyfile}"
+         passphrase="${loc.passphrase}">
+      <fileset dir="${dist}/php"
+               includes="folkso*.php"/>
+    </scp>
+    <scp remoteTodir="${rem.user}@${rem.host}:${rem.web}"
+         keyfile="${loc.keyfile}"
+         passphrase="${loc.passphrase}">
+      <fileset dir="${dist}/web"
+               includes="*.php"/>
+    </scp>
+    <scp remoteTodir="${rem.user}@${rem.host}:${rem.js}"
+         keyfile="${loc.keyfile}"
+         passphrase="${loc.passphrase}">
+      <fileset dir="${dist}/js"
+               includes="*.js"/>
+    </scp>
+  </target>
+
+  <target name="remote.dev.js" depends="js.dev">
+    <scp remoteTodir="${rem.user}@${rem.host}:${rem.js}"
+         keyfile="${loc.keyfile}"
+         passphrase="${loc.passphrase}">
+      <fileset dir="${dist}/js"
+               includes="*.js"/>
+    </scp>
+  </target>
+
+
+
+
+  <target name="archive" depends="prod">
+    <tar destfile="folksonomie.tar.gz"
+         basedir="${dist}"
+         compression="gzip"/>
+  </target>
+
+
+</project>
