@@ -2,7 +2,7 @@
   /**
    * @package Folkso
    * @author Joseph Fahey
-   * @copyright 2009 Gnu Public Licence (GPL)
+   * @copyright 2009-2010 Gnu Public Licence (GPL)
    * @subpackage Tagserv
    */
 require_once('folksoTags.php');
