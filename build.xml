@@ -385,7 +385,14 @@
     </scp>
   </target>
 
-
+  <target name="remote.dev.xsl" depends="xsl.copy">
+    <scp remoteTodir="${rem.user}@${rem.host}:${rem.xsl}"
+         keyfile="${loc.keyfile}"
+         passphrase="${loc.passphrase}">
+      <fileset dir="${dist}/xsl"
+               includes="*.xsl"/>
+    </scp>
+  </target>
 
 
   <target name="archive" depends="prod">
