@@ -194,4 +194,3 @@ else {
     }
 include("/var/www/dom/fabula/commun3/foot.php");
 
-?>
