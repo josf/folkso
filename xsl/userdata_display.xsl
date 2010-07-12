@@ -13,18 +13,6 @@
         <xsl:value-of select="concat(./firstname, ' ', ./lastname)"/>
       </xsl:element>
 
-      <xsl:element name="p">
-        <xsl:attribute name="class">tagcount</xsl:attribute>
-        <xsl:value-of select="concat(./firstname, ' ', ./lastname)"/>
-        <xsl:text> </xsl:text>
-        <xsl:text>
-          a appliqué 
-        </xsl:text>
-        <xsl:text> </xsl:text>
-        <xsl:value-of select="./tagcount"/>
-        <xsl:text> tags.</xsl:text>
-      </xsl:element>
-
       <xsl:element name="dl">
         <xsl:attribute name="class">user-data-list</xsl:attribute>
 
@@ -48,6 +36,20 @@
         </xsl:call-template>
 
       </xsl:element>
+
+
+      <xsl:element name="p">
+        <xsl:attribute name="class">tagcount</xsl:attribute>
+        <xsl:value-of select="concat(./firstname, ' ', ./lastname)"/>
+        <xsl:text> </xsl:text>
+        <xsl:text>
+          a appliqué 
+        </xsl:text>
+        <xsl:text> </xsl:text>
+        <xsl:value-of select="./tagcount"/>
+        <xsl:text> tags.</xsl:text>
+      </xsl:element>
+
 
     </xsl:element>
   </xsl:template>
