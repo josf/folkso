@@ -23,6 +23,19 @@ class testOffolksoQuery extends  UnitTestCase {
     $this->assertEqual(strtolower($this->qu->method()), 'get');
   }
 
+  function testTagStripping () {
+    $q = new folksoQuery(array(), array(), array('bob' => 'stuff'));
+    $this->assertFalse($q->is_param('bob'),
+                       "invalid parameter 'bob' should not appear here");
+    $q2 = new folksoQuery(array(), array(), array('folksotags' => 'hey <p>there</p> dude'));
+    $this->assertEqual($q2->get_param('tags'), 'hey there dude',
+                       'tags should be removed here, getting: ' . $q2->get_param('tags'));
+    $q3 = new folksoQuery(array(), array(), array('folksocv' => 'hey <p>there</p> dude'));
+    $this->assertEqual($q3->get_param('cv'), 'hey <p>there</p> dude',
+                       'tags should not be removed here: ' . $q3->get_param('cv'));
+  }
+
+
   function testGetStuff () {
     $this->qu2 = new folksoQuery( $_SERVER, array('folksoCommand' => 'obey'), $_POST);
     $this->assertTrue($this->qu2 instanceof folksoQuery);

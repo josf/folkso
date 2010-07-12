@@ -59,6 +59,15 @@ class folksoQuery {
    * @brief folksoQueryAcceptType object.
    */
   public $acceptType;
+
+  /**
+   * @brief Associated array of parameter names (without the "folkso" prefix).
+   *
+   * Fields for which we do not automatically remove all tags with
+   * strip_tags. Values should evaluate to true.
+   */
+  private $tagsAllowed;
+
   
   private $fk_params = array(); //will contain only folkso related parameters
 
@@ -70,6 +79,9 @@ class folksoQuery {
   function __construct ($server, $get, $post) {
     $this->method = strtolower($server['REQUEST_METHOD']);
     $this->req_content_type = $server['HTTP_ACCEPT'];
+
+    $this->tagsAllowed = array('cv' => true);
+
     if (count($get) > 0) {
       $this->fk_params = array_merge($this->parse_params($get), 
                                      $this->fk_params);;
@@ -97,16 +109,20 @@ class folksoQuery {
     * single parameter name, stripped of the three finale digits.
     *
     * Slashes are removed from input data by stripslashes, in case
-    * magic_quotes_gpc is on, which it probably is.
+    * magic_quotes_gpc is on, which it probably is X-(.
     */
   private function parse_params ($array) {
       $accum = array();
       $mults = array();
       foreach ($array as $param_key => $param_val) {
           if (substr($param_key, 0, 6) == 'folkso') {
+            $shortParamKey = substr($param_key, 6);
             
-            # to avoid XSS -- no html allowed anywhere.
-            $param_val = strip_tags($param_val);
+            # to avoid XSS -- no html allowed anywhere, except for exceptions.
+            if (! (array_key_exists($shortParamKey, $this->tagsAllowed) &&
+                   $this->tagsAllowed[$shortParamKey])) {
+              $param_val = strip_tags($param_val);
+            }
 
             /** in case the dreaded magic_quotes_gpc is on. We will do
                 our own escaping, thankyou. **/
