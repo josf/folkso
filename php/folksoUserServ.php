@@ -582,42 +582,23 @@ function storeUserData (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks
     catch(dbException $e) {
       return $r->handleDBexception($e);
     }
-    
-    try {
-      $i->query('select ud.userid, ud.firstname, ud.lastname, ud.nick, ud.email, '
-                .' ud.institution, ud.pays, ud.fonction, '
-                .' count(te.resource_id) as eventCount '
-                .' from user_data ud '
-                .' join tagevent te on te.userid = ud.userid '
-                ." where ud.userid = '" . $i->dbescape($u->userid) . "' "
-                .' group by te.userid ');
-    }
-    catch(dbException $e) {
-      return $r->handleDBexception($e);
-    }
 
-    $r->setOk(200, 'User data stored');
-
-    // return xml representation of userdata
-    $df = new folksoDisplayFactory();
-    $ud = $df->userData();
-    $r->t($ud->startform());
-    
-    $row = $i->result->fetch_object();
-    $r->t($ud->line(
-                    $row->userid,
-                    htmlspecialchars(excludeSQLnullKeyWord($row->firstname)),
-                    htmlspecialchars(excludeSQLnullKeyWord($row->lastname)),
-                    htmlspecialchars(excludeSQLnullKeyWord($row->nick)),
-                    htmlspecialchars(excludeSQLnullKeyWord($row->email)),
-                    htmlspecialchars(excludeSQLnullKeyWord($row->institution)),
-                    htmlspecialchars(excludeSQLnullKeyWord($row->pays)),
-                    htmlspecialchars(excludeSQLnullKeyWord($row->fonction)),
-                    $row->eventCount
-                    ));
-    $r->t($ud->endform());
-    $r->setType('xml');
-    return $r;
+  $row = $i->result->fetch_object();
+  $r->t($ud->line(
+                  $row->userid,
+                  htmlspecialchars(excludeSQLnullKeyWord($row->firstname)),
+                  htmlspecialchars(excludeSQLnullKeyWord($row->lastname)),
+                  htmlspecialchars(excludeSQLnullKeyWord($row->nick)),
+                  htmlspecialchars(excludeSQLnullKeyWord($row->email)),
+                  htmlspecialchars(excludeSQLnullKeyWord($row->institution)),
+                  htmlspecialchars(excludeSQLnullKeyWord($row->pays)),
+                  htmlspecialchars(excludeSQLnullKeyWord($row->fonction)),
+                  htmlspecialchars(excludeSQLnullKeyWord($row->cv)),
+                  $row->eventCount
+                  ));
+  $r->t($ud->endform());
+  $r->setType('xml');
+  return $r;
 }
 
 
@@ -686,6 +667,7 @@ function getUserData (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) 
                     htmlspecialchars(excludeSQLnullKeyWord($row->institution)),
                     htmlspecialchars(excludeSQLnullKeyWord($row->pays)),
                     htmlspecialchars(excludeSQLnullKeyWord($row->fonction)),
+                    htmlspecialchars(excludeSQLnullKeyWord($row->cv)),
                     $row->eventCount
                   ));
   $r->t($ud->endform());

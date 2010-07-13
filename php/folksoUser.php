@@ -34,6 +34,7 @@ class folksoUser {
   public $fonction;
   public $uid;
   public $loginId;
+  public $cv;
   public $dbc;
 
   /** 
@@ -117,7 +118,9 @@ class folksoUser {
     }
     return true;
   }
-
+  public function setCv($html) {
+    $this->cv = $html;
+  }
 
   /**
    * @param $id
@@ -218,6 +221,7 @@ class folksoUser {
     $this->setPays($params['pays']);
     $this->setFonction($params['fonction']);
     $this->setEmail($params['email']);
+    $this->setCv($params['cv']);
 
     $this->Writeable();
     return array($this);
@@ -232,7 +236,7 @@ class folksoUser {
     $i = new folksoDBinteract($this->dbc);
     $sql = 
       "select u.userid as userid, u.urlbase as urlbase, ud.lastname, ud.firstname, "
-      . " ud.email, ud.institution, ud.pays, ud.fonction "
+      . " ud.email, ud.institution, ud.pays, ud.fonction, ud.cv "
       . " from "
       . " users u join user_data ud on ud.userid = u.userid "
       . " where u.userid = '" . $i->dbescape($uid) . "'";
@@ -254,7 +258,8 @@ class folksoUser {
                             'userid' => $res->userid,
                             'institution' => $res->institution,
                             'pays' => $res->pays,
-                            'fonction' => $res->fonction));
+                            'fonction' => $res->fonction,
+                            'cv' => $res->cv));
     }
     return $this;
   }
@@ -268,7 +273,7 @@ class folksoUser {
    $i = new folksoDBinteract($this->dbc);
    $sql = "select "
      ." userid, urlbase, last_visit, lastname, firstname, email, "
-     ." institution, pays, fonction "
+     ." institution, pays, fonction, cv "
      ." from "
      ." $view "
      ." where $login_column = '" . $i->dbescape($id) . "'";
@@ -276,7 +281,7 @@ class folksoUser {
    if ($service && $right){
      $sql = "select "
        ." v.userid, urlbase, last_visit, lastname, firstname, email, institution, "
-       ." pays, fonction, ur.rightid "
+       ." pays, fonction, cv, ur.rightid "
        ." from "
        ." $view v "
        ." left join users_rights ur on ur.userid = v.userid "
@@ -306,7 +311,8 @@ class folksoUser {
                            'userid' => $res->userid,
                            'institution' => $res->institution,
                            'pays' => $res->pays,
-                           'fonction' => $res->fonction));
+                           'fonction' => $res->fonction,
+                           'cv' => $res->cv));
      if ($service &&
          $right && 
          ($res->rightid == $right)) {
