@@ -582,6 +582,21 @@ function storeUserData (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks
     catch(dbException $e) {
       return $r->handleDBexception($e);
     }
+    
+    try {
+      $i->query('select ud.userid, ud.firstname, ud.lastname, ud.nick, ud.email, '
+                .' ud.institution, ud.pays, ud.fonction, ud.cv, '
+                .' count(te.resource_id) as eventCount '
+                .' from user_data ud '
+                .' join tagevent te on te.userid = ud.userid '
+                ." where ud.userid = '" . $i->dbescape($u->userid) . "' "
+                .' group by te.userid ');
+    }
+    catch(dbException $e) {
+      return $r->handleDBexception($e);
+    }
+
+    $r->setOk(200, 'User data stored');
 
   $row = $i->result->fetch_object();
   $r->t($ud->line(
