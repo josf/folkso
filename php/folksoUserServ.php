@@ -511,7 +511,8 @@ function storeUserData (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks
                   'email' => false, 
                   'institution' => false, 
                   'pays' => false, 
-                  'fonction' => false);
+                  'fonction' => false, 
+                  'cv' => false);
 
   /* First we get data about the tag so that we can send the tag data
      back to the client. */
