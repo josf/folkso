@@ -137,6 +137,35 @@ class testOffolksoUser extends  UnitTestCase {
 
 
    }
+
+   function testStoreUserData () {
+     $u = new folksoUser($this->dbc);
+     $u->userFromUserId('gustav-2010-001');
+     $this->assertEqual($u->firstName, 'Gustave',
+                        "Problem with initial retrieval of user");
+
+
+     $u->setFonction("harpist");
+
+     $this->assertEqual($u->fonction, 'harpist',
+                        "Testing the test: 'fonction' should be set to 'harpist' "
+                        . ' not: ' . $u->fonction);
+     try {
+       $u->storeUserData();
+     }
+     catch (dbQueryException $e) {
+       print $e->sqlquery;
+     }
+     
+     $u2 = new folksoUser($this->dbc);
+     $u2->userFromUserId('gustav-2010-001');
+
+
+     $this->assertEqual($u2->fonction, 'harpist',
+                        "New fonction data was not retreived, got: " . $u2->fonction);
+
+   }
+
    
 }//end class
 

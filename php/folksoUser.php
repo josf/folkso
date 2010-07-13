@@ -351,11 +351,68 @@ class folksoUser {
    /**
     * Delete user and all associated tags. This is permanent.
     */
-    public function deleteUserWithTags () {
-      $i = new folksoDBinteract($this->dbc);
-      $i->query("call delete_user_with_tags('" . $i->dbescape($this->userid) . "')");
-    }
-   
+
+   public function deleteUserWithTags () {
+     $i = new folksoDBinteract($this->dbc);
+     $i->query("call delete_user_with_tags('" . $i->dbescape($this->userid) . "')");
+   }
+
+   /**
+    * Stores current user to DB. User must already exist in
+    * database and should be created through one of the subclasses.
+    */
+   public function storeUserData () {
+     $i = new folksoDBinteract($this->dbc);
+     if (! $this->exists($this->userid)) {
+         throw new userException("User does not already exist, must be created first.");
+     }
+
+     // check if user already has entry in user_data. Probably does,
+     // but we still might need to insert rather than update.
+     $i->query("select userid from user_data where userid = '"
+               . $i->dbescape($this->userid) . "'");
+
+     if ($i->result_status == 'NOROWS') {
+       // add userid field only for inserts
+       $reqFields['userid'] = $this->userid;
+       $sql .=
+         sprintf(
+                 ' insert into user_data ('
+                 .' userid, firstname, lastname, nick, email, '
+                 .' institution, pays, fonction, cv '
+                 .") values "
+                 ."('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')",
+                 $i->dbescape($this->userid), 
+                 $i->dbescape($this->firstName),
+                 $i->dbescape($this->lastName),
+                 $i->dbescape($this->nick),
+                 $i->dbescape($this->email),
+                 $i->dbescape($this->institution),
+                 $i->dbescape($this->pays),
+                 $i->dbescape($this->fonction),
+                 $i->dbescape($this->cv)
+                 );
+     }
+     else {
+       $sql .= ' update user_data set ';
+       $sql .=
+         sprintf("firstname = '%s', lastname = '%s', nick = '%s', "
+                 . " email = '%s', institution = '%s', pays = '%s', fonction = '%s', "
+                 . " cv = '%s' ",
+                 $i->dbescape($this->firstName),
+                 $i->dbescape($this->lastName),
+                 $i->dbescape($this->nick),
+                 $i->dbescape($this->email),
+                 $i->dbescape($this->institution),
+                 $i->dbescape($this->pays),
+                 $i->dbescape($this->fonction),
+                 $i->dbescape($this->cv));
+
+       $sql .= " where userid = '" . $this->userid . "'";
+     }
+     $i->query($sql);
+   }
+>>>>>>> 23d94f1... * php/folksoUser.php: storeUserData() passing essential tests.:php/folksoUser.php
 
 /**
  * @param 
