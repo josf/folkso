@@ -15,9 +15,12 @@ function test_db_init($megadynDefault = 10) {
   /** start over **/
    foreach ($tables as $tab) {
      $i->query("truncate table $tab");
+     if ($i->result_status == 'ERROR') {
+       print 'Truncating error: ' .  $i->error_info();
+     }
    }
 
-  print $i->error_info();
+
   $user = array( 'marcelp' => array('Marcel', 'Proust', 'marcelp@temps.eu', 
                                     0, 'http://flickr.com/marcelp'),
                  'gustav' => array('Gustave', 'Flaubert', 'gflaub@sentimental.edu',
