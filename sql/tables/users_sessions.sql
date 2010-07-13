@@ -31,6 +31,7 @@ create table user_data
        institution varchar(255) null,
        pays varchar(50) null,
        fonction varchar(50) null, 
+       cv text default '' not null,
        foreign key (userid) references users (userid))
 ENGINE=InnoDB;
 grant select on user_data to 'folkso'@'localhost';
