@@ -300,7 +300,7 @@ function visitPage (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
       $pages_to_parse = $ic->retreive_cache();
 
        if (!($lfh = fopen('/tmp/folksologfile', 'a'))){
-        $r->setError(500, 'Internal server error: could not open logfile');
+        return $r->setError(500, 'Internal server error: could not open logfile');
       }
 
       $i = new folksoDBinteract($dbc);
@@ -347,7 +347,10 @@ function visitPage (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
     fclose($lfh);
     return $r->handleDBexception($e);
   }
-  fclose($lfh);
+
+  if ($lfh) {
+    fclose($lfh);
+  }
   return $r;
 }
 
