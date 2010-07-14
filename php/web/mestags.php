@@ -182,6 +182,15 @@ print $fp->facebookConnectButton();
   <input type="text" class="fonctionbox">
   </input>
 </p>
+
+<div class="user-cv">
+  CV : 
+  <p class="cv"></p>
+  <input type="textarea" width="80" height="100" class="cv-write">
+  </input>
+</div>
+
+</div>
 <p><a href="#" id="userdata-send">Valider</a></p>
 </div>
 </div>

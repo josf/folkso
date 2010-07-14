@@ -381,6 +381,22 @@ $(document).ready(
                     }
                    });
 
+        U.addBasic("cv",
+                   {selector: "div.user-cv",
+                    init: function(sel, $place, data) {
+                        $(sel + " p.cv", $place).html(data);
+                        $(sel + " input.cv-write", $place).val(data);
+                    },
+                    update: function(sel, $place, data) {
+                        $(sel + " p.cv", $place).html(data);
+                        $(sel + " input.cv-write", $place).val(data);
+                    },
+                    deleteElem: function(sel, $place, data) {
+                        $(sel + " p.cv", $place).html('');
+                        $(sel + " input.cv-write", $place).val('');
+                    }
+                   });
+
 
         var 
         setFirstName = U.setfield("firstname"),
@@ -388,7 +404,8 @@ $(document).ready(
         setEmail     = U.setfield("email"),
         setInstitution = U.setfield("institution"),
         setPays      = U.setfield("pays"),
-        setFonction  = U.setfield("fonction");
+        setFonction  = U.setfield("fonction"),
+        setCv        = U.setfield("cv");
 
 
         var userDataUpdateSuccess = function(xml, status, xhr) 
@@ -404,6 +421,7 @@ $(document).ready(
                 setInstitution($("institution", xml).text());
                 setPays($("pays", xml).text());
                 setFonction($("fonction", xml).text());
+                setCv($("cv", xml).text());
 
                 $(U).trigger("update");
                 
@@ -427,7 +445,8 @@ $(document).ready(
                            folksosetemail: $("input.emailbox", pardiv).val(),
                            folksosetinstitution: $("input.institutionbox", pardiv).val(),
                            folksosetpays: $("input.paysbox", pardiv).val(),
-                           folksosetfonction: $("input.fonctionbox", pardiv).val()
+                           folksosetfonction: $("input.fonctionbox", pardiv).val(),
+                           folksosetcv: $("input.cv-write", pardiv).val()
                            };
 
                        $.ajax(fK.fn.userPostObject(data, userDataUpdateSuccess, 
