@@ -533,8 +533,13 @@ function storeUserData (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks
     return $r->handleDBexception($e);
   }
 
-    $r->setOk(200, 'User data stored');
+  $r->setOk(200, 'User data stored');
 
+  // return xml representation of userdata
+  $df = new folksoDisplayFactory();
+  $ud = $df->userData();
+  $r->t($ud->startform());
+    
   $row = $i->result->fetch_object();
   $r->t($ud->line(
                   $row->userid,
