@@ -499,103 +499,39 @@ function storeUserData (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks
 
   $r = new folksoResponse();
   $u = $fks->userSession();
+  $i = new folksoDBinteract($dbc);
 
   if (! $u instanceof folksoUser) {
     return $r->unAuthorized($u);
   }
 
+  $fields = array('firstname' => 'setFirstName',
+                  'lastname' => 'setLastName',
+                  'nick' => 'setNick',
+                  'email' => 'setEmail',
+                  'institution' => 'setInstitution',
+                  'pays' => 'setPays',
+                  'fonction' => 'setFonction',
+                  'cv' => 'setCv');
 
-  $fields = array('firstname' => true, 
-                  'lastname' => true, 
-                  'nick' => false, 
-                  'email' => false, 
-                  'institution' => false, 
-                  'pays' => false, 
-                  'fonction' => false, 
-                  'cv' => false);
-
-  /* First we get data about the tag so that we can send the tag data
-     back to the client. */
-
-    $sql = '';
-
-    $reqFields = array();
-
-    try {
-      $i = new folksoDBinteract($dbc);
+  foreach (array_keys($fields) as $param => $meth) {
+    if ($q->is_param('set' . $param)) {
+      call_user_func(array($u, $meth), $q->get_param('set' . $param));
     }
-    catch(dbException $e) {
-      return $r->handleDBexception($e);
-    }
-
-
-    foreach ($fields as $fieldName => $isRequired) {
-      if ($q->is_param('set' . $fieldName) &&
-          (strlen(trim($q->get_param('set' . $fieldName))) > 0)) {
-        $reqFields[$fieldName] = $i->dbescape($q->get_param('set' . $fieldName));
-      }
-      elseif ($isRequired) {
-        return $r->setError(400, "Insufficient data", 
-                            "Firstname and lastname are required");
-      }
-      else {
-        $reqFields[$fieldName] = 'NULL';
-      }
-    }
-
-
-    // check if user already has entry in user_data. Probably does,
-    // but we still might need to insert rather than update.
-    try {
-      $i->query("select userid from user_data where userid = '"
-                . $i->dbescape($u->userid) . "'");
-    }
-    catch(dbException $e) {
-      return $r->handleDBexception($e);
-    }
-
-    if ($i->result_status == 'NOROWS') {
-
-      // add userid field only for inserts
-      $reqFields['userid'] = $u->userid;
-      $sql .=
-        ' insert into user_data ('
-        . implode(', ', array_keys($reqFields))
-        .") values ('"
-        . implode("', '", array_values($values))
-        ."')";
-    }
-    else {
-      $sql .= ' update user_data set ';
-
-      $parts = array();
-      foreach ($reqFields as $k => $v) {
-        $parts[] = sprintf("%s = '%s'",
-                           $k, $v);
-      }
-      $sql .= implode(', ', $parts);
-      $sql .= " where userid = '" . $u->userid . "'";
-    }
-
-    try {
-      $i->query($sql);
-    }
-    catch(dbException $e) {
-      return $r->handleDBexception($e);
-    }
-    
-    try {
-      $i->query('select ud.userid, ud.firstname, ud.lastname, ud.nick, ud.email, '
-                .' ud.institution, ud.pays, ud.fonction, ud.cv, '
-                .' count(te.resource_id) as eventCount '
-                .' from user_data ud '
-                .' join tagevent te on te.userid = ud.userid '
-                ." where ud.userid = '" . $i->dbescape($u->userid) . "' "
-                .' group by te.userid ');
-    }
-    catch(dbException $e) {
-      return $r->handleDBexception($e);
-    }
+  }
+  try {
+    $u->storeUserData();
+    $i->query('select ud.userid, ud.firstname, ud.lastname, ud.nick, ud.email, '
+              .' ud.institution, ud.pays, ud.fonction, ud.cv, '
+              .' count(te.resource_id) as eventCount '
+              .' from user_data ud '
+              .' join tagevent te on te.userid = ud.userid '
+              ." where ud.userid = '" . $i->dbescape($u->userid) . "' "
+              .' group by te.userid ');
+  }
+  catch(dbException $e) {
+    return $r->handleDBexception($e);
+  }
 
     $r->setOk(200, 'User data stored');
 
