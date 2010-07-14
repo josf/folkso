@@ -119,8 +119,11 @@ class folksoQuery {
             $shortParamKey = substr($param_key, 6);
             
             # to avoid XSS -- no html allowed anywhere, except for exceptions.
-            if (! (array_key_exists($shortParamKey, $this->tagsAllowed) &&
-                   $this->tagsAllowed[$shortParamKey])) {
+            if (array_key_exists($shortParamKey, $this->tagsAllowed) &&
+                $this->tagsAllowed[$shortParamKey]) {
+              $param_val = strip_tags($param_val, '<p><a><ul><li><b><i><strong><em><h1><h2><h3><h4>');
+            }
+            else {
               $param_val = strip_tags($param_val);
             }
 

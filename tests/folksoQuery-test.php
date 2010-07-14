@@ -33,6 +33,13 @@ class testOffolksoQuery extends  UnitTestCase {
     $q3 = new folksoQuery(array(), array(), array('folksocv' => 'hey <p>there</p> dude'));
     $this->assertEqual($q3->get_param('cv'), 'hey <p>there</p> dude',
                        'tags should not be removed here: ' . $q3->get_param('cv'));
+
+    $q4 = new folksoQuery(array(), array(), 
+                          array('folksocv' => '<ol><li>Illegal</li></ol>'));
+    $this->assertEqual($q4->get_param('cv'), '<li>Illegal</li>',
+                       'Illegal OL tag should be removed. Expecting "<li>Illegal</li>", 
+got: ' . $q4->get_param('cv'));
+                          
   }
 
 
