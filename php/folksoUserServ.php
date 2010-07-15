@@ -514,20 +514,18 @@ function storeUserData (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks
                   'fonction' => 'setFonction',
                   'cv' => 'setCv');
 
-  foreach (array_keys($fields) as $param => $meth) {
+  foreach ($fields as $param => $meth) {
     if ($q->is_param('set' . $param)) {
       call_user_func(array($u, $meth), $q->get_param('set' . $param));
     }
   }
+
   try {
     $u->storeUserData();
-    $i->query('select ud.userid, ud.firstname, ud.lastname, ud.nick, ud.email, '
-              .' ud.institution, ud.pays, ud.fonction, ud.cv, '
-              .' count(te.resource_id) as eventCount '
-              .' from user_data ud '
-              .' join tagevent te on te.userid = ud.userid '
-              ." where ud.userid = '" . $i->dbescape($u->userid) . "' "
-              .' group by te.userid ');
+
+    // retreive stored data for return representation
+    $u2 = new folksoUser($dbc);
+    $u2->userFromUserId($u->userid);
   }
   catch(dbException $e) {
     return $r->handleDBexception($e);
@@ -540,18 +538,17 @@ function storeUserData (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks
   $ud = $df->userData();
   $r->t($ud->startform());
     
-  $row = $i->result->fetch_object();
   $r->t($ud->line(
-                  $row->userid,
-                  htmlspecialchars(excludeSQLnullKeyWord($row->firstname)),
-                  htmlspecialchars(excludeSQLnullKeyWord($row->lastname)),
-                  htmlspecialchars(excludeSQLnullKeyWord($row->nick)),
-                  htmlspecialchars(excludeSQLnullKeyWord($row->email)),
-                  htmlspecialchars(excludeSQLnullKeyWord($row->institution)),
-                  htmlspecialchars(excludeSQLnullKeyWord($row->pays)),
-                  htmlspecialchars(excludeSQLnullKeyWord($row->fonction)),
-                  htmlspecialchars(excludeSQLnullKeyWord($row->cv)),
-                  $row->eventCount
+                  $u2->userid,
+                  htmlspecialchars(excludeSQLnullKeyWord($u2->firstname)),
+                  htmlspecialchars(excludeSQLnullKeyWord($u2->lastname)),
+                  htmlspecialchars(excludeSQLnullKeyWord($u2->nick)),
+                  htmlspecialchars(excludeSQLnullKeyWord($u2->email)),
+                  htmlspecialchars(excludeSQLnullKeyWord($u2->institution)),
+                  htmlspecialchars(excludeSQLnullKeyWord($u2->pays)),
+                  htmlspecialchars(excludeSQLnullKeyWord($u2->fonction)),
+                  htmlspecialchars(excludeSQLnullKeyWord($u2->cv)),
+                  $u2->eventCount
                   ));
   $r->t($ud->endform());
   $r->setType('xml');
