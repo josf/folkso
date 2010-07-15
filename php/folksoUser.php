@@ -397,7 +397,7 @@ class folksoUser {
      if ($i->result_status == 'NOROWS') {
        // add userid field only for inserts
        $reqFields['userid'] = $this->userid;
-       $sql .=
+       $sql =
          sprintf(
                  ' insert into user_data ('
                  .' userid, firstname, lastname, nick, email, '
@@ -416,7 +416,7 @@ class folksoUser {
                  );
      }
      else {
-       $sql .= ' update user_data set ';
+       $sql = ' update user_data set ';
        $sql .=
          sprintf("firstname = '%s', lastname = '%s', nick = '%s', "
                  . " email = '%s', institution = '%s', pays = '%s', fonction = '%s', "
@@ -430,7 +430,7 @@ class folksoUser {
                  $i->dbescape($this->fonction),
                  $i->dbescape($this->cv));
 
-       $sql .= " where userid = '" . $this->userid . "'";
+       $sql .= " where userid = '" . $i->dbescape($this->userid) . "'";
      }
      $i->query($sql);
    }
