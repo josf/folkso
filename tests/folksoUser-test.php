@@ -19,6 +19,23 @@ class testOffolksoUser extends  UnitTestCase {
   }
 
 
+  function testSetters () {
+    $u = new folksoUser($this->dbc);
+    $u->setUrlbase('stuff');
+    $this->assertEqual($u->urlBase, 'stuff');
+    
+    $u->setCv('Wrote some books');
+    $this->assertEqual($u->cv, 'Wrote some books',
+                       'Failed to set cv');
+
+
+    $u2 = new folksoUser($this->dbc);
+    call_user_func(array($u2, 'setCv'), 'Wrote stuff');
+    $this->assertEqual($u2->cv, 'Wrote stuff',
+                       'Cv data failed with call_user_func');
+
+  }
+
   function testValidation() {
     $u = new folksoUser($this->dbc);
     $this->assertTrue($u->validUrlbase('marcelp'), "Basic urlbase should validate");

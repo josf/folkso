@@ -295,16 +295,25 @@ class testOfuser extends  UnitTestCase {
                                                        'folksosetlastname' => 'Hugo',
                                                        'folksosetnick' => 'vickh',
                                                        'folksosetemail' => 'victor@miserables.com',
-                                                       'folksosetinstitution' => 'A lui tout seul'), array()),
+                                                       'folksosetinstitution' => 'A lui tout seul',
+                                                       'folksosetcv' => 'Tout'), array()),
                         $this->dbc,
                         $this->fks);
      $this->assertIsA($r, folksoResponse, "ob prob");
      $this->assertEqual($r->status, 200,
                         "Expected 200: " . $r->status . " " . $r->statusMessage
                         . " " . $r->errorBody());
+
+     print "<code>" . htmlspecialchars($r->body()) . '</code>';
      $xxx = new DOMDocument();
      $this->assertTrue($xxx->loadXML($r->body()),
                        'xml failure:' .$r->body());
+
+     $this->assertPattern('/lui tout seul/', $r->body(),
+                          'Did not find institution in xml: ' . $r->body());
+     $this->assertPattern('/Tout/', $r->body(),
+                          "Did not find cv data in xml: " . $r->body());
+
    }
 
    function testGetUserData  () {
@@ -326,7 +335,7 @@ class testOfuser extends  UnitTestCase {
                           "Did not find last name in xml". $r->body());
      $this->assertPattern('/sentimental\.edu/', $r->body(),
                           "Did not find email in xml: " . $r->body());
-
+ 
    }
 
 
@@ -334,7 +343,7 @@ class testOfuser extends  UnitTestCase {
      $r = getUserData( new folksoQuery(array(), array(), array()),
                        $this->dbc,
                        $this->fks);
-     $this->assertEqual($r->status, 404,
+     $this->assertEqual($r->status, 400,
                         "No user specified, should get 404 here, not: " .
                         $r->status . " " . $r->statusMessage);
 
@@ -392,6 +401,57 @@ class testOfuser extends  UnitTestCase {
 
    }
 
+   function testCv () {
+     $this->fks->startSession('gustav-2010-001', true);
+     $q = new folksoQuery(array(), 
+                          array('folksosetcv' => 'This and that'),
+                          array());
+     $this->assertTrue($q->is_param('setcv'), 'testing the t: no setcv param here');
+     $this->assertEqual($q->get_param('setcv'), 'This and that',
+                        'Testing the t: not able to get setcv param');
+     
+     $r = storeUserData($q,
+                        $this->dbc,
+                        $this->fks);
+     $this->assertEqual($r->status, 200,
+                        "Failure on add cv data: " . $r->status);
+
+     $u = new folksoUser($this->dbc);
+     $this->assertTrue($u->userFromUserId('gustav-2010-001'),
+                       'Failed to create user from userid... (testing the test)');
+     $this->assertEqual($u->cv, 'This and that',
+                        'Did not find cv data in user object');
+
+
+     $r_get = getUserData(new folksoQuery(array(),
+                                          array('folksouid' => 'gustav-2010-001'),
+                                          array()),
+                          $this->dbc,
+                          $this->fks2);
+     $this->assertEqual($r_get->status, 200,
+                        "Failed to get user data: " . $r_get->status);
+     $this->assertPattern('/This and that/', $r_get->body(),
+                          "Did not find cv data in body: " .
+                          $r_get->body());
+
+   }
+
+
+   function testGetCV () {
+     $u = new folksoUser($this->dbc);
+     $u->userFromUserId('gustav-2010-001');
+     $u->setCv('Wrote a book');
+     $u->storeUserData();
+
+     $r = getUserData(new folksoQuery(array(),
+                                      array('folksouid' => 'gustav-2010-001'),
+                                      array()),
+                      $this->dbc,
+                      $this->fks);
+     $this->assertPattern('/Wrote/', $r->body(),
+                          'Did not find cv data');
+
+   }
 
 }//end class
 

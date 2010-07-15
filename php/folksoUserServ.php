@@ -570,39 +570,34 @@ function excludeSQLnullKeyWord ($txt) {
 
 function getUserData (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
-  $u = $fks->userSession();
-
-  if (! $u instanceof folksoUser) {
-    $u = new folksoUser($dbc);
-    if (! $q->is_param('uid')) {
-      return $r->setError(404, 'No user specified', 
-                          'You must log in or use the uid parameter');
-    }
-    elseif (! $u->validateUid($q->get_param('uid'))) {
-      return $r->setError(400, 'Malformed user id',
-                          'Check your data, something is wrong.');
-    }
-    else {
-      if (!  $u->userFromUserId($q->get_param('uid'))) {
-        return $r->setError(404, 'User not found',
-                            'This user does not appear to exist.');
-      }
-    }
-  }
+  $u = $fks->userSession(); //actual user
 
   try {
-    $i = new folksoDBinteract($dbc);
-    $i->query('select ud.userid, ud.firstname, ud.lastname, ud.nick, ud.email, '
-              .' ud.institution, ud.pays, ud.fonction, '
-              .' count(te.resource_id) as eventCount '
-              .' from user_data ud '
-              .' join tagevent te on te.userid = ud.userid '
-              ." where ud.userid = '" . $i->dbescape($u->userid) . "' "
-              .' group by te.userid ');
+    // use uid parameter for $user
+    if ($q->is_param('uid')) {
+      $user = new folksoUser($dbc); // the user we are getting information for
+      if (! $user->validateUid($q->get_param('uid'))) {
+        return $r->setError(400, 'Malformed user id',
+                            'Check your data, something is wrong.');
+      }
+      elseif (! $user->userFromUserId($q->get_param('uid'))) {
+        return $r->setError(404, 'User not found',
+                            'This user does not appear to exist');
+      }
+    }
+    // otherwise use session user
+    elseif  ($u instanceof folksoUser) {
+      $user = $u;
+    }
+    else {
+      return $r->setError(400, 'No valid user specified', 
+                          'Cannot complete request without a user');
+    }
   }
   catch(dbException $e) {
     return $r->handleDBexception($e);
   }
+
 
   $r->setOk(200, 'User data found');
 
@@ -611,18 +606,17 @@ function getUserData (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) 
   $ud = $df->userData();
   $r->t($ud->startform());
     
-  $row = $i->result->fetch_object();
   $r->t($ud->line(
-                    $row->userid,
-                    htmlspecialchars(excludeSQLnullKeyWord($row->firstname)),
-                    htmlspecialchars(excludeSQLnullKeyWord($row->lastname)),
-                    htmlspecialchars(excludeSQLnullKeyWord($row->nick)),
-                    htmlspecialchars(excludeSQLnullKeyWord($row->email)),
-                    htmlspecialchars(excludeSQLnullKeyWord($row->institution)),
-                    htmlspecialchars(excludeSQLnullKeyWord($row->pays)),
-                    htmlspecialchars(excludeSQLnullKeyWord($row->fonction)),
-                    htmlspecialchars(excludeSQLnullKeyWord($row->cv)),
-                    $row->eventCount
+                    $user->userid,
+                    htmlspecialchars(excludeSQLnullKeyWord($user->firstName)),
+                    htmlspecialchars(excludeSQLnullKeyWord($user->lastName)),
+                    htmlspecialchars(excludeSQLnullKeyWord($user->nick)),
+                    htmlspecialchars(excludeSQLnullKeyWord($user->email)),
+                    htmlspecialchars(excludeSQLnullKeyWord($user->institution)),
+                    htmlspecialchars(excludeSQLnullKeyWord($user->pays)),
+                    htmlspecialchars(excludeSQLnullKeyWord($user->fonction)),
+                    htmlspecialchars(excludeSQLnullKeyWord($user->cv)),
+                    $user->eventCount
                   ));
   $r->t($ud->endform());
   $r->setType('xml');
