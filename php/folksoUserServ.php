@@ -572,31 +572,33 @@ function getUserData (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) 
   $r = new folksoResponse();
   $u = $fks->userSession(); //actual user
 
-  try {
-    // use uid parameter for $user
-    if ($q->is_param('uid')) {
-      $user = new folksoUser($dbc); // the user we are getting information for
+  // use uid parameter for $user
+  if ($q->is_param('uid')) {
+    $user = new folksoUser($dbc); // the user we are getting information for
+    try {
       if (! $user->validateUid($q->get_param('uid'))) {
         return $r->setError(400, 'Malformed user id',
                             'Check your data, something is wrong.');
       }
       elseif (! $user->userFromUserId($q->get_param('uid'))) {
         return $r->setError(404, 'User not found',
-                            'This user does not appear to exist');
+                              'This user does not appear to exist');
       }
     }
+    catch(dbException $e) {
+      return $r->handleDBexception($e);
+    }
+  }
+
     // otherwise use session user
-    elseif  ($u instanceof folksoUser) {
-      $user = $u;
-    }
-    else {
-      return $r->setError(400, 'No valid user specified', 
-                          'Cannot complete request without a user');
-    }
+  elseif  ($u instanceof folksoUser) {
+    $user = $u;
   }
-  catch(dbException $e) {
-    return $r->handleDBexception($e);
+  else {
+    return $r->setError(400, 'No valid user specified', 
+                        'Cannot complete request without a user');
   }
+
 
 
   $r->setOk(200, 'User data found');
