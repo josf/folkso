@@ -70,3 +70,4 @@ folksologfile
 /sql.passwords
 =======
 >>>>>>> 2953d47... * .gitignore: gitig:.gitignore
+/info/cachelog.txt
