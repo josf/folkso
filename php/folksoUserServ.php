@@ -608,16 +608,16 @@ function getUserData (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) 
   $r->t($ud->startform());
     
   $r->t($ud->line(
-                    $user->userid,
-                    htmlspecialchars(excludeSQLnullKeyWord($user->firstName)),
-                    htmlspecialchars(excludeSQLnullKeyWord($user->lastName)),
-                    htmlspecialchars(excludeSQLnullKeyWord($user->nick)),
-                    htmlspecialchars(excludeSQLnullKeyWord($user->email)),
-                    htmlspecialchars(excludeSQLnullKeyWord($user->institution)),
-                    htmlspecialchars(excludeSQLnullKeyWord($user->pays)),
-                    htmlspecialchars(excludeSQLnullKeyWord($user->fonction)),
-                    htmlspecialchars(excludeSQLnullKeyWord($user->cv)),
-                    $user->eventCount
+                  $user->userid,
+                  htmlspecialchars(excludeSQLnullKeyWord($user->firstName)),
+                  htmlspecialchars(excludeSQLnullKeyWord($user->lastName)),
+                  htmlspecialchars(excludeSQLnullKeyWord($user->nick)),
+                  htmlspecialchars(excludeSQLnullKeyWord($user->email)),
+                  htmlspecialchars(excludeSQLnullKeyWord($user->institution)),
+                  htmlspecialchars(excludeSQLnullKeyWord($user->pays)),
+                  htmlspecialchars(excludeSQLnullKeyWord($user->fonction)),
+                  htmlspecialchars(excludeSQLnullKeyWord($user->cv)),
+                  $user->eventCount
                   ));
   $r->t($ud->endform());
   $r->setType('xml');
