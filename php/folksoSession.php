@@ -202,10 +202,10 @@ class folksoSession {
 
  /**
   * Load user data from session id (cookie). Retuns folksoUser
-  * obj. Caches the fkUser object. We might consider a "force reload"
-  * option if there were a reason for it. This also means that if the
+  * obj. Caches the fkUser object. This also means that if the
   * arguments (sid) change, the data returned will not. This should
-  * not be a problem though.
+  * not be a problem because if the session id changes, we should
+  * probably have a new folksoSession object anyway.
   *
   * @param $sid Session ID.
   * @return folksoUser obj or false if user not found
