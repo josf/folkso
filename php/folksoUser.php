@@ -241,7 +241,8 @@ class folksoUser {
       . ' from users u '
       . ' join user_data ud on ud.userid = u.userid '
       . ' left join tagevent te on te.userid = u.userid '
-      . " where u.userid = '" . $i->dbescape($uid) . "'";
+      . " where u.userid = '" . $i->dbescape($uid) . "'"
+      .' group by u.userid ';
     
     $i->query($sql);
     switch ($i->result_status) {
