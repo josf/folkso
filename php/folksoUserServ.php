@@ -571,10 +571,10 @@ function excludeSQLnullKeyWord ($txt) {
 function getUserData (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
   $u = $fks->userSession(); //actual user
+  $user = new folksoUser($dbc); // the user we are getting information for
 
   // use uid parameter for $user
   if ($q->is_param('uid')) {
-    $user = new folksoUser($dbc); // the user we are getting information for
     try {
       if (! $user->validateUid($q->get_param('uid'))) {
         return $r->setError(400, 'Malformed user id',
@@ -589,10 +589,9 @@ function getUserData (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) 
       return $r->handleDBexception($e);
     }
   }
-
     // otherwise use session user
   elseif  ($u instanceof folksoUser) {
-    $user = $u;
+    $user->userFromUserId($u->userid);
   }
   else {
     return $r->setError(400, 'No valid user specified', 
