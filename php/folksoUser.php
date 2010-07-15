@@ -98,6 +98,10 @@ class folksoUser {
   public function setFbId ($id) {
     $this->fbId = $id;
   }
+
+  public function setNick($arg) {
+    $this->nick = trim($arg);
+  }
     
   public function setInstitution($arg) {
     $this->institution = trim($arg);
@@ -120,7 +124,7 @@ class folksoUser {
     return true;
   }
   public function setCv($html) {
-    $this->cv = $html;
+    $this->cv = trim($html);
   }
 
   public function setEventCount($number) {
