@@ -190,19 +190,6 @@ class folksoUser {
     }
   }
 
-  /**
-   * Tests to see if User object contains enough data to be
-   * used. Requires valid nick, first and last names and (possibly) valid
-   * email address.
-   */  
-  public function Writeable() {
-    /** check presence of vars **/
-    if ( empty($this->urlBase) ||
-         empty($this->loginId)){
-      return false;
-    }
-    return true;
-  }
 
   /**
    * @param $params
@@ -237,7 +224,6 @@ class folksoUser {
     $this->setCv($params['cv']);
     $this->setEventCount($params['eventCount']);
 
-    $this->Writeable();
     return array($this);
   }
 
