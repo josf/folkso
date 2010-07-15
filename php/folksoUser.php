@@ -36,6 +36,7 @@ class folksoUser {
   public $loginId;
   public $cv;
   public $dbc;
+  public $eventCount;
 
   /** 
    * A folksoRightStore object
@@ -120,6 +121,14 @@ class folksoUser {
   }
   public function setCv($html) {
     $this->cv = $html;
+  }
+
+  public function setEventCount($number) {
+    if ($number && 
+        (! is_numeric($number))) {
+      throw new userException("Bad data for event count");
+    } 
+    $this->eventCount = $number;
   }
 
   /**
@@ -222,6 +231,7 @@ class folksoUser {
     $this->setFonction($params['fonction']);
     $this->setEmail($params['email']);
     $this->setCv($params['cv']);
+    $this->setEventCount($params['eventCount']);
 
     $this->Writeable();
     return array($this);
@@ -236,19 +246,27 @@ class folksoUser {
     $i = new folksoDBinteract($this->dbc);
     $sql = 
       "select u.userid as userid, u.urlbase as urlbase, ud.lastname, ud.firstname, "
-      . " ud.email, ud.institution, ud.pays, ud.fonction, ud.cv "
-      . " from "
-      . " users u join user_data ud on ud.userid = u.userid "
+      . " ud.email, ud.institution, ud.pays, ud.fonction, ud.cv, "
+      .' count(te.resource_id) as eventCount '
+      . ' from users u '
+      . ' join user_data ud on ud.userid = u.userid '
+      . ' left join tagevent te on te.userid = u.userid '
       . " where u.userid = '" . $i->dbescape($uid) . "'";
     
     $i->query($sql);
     switch ($i->result_status) {
-    case 'NOROWS':
+    case 'NOROWS': // this may be worthless because of left join, see below.
       print "User not found";
       return false;
       break;
     case 'OK':
       $res = $i->result->fetch_object();
+      if (! $res->userid) { 
+        // because of left join, one row of nulls may be returned
+        // so we test for userid anyway
+        return false;
+      }
+
       $this->loadUser(array(
                             'userid' => $res->userid,
                             'urlbase' => $res->urlbase,
@@ -259,7 +277,8 @@ class folksoUser {
                             'institution' => $res->institution,
                             'pays' => $res->pays,
                             'fonction' => $res->fonction,
-                            'cv' => $res->cv));
+                            'cv' => $res->cv,
+                            'eventCount' => $res->eventCount));
     }
     return $this;
   }

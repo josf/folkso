@@ -131,11 +131,14 @@ class testOffolksoUser extends  UnitTestCase {
                        "Failed to load gustav user ob");
      $u->deleteUserWithTags();
      $u2 = new folksoUser($this->dbc);
-     $this->assertFalse($u->userFromUserId('gustav-2010-001'),
-                        "Should no longer be able to load gustav here");
-     
+     $ret = $u->userFromUserId('gustav-2010-001');
 
-
+     $this->assertFalse($ret,
+                        "Should no longer be able to load gustav here: userFromUserId should return false");
+     $this->assertFalse($ret instanceof folksoUser,
+                        '$ret should be false, not folksoUser object');
+     $this->assertFalse($u2->exists('gustav-2010-001'),
+                        'gustav should no longer exist here');
    }
 
    function testStoreUserData () {
@@ -164,6 +167,22 @@ class testOffolksoUser extends  UnitTestCase {
      $this->assertEqual($u2->fonction, 'harpist',
                         "New fonction data was not retreived, got: " . $u2->fonction);
 
+   }
+
+   function testStoreCv () {
+     $u = new folksoUser($this->dbc);
+     $u->userFromUserId('gustav-2010-001');
+     $this->assertEqual($u->firstName, 'Gustave',
+                        "Problem with initial retrieval of user");
+
+     $u->setCv("Wrote a book");
+     $u->storeUserData();
+
+     $u2 = new folksoUser($this->dbc);
+     $u2->userFromUserId('gustav-2010-001');
+
+     $this->assertEqual($u2->cv, 'Wrote a book',
+                        'Did not retreive cv data');
    }
 
    
