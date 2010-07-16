@@ -385,15 +385,15 @@ $(document).ready(
                    {selector: "div.user-cv",
                     init: function(sel, $place, data) {
                         $(sel + " p.cv", $place).html(data);
-                        $(sel + " input.cv-write", $place).val(data);
+                        $(sel + " textarea.cv-write", $place).val(data);
                     },
                     update: function(sel, $place, data) {
                         $(sel + " p.cv", $place).html(data);
-                        $(sel + " input.cv-write", $place).val(data);
+                        $(sel + " textarea.cv-write", $place).val(data);
                     },
                     deleteElem: function(sel, $place, data) {
                         $(sel + " p.cv", $place).html('');
-                        $(sel + " input.cv-write", $place).val('');
+                        $(sel + " textarea.cv-write", $place).val('');
                     }
                    });
 
@@ -446,7 +446,7 @@ $(document).ready(
                            folksosetinstitution: $("input.institutionbox", pardiv).val(),
                            folksosetpays: $("input.paysbox", pardiv).val(),
                            folksosetfonction: $("input.fonctionbox", pardiv).val(),
-                           folksosetcv: $("input.cv-write", pardiv).val()
+                           folksosetcv: $("textarea.cv-write", pardiv).val()
                            };
 
                        $.ajax(fK.fn.userPostObject(data, userDataUpdateSuccess, 

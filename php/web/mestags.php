@@ -187,7 +187,7 @@ print $fp->facebookConnectButton();
   <p>CV : </p>
   <p class="cv">
   </p>
-  <input type="textarea" width="80" height="100" class="cv-write">
+  <textarea cols="80" rows="20" class="cv-write"></textarea>
   </input>
 </div>
 
