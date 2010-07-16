@@ -118,7 +118,7 @@ class folksoQuery {
           if (substr($param_key, 0, 6) == 'folkso') {
             $shortParamKey = substr($param_key, 6);
             
-            # to avoid XSS -- no html allowed anywhere, except for exceptions.
+            // to avoid XSS -- no html allowed anywhere, except for exceptions.
             if (array_key_exists($shortParamKey, $this->tagsAllowed) &&
                 $this->tagsAllowed[$shortParamKey]) {
               $param_val = strip_tags($param_val, '<p><a><ul><li><b><i><strong><em><h1><h2><h3><h4>');
@@ -131,12 +131,12 @@ class folksoQuery {
                 our own escaping, thankyou. **/
             $param_val = stripslashes($param_val);
 
-              # if fieldname end in 3 digits : folksothing123, we strip off
-              # the digits and build up an array of the fields
+            // if fieldname end in 3 digits : folksothing123, we strip off
+            // the digits and build up an array of the fields
             if (is_numeric(substr($param_key, -3))) {
                   $new_key = substr($param_key, 0, -3);
 
-                 # for 1st time through
+                  // for 1st time through
                   if (! isset($mults[$new_key])) {
                       $mults[$new_key] = array();
                   }      
@@ -176,7 +176,7 @@ class folksoQuery {
           }
       }
 
-    # If there are multiple fields, put them into $accum
+      // If there are multiple fields, put them into $accum
     if (count($mults) > 0){
       foreach ($mults as $mkey => $mval) {
         $accum[$mkey] = $mval;
