@@ -80,7 +80,7 @@ class folksoQuery {
     $this->method = strtolower($server['REQUEST_METHOD']);
     $this->req_content_type = $server['HTTP_ACCEPT'];
 
-    $this->tagsAllowed = array('cv' => true);
+    $this->tagsAllowed = array('cv' => true, 'setcv' => true);
 
     if (count($get) > 0) {
       $this->fk_params = array_merge($this->parse_params($get), 

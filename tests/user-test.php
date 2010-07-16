@@ -437,6 +437,19 @@ class testOfuser extends  UnitTestCase {
    }
 
 
+   function testCvWithTags () {
+     $this->fks->startSession('gustav-2010-001', true);
+     $complicated_html = '<h2>things</h2><ul><li>This</li><li>and</li><li>that</li></ul>';
+     $q = new folksoQuery(array(), 
+                          array('folksosetcv' => $complicated_html),
+                          array());
+     $this->assertEqual($q->get_param('setcv'), $complicated_html,
+                        "folksoQuery should leave this html alone, instead got: "
+                        . $q->get_param('setcv'));
+
+   }
+
+
    function testGetCV () {
      $u = new folksoUser($this->dbc);
      $u->userFromUserId('gustav-2010-001');
