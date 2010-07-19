@@ -555,4 +555,17 @@ $(document).ready(
 
 
 
+
+        $("textarea.cv-write")
+            .tinymce({
+                         script_url: '/tags/js/tinymce/jscripts/tiny_mce/tiny_mce.js',
+                         valid_elements: "a[href],strong/b,em/i,ul,li,p,h2,h3,h4",
+
+                         /*
+                          * It is crucial to use raw here. Otherwise the system will choke on the &
+                          */
+                         entity_encoding: 'raw'
+                     });
+
+
     });

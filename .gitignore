@@ -1,6 +1,7 @@
 *~
 build/*
 dist/*
+js/deps/tiny*
 info/afaire.txt
 php/folksoFabula.php
 php/html/*
