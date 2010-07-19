@@ -108,7 +108,7 @@ pageTracker._trackPageview();
 
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.1/jquery.js"></script>
   <?php print $fp->facebookJSinit(); ?>
-<script type="text/javascript" src="/tags/js/jquery.folksodeps.min.js"></script>
+<script type="text/javascript" src="/tags/js/jquery.folksodeps.js"></script>
 <script type="text/javascript" src="/tags/js/folksonomie.min.js"></script> 
 <!-- <script type="text/javascript" src="/tags/js/folksonomie.js"></script> -->
 <script type="text/javascript" src="/tags/js/faboid.js"></script>
