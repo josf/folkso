@@ -51,6 +51,14 @@
       </xsl:element>
 
 
+      <xsl:element name="div">
+        <xsl:attribute name="class">user-cv</xsl:attribute>
+        <xsl:element name="h3">
+          <xsl:text>CV : </xsl:text>
+        </xsl:element>
+        <xsl:copy-of select="./cv"/>
+      </xsl:element>
+
     </xsl:element>
   </xsl:template>
 

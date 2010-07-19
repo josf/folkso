@@ -421,7 +421,13 @@ $(document).ready(
                 setInstitution($("institution", xml).text());
                 setPays($("pays", xml).text());
                 setFonction($("fonction", xml).text());
-                setCv($("cv", xml).text());
+
+                /*
+                 * The jQuery.xml() method is provided by a plugin: 
+                 * 
+                 * http://plugins.jquery.com/project/x2s 
+                 */
+                setCv($("cv", xml).xml());
 
                 $(U).trigger("update");
                 
