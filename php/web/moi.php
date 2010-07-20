@@ -33,12 +33,47 @@ if (strlen($rawUser) > 255) {
   $rawUser = null;
 }
 
-if ((! $rawUser) || 
-    (! $u->validateUid($rawUser)) ||
-    (! $u->userFromUserId($rawUser))) {
-  // userFromUserId returns false when user is not found
-  header('HTTP/1.1 404 User not found');
-  print "The user id you supplied is either invalid or does not correspond to a real user";
+
+// check the userid param first. If someone asks for this, then they know what they want
+if ($rawUser) {
+  if (! $u->validateUid($rawUser)) {
+    header('HTTP/1.1 400 Malformed userid');
+    print "The user id should look something like this: characters-2000-001";
+    exit();
+  }
+  else if (! $u->userFromUserId($rawUser)) {
+    // userFromUserId returns false when user is not found
+    header('HTTP/1.1 404 User not found');
+    print "The user id you supplied does not correspond to a real user";
+    exit();
+  }
+}
+// otherwise we might be getting the name as parameters
+elseif ($_GET['first'] && $_GET['last']) {
+  $first = preg_replace('/[^a-zA-Z ]/',
+                        '',
+                        $_GET['first']);
+  $last = preg_replace('/[^a-zA-Z ]/',
+                       '',
+                       $_GET['last']);
+  if ((strlen($first) > 1) &&
+      (strlen($last) > 1)) {
+    if (! $u->userFromName($first, $last)){
+      header('HTTP/1.1 404 User not found');
+      print "The user name you have supplied does not correspond to a current user";
+      exit();
+    }
+  }
+  else {
+    header('HTTP/1.1 400 Invalid user name');
+    print "There is a problem with the user name you have supplied";
+    exit();
+  }
+}
+// and now we have run out of chances for finding a user to get data about
+else {
+  header('HTTP/1.1 404 No user');
+  print "A user must be identified in the request, either by name or by userid";
   exit();
 }
 
