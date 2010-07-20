@@ -274,6 +274,35 @@ class folksoUser {
     return $this;
   }
 
+/**
+ * Load user object using user's first and last names. Calls userFromUserId().
+ *
+ * @param $first String First name
+ * @param $last String Last name
+ * @throws DB errors
+ * @return Self
+ */
+  public function userFromName ($first, $last) {
+    $i = new folksoDBinteract($this->dbc);
+    $sql = 
+      sprintf('select u.userid from users u '
+              .' join user_data ud on u.userid = ud.userid '
+              .' where '
+              ." ud.firstname = '%s' and ud.lastname = '%s'"
+              .' limit 1',
+              $i->dbescape($first),
+              $i->dbescape($last));
+
+    $i->query($sql);
+    if ($i->result_status == 'OK') {
+      $row = $i->result->fetch_object();
+      $uid = $row->userid;
+      return $this->userFromUserId($uid);
+    }
+    return false;
+ }
+
+
   public function userFromLogin_base ($id, $view, $login_column, 
                                       $service = null, $right = null) {
    if ($this->validateLoginId($id) === false) {
