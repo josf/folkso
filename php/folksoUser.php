@@ -169,7 +169,7 @@ class folksoUser {
   public function validateUid ($uid) {
     if ((strlen($uid) > 11) &&
         (strlen($uid) < 100) &&
-        preg_match('/^[a-z]+-\d+-\d+/',  $uid)){
+        preg_match('/^[a-z0-9]+-\d+-\d+/',  $uid)){
       return true;
     }
     return false;

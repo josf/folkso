@@ -47,6 +47,8 @@ class testOffolksoUser extends  UnitTestCase {
                        "Empty string is not a valid urlbase");
     $this->assertFalse($u->validUrlbase('marcel!'),
                        "Non alphanumeric should be refused");
+    $this->assertTrue($u->validUrlbase('1221343243'),
+                      "All number url base should be allowed");
     $this->assertFalse($u->validUrlbase('abc'),
                        "Three letter urlbase should be rejected");
     $this->assertFalse($u->validUrlbase('Marcel.Proust'),
@@ -68,6 +70,8 @@ class testOffolksoUser extends  UnitTestCase {
                        "invalid uid should fail");
     $this->assertFalse($u->validateUid(""),
                        "empty uid should fail");
+    $this->assertTrue($u->validateUid('21312123112-2010-003'),
+                      "User id with all number in first part should be valid");
 
   }
 

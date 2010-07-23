@@ -92,8 +92,13 @@ class testOffolksoOIuser extends  UnitTestCase {
                             'invalid oid url should fail');
          $this->assertTrue($oi->validateLoginId('http://myspace.com/gustav'),
                            'gustav url should validate, but is not');
+
+         $this->assertTrue($oi->validateLoginId('http://myspace.com/gustav123'),
+                           'oid url with numbers should validate');
          $this->assertTrue($oi->exists('http://myspace.com/gustav'),
                            'not existing gustav');
+
+
 
          $noone = new folksoOIuser($this->dbc2);
          $bzork = $noone->userFromLogin('http://myspace.com/ploof');
