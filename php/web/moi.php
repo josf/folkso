@@ -44,7 +44,8 @@ if ($rawUser) {
   else if (! $u->userFromUserId($rawUser)) {
     // userFromUserId returns false when user is not found
     header('HTTP/1.1 404 User not found');
-    print "The user id you supplied does not correspond to a real user";
+    react404($loc,
+             "The user id you supplied does not correspond to a real user");
     exit();
   }
 }
@@ -58,20 +59,23 @@ elseif ($_GET['first'] && $_GET['last']) {
       (strlen($last) > 1)) {
     if (! $u->userFromName($first, $last)){
       header('HTTP/1.1 404 User not found');
-      print "The user name you have supplied does not correspond to a current user";
+      react404($loc,
+               "The user name you have supplied does not correspond to a current user");
+      }
       exit();
     }
   }
   else {
     header('HTTP/1.1 400 Invalid user name');
-    print "There is a problem with the user name you have supplied";
+    react404($loc, "There is a problem with the user name you have supplied");
     exit();
   }
 }
 // and now we have run out of chances for finding a user to get data about
 else {
   header('HTTP/1.1 404 No user');
-  print "A user must be identified in the request, either by name or by userid";
+  react404($loc,
+           "A user must be identified in the request, either by name or by userid");
   exit();
 }
 
@@ -177,3 +181,11 @@ require("/var/www/dom/fabula/commun3/html_start.php");
 
 include("/var/www/dom/fabula/commun3/foot.php");
 
+function react404 (folksoLocal $loc, $message) {
+  if ($loc->urlRedirect404) {
+    header('Location: ' . $loc->urlRedirect404);
+  }
+  else {
+    print $message;
+  }
+}
