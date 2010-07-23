@@ -109,6 +109,11 @@ abstract class folksoLocal {
   public $snippets;
 
 
+  /*
+   * Url of a custom, site-specific 404 page. 
+   */
+  public $urlRedirect404;
+
   public function __construct () {
     $this->snippets = array();
   }
