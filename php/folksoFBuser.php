@@ -210,6 +210,27 @@ class folksoFBuser extends folksoUser{
       throw userException('urlbase is too short');
     }
   }
+
+/**
+ * Simply checks that the login id looks valid (ie. is all numbers and
+ * at least 5 characters long) and sets it, otherwise throws
+ * exception. This will overwrite the current value of $u->urlBase so
+ * make sure that is what you want.
+ *
+ * @param $fbId
+ * @uses $urlBase
+ * @uses $loginId
+ */
+ public function urlBaseFromLoginId ($fbId = null) {
+   $id = $fbId ? $fbId : $this->loginId;
+   if ((! preg_match('/^[0-9]+$/', $id)) &&
+       (strlen($id) > 5)) {
+     throw new userException('Invalid FB id');
+   }
+   $this->setUrlbase($id);
+   return $id;
+ }
+
  
 
 }
