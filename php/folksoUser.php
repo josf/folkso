@@ -197,8 +197,7 @@ class folksoUser {
    */  
   public function Writeable() {
     /** check presence of vars **/
-    if ( empty($this->urlBase) ||
-         empty($this->loginId)){
+    if ( empty($this->loginId)) {
       return false;
     }
     return true;
