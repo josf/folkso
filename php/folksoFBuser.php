@@ -81,8 +81,18 @@ class folksoFBuser extends folksoUser{
  */
  public function writeNewUser () {
    if (! $this->validUrlbase($this->urlBase)){
-     $this->urlbaseFromFBname();
+     if ($this->firstName && $this->lastName) {
+       /* Currently, this condition should never be true since we are
+        * using the FB id instead of the name. Leaving it here in case
+        * we switch back to getting the FB name on account creation.
+        */
+       $this->urlbaseFromFBname();
+     }
+     if (! $this->validUrlbase($this->urlBase)) {
+       $this->urlBaseFromLoginId($this->loginId);
+     }
    }
+   
 
     if (! $this->Writeable()){
       /** This probably means that we did not get a valid urlbase **/
