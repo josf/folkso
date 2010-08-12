@@ -902,37 +902,60 @@
              },
 
              /**
-              * Log a Facebook user in, creating new account if necessary.
-              * This assumes that the FB Connect stuff is done.
+              * Log a Facebook user in.  This assumes that the FB
+              * Connect stuff is done.
               */
              completeFBlogin: function(okFunc, badFunc) {
                  var
-                 error400 =
-                     fK.fn.defErrorFn(400,
-                                      function(xhr, msg)
-                                      {
-                                          alert("Erreur système: informations insuffisantes");
-                                          badFunc();
-                                      }),
-                 error500 = fK.fn.defErrorFn(500,
-                                             function(xhr, msg)
-                                             {
-                                                 alert("Erreur interne du système des utilisateurs "
-                                                       + xhr.status + " " + xhr.statusText);
-                                                 badFunc();
-                                             }),
+                 error400 = function(xhr, msg)
+                 {
+                     alert("Erreur système: informations insuffisantes");
+                     badFunc();
+                 },
+                 error500 = 
+                     function(xhr, msg){
+                         alert("Erreur interne du système des utilisateurs "
+                               + xhr.status + " " + xhr.statusText);
+                         badFunc();
+                     },
+                 error404 = 
+                     function(xhr, msg) {
+                         fK.fn.createFBuser(okFunc);    
+                     },
                  errorOther = function(xhr, msg) {
                      alert("Erreur inattendue: " + xhr.status + " " + xhr.statusText);
+                     console.log("status: " + xhr.status);
                      badFunc();
                  };
+                 error400.errorcode = 400; error500.errorcode = 500; 
+                 error404.errorcode = 404;
 
                  var aj =
                      fK.fn.userGetObject({folksofblogin: "1"},
                                          okFunc,
-                                         fK.fn.errorChoose(error400, error500, errorOther));
+                                         fK.fn.errorChoose(error400, error404, error500, errorOther));
                  aj.dataType = "text";
                  $.ajax(aj);
 
+             },
+             /**
+              * Create a new user as a Facebook user. The ajax call should also 
+              * start a new session.
+              * 
+              * @param okFunc Post-completion callback. Probably the same as
+              *  in completeFBlogin().
+              */
+             createFBuser: function(okFunc){
+                 var aj = fK.fn.userPostObject({folksonewfb: "1"},
+                                               okFunc,
+                                               function(xhr, msg) {
+                                                   alert("Failed to create new user");
+                                               });
+                 if (window.console) {
+                     console.log("about to call createFBuser");
+                 }
+                 aj.dataType = "xml";
+                 jQuery.ajax(aj);
              }
 
          }
