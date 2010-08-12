@@ -29,6 +29,9 @@ $srv->addResponseObj(new folksoResponder('get',
                                          array('required' =>
                                                array('fblogin')),
                                          'loginFBuser'));
+$srv->addResponseObj(new folksoResponder('post',
+                                         array('required' => array('newfb')),
+                                         'createFBuser'));
 $srv->addResponseObj(new folksoResponder('get',
                                          array('required' => array('subscribed'),
                                                'exclude' => array('fblogin', 'check', 'tag')),
