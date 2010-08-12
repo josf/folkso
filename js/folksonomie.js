@@ -426,8 +426,7 @@
 
 
              /**
-              * Takes any number of functions as arguments. Last argument must  be
-              * an integer corresponding to an HTTP error code. Each function except
+              * Takes any number of functions as arguments.  Each function except
               * the last  must have an "errorcode" value (ie. fn.errorcode = 404).
               *
               */
