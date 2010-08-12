@@ -109,9 +109,9 @@ else {
     $udataXsl = $udataProc->importStylesheet($udataXsl);
     $udataTrans = $udataProc->transformToDoc($userData_DOM);
     $userDataHtml = $udataTrans->saveXML();
-
   }    
 
+  /* Favorite tag list */
   if (($userFaveReq->status == 200) &&
       (strlen($userFaveReq->body()) > 0)) {
     $userFave_DOM = new DOMDocument();

@@ -84,8 +84,9 @@ class testOffolksoUser extends  UnitTestCase {
      $u->setEmail('bob@warp.com');
      $this->assertEqual($u->email, 'bob@warp.com',
                         'Bad or missing email from setEmail: ' . $u->email);
-
+     
    }
+
 
    function testWithDB (){
      $u = new folksoUser($this->dbc);
