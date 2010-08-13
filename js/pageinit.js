@@ -84,7 +84,10 @@ fK.fb.onLogin = function() {
                         fK.fb.loggedUser = function()
                         {
                             fK.fn.completeFBlogin(
-                                function(){ $('body').trigger('loggedIn');
+                                function(){ if (fK.loginStatus === false) {
+                                                $('body').trigger('loggedIn');
+                                                fK.loginStatus = true; 
+                                            }
                                             if ($.isFunction(fK.ufn.loggedIn)) {
                                                 fK.ufn.loggedIn();
                                             }
