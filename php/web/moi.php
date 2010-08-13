@@ -66,7 +66,6 @@ elseif ($_GET['first'] && $_GET['last']) {
       header('HTTP/1.1 404 User not found');
       react404($loc,
                "The user name you have supplied does not correspond to a current user");
-      }
       exit();
     }
   }
