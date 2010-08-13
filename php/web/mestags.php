@@ -88,7 +88,7 @@ require("/var/www/dom/fabula/commun3/html_start.php");
 <h1>Espace tags</h1>
 
 <?php
-  if (!$loggedIn) {
+    if (!$loggedIn) {
     // display login buttons
 
 ?><h1 class="not-logged">Il faut vous identifier d'abord</h1> 
@@ -102,7 +102,8 @@ print $fp->facebookConnectButton();
   }
 
 ?>
-<div id="user-intro">
+
+<div id="user-intro" class="login-only">
 <p>Bonjour <span class="userhello"></span> !</p>
 <p>Vous avez appliqué <span id="tagcount"></span> tags.</p>
 </div>
@@ -116,13 +117,13 @@ print $fp->facebookConnectButton();
 
 <div id="favtags" class="login-only">
 <h2>Vos tags préférés</h2>
-  <p>Les tags que vous appliquez le plus souvent : </p> <!-- ' -->
+  <p>Les tags que vous appliquez le plus souvent : </p> 
 <ul class="fav-list">
 </ul>
 </div>
 
 <div id="newsubscriptions" class="login-only">
-<h2>Vous abonner à de nouveaux tags</h2> <!-- ' -->
+<h2>Vous abonner à de nouveaux tags</h2> 
 <p>Choisir un nouveau tag:</p>
 <input type="text" id="newsubbox" size="60">
 </input>
@@ -197,7 +198,6 @@ print $fp->facebookConnectButton();
 </div>
 <p><a href="#" id="userdata-send">Valider</a></p>
 </div>
-
 
 
 <div id="colonnes-deux">
