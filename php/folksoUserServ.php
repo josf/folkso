@@ -217,48 +217,69 @@ function loginFBuser (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) 
                             'An error occurred. Sorry. We will get right on it.');
       }
     }
-    else { /* Create new user */
-      
-      /* get name from Facebook */
-      $name = $fb->api_client->users_getInfo($fb_uid, 'last_name, first_name');
-      //      $fbu->useFBname($name, true); // true = make sure we overwrite
-      $fbu->setFirstName($name[0]['first_name']);
-      $fbu->setLastName($name[0]['last_name']);
-      $fbu->urlbaseFromFBname();
+    else { /* user does not exist */
+      return $r->setError(404, 'User unknown', 'We need a user. '
+#ifdef DEBUG
+                          . ' FB uid = ' . $fb_uid
+#endif
 
-      try {
-        $fbu->setLoginId($fb_uid);
-        $fbu->writeNewUser();
-      }
-      catch (userException $e) {
-        return $r->setError(500, 'Error creating new user');
-      }
-      catch (dbException $e) {
-        return $r->handleDBexception($e);
-      }
-
-      $fbu2 = new folksoFBuser($dbc);
-      $u2 = $fbu2->userFromLogin($fb_uid);
-      
-      if (! $u2 instanceof folksoFBuser) {
-        return $r->setError(500, 'Strange error creating new account',
-                            'New user not found.');
-      }
-      // TODO: correct format for user url
-      $xml = sprintf('<?xml version="1.0"?>'
-                     .'<user>'
-                     .'<facebookid>%d</facebookid>'
-                     .'<firstname>%s</firstname>'
-                     .'<lastname>%s</lastname>'
-                     .'<url>%s</url>'
-                     .'</user>',
-                     $u2->loginId, $u2->firstName, $u2->lastName, $u2->urlBase);
-      $r->setOk(201, 'User successfully created');
-      $r->t($xml);
-      $fks->startSession($u2->userid);
-      return $r;
+                          );
     }
   }
+}
+
+
+/*
+ * Creates new FB user account and logs the new user in.
+ */
+function createFBuser (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
+
+  $loc = new folksoFabula();
+  $fb = new Facebook($loc->snippets['facebookApiKey'],
+                     $loc->snippets['facebookSecret']);
+  $fbu = new folksoFBuser($dbc);
+  $r = new folksoResponse();
+
+  /*
+   * Getting the FB user depends on cookies available to the Facebook API.
+   */
+  $fb_uid = $fb->get_loggedin_user();
+  if (! $fb_uid) {
+    return $r->setError(400, "Insufficient information",
+                 'Unable to obtain necessary login information. Are you logged in to Facebook?');
+  }
+  $fbu->setLoginId($fb_uid);
+
+  try {
+    $fbu->writeNewUser();
+  }
+  catch (userException $e) {
+    return $r->setError(500, 'Error creating new user', 'Error: ' . $e->getMessage());
+  }
+  catch (dbException $e) {
+    return $r->handleDBexception($e);
+  }
+
+  $fbu2 = new folksoFBuser($dbc);
+  $u2 = $fbu2->userFromLogin($fb_uid);
+      
+  if (! $u2 instanceof folksoFBuser) {
+    return $r->setError(500, 'Strange error creating new account',
+                        'New user not found.');
+  }
+  // TODO: correct format for user url
+  $xml = sprintf('<?xml version="1.0"?>'
+                 .'<user>'
+                 .'<facebookid>%d</facebookid>'
+                 .'<firstname>%s</firstname>'
+                 .'<lastname>%s</lastname>'
+                 .'<url>%s</url>'
+                 .'</user>',
+                 $u2->loginId, $u2->firstName, $u2->lastName, $u2->urlBase);
+  $r->setOk(201, 'User successfully created');
+  $r->t($xml);
+  $fks->startSession($u2->userid);
+  return $r;
 }
 
 
