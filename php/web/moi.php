@@ -75,13 +75,15 @@ elseif ($_GET['first'] && $_GET['last']) {
     exit();
   }
 }
+
 // and now we have run out of chances for finding a user to get data about
-else {
+if (! $u->userid) {
   header('HTTP/1.1 404 No user');
   react404($loc,
            "A user must be identified in the request, either by name or by userid");
   exit();
 }
+
 
 #ifdef DEBUG
 $debug = '';
