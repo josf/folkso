@@ -97,7 +97,8 @@ if (! ($userDataReq->status  == 200)) {
   $noUserData = true;
 
 #ifdef DEBUG
-  $debug .= '<p>bad status on userDataReq: ' . $userDataReq . '</p>';
+//  $debug .= '<p>uid: ' . $u->userid . '</p><p>bad status on userDataReq: ' . $userDataReq->status . '</p>'
+//    . '<p>' . $userDataReq->error_body . '</p>';
 #endif
 }
 else {
@@ -105,7 +106,7 @@ else {
   if (! $userData_DOM->loadXML($userDataReq->body())) {
     $noUserData = true;
 #ifdef DEBUG
-    $debug .= '<p>userData failed to load as xml</p>';
+//    $debug .= '<p>userData failed to load as xml</p>';
 #endif
   }
   else {  // process and build $userDataHtml which will be used in the page
@@ -132,8 +133,8 @@ else {
   }
 #ifdef DEBUG
   else {
-    $debug .= '<p>No favorites found: userFaveReq->status: ' . $userFaveReq->status 
-      . ' bodylength: ' . strlen($userFaveReq->body()) . '</p>';
+    //    $debug .= '<p>No favorites found: userFaveReq->status: ' . $userFaveReq->status 
+    //      . ' bodylength: ' . strlen($userFaveReq->body()) . '</p>';
   }
 #endif 
 }
@@ -167,7 +168,7 @@ require("/var/www/dom/fabula/commun3/html_start.php");
 
 <?php
 #ifdef DEBUG
-  print $debug;
+//  print $debug;
 #endif 
 
   if ($noUserData ||
