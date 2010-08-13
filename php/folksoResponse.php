@@ -422,6 +422,7 @@ class folksoResponse {
       }
     }
     else {
+      // this is weird
       if ($this->styleSheet && $this->body) {
         try {
           print $this->bodyXsltTransform();
