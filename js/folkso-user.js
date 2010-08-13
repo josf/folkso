@@ -5,7 +5,6 @@
 $(document).ready(
     function()
     {
-
 //        var hostAndPath = 'http://localhost/';
         var hostAndPath = '/tags/';
         fK.init({
@@ -517,12 +516,26 @@ $(document).ready(
             }
         };
 
+        $('body').unbind('loggedIn');
         $('body').bind('loggedIn',
                        function() {
                            $("div.login-only").show();
                            $("h1.not-logged").hide();
+                           $("#fbstuff").hide();
+                           $.ajax(getList_aj);
+                           $.ajax(getRecently_aj);
+                           $.ajax(getUser_aj);
+                           getFaves_doAj();
+                           fK.loginStatus = true;
                        });
 
+
+        $('body').bind('loggedOut',
+                       function() {
+                           $('div.login-only').hide();
+                           $("h1.not-logged").show();
+                           $("#fbstuff").show();
+                       });
 
         /*
          *  Page load actions
@@ -531,29 +544,16 @@ $(document).ready(
         /* If we are already logged in, we just do the ajax calls
          * on page load.
          */
-        if (fK.loginStatus !== false) {
-            $.ajax(getList_aj);
-            $.ajax(getRecently_aj);
-            $.ajax(getUser_aj);
-            getFaves_doAj();
-        }
-        else {
-            /*
-             * and otherwise we bind the page init calls to loggedIn
-             * in case the login state changes.
-             */
-            $("div.login-only").hide();
-            $("#fbstuff").show();
-            $('body').bind('loggedIn',
-                           function() {
-                               $.ajax(getList_aj);
-                               $.ajax(getRecently_aj);
-                               $.ajax(getUser_aj);
-                               getFaves_doAj();
-                           });
-        }
+/*        if (fK.loginStatus !== false) {
+            $('body').trigger('loggedIn');
+        }*/
 
-
+        /*
+         * the 'loggedIn' event is already called via pageinit.js
+         */
+        if (fK.loginStatus === false) {
+           $('body').bind('loggedOut');
+        }
 
 
         $("textarea.cv-write")
