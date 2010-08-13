@@ -18,6 +18,8 @@ require_once 'folksoPage.php';
 require_once 'folksoUserServ.php';
 require_once 'folksoInteract.php';
 
+require_once 'facebook.php';
+
 if ((! $fp) || (! $fp instanceof folksoPage)) {
   $fp = new folksoPage();
 } 
@@ -33,6 +35,9 @@ if (strlen($rawUser) > 255) {
   $rawUser = null;
 }
 
+$fb = new Facebook($loc->snippets['facebookApiKey'],
+                   $loc->snippets['facebookSecret']);
+$fb_uid = $fb->get_loggedin_user();
 
 // check the userid param first. If someone asks for this, then they know what they want
 if ($rawUser) {
