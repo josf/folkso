@@ -133,6 +133,16 @@ class testOffolksoFBuser extends  UnitTestCase {
                        "Should return true here, user loading should have succeeded");
    }
 
+   function testMinimalUserCreation () {
+     $u = new folksoFBuser($this->dbc);
+     $u->setLoginId(123123112);
+     $u->urlBaseFromLoginId();
+     $this->assertTrue($u->urlBase, 123123112, "urlBaseFromLoginId() did not set urlBase var");
+     $this->assertTrue($u->Writeable(),
+                       "Minimal user should already be writeable, with only login id");
+
+   }
+
 
    function testGenerateUrlbase () {
      $u = new folksoFBuser($this->dbc);
