@@ -183,6 +183,7 @@ require("/var/www/dom/fabula/commun3/html_start.php");
     }
   }
 ?>
+<a href="/tags/mestags.php">Éditer mes propres informations</a>
 </div></div>
 <?php
 
