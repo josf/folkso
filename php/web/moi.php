@@ -57,8 +57,8 @@ if ($rawUser) {
 // otherwise we might be getting the name as parameters
 elseif ($_GET['first'] && $_GET['last']) {
   // letters only in names
-  $first = preg_replace('/[^a-zA-Z]/', '', $_GET['first']);
-  $last = preg_replace('/[^a-zA-Z]/', '', $_GET['last']);
+  $first = preg_replace('/[^a-zA-Z-]/', '', $_GET['first']);
+  $last = preg_replace('/[^a-zA-Z-]/', '', $_GET['last']);
 
   if ((strlen($first) > 1) &&
       (strlen($last) > 1)) {
