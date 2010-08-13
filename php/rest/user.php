@@ -13,7 +13,8 @@
 require_once('folksoUserServ.php');
 
 $srv = new folksoServer(array( 'methods' => array('POST', 'GET', 'HEAD', 'DELETE'),
-                               'access_mode' => 'ALL'));
+                               'access_mode' => 'ALL',
+                               'allow_anonymous_post' => 1));
 
 $srv->addResponseObj(new folksoResponder('get',
                                          array('required' => array('mytags')),

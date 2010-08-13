@@ -137,7 +137,6 @@ class folksoServer {
     }
 
     if (array_key_exists('allow_anonymous_post', $config) &&
-        ($this->clientAccessRestrict == 'LOCAL') &&
         $config['allow_anonymous_post']) {
       $this->allow_anonymous_post = true;
     }
