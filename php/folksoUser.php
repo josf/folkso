@@ -252,7 +252,7 @@ class folksoUser {
       . " ud.email, ud.institution, ud.pays, ud.fonction, ud.cv, "
       .' count(te.resource_id) as eventCount '
       . ' from users u '
-      . ' join user_data ud on ud.userid = u.userid '
+      . ' left join user_data ud on ud.userid = u.userid '
       . ' left join tagevent te on te.userid = u.userid '
       . " where u.userid = '" . $i->dbescape($uid) . "'"
       .' group by u.userid ';
