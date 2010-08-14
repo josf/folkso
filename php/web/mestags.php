@@ -196,7 +196,7 @@ print $fp->facebookConnectButton();
 </div>
 
 </div>
-<p><a href="#" id="userdata-send">Valider</a></p>
+<p class="login-only"><a href="#" id="userdata-send">Valider</a></p>
 </div>
 
 

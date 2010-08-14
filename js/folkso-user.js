@@ -520,6 +520,7 @@ $(document).ready(
         $('body').bind('loggedIn',
                        function() {
                            $("div.login-only").show();
+                           $("p.login-only").show();
                            $("h1.not-logged").hide();
                            $("#fbstuff").hide();
                            $.ajax(getList_aj);
@@ -533,6 +534,7 @@ $(document).ready(
         $('body').bind('loggedOut',
                        function() {
                            $('div.login-only').hide();
+                           $('p.login-only').hide();
                            $("h1.not-logged").show();
                            $("#fbstuff").show();
                        });
