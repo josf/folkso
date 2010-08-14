@@ -260,7 +260,6 @@ class folksoUser {
     $i->query($sql);
     switch ($i->result_status) {
     case 'NOROWS': // this may be worthless because of left join, see below.
-      print "User not found";
       return false;
       break;
     case 'OK':
