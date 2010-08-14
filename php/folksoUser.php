@@ -399,6 +399,21 @@ class folksoUser {
      }
      return false;
    }
+
+   /**
+    * Returns true if current user object has firstName and lastName
+    * information.
+    * 
+    * @return Boolean 
+    */
+   public function hasData () {
+     if ($this->firstName && $this->lastName) {
+       return true;
+     }
+     return false;
+   }
+
+
   
    /**
     * Delete user and all associated tags. This is permanent.

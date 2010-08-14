@@ -143,7 +143,8 @@ class testOffolksoUser extends  UnitTestCase {
 
      $this->assertEqual($u->firstName, 'Marcel',
                         "First name is absent");
-
+     $this->assertTrue($u->hasData(),
+                       "hasData() should return true here");
 
    }
 
