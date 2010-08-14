@@ -619,7 +619,9 @@ function getUserData (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) 
                         'Cannot complete request without a user');
   }
 
-
+  if (! $user->hasData()) {
+    return $r->setOk(204, 'No data for this user');
+  }
 
   $r->setOk(200, 'User data found');
 
