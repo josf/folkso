@@ -612,5 +612,12 @@ $(document).ready(
                          entity_encoding: 'raw'
                      });
 
+        /*
+         * If we still aren't logged in, we should make sure the right
+         * elements are visible on the page.
+         */
+        if (fK.loginStatus === false) {
+            $('body').trigger('loggedOut');
+        }
 
     });
