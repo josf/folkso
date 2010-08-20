@@ -110,7 +110,7 @@ print $fp->facebookConnectButton();
 
 <div id="user-intro" class="login-only">
 <p>Bonjour <span class="userhello"></span> !</p>
-<p>Vous avez appliqué <span id="tagcount"></span> tags.</p>
+<p id="tag-brag">Vous avez appliqué <span id="tagcount"></span> tags.</p>
 </div>
 
 <div id="subscriptions" class="login-only">
@@ -139,9 +139,15 @@ print $fp->facebookConnectButton();
 
 <div id="userdata" class="login-only">
 <h2>Vos données</h2>
-    <p>En renseignant les champs "courrier électronique", 
-      "institution", "pays" ou "fonction", 
-      vous acceptez de figurer dans l'annuaire Fabula</p> <!-- ' -->
+  <p>Lorsque vous renseignez les champs "Prénom" et "Nom de famille", 
+  une page personelle sera créée où vous pourriez afficher vos coordonnées et un mini-CV, 
+accessible à l'adresse <code>www.fabula.org/<strong>prénom.nomdefamille</strong></code></p>
+
+<p>
+Si vous ne souhaitez pas publier ces informations, il suffit de vous assurer que ces champs sont vides.
+</p>
+
+ <!-- ' -->
 
 
 <p class="firstname">
