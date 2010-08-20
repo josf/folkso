@@ -566,10 +566,16 @@ $(document).ready(
         $('body').unbind('loggedIn');
         $('body').bind('loggedIn',
                        function() {
+/*
+#ifdef DEBUG
+                           console.debug("loggedIn just got triggered. " +
+                                       " loginStatus was " + fK.loginStatus);
+#endif */
                            $("div.login-only").show();
                            $("p.login-only").show();
                            $("h1.not-logged").hide();
                            $("#fbstuff").hide();
+
                            $.ajax(getList_aj);
                            $.ajax(getRecently_aj);
                            $.ajax(getUser_aj);
@@ -580,6 +586,11 @@ $(document).ready(
 
         $('body').bind('loggedOut',
                        function() {
+/*
+#ifdef DEBUG
+                           console.debug("loggedOut just got triggered. " + 
+                                        "loginStatus was " + fK.loginStatus);
+#endif */
                            $('div.login-only').hide();
                            $('p.login-only').hide();
                            $("h1.not-logged").show();
