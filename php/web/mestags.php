@@ -51,6 +51,11 @@ display: inline;
 ul.fav-list a {
   font-size: 10pt;
 }
+.add-user-data {
+  display: none;
+  font-weight: bold;
+  border: solid 2px red;
+ }
 
 </style>
 
