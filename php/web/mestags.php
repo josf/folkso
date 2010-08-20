@@ -57,6 +57,10 @@ ul.fav-list a {
   border: solid 2px red;
  }
 
+.login-only {
+display: none;
+ }
+
 </style>
 
 <?php
