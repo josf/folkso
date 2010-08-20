@@ -437,6 +437,13 @@ $(document).ready(
                 setTagCount($("tagcount", xml).text());
                 $(W).trigger("update");
             }
+            else if (xhr.status == 204) {
+/*
+#ifdef DEBUG                 if (window.console) {
+ console.debug("Treating 204 as not an error");
+#endif
+                }*/
+            }
         };
 
         $("#userdata-send")
@@ -457,11 +464,35 @@ $(document).ready(
                        $.ajax(fK.fn.userPostObject(data, userDataUpdateSuccess, 
                                                    function() { alert("error"); }));
                    });
+
+        /**
+         *  Called when we get a 204 when asking for user data.
+         */
+        var noUserData = function(xhr, textStatus, e) {
+/*            if (window.console) {
+                console.log("no user data. we are here"); 
+            }*/
+            $("#tag-brag").hide();
+            $(".add-user-data").show();
+        };
+        noUserData.errorcode = "204";
+
         var getUser_aj = 
             fK.fn.userGetObject(
                 {folksouserdata: 1},
                 userDataUpdateSuccess,
-                function() { alert("Error retrieving user data"); });
+                fK.fn.errorChoose(
+                    noUserData,
+                    function(xhr, tS, e) { 
+                        alert("Error retrieving user data. " +  xhr.status);
+/*
+#ifdef DEBUG
+                        if (window.console) 
+                            console.log("status: " + xhr.status);
+#endif
+*/
+                    }
+                ));
         getUser_aj.dataType = "xml";
         getUser_aj.cache = false;
         getRecently_aj.cache = false;
@@ -489,18 +520,33 @@ $(document).ready(
                      }
                     });
 
+        /* 204 response:
+         * 
+         */
+        var noFaves = function (xhr, textStatus, e) {
+
+
+        };
+        noFaves.errorcode = 204;
+
         var appendFave = Fav.appendField("favorites"),
 
         /*
          * Ajax success
          */
         gotFaves = function (json, status, xhr) {
-            var len = json.length;
-            for (var i = 0; i < len; ++i) {
-                appendFave(json[i]);
+            if (xhr.status == 200) {
+                var len = json.length;
+                for (var i = 0; i < len; ++i) {
+                    appendFave(json[i]);
+                }
+                $(Fav).trigger("update");
             }
-            $(Fav).trigger("update");
+            else if (xhr.status == 204) {
+                // nothing here yet
+            }
         },
+
 
         getFaves_doAj = function () {
             if ($("li", $("#favtags")).length == 0) {
@@ -508,7 +554,8 @@ $(document).ready(
                     fK.fn.userGetObject(
                         {folksofavorites: 1},
                         gotFaves,
-                        fK.fn.errorChoose(err204,
+                        fK.fn.errorChoose(noFaves, // does not work here because we 
+                                          // are asking for json, not xml...
                                           function(xhr, textStatus, e) {
                                               alert("Problem getting favorites: " + textStatus);
                                           })
