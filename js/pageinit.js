@@ -92,14 +92,19 @@ fK.fb.onLogin = function() {
                                                 fK.ufn.loggedIn();
                                             }
                                           },
-                                function() {$('body').trigger('loggedOut'); }
+                                /* nothing here, because we might be logged in by 
+                                 * other means (session valid but FB unlogged, 
+                                 * logged via OpenId etc. Failuer to log via FB should 
+                                 * probably not have any effect on anything.*/
+                                function() { }
                                 );
 
                         };
 
                         fK.fb.unLoggedUser = function()
                         {
-                            $('body').trigger('loggedOut');
+                            // Do nothing. See above.
+                            // $('body').trigger('loggedOut');
                         };
 
                         /*
@@ -113,7 +118,7 @@ fK.fb.onLogin = function() {
                                     fK.cf.facebookReload ? 
                                     {"reloadIfSessionStateChanged" : true } 
                                     : {"ifUserConnected": fK.fb.loggedUser,
-                                     "ifUserNotConnected": fK.fb.unLoggedUser}
+                                       "ifUserNotConnected": fK.fb.unLoggedUser}
                                    );
                         }
 
