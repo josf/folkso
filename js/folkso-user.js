@@ -601,21 +601,6 @@ $(document).ready(
          *  Page load actions
          */
 
-        /* If we are already logged in, we just do the ajax calls
-         * on page load.
-         */
-/*        if (fK.loginStatus !== false) {
-            $('body').trigger('loggedIn');
-        }*/
-
-        /*
-         * the 'loggedIn' event is already called via pageinit.js
-         */
-        if (fK.loginStatus === false) {
-           $('body').bind('loggedOut');
-        }
-
-
         $("textarea.cv-write")
             .tinymce({
                          script_url: '/tags/js/tinymce/jscripts/tiny_mce/tiny_mce.js',
