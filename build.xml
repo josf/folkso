@@ -221,7 +221,7 @@
            parallel="false"
            dest="${dist}/js">
       <filelist dir="${build}/js"
-                files="folksonomie.min.js,folkso.js,folkso-admin.js,folkso-user.js,tagedit.js,resview.js,resedit.js,jquery.folksodeps.js"/>
+                files="folksonomie.min.js,folkso.js,folkso-admin.js,folkso-user.js,tagedit.js,resview.js,resedit.js,jquery.folksodeps.js,pageinit.js"/>
       <arg line="-jar"/>
       <arg path="/home/joseph/sect/fab/js/yuicompressor-2.4.2.jar"/>
       <srcfile/>
@@ -242,7 +242,7 @@
   <target name="js.maxify" depends="js.staging,js.folksonomie.concat">
     <move todir="${dist}/js">
       <filelist dir="${build}/js"
-                files="folkso.js,folkso-admin.js,folkso-user.js,tagedit.js,resview.js,resedit.js"/>
+                files="folkso.js,folkso-admin.js,folkso-user.js,tagedit.js,resview.js,resedit.js,pageinit.js"/>
     </move>    
   </target>
 
