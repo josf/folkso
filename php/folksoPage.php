@@ -92,19 +92,13 @@ class folksoPage {
    */
   public function __construct($url = '', $cookie_arg = null, $loc = null) {
     $this->loc = $loc ? $loc : new folksoFabula();
-    if ($url) {
-      $this->url = $url;
-    }
-    else {
-      $this->url = $this->curPageURL();
-    }
+    $this->url = $url ? $url : $this->curPageURL();
     $this->pdata = new folksoPageData($this->url);
+    $this->dbc = $this->loc->locDBC();
+    $this->session = new folksoSession($this->dbc);
     
     $cookie = $cookie_arg ? $cookie_arg : $_COOKIE['folksosess'];
     if ($cookie) {
-      $this->dbc = $this->loc->locDBC();
-      $this->session = new folksoSession($this->dbc);
-
       if ($this->session->validateSid($cookie)) {
         $this->session->setSid($cookie);
         if ($this->session->status()) {
