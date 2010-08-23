@@ -145,6 +145,14 @@ class folksoPage {
    }
   
 
+   /**
+    * @throws dbException
+    */
+    public function logOut () {
+        $this->session->killSession();
+        $this->loggedIn = false;
+    }
+   
 
   /**
    * @param $content
