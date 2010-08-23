@@ -2,6 +2,10 @@
 build/*
 dist/*
 js/deps/tiny*
+js/deps/css*
+js/deps/ui*
+js/deps/*.zip
+*.min.js
 info/afaire.txt
 php/folksoFabula.php
 php/html/*
