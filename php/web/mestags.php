@@ -68,12 +68,28 @@ require("/var/www/dom/fabula/commun3/head_javascript_folkso.php");
 
 ?> 
 
+<link rel="stylesheet" 
+  type="text/css" 
+  href="/tags/css/jquery-ui-1.8.4.custom.css" media="screen">
+</link>
+<script 
+  type="text/javascript"
+  src="/tags/js/jquery-ui-1.8.4.custom.min.js">
+</script>
+
+<style>
+#login-tabs { display: none; }
+</style>
+
+
 <script type="text/javascript" 
   src="/tags/js/folkso-user.js">
 </script>
 <script type="text/javascript"
   src="/tags/js/jquery.tinymce.js">
 </script>
+
+
 <?php
 
 require ('/var/www/dom/fabula/commun3/browser_detect.php');
@@ -101,11 +117,29 @@ require("/var/www/dom/fabula/commun3/html_start.php");
     // display login buttons
 
 ?><h1 class="not-logged">Il faut vous identifier d'abord</h1> 
-<div id="fbstuff">
-<?php //'
+
+<div id="login-tabs">
+
+<!-- tab headers --'>
+<ul>
+<li><a href="#tabs-1">Open ID</a></li>
+<li><a href="#tabs-2">Facebook Connect</a></li>
+</ul>
+
+<div id="tabs-1">
+OpenId
+</div>
+
+<div id="tabs-2">
+<?php
+
 print $fp->facebookConnectButton(); 
+
+
 ?>
 </div>
+</div> <!-- end of #login-tabs div -->     
+
 <?php 
 
   }

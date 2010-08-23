@@ -567,7 +567,7 @@ $(document).ready(
         $('body').bind('loggedIn',
                        function() {
 /*
-#ifdef DEBUG
+#ifdef DEBUG 
                            console.debug("loggedIn just got triggered. " +
                                        " loginStatus was " + fK.loginStatus);
 #endif */
@@ -575,7 +575,7 @@ $(document).ready(
                            $("p.login-only").show();
                            $("h1.not-logged").hide();
                            $("#fbstuff").hide();
-
+                           $("#login-tabs").hide();
                            $.ajax(getList_aj);
                            $.ajax(getRecently_aj);
                            $.ajax(getUser_aj);
@@ -584,17 +584,24 @@ $(document).ready(
                        });
 
 
+        $('body').unbind('loggedOut');
         $('body').bind('loggedOut',
                        function() {
 /*
-#ifdef DEBUG
+#ifdef DEBUG 
                            console.debug("loggedOut just got triggered. " + 
                                         "loginStatus was " + fK.loginStatus);
 #endif */
                            $('div.login-only').hide();
                            $('p.login-only').hide();
                            $("h1.not-logged").show();
-                           $("#fbstuff").show();
+
+                           $("#login-tabs").show();
+                           var $oidTab = $("#tabs-1");
+                           if ($("ul", $oidTab).length === 0) {
+                               console.log("No ul in tabs-1");
+                               $oidTab.append(fK.oid.providerList());
+                           }
                        });
 
         /*
