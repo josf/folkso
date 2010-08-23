@@ -175,7 +175,7 @@ class folksoPage {
     */
     public function fKjsLoginState ($var = null) {
       $varname = $var ? $var : 'fK.myfab.loginStatus';
-      if ($this->user) {
+      if ($this->loginCheck()) {
         return $varname . " = true;";
       }
       return $varname . " = false;";

@@ -231,6 +231,9 @@ class testOffolksoPage extends  UnitTestCase {
     $s = new folksoSession($this->dbc);
     $s->startSession('gustav-2010-001', true);
     $page2 = new folksoPage('http://bogus.example.com', $s->sessionId);
+    $this->assertTrue($page2->loginCheck(),
+                      "Should be logged in here");
+    
     $this->assertPattern('/true/', $page2->fKjsLoginState(),
                          "Not getting 'true' as login state for initialized session");
 
