@@ -99,12 +99,7 @@ class folksoPage {
     
     $cookie = $cookie_arg ? $cookie_arg : $_COOKIE['folksosess'];
     if ($cookie) {
-      if ($this->session->validateSid($cookie)) {
-        $this->session->setSid($cookie);
-        if ($this->session->status()) {
-          $this->user = $this->session->userSession();
-        }
-      }
+      $this->loginInit($cookie);
     }
   }
 
@@ -116,10 +111,8 @@ class folksoPage {
    *
    * @param $sid session id (as defined in folksoSession)
    */
-   public function loginCheck ($sessionId = null) {
-     if ($this->loggedIn = true) {
-       return true;
-     }
+   public function loginInit ($sessionId = null) {
+     $this->loggedIn = false;
      
      if (($this->session instanceof folksoSession) &&
          ($this->session->status())) {
@@ -130,20 +123,24 @@ class folksoPage {
      $sid = $sessionId ? $sessionId : $_COOKIE['folksosess'];
      if (! $sid) {
        $this->loggedIn = false;
-       return false;
      }
-     if ($this->session->validateSid($sid)) {
+     elseif ($this->session->validateSid($sid)) {
        $this->session->setSid($sid);
        if ($this->session->status()) {
          $this->user = $this->session->userSession();
          $this->loggedIn = true;
-         return true;
        }
-       $this->loggedIn = false;
-       return false;
      }
+     return $this->loggedIn;
    }
   
+
+   /*
+    *
+    */
+   public function loginCheck() {
+     return $this->loggedIn;
+   }
 
    /**
     * @throws dbException

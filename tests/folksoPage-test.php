@@ -177,6 +177,8 @@ class testOffolksoPage extends  UnitTestCase {
     $s->startSession('gustav-2010-001', true);
     $this->assertTrue($s->validateSid($s->sessionId),
                       'Just checking, but s->sessionId is not a valid Sid');
+    $this->assertTrue($s->status(),
+                      "Test session should be valid");
 
     $page = new folksoPage('http://bogus.example.com', $s->sessionId);
 
@@ -186,10 +188,10 @@ class testOffolksoPage extends  UnitTestCase {
                      "No session object created on fkPage construction");
     $this->assertIsA($page->dbc, folksoDBconnect,
                      'Not initialzing fkDBconnect object on fkPage construction');
+
     $this->assertTrue($page->session->sessionId,
                       'Missing session id in fkPage  obj, should be: '
                       . $s->sessionId);
-
     $this->assertTrue($page->session->validateSid('2a81c4a49e11feb87bbcb6d2550d07173e4762d9427f117ac730b79e653d6bda'),
                       'Real sid fails when validated from within fkPage obj');
 
@@ -201,6 +203,9 @@ class testOffolksoPage extends  UnitTestCase {
                      'Not initializing fkUser obj at $page->user');
     $this->assertEqual($page->user->userid, 'gustav-2010-001',
                        "Not retrieving the correct userid");
+
+    $this->assertTrue($page->loginInit(),
+                      'Valid session should return true with loginCheck');
 
   }
 
