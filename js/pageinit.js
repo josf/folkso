@@ -40,9 +40,21 @@ fK.fb.onLogin = function() {
                         $(".firstLogin", fK.cf.container).click( function(ev)
                             {
                                 ev.preventDefault();
-                                $("#fbstuff").show();
+                                $("#login-tabs").show();
+
+                                /* Insert Open Id provider list */
+                                var $oidTab = $("#tabs-1");
+                                if ($("ul", $oidTab).length === 0) {
+                                    console.log("No ul in tabs-1");
+                                    $oidTab.append(fK.oid.providerList());
+                                }
+
                             });
-                        
+
+                        /*
+                         * Setup login tabs (cloud only)
+                         */
+                        $("#login-tabs").tabs();
 
                         /*
                          * This event should only fire when
@@ -63,7 +75,7 @@ fK.fb.onLogin = function() {
                                            $(".fKLoginButton", fK.cf.container).hide();
                                            $("fb:login-button").hide();
                                            $("ul.provider_list").hide();
-                                           $("#fbstuff").hide();
+                                           $("#login-tabs").hide();                                           
                                            $(".firstLogin", fK.cf.container).hide();
                                            if (fK.loginStatus === false) {
                                                $('body').trigger('justLoggedIn');
