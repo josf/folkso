@@ -23,6 +23,25 @@ function update_user_box() {
 }
 
 
+
+/**
+ * Called by the Open Id popup window on Open Id login.
+ */
+window.handleOpenIDResponse = function (openid_args){
+    $.ajax({type: "get",
+            url: fK.cf.oIdPath + "oid_popup_end.php",
+            data: openid_args,
+            cache: true, /* must be true, otherwise openid chokes 
+                          on extra param*/
+            success: function(xhr, msg) {
+                alert("You are logged");
+            },
+            error: function () {
+                alert("Fail!");
+            }});
+};
+
+
 fK.fb.onLogin = function() {
         return 1;
 };
@@ -151,24 +170,6 @@ fK.fb.onLogin = function() {
                           $(this).parent().append( fK.oid.providerList() );
                         };
                       }
-
-                        /**
-                         * Called by the Open Id popup window on Open Id login.
-                         */
-                      window.handleOpenIDResponse = function (openid_args){
-                          $.ajax({type: "get",
-                                url: fK.cf.oIdPath + "oid_popup_end.php",
-                                data: openid_args,
-                                cache: true, /* must be true, otherwise openid chokes 
-                                              on extra param*/
-                                success: function(xhr, msg) {
-                                    alert("You are logged");
-                                },
-                               error: function () {
-                                   alert("Fail!");
-                               }});
-                      };
-
 
                       if (fK.loginStatus) {
                           $('body').trigger('loggedIn');
