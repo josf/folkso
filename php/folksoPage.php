@@ -110,6 +110,43 @@ class folksoPage {
 
 
   /**
+   * Centralizes login status checks and caches the result. This means
+   * that to effectively log out, it should be done through the
+   * methods defined here.
+   *
+   * @param $sid session id (as defined in folksoSession)
+   */
+   public function loginCheck ($sessionId = null) {
+     if ($this->loggedIn = true) {
+       return true;
+     }
+     
+     if (($this->session instanceof folksoSession) &&
+         ($this->session->status())) {
+       $this->loggedIn = true;
+       return true;
+     }
+
+     $sid = $sessionId ? $sessionId : $_COOKIE['folksosess'];
+     if (! $sid) {
+       $this->loggedIn = false;
+       return false;
+     }
+     if ($this->session->validateSid($sid)) {
+       $this->session->setSid($sid);
+       if ($this->session->status()) {
+         $this->user = $this->session->userSession();
+         $this->loggedIn = true;
+         return true;
+       }
+       $this->loggedIn = false;
+       return false;
+     }
+   }
+  
+
+
+  /**
    * @param $content
    */
    public function jsHolder ($content) {
