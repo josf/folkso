@@ -144,14 +144,17 @@ fK.fb.onLogin = function() {
                          * Called by the Open Id popup window on Open Id login.
                          */
                       window.handleOpenIDResponse = function (openid_args){
-                        $("#bucket").html("Verifying OpenID response");
-                        $.ajax({type: "get",
+                          $.ajax({type: "get",
                                 url: fK.cf.oIdPath + "oid_popup_end.php",
                                 data: openid_args,
-                                cache: false,
+                                cache: true, /* must be true, otherwise openid chokes 
+                                              on extra param*/
                                 success: function(xhr, msg) {
-                                    $("#bucket").html(msg);
-                                }});
+                                    alert("You are logged");
+                                },
+                               error: function () {
+                                   alert("Fail!");
+                               }});
                       };
 
 
