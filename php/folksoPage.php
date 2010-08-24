@@ -204,9 +204,8 @@ class folksoPage {
      */
      public function tagbox () {
        return '<div id="folksocontrol">'
-         . '<a href="#" class="fKLoginButton">Identifiez-vous via OpenID</a><br/>'
          . '<a class="firstLogin" href="' . $this->loc->account_creation_url 
-         . '">Connectez-vous pour la première fois</a>'
+         . '">Connectez-vous</a>'
          . '<input type="text" class="fKTaginput" length="20"></input>'
          . '<a href="#" class="fKTagbutton">Tagger</a>'
          . '</div>';
