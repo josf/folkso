@@ -284,6 +284,65 @@ function createFBuser (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks)
 }
 
 
+function loginOidUser (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
+  $r = new folksoResponse();
+  $oid = $q->get_param('oid');
+  $o = new folksoOIUser($dbc);
+
+  try {
+    if (! $o->userFromLogin($oid)) {
+      return $r->setError(404, "Unknown user",
+                          "This user does not exist in our database. You must first ".
+                          " create an account");
+    }
+
+    $fks->startSession($o, $q->is_param('debug') ? true : false);
+    $r->setOk(200, "User found, session started");
+    $r->t('Welcome back');
+    return $r;
+  }
+  catch (dbException $e) {
+    return $r->handleDBexception($e);
+  }
+}
+
+
+function createOidUser (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
+  $r = new folksoResponse();
+  $oid = $q->get_param('oid');
+  $o = new folksoOIuser($dbc);
+  
+  try {
+    if ($o->userFromLogin($oid)) {
+      $r->setOk(200, 'User already exists');
+      $r->t('A user account is already associated with this OpenId');
+      return $r;
+    }
+  
+    $o->setLoginId($oid);
+    $o->writeNewUser();
+    if ($o->userFromLogin($oid)) {
+      $r->setOk(201, 'User created');
+      $r->t('The user account was created for ' . $o->loginId . '.');
+      $fks->startSession($o, $q->is_param('debug') ? true : false);
+      return $r;
+    }
+    else {
+      return $r->setError(500, "Strange error", 
+                          "User was created and then disappeared");
+    }
+  }
+  catch(dbException $e) {
+    return $r->handleDBexception($e);
+  }
+  catch(userException $e) {
+    return $r->setError(400, "Cannot complete request",
+                        "The user information provided is incomplete or invalid. "
+                        . " The user account could not be created." 
+                        . $o->loginId);
+  }
+}
+
 function userSubscriptions (folksoQuery $q, 
                             folksoDBconnect $dbc, 
                             folksoSession $fks) {  

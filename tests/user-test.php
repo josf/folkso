@@ -194,6 +194,35 @@ class testOfuser extends  UnitTestCase {
 
    }
 
+   function testLoginOidUser () {
+     $r = loginOidUser(new folksoQuery(array(), 
+                                       array('folksooid' => 'http://myspace.com/gustav',
+                                             'folksodebug' => 1), 
+                                       array()),
+                       $this->dbc,
+                       $this->fks);
+     $this->assertEqual($r->status, 200, 
+                        "Error on OpenId login: " . $r->status);
+     $this->assertTrue($this->fks->status(),
+                       "OpenId login: Should be logged in here");
+   }
+
+   function testCreateOidUser () {
+     $r = createOidUser(new folksoQuery(array(),
+                                        array('folksooid' => 'http://whatever.eu',
+                                              'folksocreate' => 1,
+                                              'folksodebug' => 1),
+                                        array()),
+                        $this->dbc,
+                        $this->fks);
+     $this->assertEqual($r->status, 201,
+                        "OI user not created, expecting 201, got: " . $r->status . " "
+                        . $r->error_body);
+                                         
+     $this->assertTrue($this->fks->status(),
+                       "OI user was not logged in after creation");
+   }
+
 
    function testGetSubscriptions () {
      $this->fks->startSession('gustav-2010-001', true);
