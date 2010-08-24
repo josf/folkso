@@ -284,6 +284,7 @@ function createFBuser (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks)
 }
 
 
+/* Function not currently necessary. Not exposed in API. */
 function loginOidUser (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
   $oid = $q->get_param('oid');
@@ -306,7 +307,7 @@ function loginOidUser (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks)
   }
 }
 
-
+/* Function not currently necessary. Not exposed in API */
 function createOidUser (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
   $oid = $q->get_param('oid');
