@@ -34,11 +34,11 @@ window.handleOpenIDResponse = function (openid_args){
             cache: true, /* must be true, otherwise openid chokes 
                           on extra param*/
             success: function(xhr, msg) {
-                alert("You are logged");
-
+                fK.oidLogin = true;
             },
             error: function () {
-                alert("Fail!");
+                fK.oidLogin = false;
+                alert("Échec du login.");
             }});
 };
 
@@ -119,6 +119,7 @@ fK.fb.onLogin = function() {
                                 function(){ if (fK.loginStatus === false) {
                                                 $('body').trigger('loggedIn');
                                                 fK.loginStatus = true; 
+                                                fK.fbLogin = true;
                                             }
                                             if ($.isFunction(fK.ufn.loggedIn)) {
                                                 fK.ufn.loggedIn();
@@ -135,6 +136,7 @@ fK.fb.onLogin = function() {
 
                         fK.fb.unLoggedUser = function()
                         {
+                            fK.fbLogin = false;
                             // Do nothing. See above.
                             // $('body').trigger('loggedOut');
                         };
