@@ -94,7 +94,7 @@ fK.fb.onLogin = function() {
                                            $(".fKLoginButton", fK.cf.container).hide();
                                            $("fb:login-button").hide();
                                            $("ul.provider_list").hide();
-                                           $("#login-tabs").hide();                                           
+                                           $("#login-tabs").hide();                     
                                            $(".firstLogin", fK.cf.container).hide();
                                            if (fK.loginStatus === false) {
                                                $('body').trigger('justLoggedIn');
