@@ -89,10 +89,17 @@ class folksoSession {
   /**
    * Starts session and sets cookie.
    * 
-   * @param $uid String
+   * @param $uarg String userid or folksoUser
    * @param $debug Bool For testing we can turn off the actual setting of the cookie
    */
- public function startSession ($uid, $debug = null) {
+ public function startSession ($uarg, $debug = null) {
+   if ($uarg instanceof folksoUser) {
+     $uid = $uarg->userid;
+   }
+   else {
+     $uid = $uarg;
+   }
+
     if ($this->validateUid($uid) === false) {
       throw new userException('Missing userid');
     }
