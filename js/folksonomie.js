@@ -924,7 +924,6 @@
                      },
                  errorOther = function(xhr, msg) {
                      alert("Erreur inattendue: " + xhr.status + " " + xhr.statusText);
-                     console.log("status: " + xhr.status);
                      badFunc();
                  };
                  error400.errorcode = 400; error500.errorcode = 500; 
@@ -950,14 +949,15 @@
                                                okFunc,
                                                function(xhr, msg) {
                                                    alert("Failed to create new user");
-                                               });
+                                               });/*
+#ifdef DEBUG                  
                  if (window.console) {
                      console.log("about to call createFBuser");
                  }
+#endif */
                  aj.dataType = "xml";
                  jQuery.ajax(aj);
              }
-
          }
      };
 

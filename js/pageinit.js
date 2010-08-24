@@ -35,6 +35,7 @@ window.handleOpenIDResponse = function (openid_args){
                           on extra param*/
             success: function(xhr, msg) {
                 alert("You are logged");
+
             },
             error: function () {
                 alert("Fail!");
@@ -64,7 +65,7 @@ fK.fb.onLogin = function() {
                                 /* Insert Open Id provider list */
                                 var $oidTab = $("#tabs-1");
                                 if ($("ul", $oidTab).length === 0) {
-                                    console.log("No ul in tabs-1");
+//                                    console.log("No ul in tabs-1");
                                     $oidTab.append(fK.oid.providerList());
                                 }
 
@@ -94,7 +95,7 @@ fK.fb.onLogin = function() {
                                            $(".fKLoginButton", fK.cf.container).hide();
                                            $("fb:login-button").hide();
                                            $("ul.provider_list").hide();
-                                           $("#login-tabs").hide();                     
+                                           $("#login-tabs").hide();
                                            $(".firstLogin", fK.cf.container).hide();
                                            if (fK.loginStatus === false) {
                                                $('body').trigger('justLoggedIn');
