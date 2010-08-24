@@ -13,6 +13,7 @@ require_once('folksoTags.php');
 require_once('folksoUrl.php');
 require_once('folksoSession.php');
 require_once('folksoUser.php');
+require_once('folksoOIuser.php');
 require_once('folksoUserQuery.php');
 require_once('folksoFabula.php');
 
