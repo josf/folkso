@@ -176,7 +176,7 @@ function checkFBuserId (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks
 }
 
 /**
- * Logs in an existing Facebook user or creates a new account. 
+ * Logs in an existing Facebook user. Sends 404 if user does not exist.
  */
 function loginFBuser (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   $r = new folksoResponse();
