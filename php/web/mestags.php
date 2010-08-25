@@ -159,7 +159,7 @@ print $fp->facebookConnectButton();
 <div id="newsubscriptions" class="login-only">
 <h2>Vous abonner à de nouveaux tags</h2> 
 <p>Choisir un nouveau tag:</p>
-<input type="text" id="newsubbox" size="60">
+<input type="text" class="fKTaginput" id="newsubbox" size="60">
 </input>
 <a id="addsub" href="#">OK</a>
 </div>

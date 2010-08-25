@@ -8,7 +8,7 @@ $(document).ready(
 //        var hostAndPath = 'http://localhost/';
         var hostAndPath = '/tags/';
         fK.init({
-                    autocompleteUrl: hostAndPath + 'tagcomplete.php',
+//                    autocompleteUrl: hostAndPath + 'tagcomplete.php',
                     postResUrl: hostAndPath + 'resource.php',
                     getResUrl: hostAndPath + 'resource.php',
                     getUserUrl: hostAndPath + 'user.php',
@@ -20,7 +20,7 @@ $(document).ready(
         /*
          * Autocompletion for tag input
          */
-        $("#newsubbox").autocomplete(fK.cf.autocompleteUrl);     
+//        $("#newsubbox").autocomplete(fK.cf.autocompleteUrl);     
 
 
         /*
