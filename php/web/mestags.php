@@ -68,15 +68,6 @@ require("/var/www/dom/fabula/commun3/head_javascript_folkso.php");
 
 ?> 
 
-<link rel="stylesheet" 
-  type="text/css" 
-  href="/tags/css/jquery-ui-1.8.4.custom.css" media="screen">
-</link>
-<script 
-  type="text/javascript"
-  src="/tags/js/jquery-ui-1.8.4.custom.min.js">
-</script>
-
 <style>
 #login-tabs { display: none; }
 </style>
