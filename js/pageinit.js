@@ -94,8 +94,8 @@ fK.fb.onLogin = function() {
                                            $(".fKTaginput", fK.cf.container).show();
                                            $(".fKLoginButton", fK.cf.container).hide();
                                            $("fb:login-button").hide();
-                                           $("ul.provider_list").hide();
                                            $("#login-tabs").hide();
+                                           $("#logout").show();
                                            $(".firstLogin", fK.cf.container).hide();
                                            if (fK.loginStatus === false) {
                                                $('body').trigger('justLoggedIn');
@@ -174,16 +174,28 @@ fK.fb.onLogin = function() {
                         };
                       }
 
+                        /*
+                         * Hide all the login only stuff
+                         */
+                        function notLogged () {
+                            $(".login-only").hide();
+                            $("#logout").hide();
+                            $(".fKTagbutton", fK.cf.container).hide();
+                            $("input.fKTaginput").hide();
+                            $(".fKLoginButton").click(setupLogin());
+                            $("#login-tabs").hide();
+                            $("a.firstLogin").show();
+                        }
+
                       if (fK.loginStatus) {
                           $('body').trigger('loggedIn');
                       }
                       else {
-                        $(".fKTagbutton", fK.cf.container).hide();
-                        $("input.fKTaginput").hide();
-                        $(".fKLoginButton").click(setupLogin());
+                          notLogged();
                        }
 
                         $("input.fKTaginput", fK.cf.container).autocomplete(fK.cf.autocompleteUrl);
+                        $("input.fKTaginput", $("#newsubscriptions")).autocomplete(fK.cf.autocompleteUrl);
 
 
                         if ($("#bloc_orange ul").length == 0) {
@@ -207,6 +219,28 @@ fK.fb.onLogin = function() {
                                 $("#bloc_orange").show();
                         });
 
+                        $("#logout")
+                            .click(function(ev){
+                                       ev.preventDefault();
+                                       if (fK.fbLogin) {
+                                           FB.Integration.logout(
+                                               function()
+                                               {
+                                                   $.cookie("folksosess", null,
+                                                            {domain: ".fabula.org",
+                                                             path: "/"});
+                                                   $("body").trigger("loggedOut");
+                                                   notLogged();                 
+                                               });
+                                       }
+                                       else {
+                                           $.cookie("folksosess", null,
+                                                    {domain: ".fabula.org",
+                                                     path: "/"});
+                                           $("body").trigger("loggedOut");
+                                           notLogged();
+                                       }
+                                   });
 
                     });
 
