@@ -167,12 +167,12 @@ fK.fb.onLogin = function() {
                                   oIdPath: '/tags/fdent/'
                             });
 
-                      function setupLogin () {
-                        return function (ev) {
-                          ev.preventDefault();
-                          $(this).parent().append( fK.oid.providerList() );
-                        };
-                      }
+                        function setupLogin () {
+                            return function (ev) {
+                                ev.preventDefault();
+                                $(this).parent().append( fK.oid.providerList() );
+                            };
+                        }
 
                         /*
                          * Hide all the login only stuff
@@ -187,12 +187,12 @@ fK.fb.onLogin = function() {
                             $("a.firstLogin").show();
                         }
 
-                      if (fK.loginStatus) {
-                          $('body').trigger('loggedIn');
-                      }
-                      else {
-                          notLogged();
-                       }
+                        if (fK.loginStatus) {
+                            $('body').trigger('loggedIn');
+                        }
+                        else {
+                            notLogged();
+                        }
 
                         $("input.fKTaginput", fK.cf.container).autocomplete(fK.cf.autocompleteUrl);
                         $("input.fKTaginput", $("#newsubscriptions")).autocomplete(fK.cf.autocompleteUrl);
