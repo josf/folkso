@@ -29,7 +29,7 @@ function test_db_init($megadynDefault = 10) {
                                   543210, ''),
                  'vicktr' => array('Victor', 'Hugo', 'vhugo@guernsey.co.uk',
                                    0, 'http://myspace.com/victorhugo'),
-                 'michl' => array('Michel', 'de Montaigne', 'montaigne@mairie-bordeaux.fr', 0, 'http://michlm.blogspot.com')
+                 'michl' => array('Michel', 'de Montaigne', 'montaigne@mairie-bordeaux.fr', 0, 'http://michl2m.blogspot.com')
                  );
 
 
