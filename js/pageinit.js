@@ -57,7 +57,7 @@ fK.fb.onLogin = function() {
                         // temporary (Open Id disabled)
                         $(".fKLoginButton", fK.cf.container).hide();
                         $("#fbstuff").hide();
-                        $(".firstLogin", fK.cf.container).click( function(ev)
+                        $("#connectMe", fK.cf.container).click( function(ev)
                             {
                                 ev.preventDefault();
                                 $("#login-tabs").show();
