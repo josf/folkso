@@ -171,6 +171,19 @@ class testOffolksoPage extends  UnitTestCase {
   }
 
 
+  function testUserUrl() {
+    $s = new folksoSession($this->dbc);
+    $s->startSession('gustav-2010-001', true);
+    $page = new folksoPage('http://bogus.example.com', $s->sessionId);
+
+    $this->assertIsA($page->user, folksoUser,
+                     '$page->user should be a folksoUser object');
+    $page->user->userFromUserId('gustav-2010-001');
+
+    $this->assertEqual($page->userUrl(), 'http://localhost/gustave.flaubert');
+
+  }
+
 
   function testSessionInit () {
     $s = new folksoSession($this->dbc);
@@ -249,7 +262,6 @@ class testOffolksoPage extends  UnitTestCase {
                          'javascript output should include api key');
     $this->assertPattern('/xd_receiver.htm/', $pg->fbJsVars(),
                          'javascript output should include facebook cross channel domain url');
-
   }
 
   /**

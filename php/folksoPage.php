@@ -204,14 +204,66 @@ class folksoPage {
      */
      public function tagbox () {
        return '<div id="folksocontrol">'
-         . '<a class="firstLogin" href="' . $this->loc->account_creation_url 
+         . '<a class="firstLogin" id="connectMe"'
+         . ' href="' . $this->loc->account_creation_url 
          . '">Connectez-vous</a>'
-         . '<input type="text" class="fKTaginput" length="20"></input>'
-         . '<a href="#" class="fKTagbutton">Tagger</a>'
+         . '<p><input type="text" class="fKTaginput" length="20"></input>'
+         . '<a href="#" class="fKTagbutton">Tagger</a></p>'
+         . '<p>'
+         . '<a class="firstLogin folksoHelp" id="showWhatIs"'
+         . ' href="#">Qu\'est-ce que c\'est?</a>'
+         . ' <a class="folksoHelp login-only" id="showHelp" href="#">Aide</a>'
+         . '<a href="#" id="logout">Quitter</a>'
+         . '</p>'
          . '</div>';
-    
      }
 
+
+     /**
+      * Short message explaining the project to new users, contained
+      * in a div.
+      *
+      * @return String The Message
+      */
+      public function explainMessage () {
+        return 
+          '<div class="explainMessage">'
+          . "<p>Cet espace vous permet de participer à l'ajout de mots clés "
+          . ' (ou <em>tags</em>) '
+          . " aux pages de Fabula. Vous aurez également la possibilité de "
+          . " vous abonner à des mots clés et de créer  "
+          . " une page de présentation personnelle.</p>"
+
+          . "<p>Cliquez sur \"Connectez-vous\" pour créer, très rapidement, votre "
+          . " compte utilisateur Fabula. Vous pourriez vous identifier grâce à vos "
+          . " autres comptes Web (GMail, Facebook, Yahoo!...) sans avoir à retenir de "
+          . " nouveau mot de passe.</p>"
+
+          . "<p>C'est facile et rapide !</p>"
+          . '<a href="#" class="closebutton" id="closeExplain"><img src="/tags/images/close_x_20px.png"/></a>'
+
+          . "</div>";
+     
+      }
+     
+
+      /**
+       * If the user is logged in and has defined first and last
+       * names, returns the URL of the user's public home page.
+       *
+       * @return String or false if user data not available
+       */
+      public function userUrl () {
+         if ($this->loginCheck() 
+             && ($this->user instanceof folksoUser)
+             && (strlen($this->user->firstName) > 1)
+             && (strlen($this->user->lastName) > 1)){
+           return 
+             $this->loc->web_url . '/'.  strtolower($this->user->firstName) 
+             . '.' . strtolower($this->user->lastName);
+         }
+         return false;
+       }
 
      public function facebookApiKey() {
        return $this->loc->snippets['facebookApiKey'];
