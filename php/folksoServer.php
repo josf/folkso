@@ -26,7 +26,6 @@
    */
 require_once('folksoDBconnect.php');
 require_once('folksoQuery.php');
-require_once('folksoWsseCreds.php');
 require_once('folksoFabula.php');
 require_once('folksoResponder.php');
 require_once('folksoSession.php');
