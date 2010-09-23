@@ -212,8 +212,6 @@ class folksoPage {
          . '<p>'
          . '<a class="firstLogin folksoHelp" id="showWhatIs"'
          . ' href="#">Qu\'est-ce que c\'est?</a>'
-         . ' <a class="folksoHelp login-only" id="showHelp" href="#">Aide</a>'
-         . '<a href="#" id="logout">Quitter</a>'
          . '</p>'
          . '</div>';
      }
