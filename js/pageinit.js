@@ -212,12 +212,28 @@ fK.fb.onLogin = function() {
                             }
                         }
 
-                      $(".fKTagbutton").click(fK.fn.tagres_react($("input.fKTaginput"),
+                        $(".fKTagbutton").click(fK.fn.tagres_react($("input.fKTaginput"),
                                                                  tagAddTarget()));
                         $(".fKTagbutton").click(
                             function() {
                                 $("#bloc_orange").show();
                         });
+
+                        $("#showWhatIs").click(
+                            function(ev) {
+                                ev.preventDefault();
+                                $("div.explainMessage").show();
+                                $(this).css({fontWeight: "bold", fontStyle: "italic"});
+                            });
+
+                        $("#closeExplain").click(
+                            function(ev) {
+                                ev.preventDefault();
+                                var $here = $(this);
+                                $here.parent("div.explainMessage").hide();
+                                $("#showWhatIs").css({fontWeight: "normal", fontStyle: "normal"});
+                            }
+                        );
 
                         $("#logout")
                             .click(function(ev){
