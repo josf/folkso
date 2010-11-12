@@ -61,16 +61,33 @@ ul.fav-list a {
 display: none;
  }
 
+div.doc {
+
+
+}
+
+div.doc .closetext, div.doc .doc-content {
+  display: none;
+}
+
+div.doc .opentext, div.doc .closetext {
+  font-size: 0.8em;
+  font-style: italic;
+}
+
+div.doc .doc-content {
+  background-color: #f6e346;
+  border: 2px solid black;
+
+}
+
+#login-tabs { display: none; } 
 </style>
 
 <?php
 require("/var/www/dom/fabula/commun3/head_javascript_folkso.php");
 
 ?> 
-
-<style>
-#login-tabs { display: none; }
-</style>
 
 
 <script type="text/javascript" 
@@ -80,7 +97,31 @@ require("/var/www/dom/fabula/commun3/head_javascript_folkso.php");
   src="/tags/js/jquery.tinymce.js">
 </script>
 
+<script type="text/javascript">
 
+  $(document).ready(
+      function() {
+          $("div.doc").each(
+              function(){
+                  var $doc = $(this);
+                  $("a.opentext", $doc).click(
+                      function(ev) {
+                          ev.preventDefault();
+                          $(this).hide();
+                          $("a.closetext", $doc).show();
+                          $("div.doc-content", $doc).show();
+                      });                       
+                  $("a.closetext", $doc).click(
+                      function(ev) {
+                          ev.preventDefault();
+                          $(this).hide();
+                          $("a.opentext", $doc).show();
+                          $("div.doc-content", $doc).hide();
+                  });
+              });
+     });
+
+</script>
 <?php
 
 require ('/var/www/dom/fabula/commun3/browser_detect.php');
@@ -101,9 +142,25 @@ require("/var/www/dom/fabula/commun3/html_start.php");
 <div id="colonnes_nouvelles">
 <div id="colonnes-un">
 
+<div id="title-and-docs">
 <h1>Espace tags</h1>
-
-<?php
+<div class="doc">
+  <a class="opentext" href="#">Qu'est-ce que c'est&#160;?</a>
+  <a class="closetext" href="#">Fermer</a>
+  <div class="doc-content">
+  <p>
+  Cette page vous permet de choisir et suivre les <em>tags</em> 
+  qui vous intéressent, et de gérer les informations que vous souhaitez 
+  rendre publiques.
+   </p>
+  <p>Pour ajouter un nouveau tag, il suffit d'en 
+  saisir les premières lettres dans le champ <strong>Vous abonner 
+  à de nouveaux tags</strong>. 
+  </p>
+  </div>
+</div>
+</div>
+<?php //'
     if (!$loggedIn) {
     // display login buttons
 
