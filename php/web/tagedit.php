@@ -48,7 +48,7 @@ if (! $user->checkUserRight('folkso', 'redac')) {
 <!-- <link rel="shortcut icon" type="image/x-icon" href="http://www.fabula.org/favicon.ico"></link> -->
    <link 
         rel="stylesheet" type="text/css"
-        href="jquery.autocomplete.css"
+        href="/tags/css/jquery.autocomplete.css"
         media="screen">
     </link>
 <link rel="stylesheet" type="text/css" href="tagedit.css" media="screen">
@@ -57,7 +57,7 @@ if (! $user->checkUserRight('folkso', 'redac')) {
 
 <link rel="stylesheet" 
   type="text/css" 
-  href="/tags/css/jquery-ui-1.8-custom.css" media="screen">
+  href="/tags/css/jquery-ui-1.8.4.custom.css" media="screen">
 </link>
 <script type="text/javascript" 
         src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.js"></script>
@@ -67,7 +67,7 @@ if (! $user->checkUserRight('folkso', 'redac')) {
   src="/tags/js/jquery-ui-1.8.custom.min.js">
 </script>
 
-<script type="text/javascript" src="js/jquery.autocomplete.js">
+<script type="text/javascript" src="/tags/js/jquery.autocomplete.js">
   </script>
 
 <?php
