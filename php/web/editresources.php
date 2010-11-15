@@ -105,17 +105,17 @@ print ';';
     </link>
     <link 
         rel="stylesheet" type="text/css"
-        href="jquery.autocomplete.css"
+        href="/tags/css/jquery.autocomplete.css"
         media="screen">
     </link>
   <link 
       rel="stylesheet" type="text/css"
-      href="jquery.mcdropdown.css"
+      href="/tags/css/jquery.mcdropdown.css"
       media="screen">
   </link>
   <link
       rel="stylesheet" type="text/css" 
-      href="editres.css"
+      href="/tags/css/editres.css"
       media="screen">
   </link>
   </head>
