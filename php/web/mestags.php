@@ -102,12 +102,12 @@ require("/var/www/dom/fabula/commun3/head_javascript_folkso.php");
 
 ?> 
 
+<script type="text/javascript"
+  src="/tags/js/jquery.tinymce.js">
+</script>
 
 <script type="text/javascript" 
   src="/tags/js/folkso-user.js">
-</script>
-<script type="text/javascript"
-  src="/tags/js/jquery.tinymce.js">
 </script>
 
 <script type="text/javascript">
