@@ -68,6 +68,9 @@ fK.fb.onLogin = function() {
 //                                    console.log("No ul in tabs-1");
                                     $oidTab.append(fK.oid.providerList());
                                 }
+                                
+                                $("div.explainMessage", 
+                                  $("#bloc_folkso")).hide();
 
                             });
 
