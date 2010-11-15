@@ -68,6 +68,11 @@ class folksoQuery {
    */
   private $tagsAllowed;
 
+  /**
+   * @brief Valid parameters that do not have the 'folkso' prefix.
+   *
+   */
+  private $nonFolksoParams = array('q', 'term');
   
   private $fk_params = array(); //will contain only folkso related parameters
 
@@ -115,8 +120,15 @@ class folksoQuery {
       $accum = array();
       $mults = array();
       foreach ($array as $param_key => $param_val) {
-          if (substr($param_key, 0, 6) == 'folkso') {
-            $shortParamKey = substr($param_key, 6);
+          if ((substr($param_key, 0, 6) == 'folkso') ||
+              in_array($param_key, $this->nonFolksoParams)) {
+
+            if (in_array($param_key, $this->nonFolksoParams)) {
+              $shortParamKey = $param_key;
+            }
+            else {
+              $shortParamKey = substr($param_key, 6);
+            }
             
             // to avoid XSS -- no html allowed anywhere, except for exceptions.
             if (array_key_exists($shortParamKey, $this->tagsAllowed) &&
