@@ -97,6 +97,7 @@ fK.fb.onLogin = function() {
                                            $("#login-tabs").hide();
                                            $("#logout").show();
                                            $(".firstLogin", fK.cf.container).hide();
+                                           $("#folkso-nav").show();
                                            if (fK.loginStatus === false) {
                                                $('body').trigger('justLoggedIn');
                                            }
@@ -185,6 +186,7 @@ fK.fb.onLogin = function() {
                             $(".fKLoginButton").click(setupLogin());
                             $("#login-tabs").hide();
                             $("a.firstLogin").show();
+                            $("#folkso-nav").hide();
                         }
 
                         if (fK.loginStatus) {
@@ -257,7 +259,6 @@ fK.fb.onLogin = function() {
                                            notLogged();
                                        }
                                    });
-
                     });
 
 
