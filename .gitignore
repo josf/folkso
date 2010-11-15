@@ -78,3 +78,8 @@ folksologfile
 =======
 >>>>>>> 2953d47... * .gitignore: gitig:.gitignore
 /info/cachelog.txt
+/info/close_x.svg
+/info/close_x_20px.png
+/info/rssbutton.jpg
+/info/rssbutton.png
+/info/sql_schema_diagram.pdf
