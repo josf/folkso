@@ -198,12 +198,12 @@ elseif ( $hasRights ) {
 <p>Vous pouvez vous rendre sur les pages de gestion de tags.</p>
 <ul>
     <li>
-    <a href="http://www.fabula.org/tags/admin/editresources.php">
+    <a href="http://www.fabula.org/tags/editresources.php">
     Interface de taggage 
     </a> : tagger les pages du site.
     </li>
     <li>
-    <a href="http://www.fabula.org/tags/admin/tagedit.php">
+    <a href="http://www.fabula.org/tags/tagedit.php">
     Edition des tags
     </a> : modifier, fusionner, supprimer les tags du site.
     </li>
