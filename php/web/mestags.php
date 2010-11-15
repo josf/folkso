@@ -22,8 +22,21 @@ require("/var/www/dom/fabula/commun3/head_libs.php");
 require("/var/www/dom/fabula/commun3/head_folkso.php");
 
 $loggedIn = false;
+$redacRight = false;
+$adminRight = true;
+
 if ($fks->status()) {
     $loggedIn = true;
+
+    if ($u &&
+        $u instanceof folksoUser) {
+      if ($u->checkUserRight('folkso', 'redac')) {
+        $redacRight = true;
+      }
+      if ($u->checkUserRight('folkso', 'admin')) {
+        $adminRight = true;
+      }
+    }
 }
 
 require("/var/www/dom/fabula/commun3/head_dtd.php");
@@ -198,6 +211,17 @@ print $fp->facebookConnectButton();
 <p>Bonjour <span class="userhello"></span> !</p>
 <p id="tag-brag">Vous avez appliqué <span id="tagcount"></span> tags.</p>
 </div>
+
+  <?php // Admin, redac link
+  if ($redacRight || $adminRight) {
+    ?>
+    <p>
+    <a href="/tags/adminlogin.php">Accès aux pages de gestion des tags.</a>
+    </p>
+    <?php
+  }
+?>
+
 
 <div id="subscriptions" class="login-only">
 <h2>Vos abonnements</h2>
