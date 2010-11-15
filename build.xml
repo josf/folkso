@@ -154,7 +154,8 @@
   <target 
       name="js.dev"
       depends="js.preprocess.debug,js.folksonomie.concat,js.maxify">
-
+    <copy todir="${dist}/js" 
+          file="${build}/js/jquery.folksodeps.js"/>
   </target>
 
   <target 
