@@ -92,6 +92,8 @@ div.doc .doc-content {
 #login-tabs { display: none; } 
 </style>
 
+<link rel="stylesheet" type="text/css" href="/tags/css/jquery-ui-1.8.4.custom.css" media="screen"/>
+
 <?php
 require("/var/www/dom/fabula/commun3/head_javascript_folkso.php");
 
@@ -106,7 +108,6 @@ require("/var/www/dom/fabula/commun3/head_javascript_folkso.php");
 </script>
 
 <script type="text/javascript">
-
   $(document).ready(
       function() {
           $("div.doc").each(
