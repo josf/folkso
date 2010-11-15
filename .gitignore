@@ -1,6 +1,8 @@
 *~
 build/*
 dist/*
+\#*
+.\#*
 js/deps/tiny*
 js/deps/css*
 js/deps/ui*
