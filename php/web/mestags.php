@@ -319,8 +319,8 @@ Si vous ne souhaitez pas publier ces informations, il suffit de vous assurer que
 
 <div id="colonnes-deux">
 <div id="recently" class="login-only">
-<h2>Mes ressources</h2>
-<p>Les ressources récemment taggées avec mes tags.
+<h2>Vos ressources</h2>
+  <p>Les ressources récemment taggées avec les tags auxquels vous êtes abonné(e).
    Si une ressource comporte plus d'un de vos tags, il apparaîtra
 plus haut dans la liste.</p> <!-- ' -->
 <ul></ul>

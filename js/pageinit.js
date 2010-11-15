@@ -99,6 +99,7 @@ fK.fb.onLogin = function() {
                                            $("fb:login-button").hide();
                                            $("#login-tabs").hide();
                                            $("#logout").show();
+                                           $("ul.provider_list").hide();
                                            $(".firstLogin", fK.cf.container).hide();
                                            $("#folkso-nav").show();
                                            if (fK.loginStatus === false) {
