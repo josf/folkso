@@ -74,11 +74,6 @@ ul.fav-list a {
 display: none;
  }
 
-div.doc {
-
-
-}
-
 div.doc .closetext, div.doc .doc-content {
   display: none;
 }
