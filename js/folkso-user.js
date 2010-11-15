@@ -20,7 +20,8 @@ $(document).ready(
         /*
          * Autocompletion for tag input
          */
-//        $("#newsubbox").autocomplete(fK.cf.autocompleteUrl);     
+        $("#newsubbox").autocomplete({ source: fK.cf.autocompleteUrl,
+                                       minLength: 3});     
 
 
         /*
