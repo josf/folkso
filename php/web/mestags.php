@@ -20,7 +20,7 @@ if ((! $fp) || (! $fp instanceof folksoPage)) {
 
 require("/var/www/dom/fabula/commun3/head_libs.php");
 require("/var/www/dom/fabula/commun3/head_folkso.php");
-
+$page_titre = 'Fabula - Espace tags et gestion de compte';
 $loggedIn = false;
 $redacRight = false;
 $adminRight = true;
