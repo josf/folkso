@@ -334,7 +334,7 @@ function visitPage (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
         fclose($lfh);
         return $r;
       }
-      fwrite("success 200\n");
+      fwrite($lfh, "success 200\n");
       $r->setOk(200, "200 Read cache'");
       $r->t("updated db");
     }
