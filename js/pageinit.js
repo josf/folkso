@@ -224,13 +224,18 @@ fK.fb.onLogin = function() {
                                 return $("#bloc_orange ul");
                             }
                             else {
-                                $("#bloc_orange").append($("<div class='tagcloud'><ul class='cloudlist'></ul></div>"));
+                                $("#bloc_orange")
+                                    .append($("<div class='tagcloud'>" +
+                                              "<ul class='cloudlist'></ul>" +
+                                              "</div>"));
                                 return $("#bloc_orange ul");
                             }
                         }
 
-                        $(".fKTagbutton").click(fK.fn.tagres_react($("input.fKTaginput"),
-                                                                 tagAddTarget()));
+                        $(".fKTagbutton").click(
+                            fK.fn.tagres_react($("input.fKTaginput"),
+                                               tagAddTarget()));
+
                         $(".fKTagbutton").click(
                             function() {
                                 $("#bloc_orange").show();
@@ -240,7 +245,8 @@ fK.fb.onLogin = function() {
                             function(ev) {
                                 ev.preventDefault();
                                 $("div.explainMessage").show();
-                                $(this).css({fontWeight: "bold", fontStyle: "italic"});
+                                $(this).css({fontWeight: "bold", 
+                                             fontStyle: "italic"});
                             });
 
                         $("#closeExplain").click(
