@@ -112,6 +112,12 @@ fK.fb.onLogin = function() {
                         $('body').bind('loggedOut',
                                        function() { 
                                            fK.loginStatus = false;
+                                           if ($.cookie('folksofblogin')) {
+                                               $.cookie("folksofblogin",
+                                                        null,
+                                                        {domain: ".fabula.org",
+                                                         path: "/"});
+                                           }
                                        });
 
                         /* Sets up event handler: $("body").bind("loggedIn") */
@@ -121,22 +127,27 @@ fK.fb.onLogin = function() {
                         fK.fb.loggedUser = function()
                         {
                             fK.fn.completeFBlogin(
-                                function(){ if (fK.loginStatus === false) {
-                                                $('body').trigger('loggedIn');
-                                                fK.loginStatus = true; 
-                                                fK.fbLogin = true;
-                                            }
-                                            if ($.isFunction(fK.ufn.loggedIn)) {
-                                                fK.ufn.loggedIn();
-                                            }
-                                          },
+                                function()
+                                { 
+                                    if (fK.loginStatus === false) {
+                                        $('body').trigger('loggedIn');
+                                        fK.loginStatus = true; 
+                                        fK.fbLogin = true;
+                                        $.cookie("folksofblogin", "fb",
+                                                 {domain: ".fabula.org",
+                                                  path: "/",
+                                                  expires: 14});
+                                    }
+                                    if ($.isFunction(fK.ufn.loggedIn)) {
+                                        fK.ufn.loggedIn();
+                                    }
+                                },
                                 /* nothing here, because we might be logged in by 
                                  * other means (session valid but FB unlogged, 
                                  * logged via OpenId etc. Failuer to log via FB should 
                                  * probably not have any effect on anything.*/
                                 function() { }
-                                );
-
+                            );
                         };
 
                         fK.fb.unLoggedUser = function()
@@ -237,32 +248,34 @@ fK.fb.onLogin = function() {
                                 ev.preventDefault();
                                 var $here = $(this);
                                 $here.parent("div.explainMessage").hide();
-                                $("#showWhatIs").css({fontWeight: "normal", fontStyle: "normal"});
+                                $("#showWhatIs").css({fontWeight: "normal", 
+                                                      fontStyle: "normal"});
                             }
                         );
 
                         $("#logout")
-                            .click(function(ev){
-                                       ev.preventDefault();
-                                       if (fK.fbLogin) {
-                                           FB.Integration.logout(
-                                               function()
-                                               {
-                                                   $.cookie("folksosess", null,
-                                                            {domain: ".fabula.org",
-                                                             path: "/"});
-                                                   $("body").trigger("loggedOut");
-                                                   notLogged();                 
-                                               });
-                                       }
-                                       else {
-                                           $.cookie("folksosess", null,
-                                                    {domain: ".fabula.org",
-                                                     path: "/"});
-                                           $("body").trigger("loggedOut");
-                                           notLogged();
-                                       }
-                                   });
+                            .click(
+                                function(ev){
+                                    ev.preventDefault();
+                                    if ($.cookie('folksofblogin') == "fb") {
+                                        FB.Integration.logout(
+                                            function()
+                                            {
+                                                $.cookie("folksosess", null,
+                                                         {domain: ".fabula.org",
+                                                          path: "/"});
+                                                $("body").trigger("loggedOut");
+                                                notLogged();   
+                                            });
+                                    }
+                                    else {
+                                        $.cookie("folksosess", null,
+                                                 {domain: ".fabula.org",
+                                                  path: "/"});
+                                        $("body").trigger("loggedOut");
+                                        notLogged();                 
+                                    }
+                                });
                     });
 
 
