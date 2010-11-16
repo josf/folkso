@@ -488,12 +488,19 @@ class folksoUser {
              .' join rights r on r.rightid = ur.rightid '
              ." where userid = '" . $i->dbescape($this->userid) . "' ");
 
-    while ($row = $i->result->fetch_object()){
-      if (! $this->rights->checkRight($row->service, $row->rightid)) {
-        $this->rights->addRight(new folksoRight($row->service,
-                                                $row->rightid));
-      }
-    }
+   if ($i->result_status == 'OK') {
+     if ((! $this->rights) ||
+         (! $this->rights instanceof folksoRightStore)) {
+       $this->rights = new folksoRightStore();
+     }
+
+     while ($row = $i->result->fetch_object()){
+       if (! $this->rights->checkRight($row->service, $row->rightid)) {
+         $this->rights->addRight(new folksoRight($row->service,
+                                                 $row->rightid));
+       }
+     }
+   }
  }
 
 
@@ -502,7 +509,8 @@ class folksoUser {
    * @param $right String
    */
   public function checkUserRight ($service, $right) {
-    if ($this->rights->checkRight($service, $right)){
+    if (($this->rights instanceof folksoRightStore) &&
+        ($this->rights->checkRight($service, $right))){
       return true;
     }
     else {
