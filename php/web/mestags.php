@@ -152,6 +152,8 @@ require("/var/www/dom/fabula/commun3/html_start.php");
 <div id="colonnes-un">
 
 <div id="title-and-docs">
+
+  <!-- Documentation block, javascript enabled -->
 <h1>Espace tags</h1>
 <div class="doc">
   <a class="opentext" href="#">Qu'est-ce que c'est&#160;?</a>
@@ -168,8 +170,8 @@ require("/var/www/dom/fabula/commun3/html_start.php");
   </p>
   </div>
 </div>
-</div>
-<?php //'
+</div> <!-- 'end title-and-docs -->
+<?php 
     if (!$loggedIn) {
     // display login buttons
 
@@ -192,15 +194,12 @@ OpenId
 
 print $fp->facebookConnectButton(); 
 
-
 ?>
 </div>
 </div> <!-- end of #login-tabs div -->     
 
 <?php 
-
-  }
-
+  } // end of if block
 ?>
 
 <div id="user-intro" class="login-only">
