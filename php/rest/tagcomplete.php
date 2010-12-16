@@ -60,7 +60,8 @@ function autocomplete (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks)
   $sql = "SELECT tagdisplay ".
             "FROM tag ".
             "WHERE tagnorm like '". 
-    $i->dbescape(strtolower($typed)) . "%'";
+    $i->dbescape(strtolower($typed)) . "%'"
+    . ' limit 15 ';
 
   $i->query($sql);
 
