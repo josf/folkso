@@ -211,8 +211,12 @@ fK.fb.onLogin = function() {
                             notLogged();
                         }
 
-                        $("input.fKTaginput", fK.cf.container).autocomplete(fK.cf.autocompleteUrl);
-                        $("input.fKTaginput", $("#newsubscriptions")).autocomplete(fK.cf.autocompleteUrl);
+                        $("input.fKTaginput", fK.cf.container)
+                            .autocomplete({source: fK.cf.autocompleteUrl,
+                                          minLength: 2});
+                        $("input.fKTaginput", $("#newsubscriptions"))
+                            .autocomplete({source: fK.cf.autocompleteUrl,
+                                          minLength: 2});
 
 
                         if ($("#bloc_orange ul").length == 0) {
