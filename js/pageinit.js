@@ -79,18 +79,7 @@ fK.fb.onLogin = function() {
                          */
                         $("#login-tabs").tabs();
 
-                        /*
-                         * This event should only fire when
-                         * fK.loginStatus goes from false to true. The idea is to
-                         * avoid multiple calls.
-                         */
-                        $('body').bind('justLoggedIn',
-                                       function() {
-
-                                       });
-
-
-                        $('body').bind('loggedIn',
+                        $(fK.events).bind('loggedIn',
                                        function() {
                                            console.log("loggedIn firing");
                                            $("#fbkillbox", fK.cf.container).hide();
@@ -103,9 +92,6 @@ fK.fb.onLogin = function() {
                                            $("ul.provider_list").hide();
                                            $(".firstLogin", fK.cf.container).hide();
                                            $("#folkso-nav").show();
-                                           if (fK.loginStatus === false) {
-                                               $('body').trigger('justLoggedIn');
-                                           }
                                            fK.loginStatus = true;
                                            if (jQuery.isFunction(fK.tinymceInit)) {
                                                fK.tinymceInit();
