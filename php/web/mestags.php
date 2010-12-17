@@ -89,6 +89,31 @@ div.doc .doc-content {
 
 }
 
+<?php 
+if (!$loggedIn) {
+?>
+.not-logged, #login-tabs {
+  display: inline;
+}
+.login-only {
+display: none;
+}
+
+<?php
+    }
+else {
+?>
+  .not-logged, #login-tabs {
+    display: none;
+    }
+.login-only {
+display: inline;
+ }
+
+<?php
+    }
+?>
+
 #login-tabs { display: none; } 
 </style>
 
