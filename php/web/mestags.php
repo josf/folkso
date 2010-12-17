@@ -95,7 +95,7 @@ if (!$loggedIn) {
 .not-logged, #login-tabs {
   display: inline;
 }
-.login-only {
+  .login-only, #logout, #logout2 {
 display: none;
 }
 
@@ -106,7 +106,7 @@ else {
   .not-logged, #login-tabs {
     display: none;
     }
-.login-only {
+  .login-only, #logout, #logout2 {
 display: inline;
  }
 
@@ -153,7 +153,14 @@ require("/var/www/dom/fabula/commun3/head_javascript_folkso.php");
                           $("div.doc-content", $doc).hide();
                   });
               });
-     });
+          $('body').bind('loggedOut',
+                         function() {
+                           $(".not-logged").show();
+                           $("#login-tabs").show();
+                         });
+      });
+
+
 
 </script>
 <?php
@@ -198,7 +205,7 @@ require("/var/www/dom/fabula/commun3/html_start.php");
 </div> <!-- 'end title-and-docs -->
 <h1 class="not-logged">Il faut vous identifier d'abord</h1> 
 
-<div id="login-tabs">
+<div id="login-tabs" class="not-logged">
 
 <!-- tab headers --'>
 <ul>
@@ -220,6 +227,7 @@ print $fp->facebookConnectButton();
 </div> <!-- end of #login-tabs div -->     
 
 <div id="user-intro" class="login-only">
+<p><a href="#" id="logout2" class="login-only">Quitter</a></p> 
 <p>Bonjour <span class="userhello"></span> !</p>
 <p id="tag-brag">Vous avez appliqué <span id="tagcount"></span> tags.</p>
 </div>
@@ -330,7 +338,9 @@ Si vous ne souhaitez pas publier ces informations, il suffit de vous assurer que
 
 </div>
 <p class="login-only"><a href="#" id="userdata-send">Valider</a></p>
-<p class="login-only"><a href="#" id="logout">Quitter</a></p>
+<p class="login-only">
+<a href="#" class="login-only" id="logout">Quitter</a>
+</p>
 </div>
 
 

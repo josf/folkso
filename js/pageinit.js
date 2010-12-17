@@ -92,13 +92,14 @@ fK.fb.onLogin = function() {
 
                         $('body').bind('loggedIn',
                                        function() {
+                                           console.log("loggedIn firing");
                                            $("#fbkillbox", fK.cf.container).hide();
                                            $(".fKTagbutton").show();
                                            $(".fKTaginput", fK.cf.container).show();
                                            $(".fKLoginButton", fK.cf.container).hide();
                                            $("fb:login-button").hide();
                                            $("#login-tabs").hide();
-                                           $("#logout").show();
+                                           $("#logout, #logout2").show();
                                            $("ul.provider_list").hide();
                                            $(".firstLogin", fK.cf.container).hide();
                                            $("#folkso-nav").show();
@@ -196,10 +197,11 @@ fK.fb.onLogin = function() {
                         function notLogged () {
                             $(".login-only").hide();
                             $("#logout").hide();
+                            $(".logout-link").hide();
                             $(".fKTagbutton", fK.cf.container).hide();
                             $("input.fKTaginput").hide();
                             $(".fKLoginButton").click(setupLogin());
-                            $("#login-tabs").hide();
+//                            $("#login-tabs").hide();
                             $("a.firstLogin").show();
                             $("#folkso-nav").hide();
                         }
@@ -263,7 +265,7 @@ fK.fb.onLogin = function() {
                             }
                         );
 
-                        $("#logout")
+                        $("#logout, #logout2")
                             .click(
                                 function(ev){
                                     ev.preventDefault();
