@@ -609,16 +609,7 @@ $(document).ready(
          *  Page load actions
          */
 
-        $("textarea.cv-write")
-            .tinymce({
-                         script_url: '/tags/js/tinymce/jscripts/tiny_mce/tiny_mce.js',
-                         valid_elements: "a[href],strong/b,em/i,ul,li,p,h2,h3,h4",
 
-                         /*
-                          * It is crucial to use raw here. Otherwise the system will choke on the &
-                          */
-                         entity_encoding: 'raw'
-                     });
 
         /*
          * If we still aren't logged in, we should make sure the right
@@ -629,3 +620,21 @@ $(document).ready(
         }
 
     });
+
+
+fK.tinymceInit = 
+    function () {
+        if ($("textarea:tinymce").length == 0) {
+            $("textarea.cv-write")
+                .tinymce({
+                             script_url: '/tags/js/tinymce/jscripts/tiny_mce/tiny_mce.js',
+                             valid_elements: "a[href],strong/b,em/i,ul,li,p,h2,h3,h4",
+
+                         /*
+                          * It is crucial to use raw here. Otherwise 
+                          * the system will choke on the "&"
+                          */
+                         entity_encoding: 'raw'
+                         });
+        }
+};

@@ -107,6 +107,9 @@ fK.fb.onLogin = function() {
                                                $('body').trigger('justLoggedIn');
                                            }
                                            fK.loginStatus = true;
+                                           if (jQuery.isFunction(fK.tinymceInit)) {
+                                               fK.tinymceInit();
+                                           }
                                        });
 
 
