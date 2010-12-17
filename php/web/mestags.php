@@ -196,11 +196,7 @@ require("/var/www/dom/fabula/commun3/html_start.php");
   </div>
 </div>
 </div> <!-- 'end title-and-docs -->
-<?php 
-    if (!$loggedIn) {
-    // display login buttons
-
-?><h1 class="not-logged">Il faut vous identifier d'abord</h1> 
+<h1 class="not-logged">Il faut vous identifier d'abord</h1> 
 
 <div id="login-tabs">
 
@@ -223,10 +219,6 @@ print $fp->facebookConnectButton();
 </div>
 </div> <!-- end of #login-tabs div -->     
 
-<?php 
-  } // end of if block
-?>
-
 <div id="user-intro" class="login-only">
 <p>Bonjour <span class="userhello"></span> !</p>
 <p id="tag-brag">Vous avez appliqué <span id="tagcount"></span> tags.</p>
@@ -235,7 +227,7 @@ print $fp->facebookConnectButton();
   <?php // Admin, redac link
   if ($redacRight || $adminRight) {
     ?>
-    <p>
+    <p class="login-only">
     <a href="/tags/adminlogin.php">Accès aux pages de gestion des tags.</a>
     </p>
     <?php
@@ -338,6 +330,7 @@ Si vous ne souhaitez pas publier ces informations, il suffit de vous assurer que
 
 </div>
 <p class="login-only"><a href="#" id="userdata-send">Valider</a></p>
+<p class="login-only"><a href="#" id="logout">Quitter</a></p>
 </div>
 
 
