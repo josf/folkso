@@ -87,6 +87,13 @@
                 },
 
          /**
+          * All your events can go here. For simple namespacing, there
+          * could be children of fK.events, but that probably won't be
+          * necessary.
+          */
+         events: {},
+
+         /**
           * Config information set on init.
           *
           * Other scripts could use this for their data, maybe.
