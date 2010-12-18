@@ -106,7 +106,12 @@ pageTracker._initData();
 pageTracker._trackPageview();
 </script>
 
-<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.1/jquery.js"></script>
+<script type="text/javascript" 
+  src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
+<script type="text/javascript" 
+  src="/tags/js/jquery-ui-1.8.4.custom.min.js"></script>
+
+
   <?php print $fp->facebookJSinit(); ?>
 <script type="text/javascript" src="/tags/js/jquery.folksodeps.js"></script>
 <script type="text/javascript" src="/tags/js/folksonomie.min.js"></script> 
@@ -116,8 +121,13 @@ pageTracker._trackPageview();
 <script type="text/javascript">
   fK.cf.facebookReload = false;
 fK.ufn.loggedIn = function() {
-  window.location = "http://www.fabula.org/tags/admin/adminlogged.php";
+  window.location = "http://www.fabula.org/tags/adminlogged.php";
 }
+  $(fK.events).bind("loggedOut",
+                    function () {
+                        window.location = "/tags/mestags.php";                        
+                    });
+
 </script>
 <?php
   print $fp->jsHolder($fp->fKjsLoginState('fK.loginStatus') 
@@ -194,7 +204,7 @@ print $fp->facebookConnectButton();
 elseif ( $hasRights ) {
 ?>
   <h1>Vous êtes loggué(e).</h1>
-
+<a href="#" id="logout">Quitter</a>
 <p>Vous pouvez vous rendre sur les pages de gestion de tags.</p>
 <ul>
     <li>
