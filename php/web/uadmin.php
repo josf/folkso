@@ -153,6 +153,19 @@ elseif (! $authorized) {
 d'administration. Veuillez contacter les administrateurs du site si vous pensez 
 qu'il s'agit d'une erreur. <!-- ' --></p>
 
+<ul>
+    <li>
+    <a href="http://www.fabula.org/tags/editresources.php">
+    Interface de taggage 
+    </a> : tagger les pages du site.
+    </li>
+    <li>
+    <a href="http://www.fabula.org/tags/tagedit.php">
+    Edition des tags
+    </a> : modifier, fusionner, supprimer les tags du site.
+    </li>
+    <li>
+</ul>
 <?php
 }
 else {
