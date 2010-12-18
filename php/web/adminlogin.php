@@ -207,6 +207,11 @@ elseif ( $hasRights ) {
     Edition des tags
     </a> : modifier, fusionner, supprimer les tags du site.
     </li>
+    <li>
+    <a href="http://fabula.org/tags/uadmin.php">
+    Gestion des utilisateurs
+    </a> (niveau "admin" nécessaire)
+    </li>
 </ul>
     
 <?php
