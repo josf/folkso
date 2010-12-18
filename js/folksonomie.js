@@ -852,7 +852,7 @@
               */
              pollFolksoCookie: function ()
              {
-                 $('body').bind('loggedIn', function() {
+                 $(fK.events).bind('loggedIn', function() {
                                     fK.loginStatus = true;
                                     if (fK.onLoggedIn.length > 0) {
                                         for (var i = 0; i < fK.onLoggedIn.length; i++) {
@@ -860,14 +860,14 @@
                                         }
                                     }
                                 });
-                 $('body').bind('loggedOut', function() {fK.loginStatus = false; });
+                 $(fK.events).bind('loggedOut', function() {fK.loginStatus = false; });
 
                  var poller =
                      setInterval(function()
                                  {
 
                                      if (/folksosess/.test(document.cookie)) {
-                                         $('body').trigger('loggedIn');
+                                         $(fK.events).trigger('loggedIn');
                                          clearInterval(poller);
                                      }
                                  },

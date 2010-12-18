@@ -564,16 +564,16 @@ $(document).ready(
             }
         };
 
-        $('body').unbind('loggedIn');
-        $('body').bind('loggedIn',
-                       function() {
+//       $(fK.events).unbind('loggedIn');
+       $(fK.events).bind('loggedIn',
+                         function() {
 /*
 #ifdef DEBUG 
                            console.debug("loggedIn just got triggered. " +
                                        " loginStatus was " + fK.loginStatus);
 #endif */
-                           $("div.login-only").show();
-                           $("p.login-only").show();
+                             $("div.login-only").show();
+                             $("p.login-only").show();
                            $("h1.not-logged").hide();
                            $("#fbstuff").hide();
                            $("#login-tabs").hide();
@@ -585,8 +585,8 @@ $(document).ready(
                        });
 
 
-        $('body').unbind('loggedOut');
-        $('body').bind('loggedOut',
+//        $(fK.events).unbind('loggedOut');
+        $(fK.events).bind('loggedOut',
                        function() {
 /*
 #ifdef DEBUG 
@@ -616,7 +616,7 @@ $(document).ready(
          * elements are visible on the page.
          */
         if (fK.loginStatus === false) {
-            $('body').trigger('loggedOut');
+            $(fK.events).trigger('loggedOut');
         }
 
     });

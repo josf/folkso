@@ -35,6 +35,7 @@ window.handleOpenIDResponse = function (openid_args){
                           on extra param*/
             success: function(xhr, msg) {
                 fK.oidLogin = true;
+                $(fK.events).trigger("loggedIn");
             },
             error: function () {
                 fK.oidLogin = false;
@@ -99,7 +100,7 @@ fK.fb.onLogin = function() {
                                        });
 
 
-                        $('body').bind('loggedOut',
+                        $(fK.events).bind('loggedOut',
                                        function() { 
                                            fK.loginStatus = false;
                                            if ($.cookie('folksofblogin')) {
@@ -110,7 +111,7 @@ fK.fb.onLogin = function() {
                                            }
                                        });
 
-                        /* Sets up event handler: $("body").bind("loggedIn") */
+                        /* Sets up event handler: $(fK.events).bind("loggedIn") */
                         fK.fn.pollFolksoCookie();
 
                         /* Facebook connect login and logout events */
@@ -120,7 +121,7 @@ fK.fb.onLogin = function() {
                                 function()
                                 { 
                                     if (fK.loginStatus === false) {
-                                        $('body').trigger('loggedIn');
+                                        $(fK.events).trigger('loggedIn');
                                         fK.loginStatus = true; 
                                         fK.fbLogin = true;
                                         $.cookie("folksofblogin", "fb",
@@ -196,7 +197,7 @@ fK.fb.onLogin = function() {
                         }
 
                         if (fK.loginStatus) {
-                            $('body').trigger('loggedIn');
+                            $(fK.events).trigger('loggedIn');
                         }
                         else {
                             notLogged();
@@ -265,7 +266,7 @@ fK.fb.onLogin = function() {
                                                 $.cookie("folksosess", null,
                                                          {domain: ".fabula.org",
                                                           path: "/"});
-                                                $("body").trigger("loggedOut");
+                                                $(fK.events).trigger("loggedOut");
                                                 notLogged();   
                                             });
                                     }
@@ -273,7 +274,7 @@ fK.fb.onLogin = function() {
                                         $.cookie("folksosess", null,
                                                  {domain: ".fabula.org",
                                                   path: "/"});
-                                        $("body").trigger("loggedOut");
+                                        $(fK.events).trigger("loggedOut");
                                         notLogged();                 
                                     }
                                 });

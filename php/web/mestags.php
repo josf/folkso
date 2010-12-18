@@ -153,10 +153,11 @@ require("/var/www/dom/fabula/commun3/head_javascript_folkso.php");
                           $("div.doc-content", $doc).hide();
                   });
               });
-          $('body').bind('loggedOut',
+          $(fK.events).bind('loggedOut',
                          function() {
                            $(".not-logged").show();
                            $("#login-tabs").show();
+                           $("ul.provider_list", $("#tabs-1")).show();
                          });
       });
 
