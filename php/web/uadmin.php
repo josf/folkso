@@ -107,6 +107,15 @@ require("/var/www/dom/fabula/commun3/head_javascript_folkso.php");
 <script type="text/javascript" 
   src="/tags/js/folkso-admin.js">
 </script>
+
+<script type="text/javascript">
+  $(fK.events).bind("loggedOut",
+                    function () {
+                        window.location = "/tags/mestags.php";                        
+                    });
+
+</script>
+
 <?php
 
 require ('/var/www/dom/fabula/commun3/browser_detect.php');
@@ -171,6 +180,7 @@ qu'il s'agit d'une erreur. <!-- ' --></p>
 else {
 ?>
 
+<a href="#" id="logout">Quitter</a>
 <div id="usersearch">
 <h2>Recherche d'utilisateur</h2> <!-- ' -->
 
