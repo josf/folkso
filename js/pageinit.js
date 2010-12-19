@@ -23,7 +23,6 @@ function update_user_box() {
 }
 
 
-
 /**
  * Called by the Open Id popup window on Open Id login.
  */
