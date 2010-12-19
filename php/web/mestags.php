@@ -208,7 +208,7 @@ require("/var/www/dom/fabula/commun3/html_start.php");
 
 <div id="login-tabs" class="not-logged">
 
-<!-- tab headers --'>
+<!-- tab headers ' -->
 <ul>
 <li><a href="#tabs-1">Open ID</a></li>
 <li><a href="#tabs-2">Facebook Connect</a></li>
