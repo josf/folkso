@@ -83,3 +83,5 @@ folksologfile
 /info/rssbutton.jpg
 /info/rssbutton.png
 /info/sql_schema_diagram.pdf
+/sql/proc-perms.sql
+/sql/table-perms.sql
