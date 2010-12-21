@@ -310,6 +310,62 @@
   </target>
 
 
+  <target name="sql.permissions"
+          depends="sql.tables.build,sql.procedures.build">
+    <apply executable="awk"
+           output="${build}/sql/table-permissions.sql"
+           failonerror="yes">
+      <arg value="-f"/>
+      <arg value="./sql/table-perms.awk"/>
+      <arg line="user=folkso"/>
+      <fileset file="${dist}/sql/all-tables.sql"/>
+    </apply>
+
+    <apply executable="awk"
+           output="${build}/sql/procedure-permissions.sql"
+           failonerror="yes">
+      <arg value="-f"/>
+      <arg value="./sql/procedure-perms.awk"/>
+      <arg line="user=folkso"/>
+      <fileset file="${dist}/sql/procedures.sql"/>
+    </apply>
+
+    <concat destfile="${dist}/sql/permissions.sql">
+      <filelist dir="${build}/sql"
+                files="table-permissions.sql,procedure-permissions.sql"/>
+    </concat>
+
+
+  </target>
+
+
+  <target name="sql.test-permissions"
+          depends="sql.tables.build,sql.procedures.build">
+    <apply executable="awk"
+           output="${build}/sql/test-table-permissions.sql"
+           failonerror="yes">
+      <arg value="-f"/>
+      <arg value="./sql/table-perms.awk"/>
+      <arg line="user=tester_dude"/>
+      <fileset file="${dist}/sql/all-tables.sql"/>
+    </apply>
+
+    <apply executable="awk"
+           output="${build}/sql/test-procedure-permissions.sql"
+           failonerror="yes">
+      <arg value="-f"/>
+      <arg value="./sql/procedure-perms.awk"/>
+      <arg line="user=folkso"/>
+      <fileset file="${dist}/sql/procedures.sql"/>
+    </apply>
+
+    <concat destfile="${dist}/sql/test-permissions.sql">
+      <filelist dir="${build}/sql"
+                files="test-table-permissions.sql,test-procedure-permissions.sql"/>
+    </concat>
+
+
+  </target>
 
 <!-- XSLT -->
 <target name="xsl.copy">
