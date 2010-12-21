@@ -336,7 +336,7 @@
         fixlastline="yes">
       <filelist 
           dir="${build}/sql"
-          files="tag.sql, resource.sql, metatag.sql, ean13.sql, tag-event.sql, users_sessions.sql, user_subscription.sql, exclude.sql, aux-tables.sql"/>
+          files="users.sql ,tag.sql, resource.sql, metatag.sql, ean13.sql, tag-event.sql, users_sessions.sql,user_subscription.sql, exclude.sql, aux-tables.sql,note.sql"/>
 
     </concat>
   </target>
