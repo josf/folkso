@@ -17,7 +17,7 @@ class testOffolksoUrlRewriteTag extends  UnitTestCase {
 
    function testUrlRewriteTag () {
          $rw   = new folksoUrlRewriteTag();
-         $this->assertIsA($rw, folksoUrlRewriteTag,
+         $this->assertIsA($rw, 'folksoUrlRewriteTag',
                                'object creation failed');
 
    }

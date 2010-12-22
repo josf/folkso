@@ -10,11 +10,11 @@ class testOffolksoEanList extends UnitTestCase {
 
   function testBasic () {
     $e = new folksoEanList(new folksoFabula(), 4159);
-    $this->assertIsA($e, folksoEanList);
+    $this->assertIsA($e, 'folksoEanList);'
     $this->assertFalse(is_string($e->xml));
     $e->getData();
     $this->assertTrue(is_string($e->xml));
-    $this->assertIsA($e->xml_DOM(), DOMDocument);
+    $this->assertIsA($e->xml_DOM(), 'DOMDocument);'
     
   }
 

@@ -46,7 +46,7 @@ class testOffolksoResponder extends  UnitTestCase {
                        folksoResponse,
                        'Testing the test: nothingFunc should return empty fkResponse');
       
-      $this->assertIsA($rep, folksoResponder);
+      $this->assertIsA($rep, 'folksoResponder);'
       $this->assertTrue($rep->activatep($query)); 
      }
 

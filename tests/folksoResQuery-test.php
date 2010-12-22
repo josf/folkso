@@ -17,8 +17,8 @@ class testOffolksoResQuery extends UnitTestCase {
 
   function testBasic ()  {
     $rq = new folksoResQuery();
-    $this->assertIsA($rq, folksoResQuery);
-    $this->assertIsA($rq->qb, folksoQueryBuild);
+    $this->assertIsA($rq, 'folksoResQuery);'
+    $this->assertIsA($rq->qb, 'folksoQueryBuild);'
     $cl_pop = $rq->cloud_by_popularity(4354, 3);
     $this->assertTrue(is_string($cl_pop));
     $this->assertTrue(strlen($cl_pop) > 300);

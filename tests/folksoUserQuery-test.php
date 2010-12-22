@@ -17,7 +17,7 @@ class testOffolksoUserQuery extends  UnitTestCase {
 
    function testUserQuery () {
          $uq   = new folksoUserQuery();
-         $this->assertIsA($uq, folksoUserQuery,
+         $this->assertIsA($uq, 'folksoUserQuery',
                                'object creation failed');
          
          $sql = $uq->resourcesByTag('emacs', 'downhome-2009-001');

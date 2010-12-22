@@ -54,10 +54,10 @@ class testOffolksoFBuser extends  UnitTestCase {
 
    function testFBuser () {
          $fb   = new folksoFBuser($this->dbc);
-         $this->assertIsA($fb, folksoFBuser,
+         $this->assertIsA($fb, 'folksoFBuser',
                                'object creation failed');
 
-         $this->assertIsA($fb, folksoUser,
+         $this->assertIsA($fb, 'folksoUser',
                           'object hierarchy problem');
          $this->assertFalse($fb->exists('999999'),
                             'bad fb id should return false');
@@ -118,7 +118,7 @@ class testOffolksoFBuser extends  UnitTestCase {
                         'email' => 'cb@interflora.com',
                         'userid' => 'charlesbaud-2010-001',
                         'loginid' => 99119911));
-     $this->assertIsA($u, folksoFBuser,
+     $this->assertIsA($u, 'folksoFBuser',
                       'problem with object creation');
 
      $this->assertTrue($u->Writeable(),

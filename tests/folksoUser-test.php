@@ -96,7 +96,7 @@ class testOffolksoUser extends  UnitTestCase {
                         'lastname' => 'Proust',
                         'email' => 'marcelp@temps.eu',
                         'userid' => 'marcelp-2010-001'));
-     $this->assertIsA($u, folksoUser,
+     $this->assertIsA($u, 'folksoUser',
                       'problem with object creation');
      $this->assertEqual($u->urlBase, 'proust.marcel',
                         'missing urlbase in user object');

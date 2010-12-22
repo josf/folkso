@@ -35,7 +35,7 @@ class testOffolksoDataDisplay extends  UnitTestCase {
                                       'lineformat' => '<hooha>>XXX</hooha>',
                                       'start' => '<zork>',
                                       'end' => '</zork>'));
-    $this->assertIsA($dd, folksoDataDisplay,
+    $this->assertIsA($dd, 'folksoDataDisplay',
                      'Not creating one-style object');
     $this->assertEqual($dd->type, 'xml',
                        'Default display style not being automatically set');
@@ -62,7 +62,7 @@ class testOffolksoDataDisplay extends  UnitTestCase {
 
     $df = new folksoDisplayFactory();
     $dd2 = $df->FancyResourceList();
-    $this->assertIsA($dd2, folksoDataDisplay);
+    $this->assertIsA($dd2, 'folksoDataDisplay);'
     $dd2->activate_style('xml');
     $this->assertEqual($dd2->type, 'xml');
     $ltext = $dd2->line('abcXXXdef', 'WWW', 'Bob is a slob', 'plooof');

@@ -17,7 +17,7 @@ class testOffolksoUrlRewriteResource extends  UnitTestCase {
 
    function testUrlRewriteResource () {
          $rw   = new folksoUrlRewriteResource();
-         $this->assertIsA($rw, folksoUrlRewriteResource,
+         $this->assertIsA($rw, 'folksoUrlRewriteResource',
                                'object creation failed');
    }
 

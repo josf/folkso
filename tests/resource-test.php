@@ -32,9 +32,9 @@ class testOfResource extends  UnitTestCase {
      $this->fks4 = new folksoSession(new folksoDBconnect($lh, $td, $ty, $tt));
   }
   function testTheTest () {
-    $this->assertIsA($this->fks, folksoSession,
+    $this->assertIsA($this->fks, 'folksoSession',
                      'Not creating session object for tests');
-    $this->assertIsA($this->fks->dbc, folksoDBconnect,
+    $this->assertIsA($this->fks->dbc, 'folksoDBconnect',
                      'Session DBconnect object not present');
 
   }
@@ -48,7 +48,7 @@ class testOfResource extends  UnitTestCase {
                                 'testy', 'testostonomie');
      $r = isHead($q, $dbc, $this->fks);
      $r->prepareHeaders();
-     $this->assertIsA($r, folksoResponse, 
+     $this->assertIsA($r, 'folksoResponse', 
                 'getTagsIds() does not return a folksoResponse object');
      $this->assertEqual($r->status, 200, 
                         'getTagsIds returns incorrect status');
@@ -64,7 +64,7 @@ class testOfResource extends  UnitTestCase {
      $r2 = isHead($q2, $this->dbc2, $this->fks2);
      $r2->prepareHeaders();
 
-     $this->assertIsA($r2, folksoResponse,
+     $this->assertIsA($r2, 'folksoResponse',
                       'isHead 404 not returning folksoResponse object');
      $this->assertEqual($r2->status, 404,
                         'Not returning 404 on non-existant resource: ' .$r->status );
@@ -78,7 +78,7 @@ class testOfResource extends  UnitTestCase {
      $dbc = new folksoDBconnect('localhost', 'tester_dude', 
                                 'testy', 'testostonomie');
      $r = getTagsIds($q, $dbc, $this->fks);
-     $this->assertIsA($r, folksoResponse, 
+     $this->assertIsA($r, 'folksoResponse', 
                 'getTagsIds() does not return a folksoResponse object');
      $this->assertEqual($r->status, 200, 
                         'getTagsIds returns incorrect status: ' . $r->status);
@@ -130,7 +130,7 @@ class testOfResource extends  UnitTestCase {
      $dbc = new folksoDBconnect('localhost', 'tester_dude', 
                                 'testy', 'testostonomie');
      $r = tagCloudLocalPop($q, $dbc, $this->fks);
-     $this->assertIsA($r, folksoResponse, 
+     $this->assertIsA($r, 'folksoResponse', 
                       'tagCloudLocalPop is not returning a folksoResponse object');
      $this->assertEqual($r->status, 200, 
                         'Incorrect status returned by tagCloudLocalPop. Expecting 200, got: ' 
@@ -143,7 +143,7 @@ class testOfResource extends  UnitTestCase {
      $dbc2 = new folksoDBconnect('localhost', 'tester_dude',
                                  'testy', 'testostonomie');
      $r2 = tagCloudLocalPop($q2, $dbc2, $this->fks2);
-     $this->assertIsA($r2, folksoResponse,
+     $this->assertIsA($r2, 'folksoResponse',
                       "tagCloudLocalPop is not returning a Response object (xml request)");
      $this->assertEqual($r2->status, 200,
                         'Incorrect http status for tagCloudLocalPop xml request: ' . $r2->status);
@@ -161,7 +161,7 @@ class testOfResource extends  UnitTestCase {
                                  'folksores' => 'http://not-here-at-all.com'),
                            array());
      $r3 = tagCloudLocalPop($q3, $dbc3, $this->fks3); 
-     $this->assertIsA($r3, folksoResponse,
+     $this->assertIsA($r3, 'folksoResponse',
                       'tagCloudPop not returning Response object (non-exist request)');
      $this->assertEqual($r3->status, 404,
                         'tagCloudLocalPop not returning 404');
@@ -176,7 +176,7 @@ class testOfResource extends  UnitTestCase {
                                 ),
                           array());
      $r = visitPage($q,  $dbc, $this->fks);
-     $this->assertIsA($r, folksoResponse, 
+     $this->assertIsA($r, 'folksoResponse', 
                       "visitPage() not returning a folksoResponse object");
      $this->assertEqual($r->status, 202, 
                         'visitPage() not returning 202 on cache request. Warning: this might depend on the state of the cache.');
@@ -205,7 +205,7 @@ class testOfResource extends  UnitTestCase {
                                           'testy', 'testostonomie'),
                       $this->fks
                       );
-     $this->assertIsA($r, folksoResponse,
+     $this->assertIsA($r, 'folksoResponse',
                       'addResource() not returning folksoResponse object');
      $this->assertEqual($r->status, 201, 
                         'addResource() not returning 201');
@@ -237,7 +237,7 @@ class testOfResource extends  UnitTestCase {
                                           'testy', 'testostonomie'),
                       $this->fks
                       );
-     $this->assertIsA($r, folksoResponse, "tagResource not returning Response object");
+     $this->assertIsA($r, 'folksoResponse', "tagResource not returning Response object");
      $this->assertEqual($r->status, 200,
                         "tagResource throws error");
 
@@ -302,7 +302,7 @@ class testOfResource extends  UnitTestCase {
                                       array()),
                       $this->dbc,
                       $this->fks);
-     $this->assertIsA($r, folksoResponse,
+     $this->assertIsA($r, 'folksoResponse',
                       'Not even getting a response object back');
 
      $this->assertEqual($r->status, 401,
@@ -321,7 +321,7 @@ class testOfResource extends  UnitTestCase {
                                     'testy', 'testostonomie'),
                 $this->fks);
 
-     $this->assertIsA($r, folksoResponse,
+     $this->assertIsA($r, 'folksoResponse',
                       'unTag does not return a folksoResponse object');
      $this->assertEqual($r->status, 200,
                         'Error code on unTag request: ' . $r->status);
@@ -355,7 +355,7 @@ class testOfResource extends  UnitTestCase {
                 new folksoDBconnect('localhost', 'tester_dude',
                                     'testy', 'testostonomie'),
                 $this->fks);
-     $this->assertIsA($r, folksoResponse,
+     $this->assertIsA($r, 'folksoResponse',
                       'rmRes does not return a folksoResponse object');
      $this->assertEqual($r->status, 200, 
                         'rmRes returns error code' 
@@ -377,7 +377,7 @@ class testOfResource extends  UnitTestCase {
                                   array()),
                   $this->dbc,
                   $this->fks);
-     $this->assertIsA($r, folksoResponse,
+     $this->assertIsA($r, 'folksoResponse',
                       'Problem with object creation');
      $this->assertEqual($r->status, 404,
                         'Should not be any ean13 data yet');
@@ -416,7 +416,7 @@ class testOfResource extends  UnitTestCase {
                                    array()),
                    $this->dbc2,
                    $this->fks2);
-     $this->assertIsA($r3, folksoResponse,
+     $this->assertIsA($r3, 'folksoResponse',
                       'This is not my beautiful folksoResponse object');
      $this->assertEqual($r3->status, 200,
                         'ean13 related resources not showing up ' . $r3->status . " ". 
@@ -437,7 +437,7 @@ class testOfResource extends  UnitTestCase {
                      new folksoDBconnect('localhost', 'tester_dude',
                                          'testy', 'testostonomie'),
                      $this->fks);
-     $this->assertIsA($r, folksoResponse,
+     $this->assertIsA($r, 'folksoResponse',
                       'assocEan13 does not return a folksoResponse object');
      $this->assertEqual($r->status, 200,
                         'assocEan13 returns error : ' . $r->status . $r->body());
@@ -501,7 +501,7 @@ class testOfResource extends  UnitTestCase {
                      new folksoDBconnect('localhost', 'tester_dude',
                                          'testy', 'testostonomie'),
                       $this->fks);
-     $this->assertIsA($r, folksoResponse,
+     $this->assertIsA($r, 'folksoResponse',
                       'not returning folksoReponse object');
      $this->assertEqual($r->status, 200,
                         'Error message on ean13 modification' . $r->status . $r->status_message . $r->body());
@@ -543,7 +543,7 @@ class testOfResource extends  UnitTestCase {
                                          'testy', 'testostonomie'),
                       $this->fks);
 
-     $this->assertIsA($r, folksoResponse,
+     $this->assertIsA($r, 'folksoResponse',
                       'not returning folksoReponse object');
      $this->assertEqual(200, $r->status,
                         sprintf('Error returned on ean deletion %d %s <br/>%s',
@@ -569,7 +569,7 @@ class testOfResource extends  UnitTestCase {
      $q = new folksoQuery(array(), array('folksores' => 'http://example.com/1'),
                           array());
      $r = resPage($q, $this->dbc, $this->fks);
-     $this->assertIsA($r, folksoResponse, 'Prob with ob creation');
+     $this->assertIsA($r, 'folksoResponse', 'Prob with ob creation');
      $this->assertEqual($r->status, 200,
                         'resPage should return 200 status with example.com/1, not: '
                         . $r->status);

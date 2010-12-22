@@ -38,7 +38,7 @@ class testOfuser extends  UnitTestCase {
                     $this->dbc,
                     $this->fks);
 
-     $this->assertIsA($r, folksoResponse,
+     $this->assertIsA($r, 'folksoResponse',
                       'Not getting response object back');
      $this->assertEqual($r->status, 200,         
                         'Not getting 200: ' . $r->status);
@@ -60,7 +60,7 @@ class testOfuser extends  UnitTestCase {
                     $this->dbc,
                     $this->fks);
 
-     $this->assertIsA($r, folksoResponse,
+     $this->assertIsA($r, 'folksoResponse',
                       'Not getting response object back');
      $this->assertEqual($r->status, 200,         
                         'Not getting 200: ' . $r->status);
@@ -82,7 +82,7 @@ class testOfuser extends  UnitTestCase {
                                           array()),
                           $this->dbc,
                           $this->fks);
-     $this->assertIsA($r, folksoResponse,
+     $this->assertIsA($r, 'folksoResponse',
                       'Not getting fkResponse');
      $this->assertEqual($r->status, 200,
                         'Not a 200!: ' . $r->status);
@@ -104,7 +104,7 @@ class testOfuser extends  UnitTestCase {
                                            array()),
                            $this->dbc2,
                            $this->fks);
-     $this->assertIsA($r2, folksoResponse,
+     $this->assertIsA($r2, 'folksoResponse',
                       'Not getting fkResponse this time');
      $this->assertEqual($r2->status, 204,
                         'Unknown tag should throw 204: ' . $r2->status);
@@ -132,7 +132,7 @@ class testOfuser extends  UnitTestCase {
                                         array()),
                         $this->dbc,
                         $this->fks);
-     $this->assertIsA($r, folksoResponse,
+     $this->assertIsA($r, 'folksoResponse',
                       'checkFBuserId is not returning a response object');
      $this->assertEqual($r->status, 200,
                         'Did not find a valid FB user: ' . $r->statusMessage);
@@ -144,7 +144,7 @@ class testOfuser extends  UnitTestCase {
                                          array()),
                          $this->dbc2,
                          $this->fks2);
-     $this->assertIsA($r2, folksoResponse,
+     $this->assertIsA($r2, 'folksoResponse',
                       'checkFBuserId not returning response object on unknown user');
      $this->assertEqual($r2->status, 404,
                         'Incorrect error status for unknown user: ' . $r2->status);
@@ -156,7 +156,7 @@ class testOfuser extends  UnitTestCase {
                                          array()),
                          $this->dbc3,
                          $this->fks3);
-     $this->assertIsA($r3, folksoResponse,
+     $this->assertIsA($r3, 'folksoResponse',
                       'checkFBuserId not returning response object on invalid uid');
      $this->assertEqual($r3->status, 406,
                         'Incorrect error status for unknown user'
@@ -176,7 +176,7 @@ class testOfuser extends  UnitTestCase {
      $r = loginFBuser(new folksoQuery(array(), array(), array()),
                       $this->dbc,
                       $this->fks);
-     $this->assertIsA($r, folksoResponse,
+     $this->assertIsA($r, 'folksoResponse',
                       'Not getting resp obj back from loginFBuser() using '
                       .' already open session');
      $this->assertEqual($r->status, 200,
@@ -185,7 +185,7 @@ class testOfuser extends  UnitTestCase {
      $r2 = loginFBuser(new folksoQuery(array(), array(), array()),
                        $this->dbc, 
                        $this->fks2);
-     $this->assertIsA($r, folksoResponse,
+     $this->assertIsA($r, 'folksoResponse',
                       'Not getting resp obj back from loginFBuser(). '
                      .  'Expecting insufficient data warning (400)');
      $this->assertEqual($r2->status, 400,
@@ -229,7 +229,7 @@ class testOfuser extends  UnitTestCase {
      $r = userSubscriptions(new folksoQuery(array(), array(), array()),
                             $this->dbc,
                             $this->fks);
-     $this->assertIsA($r, folksoResponse,
+     $this->assertIsA($r, 'folksoResponse',
                       "No response obj from userSubscriptions");
      $this->assertEqual($r->status, 204,
                         'Expecting 204 status (no subscriptions for gustav): ' 
@@ -239,7 +239,7 @@ class testOfuser extends  UnitTestCase {
      $r2 = userSubscriptions(new folksoQuery(array(), array(), array()),
                              $this->dbc,
                              $this->fks2);
-     $this->assertIsA($r2, folksoResponse,
+     $this->assertIsA($r2, 'folksoResponse',
                       "No response ob from userSubscriptions with valid subscriptions");
      $this->assertEqual($r2->status, 200,
                          "Should return 200 for valid subscriptions: " . $r2->status);
@@ -253,7 +253,7 @@ class testOfuser extends  UnitTestCase {
                                           array()),
                           $this->dbc,
                           $this->fks);
-     $this->assertIsA($r, folksoResponse,
+     $this->assertIsA($r, 'folksoResponse',
                       "No response object from addSubscription");
      $this->assertEqual($r->status, 200,
                         "Add subscription should be successful: " . $r->status . " "
@@ -280,7 +280,7 @@ class testOfuser extends  UnitTestCase {
      $r = removeSubscription(new folksoQuery(array(), array('folksotag' => 1), array()),
                              $this->dbc,
                              $this->fks);
-     $this->assertIsA($r, folksoResponse,
+     $this->assertIsA($r, 'folksoResponse',
                       'not a response obj');
      $this->assertEqual($r->status, 200,
                        "Expecting 200 on successful subscription removal: "
@@ -307,7 +307,7 @@ class testOfuser extends  UnitTestCase {
      $r = recentlyTagged(new folksoQuery(array(), array(), array()),
                          $this->dbc,
                          $this->fks);
-     $this->assertIsA($r, folksoResponse, "ob prob");
+     $this->assertIsA($r, 'folksoResponse', "ob prob");
      $this->assertEqual($r->status, 200, "Not getting 200: "
                         . $r->status . " " . $r->statusMessage . " " 
                         . $r->errorBody());
@@ -328,7 +328,7 @@ class testOfuser extends  UnitTestCase {
                                                        'folksosetcv' => 'Tout'), array()),
                         $this->dbc,
                         $this->fks);
-     $this->assertIsA($r, folksoResponse, "ob prob");
+     $this->assertIsA($r, 'folksoResponse', "ob prob");
      $this->assertEqual($r->status, 200,
                         "Expected 200: " . $r->status . " " . $r->statusMessage
                         . " " . $r->errorBody());
@@ -350,7 +350,7 @@ class testOfuser extends  UnitTestCase {
      $r = getUserData(new folksoQuery(array(), array(), array()),
                       $this->dbc, 
                       $this->fks);
-     $this->assertIsA($r, folksoResponse, "ob prob");
+     $this->assertIsA($r, 'folksoResponse', "ob prob");
      $this->assertEqual($r->status, 200,
                         "Error, expected 200: " . $r->status . " " . $r->statusMessage
                         . " " . $r->errorBody());
@@ -396,7 +396,7 @@ class testOfuser extends  UnitTestCase {
                                           array('folksouid' => 'gustav-2010-001')),
                           $this->dbc,
                           $this->fks);
-     $this->assertIsA($r, folksoResponse, "ob prob");
+     $this->assertIsA($r, 'folksoResponse', "ob prob");
      $this->assertEqual($r->status, 200, 
                         "Status " . $r->status . ", expecting 200: "
                         . $r->statusMessage . " " . $r->error_body);

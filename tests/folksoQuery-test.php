@@ -106,7 +106,7 @@ got: ' . $q4->get_param('cv'));
     $q = new folksoQuery(array('REQUEST_METHOD' => 'GET'),
                          array('folksores' => 1234),
                          array());
-    $this->assertIsA($q, folksoQuery,
+    $this->assertIsA($q, 'folksoQuery',
                      'Problem with object creation');
     $this->assertEqual($q->method(), 'get',
                        'Reporting incorrect method');
@@ -128,7 +128,7 @@ got: ' . $q4->get_param('cv'));
     $q = new folksoQuery(array('HTTP_ACCEPT' => 'application/atom+xml'),
                          array('folksotag' => 'tagone'),
                          array());
-    $this->assertIsA($q, folksoQuery,
+    $this->assertIsA($q, 'folksoQuery',
                      'Problem with object creation using atom HTTP_ACCEPT');
     $this->assertEqual($q->content_type(), 'xml',
                        'application/atom+xml not giving "xml" as $q->content_type()'); 
@@ -141,7 +141,7 @@ got: ' . $q4->get_param('cv'));
     $q = new folksoQuery(array(),
                          array(),
                          array());
-    $this->assertIsA($q, folksoQuery, 'Object creation failed');
+    $this->assertIsA($q, 'folksoQuery', 'Object creation failed');
     
     $this->assertEqual($q->parse_content_type('text/xml'),
                        'xml',
@@ -157,7 +157,7 @@ got: ' . $q4->get_param('cv'));
     $q = new folksoQuery(array(),
                          array('folksofeed' => 'atom'),
                          array());
-    $this->assertIsA($q, folksoQuery, 'Object creation failed');
+    $this->assertIsA($q, 'folksoQuery', 'Object creation failed');
     $this->assertEqual($q->fk_content_type, 'xml',
                        'fk_content_type not getting set with atom query');
     $this->assertEqual($q->subType(), 'atom',
@@ -260,7 +260,7 @@ got: ' . $q4->get_param('cv'));
 
     $best1 = $q->chooseContentType(array('xml' => array($xml, $atom),
                                          'html' => array($html)));
-    $this->assertIsA($best1, folksoQueryAcceptType,
+    $this->assertIsA($best1, 'folksoQueryAcceptType',
                      'chooseContentType should return a folksoQueryAcceptType object');
     $this->assertEqual($best1->accept(), 'application/atom+xml',
                        'Should prefer atom here, not: ' . $best1->accept());
@@ -272,7 +272,7 @@ got: ' . $q4->get_param('cv'));
 
     $best2 = $q->chooseContentType(array('text' => array($text),
                                          'html' => array($html2)));
-    $this->assertIsA($best2, folksoQueryAcceptType,
+    $this->assertIsA($best2, 'folksoQueryAcceptType',
                      'chooseContentType does not return a fkQaT obj');
     /*    $this->assertEqual($best2->accept(), 'text/text',
           'Should prefer text/text here');*/
@@ -308,7 +308,7 @@ got: ' . $q4->get_param('cv'));
     $q5 = new folksoQuery(array(), array(), array());
     $firef = $q5->buildAcceptArray('text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8');
     $fireChoose = $q5->chooseContentType($firef);
-    $this->assertIsA($fireChoose, folksoQueryAcceptType,
+    $this->assertIsA($fireChoose, 'folksoQueryAcceptType',
                      'Firefox accept: chooseContentType not returning fkQaT obj');
     $this->assertEqual($fireChoose->accept(), 'text/html',
                        'Real firefox 3.6 accept header should evaluate to text/html, not: ' 

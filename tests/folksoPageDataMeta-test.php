@@ -9,7 +9,7 @@ class testOffolksoPageDataMeta extends  UnitTestCase {
 
   function testBasic () {
     $m = new folksoPageDataMeta();
-    $this->assertIsA($m, folksoPageDataMeta);
+    $this->assertIsA($m, 'folksoPageDataMeta);'
     $this->assertTrue(is_array($m->array));
   }
 

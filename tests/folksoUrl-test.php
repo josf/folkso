@@ -8,7 +8,7 @@ class testOffolksoUrl extends  UnitTestCase {
 
    function testBase () {
      $u = new folksoUrl("http://example.org", "Bogus");
-     $this->assertIsA($u, folksoUrl,
+     $this->assertIsA($u, 'folksoUrl',
                       "new folksoUrl does not return a folksoUrl object");
      $this->assertEqual(
                         $u->get_url(),

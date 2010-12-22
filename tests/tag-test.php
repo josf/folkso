@@ -39,7 +39,7 @@ class testOffolksotag extends  UnitTestCase {
                                        array()),
                        $this->dbc,
                        $this->fks);
-     $this->assertIsA($r, folksoResponse,
+     $this->assertIsA($r, 'folksoResponse',
                       'not creating Response object');
      $this->assertEqual(200, $r->status,
                         'Error returned by headcheck: ' . $r->status . " " .$r->statusMessage . " " . $r->error_body);
@@ -55,7 +55,7 @@ class testOffolksotag extends  UnitTestCase {
                                        array()),
                         $this->dbc,
                         $this->fks);
-     $this->assertIsA($r2, folksoResponse,
+     $this->assertIsA($r2, 'folksoResponse',
                       'Bad resource not returning folksoResponse');
      $this->assertEqual($r2->status, 404,
                         'Not getting 404 for incorrect tag');
@@ -81,7 +81,7 @@ class testOffolksotag extends  UnitTestCase {
                                  array()),
                  $this->dbc,
                  $this->fks);
-     $this->assertIsA($r, folksoResponse,
+     $this->assertIsA($r, 'folksoResponse',
                       'not creating Response object');
      $this->assertEqual(200, $r->status,
                         'Error returned by getTag');
@@ -110,7 +110,7 @@ class testOffolksotag extends  UnitTestCase {
 
 
 
-     $this->assertIsA($r2, folksoResponse,
+     $this->assertIsA($r2, 'folksoResponse',
                       'Problem with object creation');
      $this->assertEqual($r2->status,
                         201,
@@ -141,7 +141,7 @@ class testOffolksotag extends  UnitTestCase {
                                           array()),
                           $this->dbc,
                           $this->fks);
-     $this->assertIsA($r, folksoResponse,
+     $this->assertIsA($r, 'folksoResponse',
                       'problem w/ object creation');
      $this->assertEqual(200, $r->status,
                         sprintf('getting error msg with getTagResources: %d %s ',
@@ -179,7 +179,7 @@ class testOffolksotag extends  UnitTestCase {
                                         array()),
                         $this->dbc,
                         $this->fks);
-     $this->assertIsA($r, folksoResponse,
+     $this->assertIsA($r, 'folksoResponse',
                       'problem w/ object creation');
      $this->assertEqual(200, $r->status,
                         sprintf('getting error msg with fancyResource: %d %s ',
@@ -258,7 +258,7 @@ class testOffolksotag extends  UnitTestCase {
                           array());
      $q->applyOutput = 'atom';
      $r = fancyResource($q, $this->dbc, $this->fks);
-     $this->assertIsA($r, folksoResponse, "Not getting fkResponse obj");
+     $this->assertIsA($r, 'folksoResponse', "Not getting fkResponse obj");
      $this->assertEqual($r->styleSheet, 'atom_fancyResource.xsl',
                         '$r->styleSheet should be atom_fancyResource.xsl, getting: '
                         . $r->styleSheet);
@@ -339,7 +339,7 @@ class testOffolksotag extends  UnitTestCase {
                                       array()),
                       $this->dbc,
                       $this->fks);
-     $this->assertIsA($r, folksoResponse,
+     $this->assertIsA($r, 'folksoResponse',
                       'This is not my beautiful folksoResponse object');
      $this->assertEqual($r->status, 204,
                         'There should not be any related tags: ' . $r->status . $r->body());
@@ -352,7 +352,7 @@ class testOffolksotag extends  UnitTestCase {
                           new folksoDBconnect('localhost', 'hoohaa',
                                               'hoohaa', 'hoohaa'),
                           $this->fks2);
-     $this->assertIsA($baddb, folksoResponse,
+     $this->assertIsA($baddb, 'folksoResponse',
                       'Object creation problem with bad DB');
      $this->assertEqual($baddb->status, 500,
                         'Incorrect http status: ' . $baddb->status);
@@ -367,7 +367,7 @@ class testOffolksotag extends  UnitTestCase {
                                            array()),
                            $this->dbc,
                            $this->fks);
-     $this->assertIsA($r, folksoResponse,
+     $this->assertIsA($r, 'folksoResponse',
                       'problem w/ object creation');
      $this->assertEqual(200, $r->status,
                         sprintf('getting error msg with autocompleteTags: %d %s',
@@ -382,7 +382,7 @@ class testOffolksotag extends  UnitTestCase {
                                    array()),
                    $this->dbc,
                    $this->fks);
-     $this->assertIsA($r, folksoResponse,
+     $this->assertIsA($r, 'folksoResponse',
                       'Problem with object creation');
      $this->assertEqual($r->status, 403,
                         'Michel de Montaigne does not get to merge tags, should get 403 here, not: '
@@ -429,7 +429,7 @@ class testOffolksotag extends  UnitTestCase {
                                     array()),
                     $this->dbc,
                     $this->fks);
-     $this->assertIsA($r, folksoResponse,
+     $this->assertIsA($r, 'folksoResponse',
                       'problem with object creation');
 
      $this->assertEqual($r->status, 401,
@@ -452,7 +452,7 @@ class testOffolksotag extends  UnitTestCase {
                                      array()),
                      $this->dbc2,
                      $this->fks);
-     $this->assertIsA($r2, folksoResponse,
+     $this->assertIsA($r2, 'folksoResponse',
                       'problem with object creation on bad tag delete');
      $this->assertEqual($r2->status, 404,
                         'Not getting correct status (404) on bad tag delete: '
@@ -496,7 +496,7 @@ class testOffolksotag extends  UnitTestCase {
                   $this->dbc,
                   $this->fks);
 
-     $this->assertIsA($r, folksoResponse,
+     $this->assertIsA($r, 'folksoResponse',
                       'problem with object creation');
      $this->assertEqual($r->status, 200,
                         'byalpha not returning 200');
@@ -521,7 +521,7 @@ class testOffolksotag extends  UnitTestCase {
                                     array()),
                     $this->dbc,
                     $this->fks);
-     $this->assertIsA($r, folksoResponse,
+     $this->assertIsA($r, 'folksoResponse',
                       'Problem with object creation');
      $this->assertEqual($r->status, 401,
                         'Anonymous user should fail with 401: ' . $r->status);
@@ -566,7 +566,7 @@ class testOffolksotag extends  UnitTestCase {
      $this->assertEqual($resp->status, 200, "fancy query not returning 200");
      //     print '<pre>fancy' . htmlentities($resp->body()) . '</pre>';
 
-     $this->assertIsA($r, folksoResponse, 'Pb with object creation');
+     $this->assertIsA($r, 'folksoResponse', 'Pb with object creation');
      $this->assertPattern('/<tagpage>/',
                           $r->body(),
                           'XML boilerplate missing from tagPage response');
@@ -590,7 +590,7 @@ class testOffolksotag extends  UnitTestCase {
                                   array()),
                   $this->dbc,
                   $this->fks);
-     $this->assertIsA($r, folksoResponse,
+     $this->assertIsA($r, 'folksoResponse',
                       'problem with object creation');
      $this->assertEqual(200, $r->status,
                         'all tags not returning a 200');

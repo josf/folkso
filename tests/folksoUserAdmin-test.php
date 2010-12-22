@@ -34,7 +34,7 @@ class testOffolksoUserAdmin extends  UnitTestCase {
      $r = getUsersByQuery(new folksoQuery(array(), array(), 
                                           array("folksosearch" => "default: Michel")),
                           $this->dbc, $this->fks);
-     $this->assertIsA($r, folksoResponse,
+     $this->assertIsA($r, 'folksoResponse',
                       "ob prob");
      $this->assertEqual($r->status, 200,
                         "Not getting 200 for getUsersByQuery: " . $r->status . " "
@@ -112,7 +112,7 @@ class testOffolksoUserAdmin extends  UnitTestCase {
                                       array("folksonewright" => "admin",
                                             "folksouser" => "gustav-2010-001")),
                       $this->dbc, $this->fks);
-     $this->assertIsA($r, folksoResponse,
+     $this->assertIsA($r, 'folksoResponse',
                       "Ob prob");
      $this->assertEqual($r->status, 200,
                         "Should have 200 status, not: " . $r->status . " " .

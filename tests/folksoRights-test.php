@@ -17,7 +17,7 @@ class testOffolksoRights extends  UnitTestCase {
 
    function testRights () {
      $dr   = new folksoRight('folkso', 'delete');
-     $this->assertIsA($dr, folksoRight,
+     $this->assertIsA($dr, 'folksoRight',
                       'object creation failed');
     
      $this->assertEqual($dr->getRight(),
@@ -33,10 +33,10 @@ class testOffolksoRights extends  UnitTestCase {
 
    function testStore () {
      $st = new folksoRightStore();
-     $this->assertIsA($st, folksoRightStore,
+     $this->assertIsA($st, 'folksoRightStore',
                       'object creation failed for folksoRightStore');
     $dr   = new folksoRight('folkso', 'delete');
-     $this->assertIsA($dr, folksoRight,
+     $this->assertIsA($dr, 'folksoRight',
                       'object creation failed');
      $this->assertFalse($st->hasRights(),
                         'hasRights not reporting empty store');

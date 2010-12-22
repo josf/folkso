@@ -21,7 +21,7 @@ class testOffolksoDBinteract extends  UnitTestCase {
   
   public function testDBobjCreation () {
     $i = new folksoDBinteract($this->dbc);
-    $this->assertIsA($i, folksoDBinteract, 
+    $this->assertIsA($i, 'folksoDBinteract', 
                      "Object creation failed:");
   }
 
@@ -43,7 +43,7 @@ class testOffolksoDBinteract extends  UnitTestCase {
   public function testMultiQuery () {
     $db = new folksoDBinteract($this->dbc);
     /** actually a test of DBconnect...**/
-    $this->assertIsA($this->dbc->db_obj(), mysqli, 
+    $this->assertIsA($this->dbc->db_obj(), 'mysqli', 
                      "Created object is not a mysql object");
 
     $db->sp_query('select uri_normal as uri from resource where id = 1;'
@@ -60,7 +60,7 @@ class testOffolksoDBinteract extends  UnitTestCase {
                        'Result is not ok on resouce id = 1');
 
     $this->assertNotNull($db->result, 'Null result from query');
-    $this->assertIsA($db->result, mysqli_result, 
+    $this->assertIsA($db->result, 'mysqli_result', 
                      'Not returning a mysqli result object');
     $this->assertTrue(count($db->result_array) == 1,
                       'Incorrect number of elements in $i->result_array');
@@ -79,7 +79,7 @@ class testOffolksoDBinteract extends  UnitTestCase {
 
   public function testLiveQueries () {
     $i = new folksoDBinteract($this->dbc);
-    $this->assertIsA($i, folksoDBinteract, 'Problem with object creation');
+    $this->assertIsA($i, 'folksoDBinteract', 'Problem with object creation');
     $this->assertFalse($i->db_error(),
                        'Database connection error'
                        );

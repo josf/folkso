@@ -17,9 +17,9 @@ class testOffolksoDataJson extends  UnitTestCase {
 
    function testBasic () {
      $dj   = new folksoDataJson(array('this', 'that'));
-     $this->assertIsA($dj, folksoDataJson,
+     $this->assertIsA($dj, 'folksoDataJson',
                       'object creation failed');
-     $this->assertIsA($dj, folksoDataDisplay,
+     $this->assertIsA($dj, 'folksoDataDisplay',
                       'inheritance failing');
      
      $line = $dj->line('Hiii', 'Haaa');

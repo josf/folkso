@@ -9,16 +9,16 @@ class testOffolksoRelatedTags extends  UnitTestCase {
    function testBase () {
      $rt = new folksoRelatedTags(new folksoFabula(),
                                  'tagone');
-     $this->assertIsA($rt, folksoRelatedTags,
+     $this->assertIsA($rt, 'folksoRelatedTags',
                       'Object creation failing');
 
-     $this->assertIsA($rt, folksoTagdata,
+     $this->assertIsA($rt, 'folksoTagdata',
                       'Problem with inheritance');
 
      $r2 = new folksoRelatedTags(new folksoFabula(),
                                  8170);
 
-     $this->assertIsA($r2, folksoRelatedTags,
+     $this->assertIsA($r2, 'folksoRelatedTags',
                       'Object creation failing with numeric tag');
 
      $r2->getData();
@@ -34,7 +34,7 @@ class testOffolksoRelatedTags extends  UnitTestCase {
 
      $r3 = new folksoRelatedTags(new folksoFabula(),
                                  "poesie");
-     $this->assertIsA($r3, folksoRelatedTags,
+     $this->assertIsA($r3, 'folksoRelatedTags',
                       "Constructor problem with string tag arg");
      $r3->getData();
      $this->assertPattern('/autobiographie/', $r3->xml,

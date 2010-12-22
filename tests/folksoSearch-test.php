@@ -18,10 +18,10 @@ class testOffolksoSearch extends  UnitTestCase {
    function testSearchQueryParser () {
 
          $kw = new folksoSearchKeyWordSetUserAdmin();
-         $this->assertIsA($kw, folksoSearchKeyWordSetUserAdmin,
+         $this->assertIsA($kw, 'folksoSearchKeyWordSetUserAdmin',
                           "keyword class not correctly instantiated");
          $s = new folksoSearchQueryParser($kw);
-         $this->assertIsA($s, folksoSearchQueryParser,
+         $this->assertIsA($s, 'folksoSearchQueryParser',
                           "ob prob");
 
 
@@ -50,7 +50,7 @@ class testOffolksoSearch extends  UnitTestCase {
 
    function testSearchKeyWord () {
      $kw = new folksoSearchKeyWordSetUserAdmin();
-     $this->assertIsA($kw, folksoSearchKeyWordSetUserAdmin,
+     $this->assertIsA($kw, 'folksoSearchKeyWordSetUserAdmin',
                       "keyword class not correctly instantiated");
      $this->assertFalse($kw->isKeyWord("bob"),
                         "should return false for unregistered keyword");

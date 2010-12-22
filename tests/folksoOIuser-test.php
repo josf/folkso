@@ -24,7 +24,7 @@ class testOffolksoOIuser extends  UnitTestCase {
 
   function testUser () { // tests that used to be in folksoUser-test
     $u   = new folksoOIuser($this->dbc);
-    $this->assertIsA($u, folksoUser,
+    $this->assertIsA($u, 'folksoUser',
                      'object creation failed');
 
     $this->assertFalse($u->writeable,
@@ -78,9 +78,9 @@ class testOffolksoOIuser extends  UnitTestCase {
 
    function testfolksoOIuser () {
          $oi   = new folksoOIuser($this->dbc);
-         $this->assertIsA($oi, folksoOIuser,
+         $this->assertIsA($oi, 'folksoOIuser',
                                'object creation failed');
-         $this->assertIsA($oi, folksoUser,
+         $this->assertIsA($oi, 'folksoUser',
                           'object hierarchy problem. folksoOIusers should be folksoUser objs');
          $this->assertFalse($oi->exists('http://idont-exist.com'),
                             'bad oid url should return false');
@@ -115,7 +115,7 @@ class testOffolksoOIuser extends  UnitTestCase {
          $gus = new folksoOIuser($this->dbc3);
          $zork = $gus->userFromLogin('http://myspace.com/gustav');
 
-         $this->assertIsA($zork, folksoOIuser,
+         $this->assertIsA($zork, 'folksoOIuser',
                           'userFromLogin should not return false');
          $this->assertTrue($gus->Writeable(),
                            'userFromLogin does not fetch a writeable user' );
@@ -207,7 +207,7 @@ class testOffolksoOIuser extends  UnitTestCase {
      $u = new folksoOIuser($this->dbc);
      $u->userFromLogin('http://flickr.com/marcelp', 'folkso', 'tag');
 
-     $this->assertIsA($u, folksoOIuser,
+     $this->assertIsA($u, 'folksoOIuser',
                       'Problem with object creation');
      $this->assertEqual($u->urlBase, 'marcelp',
                         'Incorrect urlBase with userFromLogin');

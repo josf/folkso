@@ -8,7 +8,7 @@ class testOffolksoQueryBuild extends UnitTestCase {
 
   function testBasic () {
     $qq = new folksoQueryBuild();
-    $this->assertIsA($qq, folksoQueryBuild);
+    $this->assertIsA($qq, 'folksoQueryBuild);'
   }
 
   function testBuild () {

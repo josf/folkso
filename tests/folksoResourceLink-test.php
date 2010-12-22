@@ -11,7 +11,7 @@ class testOffolksoResourceLink extends  UnitTestCase {
     $loc->setServerUrl('bobworld.com');
 
     $rl = new folksoResourceLink(234, $loc);
-    $this->assertIsA($rl, folksoResourceLink, 
+    $this->assertIsA($rl, 'folksoResourceLink', 
                      "Problem with folksoResourceLink object creation");
     $this->assertEqual($rl->identifier, 234, 'Problem with setting $identifier');
 

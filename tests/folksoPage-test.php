@@ -28,7 +28,7 @@ class testOffolksoPage extends  UnitTestCase {
 
   function testKeyword_list () {
     $page = new folksoPage(26663);
-    $this->assertIsA($page, folksoPage, "Page creation from number failed");
+    $this->assertIsA($page, 'folksoPage', "Page creation from number failed");
     $this->assertEqual($page->url, 26663, 
                        "Page url property  incorrect w/ number url");
     
@@ -44,31 +44,31 @@ class testOffolksoPage extends  UnitTestCase {
        These should be tested in the PageDataMeta tests.
 
     $page->pdata->prepareMetaData();
-    $this->assertIsA($page->pdata->mt, folksoPageDataMeta);
+    $this->assertIsA($page->pdata->mt, 'folksoPageDataMeta);'
     $this->assertTrue((is_string($page->keyword_list()) &&
                        (strlen($page->keyword_list()) > 10)));
     $this->assertPattern('/<meta/', $page->meta_keywords());
     $this->assertTrue((is_string($page->meta_keywords()) &&
                        (strlen($page->meta_keywords()) > 10)));
     $this->assertTrue(is_string($page->DC_description_list()));
-    $this->assertIsA($page->pdata->ptags, folksoPageTags);
-    $this->assertIsA($page->pdata->ptags, folksoTagdata); // inheritance works!
+    $this->assertIsA($page->pdata->ptags, 'folksoPageTags);'
+    $this->assertIsA($page->pdata->ptags, 'folksoTagdata); // inheritance works!'
 
     **/
 
     $p2 = new folksoPage('http://fabula.org/actu_meta_test.php');
-    $this->assertIsA($p2, folksoPage, "Failed to create fKPage object from real url");
+    $this->assertIsA($p2, 'folksoPage', "Failed to create fKPage object from real url");
     $p3 = new folksoPage(38065);
-    $this->assertIsA($p3, folksoPage, "Failed to create fkPage object from number");
+    $this->assertIsA($p3, 'folksoPage', "Failed to create fkPage object from number");
     /*    $p2->pdata->prepareMetaData();
           $p3->pdata->prepareMetaData();
-    $this->assertIsA($p2->pdata, folksoPageData, 
+    $this->assertIsA($p2->pdata, 'folksoPageData', 
                      "Failed to create pageData object using prepareMetaData");
-    $this->assertIsA($p2->pdata->mt, folksoPageDataMeta);
-    $this->assertIsA($p2->pdata->ptags, folksoPageTags);
+    $this->assertIsA($p2->pdata->mt, 'folksoPageDataMeta);'
+    $this->assertIsA($p2->pdata->ptags, 'folksoPageTags);'
     $this->assertTrue($p2->pdata->ptags->is_valid(), 
                       "Valid request for page tags?");
-    $this->assertIsA($p2->pdata->ptags->xml_DOM(), DOMDocument);
+    $this->assertIsA($p2->pdata->ptags->xml_DOM(), 'DOMDocument);'
     $this->assertTrue(is_string($p2->pdata->ptags->xml));
 
     // url
@@ -93,13 +93,13 @@ class testOffolksoPage extends  UnitTestCase {
 
   function testTagRes () {
     $page = new folksoPage(5775);
-    $this->assertIsA($page, folksoPage);
+    $this->assertIsA($page, 'folksoPage);'
     $this->assertEqual($page->url, 5775);
 
 
 
            $html = $page->TagResources();
-    $this->assertIsA($page->tr, folksoTagRes);
+    $this->assertIsA($page->tr, 'folksoTagRes);'
 
     /**     Should be tested in TagResources-test
     $this->assertTrue($page->tr->is_valid());
@@ -110,7 +110,7 @@ class testOffolksoPage extends  UnitTestCase {
 
   function testClouds () {
     $page = new folksoPage('fabula.org/actualites/article20927.php');
-    $this->assertIsA($page, folksoPage);
+    $this->assertIsA($page, 'folksoPage);'
 
     /** tests disabled: depend on external data
     $cloud = $page->basic_cloud();
@@ -145,7 +145,7 @@ class testOffolksoPage extends  UnitTestCase {
 
   function testEan13 () {
     $page = new folksoPage(38065);
-    $this->assertIsA($page, folksoPage);
+    $this->assertIsA($page, 'folksoPage);'
     $dc = $page->ean13_dc_identifier();
     /*    $this->assertTrue(is_string($dc));
           $this->assertPattern('/<meta\s+/', $dc);*/
@@ -176,7 +176,7 @@ class testOffolksoPage extends  UnitTestCase {
     $s->startSession('gustav-2010-001', true);
     $page = new folksoPage('http://bogus.example.com', $s->sessionId);
 
-    $this->assertIsA($page->user, folksoUser,
+    $this->assertIsA($page->user, 'folksoUser',
                      '$page->user should be a folksoUser object');
     $page->user->userFromUserId('gustav-2010-001');
 
@@ -195,11 +195,11 @@ class testOffolksoPage extends  UnitTestCase {
 
     $page = new folksoPage('http://bogus.example.com', $s->sessionId);
 
-    $this->assertIsA($page, folksoPage,
+    $this->assertIsA($page, 'folksoPage',
                      "Object construction with session id failed");
-    $this->assertIsA($page->session, folksoSession,
+    $this->assertIsA($page->session, 'folksoSession',
                      "No session object created on fkPage construction");
-    $this->assertIsA($page->dbc, folksoDBconnect,
+    $this->assertIsA($page->dbc, 'folksoDBconnect',
                      'Not initialzing fkDBconnect object on fkPage construction');
 
     $this->assertTrue($page->session->sessionId,
@@ -212,7 +212,7 @@ class testOffolksoPage extends  UnitTestCase {
                        $s->sessionId,
                        'fkPage does not have the same session id that we gave it');
 
-    $this->assertIsA($page->user, folksoUser,
+    $this->assertIsA($page->user, 'folksoUser',
                      'Not initializing fkUser obj at $page->user');
     $this->assertEqual($page->user->userid, 'gustav-2010-001',
                        "Not retrieving the correct userid");

@@ -27,9 +27,9 @@ class testOffolksoSession extends  UnitTestCase {
                                   new folksoDBconnect( 'localhost', 'tester_dude', 
                                                       'testy', 'testostonomie'));
 
-         $this->assertIsA($s, folksoSession,
+         $this->assertIsA($s, 'folksoSession',
                                'object creation failed');
-         $this->assertIsA($s->dbc, folksoDBconnect,
+         $this->assertIsA($s->dbc, 'folksoDBconnect',
                           'DBconnection object is not there');
 
 
@@ -100,7 +100,7 @@ class testOffolksoSession extends  UnitTestCase {
          $this->assertTrue($s->checkSession($sess2),
                            'session not valid (sess2)');
          $u = $s->userSession($sess2);
-         $this->assertIsA($u, folksoUser,
+         $this->assertIsA($u, 'folksoUser',
                           'userSession not returning folksoUser object');
 
          $this->assertEqual($u->firstName, 'Gustave',
@@ -110,14 +110,14 @@ class testOffolksoSession extends  UnitTestCase {
 
    function testRights () {
      $s = new folksoSession($this->dbc);
-     $this->assertIsA($s, folksoSession,
+     $this->assertIsA($s, 'folksoSession',
                       'No point in testing if we do not have a fkSession obj');
      $sid = $s->startSession('marcelp-2010-001', true);
      $u = $s->userSession($sid, 'folkso', 'tag');
      $this->assertTrue($u, 'userSession returns false');
-     $this->assertIsA($u, folksoUser,
+     $this->assertIsA($u, 'folksoUser',
                       'userSession w/ args not returning a fkUser obj');
-     $this->assertIsA($u->rights, folksoRightStore,
+     $this->assertIsA($u->rights, 'folksoRightStore',
                       '$u->rights should be a folksoRightStore object');
      $this->assertTrue($u->rights->hasRights(),
                        'user right store is still empty');

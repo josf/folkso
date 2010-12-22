@@ -9,17 +9,17 @@ class testOffolksoPageData extends  UnitTestCase {
   function testBasic () {
 
     $pg = new folksoPageData(20634);
-    $this->assertIsA($pg, folksoPageData,
+    $this->assertIsA($pg, 'folksoPageData',
                      'Problem with object construction');
 
     $pg->prepareMetaData();
-    $this->assertIsA($pg->mt, folksoPageDataMeta,
+    $this->assertIsA($pg->mt, 'folksoPageDataMeta',
                      'Did not create a folksoPageDataMeta object');
-    $this->assertIsA($pg->ptags, folksoPagetags,
+    $this->assertIsA($pg->ptags, 'folksoPagetags',
                      'Did not create a folksoPagetags object');
 
     $pg->prepareCloud();
-    $this->assertIsA($pg->cloud, folksoCloud,
+    $this->assertIsA($pg->cloud, 'folksoCloud',
                      'Could not build folksoCloud object');
     $this->assertTrue(strlen($this->cloud) > 100,
                       'Cloud has less than 100 chars of data');

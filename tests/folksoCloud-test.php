@@ -9,7 +9,7 @@ class testOffolksoCloud extends  UnitTestCase {
   function testCloud () {
     $loc = new folksoFabula();
     $cl  = new folksoCloud($loc, 20634);
-    $this->assertIsA($cl, folksoCloud,
+    $this->assertIsA($cl, 'folksoCloud',
                      'Problem on object construction');
     $this->assertEqual($cl->url, 20634,
                        'url not being assigned correctly.');
