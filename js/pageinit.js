@@ -234,7 +234,7 @@ fK.fb.onLogin = function() {
                             $("#logout").hide();
                             $(".logout-link").hide();
                             $(".fKTagbutton", fK.cf.container).hide();
-                            $("input.fKTaginput").hide();
+//                            $("input.fKTaginput").hide();
                             $(".fKLoginButton").click(setupLogin());
 //                            $("#login-tabs").hide();
                             $("a.firstLogin").show();
