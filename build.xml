@@ -83,7 +83,7 @@
 
 
 <target name="local-install-tests"
-        depends="build-tests">
+        depends="build-tests,local-libs.dev">
   <copy todir="${test.dir}">
     <fileset dir="${dist}/tests/"
              includes="*.php,dbinit.inc"/>
