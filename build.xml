@@ -211,6 +211,13 @@
 
 
   <target 
+      name="js.prod-no-min"
+      depends="js.preprocess.prod,js.minify,js.folksonomie.concat">
+    <copy todir="${dist}/js" 
+          file="${build}/js/jquery.folksodeps.js"/>
+  </target>
+
+  <target 
       name="js.prod" 
       depends="js.minify,js.folksonomie.concat">
   </target>
@@ -221,6 +228,7 @@
                includes="jquery.*.js"/>
     </concat>
   </target>
+
 
 
   <target name="js.prod.staging" depends="init,js.deps">
@@ -505,6 +513,7 @@
     </scp>
   </target>
 
+
   <target name="remote.dev.js.nolog" depends="js.dev.nolog">
     <scp remoteTodir="${rem.user}@${rem.host}:${rem.js}"
          keyfile="${loc.keyfile}"
@@ -513,6 +522,7 @@
                includes="*.js"/>
     </scp>
   </target>
+
 
   <target name="remote.prod.js" depends="js.prod">
     <scp remoteTodir="${rem.user}@${rem.host}:${rem.js}"
