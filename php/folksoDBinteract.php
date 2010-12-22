@@ -154,7 +154,6 @@ class folksoDBinteract {
 
     /** some SQL operations do not return result sets. In this case we bail. **/
     if ($this->result instanceof MySQLi_Result) {
-
       $this->rowCount = $this->result->num_rows;
     }
 
@@ -168,7 +167,7 @@ class folksoDBinteract {
                                  $this->db->error);
       return;
     }
-    elseif ($this->result->num_rows == 0) {
+    elseif ($this->rowCount == 0) {
       $this->result_status = 'NOROWS';
     }
     else {
