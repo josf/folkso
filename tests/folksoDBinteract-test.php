@@ -20,9 +20,19 @@ class testOffolksoDBinteract extends  UnitTestCase {
 
   
   public function testDBobjCreation () {
+
+    $this->assertIsA($this->dbc, 'folksoDBconnect', 
+                     'this->dbc is not a fkDBconnect object');
+    $this->assertIsA($this->dbc2, 'folksoDBconnect', 
+                     'this->dbc2 is not a fkDBconnect object');
+    $this->assertIsA($this->dbc3, 'folksoDBconnect', 
+                     'this->dbc3 is not a fkDBconnect object');
+
     $i = new folksoDBinteract($this->dbc);
     $this->assertIsA($i, 'folksoDBinteract', 
                      "Object creation failed:");
+    $this->assertIsA($i->db, 'mysqli',
+                     '$i->db is not a mysqli object');
   }
 
   public function testDBConnectError () {
