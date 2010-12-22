@@ -399,7 +399,7 @@
            failonerror="yes">
       <arg value="-f"/>
       <arg value="./sql/procedure-perms.awk"/>
-      <arg line="user=folkso"/>
+      <arg line="user=tester_dude"/>
       <fileset file="${dist}/sql/procedures.sql"/>
     </apply>
 
