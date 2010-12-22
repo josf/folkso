@@ -82,7 +82,7 @@ class testOffolksoDBinteract extends  UnitTestCase {
                        1,
                        'Should have one additional result set');
     $this->assertIsA($db->additional_results[0], 
-                     mysqli_result,
+                     'mysqli_result',
                      '2nd result set is not a mysql_result object');
 
   }
@@ -98,7 +98,7 @@ class testOffolksoDBinteract extends  UnitTestCase {
     $i->query($sql);
 
     $this->assertIsA($i->result, 
-                     mysqli_result, 
+                     'mysqli_result', 
                      '$i->result is not a mysqli_result object'
                      );
 
