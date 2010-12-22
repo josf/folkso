@@ -9,8 +9,16 @@ function test_db_init($megadynDefault = 10) {
                   'note', 'replace_characters', 'resource',
                   'tag',  
                   'metatag', 'user_data', 'fb_ids', 'oid_urls', 'sessions', 'users_rights', 'users' );
+
   $dbc = new folksoDBconnect('localhost', 'tester_dude', 'testy', 'testostonomie');
   $i = new folksoDBinteract($dbc);
+
+  if (! $i->db instanceof mysqli) {
+    trigger_error("No mysqli object, cannot set things up.",
+                  E_USER_ERROR);
+  }
+
+
   
   /** start over **/
    foreach ($tables as $tab) {
