@@ -210,7 +210,7 @@ fK.fb.onLogin = function() {
 
                         var hostAndPath = '/tags/';
                         fK.init({
-                                  autocompleteUrl: hostAndPath + 'tagcomplete.php',
+                                  autocompleteUrl: '/tags/tagcomplete.php',
                                   postResUrl: hostAndPath + 'resource.php',
                                   getResUrl: hostAndPath + 'resource.php',
                                   getUserUrl: hostAndPath + 'user.php',
@@ -248,12 +248,12 @@ fK.fb.onLogin = function() {
                             notLogged();
                         }
 
-
                         $("input.fKTaginput")
                             .autocomplete({source: fK.cf.autocompleteUrl,
                                           minLength: 2});
+
                         $("input.fKTaginput", $("#newsubscriptions"))
-                            .autocomplete({source: autoCompleter,
+                            .autocomplete({source: fK.cf.autocompleteUrl,
                                           minLength: 2});
 
 

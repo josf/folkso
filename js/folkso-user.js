@@ -8,7 +8,7 @@ $(document).ready(
         /* CLAG(console.log("document.ready starting: from folkso-user");) */
         var hostAndPath = '/tags/';
         fK.init({
-//                    autocompleteUrl: hostAndPath + 'tagcomplete.php',
+                    autocompleteUrl: hostAndPath + 'tagcomplete.php',
                     postResUrl: hostAndPath + 'resource.php',
                     getResUrl: hostAndPath + 'resource.php',
                     getUserUrl: hostAndPath + 'user.php',
