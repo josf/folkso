@@ -3,7 +3,7 @@
 BEGIN { FS="[ (]"}
 
 tolower($0) ~ /create (function|procedure)/ {
-    print "grant execute on " tolower($2) " " $3 " to 'folkso'@'localhost';"
+    print "grant execute on " tolower($2) " " $3 " to '" user "'@'localhost';"
 }
 
 
