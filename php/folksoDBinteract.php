@@ -81,6 +81,12 @@ class folksoDBinteract {
     $this->result_array = array();
     $this->db = $dbc->db_obj();
     $this->db->set_charset('utf8');
+
+    if (! $this->db instanceof mysqli) {
+      throw new dbConnectionException("DBinteract: connect failed, not a connection object.", 
+                                      '', '');
+    }
+
     if ( mysqli_connect_errno()) {
       //      $this->connect_error = 
       throw new dbConnectionException("Connect failed: ".
