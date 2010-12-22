@@ -78,4 +78,4 @@ class folksoDBconnect {
     }
   }
 } //end of class
-?>
+
