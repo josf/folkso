@@ -105,6 +105,7 @@ function autocomplete (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks)
     }
     else {
       $r->t(json_encode($preJsonArray));
+      $r->t("\n");
       return $r;
     }
     break;
