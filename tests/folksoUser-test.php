@@ -11,7 +11,7 @@ class testOffolksoUser extends  UnitTestCase {
 
 
   function setUp() {
-    test_db_init();
+    //    test_db_init();
     /** not using teardown because this function does a truncate
         before starting. **/
      $this->dbc = new folksoDBconnect('localhost', 'tester_dude', 
@@ -57,8 +57,6 @@ class testOffolksoUser extends  UnitTestCase {
                        'Four letter urlbase should be rejected');
     $this->assertTrue($u->validUrlbase('abcde'),
                       'Five letter urlbase should be accepted');
-                      
-
   }
 
 
@@ -89,6 +87,7 @@ class testOffolksoUser extends  UnitTestCase {
 
 
    function testWithDB (){
+     test_db_init();
      $u = new folksoUser($this->dbc);
      $u->loadUser(array( 
                         'urlbase' => 'proust.marcel',
@@ -111,9 +110,10 @@ class testOffolksoUser extends  UnitTestCase {
    }
 
    function testRights () {
+     test_db_init();
      $u = new folksoUser($this->dbc);
      $this->assertIsA($u->rights, 
-                      folksoRightStore,
+                      'folksoRightStore',
                       'No fkRightStore at $u->rights');
 
      $u->loadUser(array('userid' => 'marcelp-2010-001',
@@ -125,11 +125,11 @@ class testOffolksoUser extends  UnitTestCase {
                         "user marcelp should not have right 'admin'");
      $this->assertTrue($u->checkUserRight("folkso", "create"),
                        "user marcelp should have right 'create'");
-                                           
 
    }
 
    function testExists() {
+     test_db_init();
      $u = new folksoUser($this->dbc);
      $this->assertTrue($u->exists('marcelp-2010-001'));
      $this->assertFalse($u->exists('ffffffff-2010-001'),
@@ -138,6 +138,7 @@ class testOffolksoUser extends  UnitTestCase {
    }
 
    function testUserFromUserId () {
+     test_db_init();
      $u = new folksoUser($this->dbc);
      $u->userFromUserId('marcelp-2010-001');
 
@@ -149,6 +150,7 @@ class testOffolksoUser extends  UnitTestCase {
    }
 
    function testDeleteUserWithTags () {
+     test_db_init();
      $u = new folksoUser($this->dbc);
      $this->assertTrue($u->userFromUserId('gustav-2010-001'),
                        "Failed to load gustav user ob");
@@ -165,6 +167,7 @@ class testOffolksoUser extends  UnitTestCase {
    }
 
    function testStoreUserData () {
+     test_db_init();
      $u = new folksoUser($this->dbc);
      $u->userFromUserId('gustav-2010-001');
      $this->assertEqual($u->firstName, 'Gustave',
@@ -193,6 +196,7 @@ class testOffolksoUser extends  UnitTestCase {
    }
 
    function testStoreCv () {
+     test_db_init();
      $u = new folksoUser($this->dbc);
      $u->userFromUserId('gustav-2010-001');
      $this->assertEqual($u->firstName, 'Gustave',
