@@ -44,25 +44,36 @@ require("/var/www/dom/fabula/commun3/head_dtd.php");
 print "<html>\n<head>";
 
 require("/var/www/dom/fabula/commun3/head_meta.php");
+?>
+
+<link rel="stylesheet" href="css/blueprint/screen.css" type="text/css" media="screen, projection"/>
+<link rel="stylesheet" href="css/blueprint/print.css" type="text/css" media="print"/>	
+<!--[if lt IE 8]><link rel="stylesheet" href="css/blueprint/ie.css" type="text/css" media="screen, projection"><![endif]-->
+
+
+
+<?php
+
 require("/var/www/dom/fabula/commun3/head_css.php");
 
 ?>
 
 <style>
 a.taglink {
-font-size: 12pt;
- }
+    font-size: 12pt;
+}
+
 a.unsub {
-font-size: 8pt;
+    font-size: 8pt;
 }
 
 ul.fav-list li {
-display: inline;
-  right-margin: 0.2em;
+    display: inline;
+    right-margin: 0.2em;
 }
 
 ul.fav-list a {
-  font-size: 10pt;
+    font-size: 10pt;
 }
 .add-user-data {
   display: none;
@@ -86,6 +97,42 @@ div.doc .opentext, div.doc .closetext {
 div.doc .doc-content {
   background-color: #f6e346;
   border: 2px solid black;
+}
+
+div#title-and-docs {
+    height: 300px;
+    padding-left: 220px;
+    background: url('/tags/images/taglogo.png') 0% 40%;
+    background-repeat: no-repeat;
+}
+#title-and-docs h1 {
+    font-size: x-large;
+    font-weight: bold;
+    padding-top: 1em;
+}
+
+emph {
+    font-style: italic;
+}
+
+div#docGenerale {
+    border: 1px dotted gray;
+    padding-top: 5px;
+    padding-left: 8px;
+    padding-right: 8px;
+    padding-bottom: 5px;
+}
+
+div#docContainer {
+    padding-left: 1.5em;
+}
+div#docGenerale p {
+    font-size: 9pt;
+}
+
+span.moretext { 
+    display:none;
+}
 
 }
 
@@ -153,6 +200,15 @@ require("/var/www/dom/fabula/commun3/head_javascript_folkso.php");
                           $("div.doc-content", $doc).hide();
                   });
               });
+
+          $("a.morelink").click(
+                                function(ev) {
+                                    ev.preventDefault();
+                                    var $link = $(this);
+                                    var $more = $($link.siblings("span.moretext")[0]);
+                                    $more.toggle();
+                                });
+
           $(fK.events).bind('loggedOut',
                          function() {
                            $(".not-logged").show();
@@ -186,23 +242,32 @@ require("/var/www/dom/fabula/commun3/html_start.php");
 
 <div id="title-and-docs">
 
+
   <!-- Documentation block, javascript enabled -->
 <h1>Espace tags</h1>
-<div class="doc">
-  <a class="opentext" href="#">Qu'est-ce que c'est&#160;?</a>
-  <a class="closetext" href="#">Fermer</a>
-  <div class="doc-content">
-  <p>
-  Cette page vous permet de choisir et suivre les <em>tags</em> 
-  qui vous intéressent, et de gérer les informations que vous souhaitez 
-  rendre publiques.
-   </p>
-  <p>Pour ajouter un nouveau tag, il suffit d'en 
-  saisir les premières lettres dans le champ <strong>Vous abonner 
-  à de nouveaux tags</strong>. 
-  </p>
-  </div>
+<div id="docContainer">
+<div id="docGenerale" class="quiet">
+<p>
+<strong>Qu'est-ce que c'est ?</strong> Cette page vous permet de choisir des 
+  <emph>tags</emph> qui vous intéressent, et de les <emph>suivre</emph> : chaque fois
+  que quelqu'un applique l'un  de vos <emph>tags</emph><a href="#" class="morelink">(suite)</a><span class="moretext">  à une nouvelle ressource sur Fabula 
+(une annonce dans les nouvelles, un texte de l'Atelier,  un compte-rendu dans Acta Fabula, etc.),
+un lien vers la ressource apparaîtra dans la liste <emph>Vos ressources</emph>, à droite.</span>
+</p>
+<p>
+Vous pouvez également gérer vos informations personnelles ici, si vous souhaitez 
+publiquement, et connaître les <emph>tags</emph> que vous appliquez le plus souvent.
+</p>
+<p><strong>Qu'est-ce qu'un <emph>tag</emph> ?</strong> Le terme anglais <emph>tag</emph> 
+désigne une étiquette ou <strong>mot clé</strong>. <a href="#" class="morelink">(suite)</a><span class="moretext">(Voir l'<a 
+ href="http://fr.wikipedia.org/wiki/Tag_%28m%C3%A9tadonn%C3%A9e%29">article Wikipédia</a>.)
+  Sur Fabula, les <emph>tags</emph> sont appliqués par les lecteurs afin de faciliter l'accès
+aux informations sur le site, de façon plus pertinente que les moteurs de recherche. Vous êtes 
+invité(e) à <emph>«&#160;tagger&#160;</emph> autant de pages que vous souhaitez. Ce faisant, 
+vous enrichissez le site pour tous les utilisateurs.</span></p>
 </div>
+</div>
+
 </div> <!-- 'end title-and-docs -->
 <h1 class="not-logged">Il faut vous identifier d'abord</h1> 
 
@@ -227,7 +292,7 @@ print $fp->facebookConnectButton();
 </div>
 </div> <!-- end of #login-tabs div -->     
 
-<div id="user-intro" class="login-only">
+<div id="user-intro" class="login-only span-8 prepend-7">
 <p><a href="#" id="logout2" class="login-only">Quitter</a></p> 
 <p>Bonjour <span class="userhello"></span> !</p>
 <p id="tag-brag">Vous avez appliqué <span id="tagcount"></span> tags.</p>
