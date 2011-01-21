@@ -134,6 +134,56 @@ span.moretext {
     display:none;
 }
 
+div#test { background-color: red;
+}
+ul#userNav li {
+    display: inline; 
+    list-style-type: none; 
+    padding-right: 20px;
+    font-size: 8pt;
+    color: #d45500;
+}
+ul#userNav a, ul#userNav a:link, ul#userNav a:visited, ul#userNav a:active {
+    color: #d45500;
+    border-bottom: none;
+}
+
+div#user-intro {
+    padding-top: 1em;
+    border-top: 1px dotted #d45500;
+    border-bottom: 1px dotted #d45500;
+}
+
+a#addsub, a#userdata-send, #logout {
+    color: white;
+    background-color: #d45500;
+    font-weight: bold;
+    padding: 2px;
+    border-bottom: none;
+}
+
+div#currentTags {
+    padding-top: 1.5em
+}
+
+#greeting {
+    font-weight: bold;
+}
+
+
+div#userdata {
+    border-top: 1px dotted #d45500;
+    margin-top: 2em;
+    padding-top: 1.5em;
+}
+
+span.inputlabel {
+    font-weight: bold;
+}
+
+div#recently h2 {
+    margin-top: 36px;
+}
 }
 
 <?php 
@@ -238,7 +288,7 @@ require("/var/www/dom/fabula/commun3/html_start.php");
 
 ?> 
 <div id="colonnes_nouvelles">
-<div id="colonnes-un">
+<div id="colonnes-un" class="span-15">
 
 <div id="title-and-docs">
 
@@ -268,12 +318,12 @@ vous enrichissez le site pour tous les utilisateurs.</span></p>
 </div>
 </div>
 
-</div> <!-- 'end title-and-docs -->
+</div>
 <h1 class="not-logged">Il faut vous identifier d'abord</h1> 
 
 <div id="login-tabs" class="not-logged">
 
-<!-- tab headers ' -->
+
 <ul>
 <li><a href="#tabs-1">Open ID</a></li>
 <li><a href="#tabs-2">Facebook Connect</a></li>
@@ -292,48 +342,61 @@ print $fp->facebookConnectButton();
 </div>
 </div> <!-- end of #login-tabs div -->     
 
-<div id="user-intro" class="login-only span-8 prepend-7">
-<p><a href="#" id="logout2" class="login-only">Quitter</a></p> 
-<p>Bonjour <span class="userhello"></span> !</p>
-<p id="tag-brag">Vous avez appliqué <span id="tagcount"></span> tags.</p>
-</div>
 
+
+<div id="user-intro" class="login-only span-15 prepend-bottom">
+<div class="span-7" id="greeting">
+Bonjour <span class="userhello"></span> !
+</div>
+<ul id="userNav" class="span-6 prepend-2 last login-only">
   <?php // Admin, redac link
   if ($redacRight || $adminRight) {
     ?>
-    <p class="login-only">
-    <a href="/tags/adminlogin.php">Accès aux pages de gestion des tags.</a>
-    </p>
+    <li><a href="/tags/adminlogin.php">Gestion tags</a></li>
     <?php
   }
+
+$userUrl = $fp->userUrl();
+if ($userUrl) {
+  echo sprintf('<li><a href="%s">Page publique</a></li>',
+               $userUrl, $userUrl);
+}
 ?>
 
+<li><a href="#" id="logout2" class="login-only">Quitter</a></li>
+</ul>
+</div>
 
-<div id="subscriptions" class="login-only">
+<p id="tag-brag" class="login-only quiet">Vous avez appliqué <span id="tagcount"></span> tags.</p>
+
+<div id="currentTags" class="span-15 login-only prepend-bottom">
+<div id="subscriptions" class="login-only  span-7">
 <h2>Vos abonnements</h2>
   <p>Les tags auxquels vous êtes actuellement abonné(e) : </p>
 <ul>
 </ul>
 </div>
 
-<div id="favtags" class="login-only">
+
+<div id="favtags" class="login-only span-6 prepend-1 colsep last">
 <h2>Vos tags préférés</h2>
   <p>Les tags que vous appliquez le plus souvent : </p> 
 <ul class="fav-list">
 </ul>
 </div>
+</div>
 
 <div id="newsubscriptions" class="login-only">
 <h2>Vous abonner à de nouveaux tags</h2> 
 <p>Choisir un nouveau tag:</p>
-<input type="text" class="fKTaginput" id="newsubbox" size="60">
+<input type="text" class="fKTaginput login-only" id="newsubbox" size="60">
 </input>
 <a id="addsub" href="#">OK</a>
 </div>
 
 
 
-<div id="userdata" class="login-only">
+<div id="userdata" class="login-only span-15">
 <h2>Vos données</h2>
   <p>Lorsque vous renseignez les champs "Prénom" et "Nom de famille", 
   une page personelle sera créée où vous pourriez afficher vos coordonnées et un mini-CV, 
@@ -355,67 +418,90 @@ Si vous ne souhaitez pas publier ces informations, il suffit de vous assurer que
  <!-- ' -->
 
 
-<p class="firstname">
+<div class="udatafield span-15 firstname">
+<div class="span-3">
+  <span class="inputlabel firstname">
   Prénom : 
-  <span class="firstname">
   </span>
+</div>
+<div class="span-10 prepend-1">
   <input type="text" class="firstnamebox">
   </input>
-</p>
+</div>
+</div>
 
-<p class="lastname">
+<div class="udatafield span-15 lastname">
+<div class="span-3">
+  <span class="inputlabel lastname">
   Nom de famille :
-  <span class="lastname">
   </span>
+</div>
+<div class="span-10 prepend-1">
   <input type="text" class="lastnamebox">
   </input>
-</p>
+</div>
+</div>
 
-<p class="email">
+<div class="udatafield span-15 email">
+<div class="span-3">
+  <span class="inputlabel email">
   Courrier électronique :
-  <span class="email">
   </span>
+</div>
+<div class="span-10 prepend-1">
   <input type="text" class="emailbox">
   </input>
-</p>
+</div>
+</div>
 
-<p class="institution">
+<div class="udatafield span-15 institution">
+<div class="span-3">
+  <span class="inputlabel institution">
   Institution :
-  <span class="institution">
   </span>
+</div>
+<div class="span-10 prepend-1">
   <input type="text" class="institutionbox">
   </input>
-</p>
+</div>
+</div>
 
-<p class="pays">
+<div class="udatafield span-15 pays">
+<div class="span-3">
+  <span class="inputlabel pays">
   Pays :
-  <span class="pays">
   </span>
+</div>
+<div class="span-10 prepend-1">
   <input type="text" class="paysbox">
   </input>
-</p>
+</div>
+</div>
 
-<p class="fonction">
+<div class="udatafield span-15 fonction login-only">
+<div class="span-3">
+  <span class="inputlabel fonction">
   Fonction : 
-  <span class="fonction">
   </span>
+</div>
+<div class="span-10 prepend-1">
   <input type="text" class="fonctionbox">
   </input>
-</p>
+</div>
+</div>
 
 <div class="user-cv">
-  <p>CV : </p>
-  <p class="cv">
-  </p>
+  <p><span class="inputlabel cv">CV:  </p>
   <textarea cols="80" rows="20" class="cv-write"></textarea>
   </input>
 </div>
 
-</div>
+
 <p class="login-only"><a href="#" id="userdata-send">Valider</a></p>
 <p class="login-only">
 <a href="#" class="login-only" id="logout">Quitter</a>
 </p>
+</div>
 </div>
 
 
@@ -424,7 +510,7 @@ Si vous ne souhaitez pas publier ces informations, il suffit de vous assurer que
 <h2>Vos ressources</h2>
   <p>Les ressources récemment taggées avec les tags auxquels vous êtes abonné(e).
    Si une ressource comporte plus d'un de vos tags, il apparaîtra
-plus haut dans la liste.</p> <!-- ' -->
+plus haut dans la liste.</p>
 <ul></ul>
 </div>
 </div>
