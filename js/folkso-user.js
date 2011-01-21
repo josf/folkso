@@ -593,9 +593,8 @@ $(document).ready(
                            console.debug("loggedIn just got triggered. " +
                                        " loginStatus was " + fK.loginStatus);
 #endif */
-                             $("div.login-only").show();
-                             $("p.login-only").show();
-                           $("h1.not-logged").hide();
+                             $(".login-only").show();
+                             $("h1.not-logged").hide();
                            $("#fbstuff").hide();
                            $("#login-tabs").hide();
                            $.ajax(getList_aj);
@@ -617,7 +616,7 @@ $(document).ready(
                            $('div.login-only').hide();
                            $('p.login-only').hide();
                            $("h1.not-logged").show();
-
+                           $("#fKTaginput").hide();
                            $("#login-tabs").show();
                            var $oidTab = $("#tabs-1");
                            if ($("ul", $oidTab).length === 0) {
