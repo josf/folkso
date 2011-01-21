@@ -230,12 +230,28 @@ class folksoUser {
     $this->setFirstName($params['firstname']);
     $this->setLastName($params['lastname']);
 
-    $this->setInstitution($params['institution']);
-    $this->setPays($params['pays']);
-    $this->setFonction($params['fonction']);
-    $this->setEmail($params['email']);
-    $this->setCv($params['cv']);
-    $this->setEventCount($params['eventCount']);
+    if (array_key_exists('institution', $params)) {
+      $this->setInstitution($params['institution']);
+    }
+
+    if (array_key_exists('pays', $params)) {
+      $this->setPays($params['pays']);
+    } 
+
+    if (array_key_exists('fonction', $params)) {
+      $this->setFonction($params['fonction']);
+    }
+
+    if (array_key_exists('email', $params)) {
+      $this->setEmail($params['email']);
+    }
+
+    if (array_key_exists('cv', $params)) {
+      $this->setCv($params['cv']);
+    }
+    if (array_key_exists('eventCount', $params)) {
+      $this->setEventCount($params['eventCount']);
+    }
 
     $this->Writeable();
     return array($this);
