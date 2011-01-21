@@ -29,6 +29,15 @@ $(document).ready(
          */
         var err204 = fK.fn.defErrorFn(204, function() { });
 
+        /*
+         * Trigger logout event on Unauthorized
+         */
+        var notLogged = function (xhr, textStatus, e) {
+            $(fK.events).trigger('loggedOut');
+        };
+        notLogged.errorcode = 401;
+
+
 
         /*******************************************************************
          * Recently tagged list
@@ -85,6 +94,7 @@ $(document).ready(
                                                      function () {
                                                          dropResourceList();
                                                      }),
+                                    notLogged,
                                     function() {
                                         alert("Resource list problem");
                                     }));
@@ -177,7 +187,7 @@ $(document).ready(
 
         var getList_aj = fK.fn.userGetObject({folksosubscribed: 1},
                                              gotList,
-                                             fK.fn.errorChoose(err204,
+                                             fK.fn.errorChoose(err204, notLogged,
                                                                function(xhr, textStatus, e) { 
                                                                    alert("list getting failed"); 
                                                  })
@@ -187,9 +197,12 @@ $(document).ready(
         var addSub_aj = fK.fn.userPostObject({folksoaddsubscription: 1,
                                               folksotag: undefined},
                                              addListItem,
-                                             function(xhr, status, e) {
+                                             fK.fn.errorChoose(
+                                                 notLogged,
+                                                 function(xhr, status, e) {
                                                  alert("Add subscription failed");
-                                             });
+                                                 }
+                                             ));
         addSub_aj.complete = function(xhr, status) {
             $("#newsubbox").val("");
         };
@@ -198,10 +211,13 @@ $(document).ready(
         var removeSub_aj = fK.fn.userPostObject({folksormsub: 1,
                                                  folksotag: undefined},
                                                 rmSub,
-                                                function(xhr, status, e) {
+                                                fK.fn.errorChoose(
+                                                    notLogged,
+                                                    function(xhr, status, e) {
 //                                                    if (window.console) console.log(e);
                                                     alert(status + " Failed to remove subscription");
-                                                });
+                                                    }
+                                                ));
 
         getList_aj.dataType = "xml";
         getList_aj.cache = false;
@@ -463,7 +479,10 @@ $(document).ready(
                            };
 
                        $.ajax(fK.fn.userPostObject(data, userDataUpdateSuccess, 
-                                                   function() { alert("error"); }));
+                                                   fK.fn.errorChoose(
+                                                       notLogged,
+                                                       function() { alert("error"); }
+                                                       )));
                    });
 
         /**
@@ -483,6 +502,7 @@ $(document).ready(
                 {folksouserdata: 1},
                 userDataUpdateSuccess,
                 fK.fn.errorChoose(
+                    notLogged,
                     noUserData,
                     function(xhr, tS, e) { 
                         alert("Error retrieving user data. " +  xhr.status);
@@ -530,6 +550,7 @@ $(document).ready(
         };
         noFaves.errorcode = 204;
 
+
         var appendFave = Fav.appendField("favorites"),
 
         /*
@@ -555,7 +576,7 @@ $(document).ready(
                     fK.fn.userGetObject(
                         {folksofavorites: 1},
                         gotFaves,
-                        fK.fn.errorChoose(noFaves, // does not work here because we 
+                        fK.fn.errorChoose(noFaves, notLogged, // does not work here because we 
                                           // are asking for json, not xml...
                                           function(xhr, textStatus, e) {
                                               alert("Problem getting favorites: " + textStatus);
