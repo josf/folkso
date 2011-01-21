@@ -125,6 +125,8 @@ div#docGenerale {
 
 div#docContainer {
     padding-left: 1.5em;
+    padding-top: 0.5em;
+    margin-top: 1em;
 }
 div#docGenerale p {
     font-size: 9pt;
@@ -175,6 +177,11 @@ div#userdata {
     border-top: 1px dotted #d45500;
     margin-top: 2em;
     padding-top: 1.5em;
+}
+
+div#userdata p {
+    padding-left: 2em;
+    padding-right: 2em;
 }
 
 span.inputlabel {
