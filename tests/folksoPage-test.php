@@ -93,13 +93,11 @@ class testOffolksoPage extends  UnitTestCase {
 
   function testTagRes () {
     $page = new folksoPage(5775);
-    $this->assertIsA($page, 'folksoPage);'
+    $this->assertIsA($page, 'folksoPage');
     $this->assertEqual($page->url, 5775);
 
-
-
-           $html = $page->TagResources();
-    $this->assertIsA($page->tr, 'folksoTagRes);'
+    $html = $page->TagResources();
+    $this->assertIsA($page->tr, 'folksoTagRes');
 
     /**     Should be tested in TagResources-test
     $this->assertTrue($page->tr->is_valid());
@@ -110,7 +108,7 @@ class testOffolksoPage extends  UnitTestCase {
 
   function testClouds () {
     $page = new folksoPage('fabula.org/actualites/article20927.php');
-    $this->assertIsA($page, 'folksoPage);'
+    $this->assertIsA($page, 'folksoPage');
 
     /** tests disabled: depend on external data
     $cloud = $page->basic_cloud();
@@ -145,7 +143,7 @@ class testOffolksoPage extends  UnitTestCase {
 
   function testEan13 () {
     $page = new folksoPage(38065);
-    $this->assertIsA($page, 'folksoPage);'
+    $this->assertIsA($page, 'folksoPage');
     $dc = $page->ean13_dc_identifier();
     /*    $this->assertTrue(is_string($dc));
           $this->assertPattern('/<meta\s+/', $dc);*/
