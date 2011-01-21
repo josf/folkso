@@ -81,7 +81,6 @@ fK.fb.onLogin = function() {
 
                         $(fK.events).bind('loggedIn',
                                        function() {
-                                           console.log("loggedIn firing");
                                            $("#fbkillbox", fK.cf.container).hide();
                                            $(".fKTagbutton").show();
                                            $(".fKTaginput", fK.cf.container).show();
