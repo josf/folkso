@@ -18,9 +18,9 @@
   <property name="test.root" location="/var/www/folkso"/>
   <property name="test.dir"  location="${test.root}/tests"/>
   <property name="local.phplib"
-            location="/var/lib/php5/folkso"/>
+            location="/usr/local/lib/php5/folkso"/>
   <property name="local.xsl"
-            location="/var/lib/php5/folkso/xsl"/>
+            location="/usr/local/lib/php5/folkso/xsl"/>
 
   <target name="init">
     <tstamp/>
