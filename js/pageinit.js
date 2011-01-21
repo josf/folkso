@@ -162,7 +162,7 @@ fK.fb.onLogin = function() {
                                    );
                         }
 
-                        var hostAndPath = 'http://www.fabula.org/tags/';
+                        var hostAndPath = '/tags/';
                         fK.init({
                                   autocompleteUrl: hostAndPath + 'tagcomplete.php',
                                   postResUrl: hostAndPath + 'resource.php',
