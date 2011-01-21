@@ -37,6 +37,7 @@ class folksoUser {
   public $cv;
   public $dbc;
   public $eventCount;
+  Public $urlBase;
 
   /** 
    * A folksoRightStore object
