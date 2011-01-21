@@ -62,21 +62,21 @@ class testOffolksoUser extends  UnitTestCase {
 
   function testValidateUid () {
     $u = new folksoUser($this->dbc);
-    $this->assertTrue($u->validateUid('herman-2010-004'),
+    $this->assertTrue($u->validateUid('herman-2011-004'),
                       "valid uid should validate");
     $this->assertFalse($u->validateUid("bobiskingoftheworld"),
                        "invalid uid should fail");
     $this->assertFalse($u->validateUid(""),
                        "empty uid should fail");
-    $this->assertTrue($u->validateUid('21312123112-2010-003'),
+    $this->assertTrue($u->validateUid('21312123112-2011-003'),
                       "User id with all number in first part should be valid");
 
   }
 
    function testUser () {
      $u = new folksoUser($this->dbc);
-     $u->setUid('marcelp-2010-001');
-     $this->assertEqual($u->userid, 'marcelp-2010-001',
+     $u->setUid('marcelp-2011-001');
+     $this->assertEqual($u->userid, 'marcelp-2011-001',
                         'Bad or missing userid from setUid: ' . $u->userid);
 
      $u->setEmail('bob@warp.com');
@@ -94,14 +94,14 @@ class testOffolksoUser extends  UnitTestCase {
                         'firstname' => 'Marcel',
                         'lastname' => 'Proust',
                         'email' => 'marcelp@temps.eu',
-                        'userid' => 'marcelp-2010-001'));
+                        'userid' => 'marcelp-2011-001'));
      $this->assertIsA($u, 'folksoUser',
                       'problem with object creation');
      $this->assertEqual($u->urlBase, 'proust.marcel',
                         'missing urlbase in user object');
      $this->assertEqual($u->email, 'marcelp@temps.eu',
                         'Email incorrect after loadUser');
-     $this->assertEqual($u->userid, 'marcelp-2010-001',
+     $this->assertEqual($u->userid, 'marcelp-2011-001',
                         'userid not present: ' . $u->userid);
      $this->assertTrue($u->checkUserRight('folkso', 'tag'),
                        'user right fails incorrectly');
@@ -116,7 +116,7 @@ class testOffolksoUser extends  UnitTestCase {
                       'folksoRightStore',
                       'No fkRightStore at $u->rights');
 
-     $u->loadUser(array('userid' => 'marcelp-2010-001',
+     $u->loadUser(array('userid' => 'marcelp-2011-001',
                         'urlbase' => 'marcelp'));
      $u->loadAllRights();
      $this->assertTrue($u->checkUserRight("folkso", "tag"),
@@ -128,19 +128,14 @@ class testOffolksoUser extends  UnitTestCase {
 
    }
 
-   function testExists() {
-     test_db_init();
-     $u = new folksoUser($this->dbc);
-     $this->assertTrue($u->exists('marcelp-2010-001'));
-     $this->assertFalse($u->exists('ffffffff-2010-001'),
-                        "Unknown user should return false");
-
-   }
-
    function testUserFromUserId () {
      test_db_init();
      $u = new folksoUser($this->dbc);
-     $u->userFromUserId('marcelp-2010-001');
+     $this->assertTrue($u->exists('marcelp-2011-001'));
+     $this->assertFalse($u->exists('ffffffff-2011-001'),
+                        "Unknown user should return false");
+
+     $u->userFromUserId('marcelp-2011-001');
 
      $this->assertEqual($u->firstName, 'Marcel',
                         "First name is absent");
@@ -152,24 +147,24 @@ class testOffolksoUser extends  UnitTestCase {
    function testDeleteUserWithTags () {
      test_db_init();
      $u = new folksoUser($this->dbc);
-     $this->assertTrue($u->userFromUserId('gustav-2010-001'),
+     $this->assertTrue($u->userFromUserId('gustav-2011-001'),
                        "Failed to load gustav user ob");
      $u->deleteUserWithTags();
      $u2 = new folksoUser($this->dbc);
-     $ret = $u->userFromUserId('gustav-2010-001');
+     $ret = $u->userFromUserId('gustav-2011-001');
 
      $this->assertFalse($ret,
                         "Should no longer be able to load gustav here: userFromUserId should return false");
      $this->assertFalse($ret instanceof folksoUser,
                         '$ret should be false, not folksoUser object');
-     $this->assertFalse($u2->exists('gustav-2010-001'),
+     $this->assertFalse($u2->exists('gustav-2011-001'),
                         'gustav should no longer exist here');
    }
 
    function testStoreUserData () {
      test_db_init();
      $u = new folksoUser($this->dbc);
-     $u->userFromUserId('gustav-2010-001');
+     $u->userFromUserId('gustav-2011-001');
      $this->assertEqual($u->firstName, 'Gustave',
                         "Problem with initial retrieval of user");
 
@@ -187,7 +182,7 @@ class testOffolksoUser extends  UnitTestCase {
      }
      
      $u2 = new folksoUser($this->dbc);
-     $u2->userFromUserId('gustav-2010-001');
+     $u2->userFromUserId('gustav-2011-001');
 
 
      $this->assertEqual($u2->fonction, 'harpist',
@@ -198,7 +193,7 @@ class testOffolksoUser extends  UnitTestCase {
    function testStoreCv () {
      test_db_init();
      $u = new folksoUser($this->dbc);
-     $u->userFromUserId('gustav-2010-001');
+     $u->userFromUserId('gustav-2011-001');
      $this->assertEqual($u->firstName, 'Gustave',
                         "Problem with initial retrieval of user");
 
@@ -206,7 +201,7 @@ class testOffolksoUser extends  UnitTestCase {
      $u->storeUserData();
 
      $u2 = new folksoUser($this->dbc);
-     $u2->userFromUserId('gustav-2010-001');
+     $u2->userFromUserId('gustav-2011-001');
 
      $this->assertEqual($u2->cv, 'Wrote a book',
                         'Did not retreive cv data');
