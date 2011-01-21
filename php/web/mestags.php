@@ -191,6 +191,14 @@ span.inputlabel {
 div#recently h2 {
     margin-top: 36px;
 }
+
+#resList a, #resList a:visited, #resList a:active, #resList a:link, #favtags a, #favtags a:visited, #favtags a:active, #favtags a:link {
+    border-bottom: none;
+}
+#resList li {
+    margin-top: 3px;
+}
+
 }
 
 <?php 
