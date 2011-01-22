@@ -23,6 +23,15 @@ class testOffolksoUser extends  UnitTestCase {
     $u = new folksoUser($this->dbc);
     $u->setUrlbase('stuff');
     $this->assertEqual($u->urlBase, 'stuff');
+
+
+    $u->setFirstName('Bob');
+    $this->assertEqual($u->firstName, 'Bob',
+                       'setFirstName method: name not showing up in obj');
+
+    $u->setLastName('TheSlob');
+    $this->assertEqual($u->lastName, 'TheSlob',
+                       'setLastName method: name not showing up in obj');
     
     $u->setCv('Wrote some books');
     $this->assertEqual($u->cv, 'Wrote some books',
@@ -103,10 +112,39 @@ class testOffolksoUser extends  UnitTestCase {
                         'Email incorrect after loadUser');
      $this->assertEqual($u->userid, 'marcelp-2011-001',
                         'userid not present: ' . $u->userid);
-     $this->assertTrue($u->checkUserRight('folkso', 'tag'),
-                       'user right fails incorrectly');
+
      $this->assertFalse($u->checkUserRight('ploop', 'dooop'),
                         'inexistant right should not validate');
+   }
+
+
+   function testSetterWithDB () {
+     test_db_init();
+     $u = new folksoUser($this->dbc);
+     $u->userFromUserId('marcelp-2011-001');
+
+     $this->assertEqual($u->firstName, 'Marcel',
+                        'Problem with test. firstName incorrect on load');
+     $this->assertEqual($u->lastName, 'Proust',
+                        'Problem with test. lastName incorrect on load');
+     
+     $u->setFirstName('Horace');
+     $u->setLastName('Force');
+
+     $this->assertEqual($u->firstName, 'Horace',
+                        'Incorrect firstname after attempt to change');
+     $this->assertEqual($u->lastName, 'Force',
+                        'Incorrect lastname after attempt to change');
+
+     $u->storeUserData();
+     $u2 = new folksoUser($this->dbc);
+     $u2->userFromUserId('marcelp-2011-001');
+
+     $this->assertEqual($u2->firstName, 'Horace',
+                        'Incorrect firstname after DB retrieval');
+     $this->assertEqual($u2->lastName, 'Force',
+                        'Incorrect lastname after DB retrieval');
+
    }
 
    function testRights () {
