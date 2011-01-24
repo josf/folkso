@@ -35,6 +35,7 @@ window.handleOpenIDResponse = function (openid_args){
             success: function(xhr, msg) {
                 fK.oidLogin = true;
                 $(fK.events).trigger("loggedIn");
+                $(fK.events).trigger("OIDlogin");
             },
             error: function () {
                 fK.oidLogin = false;
@@ -120,6 +121,7 @@ fK.fb.onLogin = function() {
                                 { 
                                     if (fK.loginStatus === false) {
                                         $(fK.events).trigger('loggedIn');
+                                        $(fK.events).trigger('FBlogin');
                                         fK.loginStatus = true; 
                                         fK.fbLogin = true;
                                         $.cookie("folksofblogin", "fb",

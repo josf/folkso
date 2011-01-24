@@ -199,6 +199,12 @@ div#recently h2 {
     margin-top: 3px;
 }
 
+#loggedVia {
+   display: none;
+   color: gray;
+   font-style: italic;
+}
+
 }
 
 <?php 
@@ -376,7 +382,8 @@ print $fp->facebookConnectButton();
 
 <div id="user-intro" class="login-only span-15 prepend-bottom">
 <div class="span-7" id="greeting">
-Bonjour <span class="userhello"></span> !
+<p>Bonjour <span class="userhello"></span> !</p>
+ <p id="loggedVia" class="quiet">Loggé(e) via <span id="loginSource"></spa></p>
 </div>
 <ul id="userNav" class="span-6 prepend-2 last login-only">
   <?php // Admin, redac link

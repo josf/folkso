@@ -612,6 +612,18 @@ $(document).ready(
                            fK.loginStatus = true;
                        });
 
+        $(fK.events).bind('FBlogin',
+                          function() {
+                              $("#loggedVia").show();
+                              $("#loginSource").html("Facebook");
+                          });
+
+        $(fK.events).bind('OIDlogin',
+                          function() {
+                              $("#loggedVia").show();
+                              $("#loginSource").html("OpenID");
+                          });
+
 
 //        $(fK.events).unbind('loggedOut');
         $(fK.events).bind('loggedOut',
