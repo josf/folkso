@@ -231,18 +231,33 @@ display: inline;
 
 <link rel="stylesheet" type="text/css" href="/tags/css/jquery-ui-1.8.4.custom.css" media="screen"/>
 
-<?php
-require("/var/www/dom/fabula/commun3/head_javascript_folkso.php");
 
-?> 
-
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.js"></script>
 <script type="text/javascript"
-  src="/tags/js/jquery.tinymce.js">
+  src="/tags/js/tinymce/jscripts/tiny_mce/jquery.tinymce.js">
 </script>
+<script type="text/javascript" src="/tags/js/jquery-ui-1.8.4.custom.min.js"></script>
+<script src="http://static.ak.connect.facebook.com/js/api_lib/v0.4/FeatureLoader.js.php/en_US" type="text/javascript"></script><script type="text/javascript" src="/tags/js/jquery.folksodeps.js"></script>
+<script type="text/javascript" src="/tags/js/folksonomie.min.js"></script> 
+
+
+
+<?php
+ if ($fp instanceof folksoPage) {
+	print $fp->jsHolder($fp->fKjsLoginState('fK.loginStatus')
+				. $fp->fbJsVars());
+
+} 
+?>
+
 
 <script type="text/javascript" 
   src="/tags/js/folkso-user.js">
 </script>
+<script type="text/javascript"
+  src="/tags/js/pageinit.js">
+</script>
+
 
 <script type="text/javascript">
   $(document).ready(
