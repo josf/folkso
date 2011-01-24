@@ -130,11 +130,14 @@ class testOffolksoUser extends  UnitTestCase {
      
      $u->setFirstName('Horace');
      $u->setLastName('Force');
+     $u->setCv('Wrote a long book');
 
      $this->assertEqual($u->firstName, 'Horace',
                         'Incorrect firstname after attempt to change');
      $this->assertEqual($u->lastName, 'Force',
                         'Incorrect lastname after attempt to change');
+     $this->assertEqual($u->cv, 'Wrote a long book',
+                        'Cv failed to update on object');
 
      $u->storeUserData();
      $u2 = new folksoUser($this->dbc);
@@ -144,7 +147,9 @@ class testOffolksoUser extends  UnitTestCase {
                         'Incorrect firstname after DB retrieval');
      $this->assertEqual($u2->lastName, 'Force',
                         'Incorrect lastname after DB retrieval');
-
+     $this->assertEqual($u2->cv, 'Wrote a long book',
+                        'Cv failed to update after DB retrieval');
+     
    }
 
    function testRights () {
