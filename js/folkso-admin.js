@@ -105,18 +105,12 @@
              var 
              highestRight = fK.admin.maxRight(rightlist);
 
-             /*
-#ifdef DEBUG */
-         if (window.console) console.log("highestRight " + highestRight);    
-/*
-#endif */
+         LOG(if (window.console) console.log("highestRight " + highestRight);)    
+
 
              highestRight = highestRight || "user";
-         /*
-#ifdef DEBUG */
-         if (window.console) console.log("highestRight redux: " + highestRight);    
-/*
-#endif */    
+
+         LOG(if (window.console) console.log("highestRight redux: " + highestRight);) 
              var html = 
                  '<span class="currentright">' 
                  + highestRight
@@ -134,12 +128,12 @@
              for (var i = 0; i < 3;i++) {
                  var closing = 
                      (rights[i] === highestRight) ? ' checked="checked"/>' : '/>';
-/*
-#ifdef DEBUG */
-if (window.console) console.log("rights I is : " + rights[i] + " and highest is " + highestRight + " closing " + closing);                 
 
-/*
-#endif  */
+                 LOG(if (window.console) 
+                     console.log("rights I is : " + rights[i] + 
+                                 " and highest is " + highestRight + 
+                                 " closing " + closing);)                 
+
                  html = 
                      html 
                      + '<input type="radio" id="rightmod' + rights[i] 
