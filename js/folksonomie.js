@@ -284,6 +284,10 @@
              this.updateAllNew = function() {
                  for (var fieldname in fields) {
                      with(fields[fieldname]) {
+
+                         /*
+                          * Single field (basic)
+                          */
                          if (type == 'basic') {
                              if (newval && newval !== value) {
                                  value = newval; newval = null;
@@ -298,6 +302,10 @@
                                  deleteElem(selector, $place, value);
                              }
                          }
+
+                         /*
+                          * List
+                          */
                          else { // type is therefore 'list'
                              if (appendval.length > 0) {
                                  $.each(appendval,
