@@ -197,14 +197,22 @@
 
   <target 
       name="js.dev"
-      depends="js.preprocess.debug,js.folksonomie.concat,js.maxify">
+      depends="js.dev.staging,js.dev.folksonomie.concat,js.dev.maxify">
     <copy todir="${dist}/js" 
           file="${build}/js/jquery.folksodeps.js"/>
   </target>
 
+  <target
+      name="js.dev.nolog"
+      depends="js.nolog.maxify">
+    <copy todir="${dist}/js" 
+          file="${build}/js/jquery.folksodeps.js"/>
+  </target>
+
+
   <target 
       name="js.prod" 
-      depends="js.preprocess.prod,js.minify,js.folksonomie.concat">
+      depends="js.minify,js.folksonomie.concat">
   </target>
 
   <target name="js.deps">
@@ -215,45 +223,47 @@
   </target>
 
 
-  <target name="js.staging" depends="init,js.deps">
-    <copy todir="${build}/js">
+  <target name="js.prod.staging" depends="init,js.deps">
+    <apply executable="./tools/jsprocess"
+           dest="${build}/js">
       <fileset dir="./js"
                includes="*.js"/>
-    </copy>
-  </target>
-
-  <target name="js.preprocess.prod" depends="js.staging">
-    <apply executable="cpp" 
-           dest="${build}/js">
-      <fileset dir="${build}/js"
-               includes="*.js"/>
-      <arg line="-P -C"/>
+      <arg line="./tools/js.m4"/>
       <srcfile/>
       <targetfile/>
       <mapper type="glob"
               from="*.js"
-              to="pp-*.js"/>
+              to="*.js"/>
+
     </apply>
-    <antcall target="js.preprocess.rename"/>
   </target>
 
-
-  <target name="js.preprocess.debug" depends="js.staging">
-    <apply executable="cpp" 
+  <target name="js.dev.staging" depends="init,js.deps">
+    <apply executable="./tools/jsprocess"
            dest="${build}/js">
       <fileset dir="./js"
                includes="*.js"/>
-      <arg line="-P -C -DDEBUG"/>
+      <arg line="./tools/js.m4"/>
       <srcfile/>
       <targetfile/>
+      <arg line="-DDEBUG=1"/>
       <mapper type="glob"
               from="*.js"
-              to="pp-*.js"/>
+              to="*.js"/>
+
     </apply>
-    <antcall target="js.preprocess.rename"/>
   </target>
 
-  <target name="js.folksonomie.concat" depends="js.staging">
+  
+
+  <target name="js.folksonomie.concat" depends="js.prod.staging">
+    <concat destfile="${dist}/js/folksonomie.min.js">
+      <filelist dir="${build}/js"
+                files="folksonomie.js, faboid.js"/>
+    </concat>
+  </target>
+
+  <target name="js.dev.folksonomie.concat" depends="js.dev.staging">
     <concat destfile="${dist}/js/folksonomie.min.js">
       <filelist dir="${build}/js"
                 files="folksonomie.js, faboid.js"/>
@@ -261,7 +271,7 @@
   </target>
 
   <target name="js.minify" 
-          depends="js.staging">
+          depends="js.prod.staging">
     <apply executable="java" 
            parallel="false"
            dest="${dist}/js">
@@ -278,29 +288,24 @@
     </apply>
   </target>
 
-  <target name="js.move" depends="js.staging,js.folksonomie.concat">
+  <target name="js.move" depends="js.prod.staging,js.folksonomie.concat">
 
   </target>
 
 
   <!-- replacement for js.minify when we do not want to minify -->
-  <target name="js.maxify" depends="js.staging,js.folksonomie.concat">
+  <target name="js.dev.maxify" depends="js.dev.folksonomie.concat">
     <move todir="${dist}/js">
       <filelist dir="${build}/js"
                 files="folkso.js,folkso-admin.js,folkso-user.js,tagedit.js,resview.js,resedit.js,pageinit.js"/>
     </move>    
   </target>
 
-  <!-- no depends, must use antcall from another target 
-       renames the files after post-processing
-  -->
-  <target name="js.preprocess.rename">
-    <move todir="${build}/js">
-      <fileset dir="${build}/js"/>
-      <mapper type="glob"
-              from="pp-*.js"
-              to="*.js"/>
-    </move>
+  <target name="js.nolog.maxify" depends="js.folksonomie.concat">
+    <move todir="${dist}/js">
+      <filelist dir="${build}/js"
+                files="folkso.js,folkso-admin.js,folkso-user.js,tagedit.js,resview.js,resedit.js,pageinit.js"/>
+    </move>    
   </target>
 
 
@@ -492,6 +497,24 @@
   </target>
 
   <target name="remote.dev.js" depends="js.dev">
+    <scp remoteTodir="${rem.user}@${rem.host}:${rem.js}"
+         keyfile="${loc.keyfile}"
+         passphrase="${loc.passphrase}">
+      <fileset dir="${dist}/js"
+               includes="*.js"/>
+    </scp>
+  </target>
+
+  <target name="remote.dev.js.nolog" depends="js.dev.nolog">
+    <scp remoteTodir="${rem.user}@${rem.host}:${rem.js}"
+         keyfile="${loc.keyfile}"
+         passphrase="${loc.passphrase}">
+      <fileset dir="${dist}/js"
+               includes="*.js"/>
+    </scp>
+  </target>
+
+  <target name="remote.prod.js" depends="js.prod">
     <scp remoteTodir="${rem.user}@${rem.host}:${rem.js}"
          keyfile="${loc.keyfile}"
          passphrase="${loc.passphrase}">

@@ -1,0 +1,5 @@
+#!/bin/bash
+# args: 1) m4 defs, 2) javascript file, 3) output file, 4) arg for m4
+
+
+m4 $4 $1 $2 > $3
