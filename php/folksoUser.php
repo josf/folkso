@@ -227,8 +227,13 @@ class folksoUser {
       $this->setLoginId($params['loginid']);
     }
 
-    $this->setFirstName($params['firstname']);
-    $this->setLastName($params['lastname']);
+    if (isset($params['firstname'])) {
+      $this->setFirstName($params['firstname']);
+    }
+
+    if (isset($params['lastname'])) {
+      $this->setLastName($params['lastname']);
+    }
 
     if (array_key_exists('institution', $params)) {
       $this->setInstitution($params['institution']);
