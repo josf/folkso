@@ -622,8 +622,8 @@ function storeUserData (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks
     
   $r->t($ud->line(
                   $u2->userid,
-                  htmlspecialchars(excludeSQLnullKeyWord($u2->firstname)),
-                  htmlspecialchars(excludeSQLnullKeyWord($u2->lastname)),
+                  htmlspecialchars(excludeSQLnullKeyWord($u2->firstName)),
+                  htmlspecialchars(excludeSQLnullKeyWord($u2->lastName)),
                   htmlspecialchars(excludeSQLnullKeyWord($u2->nick)),
                   htmlspecialchars(excludeSQLnullKeyWord($u2->email)),
                   htmlspecialchars(excludeSQLnullKeyWord($u2->institution)),
