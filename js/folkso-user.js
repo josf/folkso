@@ -400,16 +400,23 @@ $(document).ready(
         U.addBasic("cv",
                    {selector: "div.user-cv",
                     init: function(sel, $place, data) {
-                        $(sel + " p.cv", $place).html(data);
+                        $(sel + " div.cv-view", $place).html(data);
                         $(sel + " textarea.cv-write", $place).val(data);
                     },
                     update: function(sel, $place, data) {
-                        $(sel + " p.cv", $place).html(data);
-                        $(sel + " textarea.cv-write", $place).val(data);
+                        $(sel + " div.cv-view", $place).html(data);
+
+                        // contents to get inside the iframe, first and 
+                        // only elem is html.
+                        var $ifrHtml = $($("#cveditor_ifr").contents()[0]);
+                        var $body = $("body", $ifrHtml);
+                        $body.html(data);
                     },
                     deleteElem: function(sel, $place, data) {
-                        $(sel + " p.cv", $place).html('');
-                        $(sel + " textarea.cv-write", $place).val('');
+                        $(sel + " div.cv-view", $place).html('');
+                        var $ifrHtml = $($("#cveditor_ifr").contents()[0]);
+                        var $body = $("body", $ifrHtml);
+                        $body.html('');
                     }
                    });
 
@@ -467,6 +474,7 @@ $(document).ready(
             .click(function(ev)
                    {
                        ev.preventDefault();
+                       var tmp = $("body", $($("#cveditor_ifr").contents()[0])).html();
                        var pardiv = $(this).parent().parent(),
                        data = {
                            folksosetfirstname: $("input.firstnamebox", pardiv).val(),
@@ -475,7 +483,7 @@ $(document).ready(
                            folksosetinstitution: $("input.institutionbox", pardiv).val(),
                            folksosetpays: $("input.paysbox", pardiv).val(),
                            folksosetfonction: $("input.fonctionbox", pardiv).val(),
-                           folksosetcv: $("textarea.cv-write", pardiv).val()
+                           folksosetcv: $("body", $($("#cveditor_ifr").contents()[0])).html()
                            };
 
                        $.ajax(fK.fn.userPostObject(data, userDataUpdateSuccess, 
@@ -644,18 +652,28 @@ $(document).ready(
 
 fK.tinymceInit = 
     function () {
-        if ($("textarea:tinymce").length == 0) {
-            $("textarea.cv-write")
-                .tinymce({
-                             script_url: '/tags/js/tinymce/jscripts/tiny_mce/tiny_mce.js',
-                             valid_elements: "a[href],strong/b,em/i,ul,li,p,h2,h3,h4",
-                             width: "500",
+        var $cveditor = $("textarea#cveditor:first"); 
+        var sibs = $cveditor.siblings("span.mceEditor").length;
+        if (sibs === 0){
+            if ($cveditor.is(":hidden")) {
+                $cveditor.show();
+            }
+            $cveditor.tinymce({
+                                  script_url: '/tags/js/tinymce/jscripts/tiny_mce/tiny_mce.js',
+/*                                  theme: "advanced",
+                                  theme_advanced_toolbar_location: "top",
+                                  theme_advanced_disable: "strikethrough,outdent,code,anchor,forecolor,backcolor,newdocument,visualaid,sub,image,indent,styleselect,formatselect",
+                                  theme_advanced_buttons1: "bold,italic,underline,justifyleft,justifycenter,justifyright,justifyfull,bullist,numlist",
+                                  theme_advanced_buttons2: "link,unlink,cleanup,hr,removeformat,superscript,charmap",
+                                  theme_advanced_buttons3: "",
+                                  valid_elements: "a[href],strong/b,em/i,ul,li,p,h2,h3,h4",
+                                  width: "500", */
 
-                         /*
-                          * It is crucial to use raw here. Otherwise 
-                          * the system will choke on the "&"
-                          */
-                         entity_encoding: 'raw'
+                             /*
+                              * It is crucial to use raw here. Otherwise 
+                              * the system will choke on the "&"
+                              */
+                             entity_encoding: 'raw'
                          });
         }
 };

@@ -512,8 +512,9 @@ Si vous ne souhaitez pas publier ces informations, il suffit de vous assurer que
 </div>
 
 <div class="user-cv">
-  <p><span class="inputlabel cv">CV:  </p>
-  <textarea cols="80" rows="20" class="cv-write"></textarea>
+  <p><span class="inputlabel">CV:  </p>
+<div class="cv-view"></div>
+  <textarea cols="80" rows="20" class="cv-write" id="cveditor" name="cveditor"></textarea>
   </input>
 </div>
 
