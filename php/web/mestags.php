@@ -434,10 +434,11 @@ Si vous ne souhaitez pas publier ces informations, il suffit de vous assurer que
 
 
 <div class="udatafield span-15 firstname">
-<div class="span-3">
-  <span class="inputlabel firstname">
+<div class="span-3 firstname">
+  <span class="inputlabel">
   Prénom : 
   </span>
+<span class="firstname"></span>
 </div>
 <div class="span-10 prepend-1">
   <input type="text" class="firstnamebox">
@@ -446,10 +447,11 @@ Si vous ne souhaitez pas publier ces informations, il suffit de vous assurer que
 </div>
 
 <div class="udatafield span-15 lastname">
-<div class="span-3">
-  <span class="inputlabel lastname">
+<div class="span-3 lastname">
+  <span class="inputlabel">
   Nom de famille :
   </span>
+<span class="lastname"></span>
 </div>
 <div class="span-10 prepend-1">
   <input type="text" class="lastnamebox">
@@ -458,10 +460,11 @@ Si vous ne souhaitez pas publier ces informations, il suffit de vous assurer que
 </div>
 
 <div class="udatafield span-15 email">
-<div class="span-3">
-  <span class="inputlabel email">
+<div class="span-3 email">
+  <span class="inputlabel">
   Courrier électronique :
   </span>
+<span class="email"></span>
 </div>
 <div class="span-10 prepend-1">
   <input type="text" class="emailbox">
@@ -470,10 +473,11 @@ Si vous ne souhaitez pas publier ces informations, il suffit de vous assurer que
 </div>
 
 <div class="udatafield span-15 institution">
-<div class="span-3">
-  <span class="inputlabel institution">
+<div class="span-3 institution">
+  <span class="inputlabel">
   Institution :
   </span>
+<span class="institution"></span>
 </div>
 <div class="span-10 prepend-1">
   <input type="text" class="institutionbox">
@@ -482,10 +486,11 @@ Si vous ne souhaitez pas publier ces informations, il suffit de vous assurer que
 </div>
 
 <div class="udatafield span-15 pays">
-<div class="span-3">
-  <span class="inputlabel pays">
+<div class="span-3 pays">
+  <span class="inputlabel">
   Pays :
   </span>
+<span class="pays"></span>
 </div>
 <div class="span-10 prepend-1">
   <input type="text" class="paysbox">
@@ -494,10 +499,11 @@ Si vous ne souhaitez pas publier ces informations, il suffit de vous assurer que
 </div>
 
 <div class="udatafield span-15 fonction login-only">
-<div class="span-3">
-  <span class="inputlabel fonction">
+<div class="span-3 fonction">
+  <span class="inputlabel">
   Fonction : 
   </span>
+<span class="fonction"></span>
 </div>
 <div class="span-10 prepend-1">
   <input type="text" class="fonctionbox">

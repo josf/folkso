@@ -304,7 +304,7 @@ $(document).ready(
 
         var U = new fK.Ktl("#userdata");
         U.addBasic("firstname",
-                   {selector: "p.firstname",
+                   {selector: "div.firstname",
                     init: function(sel, $place, data) {
                         $(sel + " span.firstname", $place).html(data);
                         $(sel + " input.firstnamebox", $place).val(data);
@@ -320,7 +320,7 @@ $(document).ready(
                    });
 
         U.addBasic("lastname",
-                   {selector: "p.lastname",
+                   {selector: "div.lastname",
                     init: function(sel, $place, data){
                         $(sel + " span.lastname", $place).html(data);
                         $(sel + " input.lastnamebox", $place).val(data);
@@ -336,7 +336,7 @@ $(document).ready(
                    });
 
         U.addBasic("email",
-                   {selector: "p.email",
+                   {selector: "div.email",
                     init: function(sel, $place, data){
                         $(sel + " span.email", $place).html(data);
                         $(sel + " input.emailbox", $place).val(data);
@@ -352,7 +352,7 @@ $(document).ready(
                    });
 
         U.addBasic("institution",
-                   {selector: "p.institution",
+                   {selector: "div.institution",
                     init: function(sel, $place, data){
                         $(sel + " span.institution", $place).html(data);
                         $(sel + " input.institutionbox", $place).val(data);
@@ -367,7 +367,7 @@ $(document).ready(
                     }
                    });
         U.addBasic("pays",
-                   {selector: "p.pays",
+                   {selector: "div.pays",
                     init: function(sel, $place, data){
                         $(sel + " span.pays", $place).html(data);
                         $(sel + " input.paysbox", $place).val(data);
@@ -382,7 +382,7 @@ $(document).ready(
                     }
                    });
         U.addBasic("fonction",
-                   {selector: "p.fonction",
+                   {selector: "div.fonction",
                     init: function(sel, $place, data){
                         $(sel + " span.fonction", $place).html(data);
                         $(sel + " input.fonctionbox", $place).val(data);
