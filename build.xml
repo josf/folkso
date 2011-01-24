@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+
 <project 
     name="folkso" 
     default="prod" 
@@ -71,7 +71,7 @@
     <apply executable="cpp" 
            dest="${dist}/tests">
       <fileset dir="./tests"
-               includes="folkso*test.php,dbinit.inc">
+               includes="folkso*test.php,dbinit.inc,control.php">
         <depth max="1"/>
       </fileset>
       <arg line="-P -C"/>
@@ -419,6 +419,13 @@
   </copy>
 </target>
 
+<target name="xsl.local" depends="xsl.copy">
+  <copy todir="${local.xsl}">
+    <fileset dir="${dist}/xsl"
+             includes="*.xsl"/>
+  </copy>
+</target>
+
 
   <!-- DEPLOY -->
   <target name="remote.dev.php" depends="php.dev">
@@ -503,7 +510,7 @@
   </target>
 
 <!-- Local deployment -->
-  <target name="local-libs.dev" depends="php.dev">
+  <target name="local-libs.dev" depends="php.dev,xsl.local">
     <copy todir="${local.phplib}">
       <fileset dir="${dist}/php"
                includes="folkso*.php">
