@@ -628,7 +628,6 @@ $(document).ready(
                            $("#login-tabs").show();
                            var $oidTab = $("#tabs-1");
                            if ($("ul", $oidTab).length === 0) {
-                               console.log("No ul in tabs-1");
                                $oidTab.append(fK.oid.providerList());
                            }
                        });
