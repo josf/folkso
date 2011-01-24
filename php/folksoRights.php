@@ -124,7 +124,8 @@ class folksoRightStore {
     * @param folksoRight $dr
     */
     public function addRight (folksoRight $dr) {
-      if ($this->store[$dr->fullName()] instanceof folksoRight){
+      if (isset($this->store[$dr->fullName()]) &&
+          ($this->store[$dr->fullName()] instanceof folksoRight)){
         throw new rightAlreadyPresentException('Cannot add right because it is already present');
       }
       $this->store[$dr->fullName()] = $dr;
@@ -202,12 +203,14 @@ class folksoRightStore {
          return true;
        }
 
-       if ($this->store[$service . '/' . $right] instanceof folksoRight){
+       if (isset($this->store[$service . '/' . $right]) &&
+           ($this->store[$service . '/' . $right] instanceof folksoRight)){
          return true;
        }
        elseif ($this->getAliases($service, $right))
          foreach ($this->getAliases($service, $right) as $alias) {
-           if ($this->store[$alias] instanceof folksoRight) {
+           if (isset($this->store[$alias]) &&
+               ($this->store[$alias] instanceof folksoRight)) {
              return true;
            }
          }
@@ -226,6 +229,7 @@ class folksoRightStore {
           if (array_key_exists($right->fullName(), $this->rightValues) &&
               ($this->rightValues[$right->fullName()] > $currentBest)) {
             $currentBest = $this->rightValues[$right->fullName()];
+
           }
         }
         switch ($currentBest) {
@@ -263,7 +267,8 @@ class folksoRightStore {
       */
      public function getAliases ($service, $right) {
        $fullname = $service . '/' . $right;
-       if (! is_array($this->aliases[$fullname])){
+       if ((! isset($this->aliases[$fullname]))
+           || (! is_array($this->aliases[$fullname]))){
          return false;
        }
        return $this->aliases[$fullname];
