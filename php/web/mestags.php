@@ -415,11 +415,11 @@ print $fp->facebookConnectButton();
 
 
 <div id="user-intro" class="login-only span-15 prepend-bottom">
-<div class="span-7" id="greeting">
+<div class="span-6" id="greeting">
 <p>Bonjour <span class="userhello"></span> !</p>
- <p id="loggedVia" class="quiet">Loggé(e) via <span id="loginSource"></spa></p>
+ <p id="loggedVia" class="quiet">Loggé(e) via <span id="loginSource"></span></p>
 </div>
-<ul id="userNav" class="span-6 prepend-2 last login-only">
+<ul id="userNav" class="span-7 prepend-2 last login-only">
   <?php // Admin, redac link
   if ($redacRight || $adminRight) {
     ?>
@@ -486,82 +486,93 @@ if ($userUrl) {
 Si vous ne souhaitez pas publier ces informations, il suffit de vous assurer que ces champs sont vides.
 </p>
 
- <!-- ' -->
-
-
 <div class="udatafield span-15 firstname">
-<div class="span-3 firstname">
+<div class="span-4 firstname">
   <span class="inputlabel">
   Prénom : 
   </span>
-<span class="firstname"></span>
 </div>
-<div class="span-10 prepend-1">
+<div class="span-4">
+<span class="firstname">&#160;</span>
+</div>
+<div class="span-5 prepend-1">
   <input type="text" class="firstnamebox">
   </input>
 </div>
 </div>
 
 <div class="udatafield span-15 lastname">
-<div class="span-3 lastname">
+<div class="span-4 lastname">
   <span class="inputlabel">
   Nom de famille :
   </span>
-<span class="lastname"></span>
 </div>
-<div class="span-10 prepend-1">
+<div class="span-4">
+<span class="lastname">&#160;</span>
+</div>
+<div class="span-5 prepend-1">
   <input type="text" class="lastnamebox">
   </input>
 </div>
 </div>
 
 <div class="udatafield span-15 email">
-<div class="span-3 email">
+<div class="span-4 email">
   <span class="inputlabel">
   Courrier électronique :
   </span>
-<span class="email"></span>
 </div>
-<div class="span-10 prepend-1">
+<div class="span-4">
+<span class="email">&#160;</span>
+
+</div>
+<div class="span-5 prepend-1">
   <input type="text" class="emailbox">
   </input>
 </div>
 </div>
 
 <div class="udatafield span-15 institution">
-<div class="span-3 institution">
+<div class="span-4 institution">
   <span class="inputlabel">
   Institution :
   </span>
-<span class="institution"></span>
 </div>
-<div class="span-10 prepend-1">
+<div class="span-4">
+<span class="institution">&#160;</span>
+</div>
+<div class="span-5 prepend-1">
   <input type="text" class="institutionbox">
   </input>
 </div>
 </div>
 
 <div class="udatafield span-15 pays">
-<div class="span-3 pays">
+<div class="span-4 pays">
   <span class="inputlabel">
   Pays :
   </span>
-<span class="pays"></span>
 </div>
-<div class="span-10 prepend-1">
+<div class="span-4">
+<span class="pays">&#160;</span>
+</div>
+<div class="span-5 prepend-1">
   <input type="text" class="paysbox">
   </input>
 </div>
 </div>
 
 <div class="udatafield span-15 fonction login-only">
-<div class="span-3 fonction">
+<div class="span-4 fonction">
   <span class="inputlabel">
   Fonction : 
   </span>
-<span class="fonction"></span>
 </div>
-<div class="span-10 prepend-1">
+<div class="span-4">
+<span class="fonction">&#160;</span>
+</div>
+
+<div class="span-5 prepend-1">
   <input type="text" class="fonctionbox">
   </input>
 </div>
