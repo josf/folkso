@@ -575,11 +575,20 @@ Si vous ne souhaitez pas publier ces informations, il suffit de vous assurer que
 </div>
 
 
-<p class="login-only"><a href="#" id="userdata-send">Valider</a></p>
-<p class="login-only">
-<a href="#" class="login-only" id="logout">Quitter</a>
-</p>
+<p class="login-only"><a href="#" id="userdata-send">Valider</a> <span id="validerMessage"></span></p>
+
+
+
 </div>
+
+
+
+<div class="login-only span-15" id="lastNav">
+<div class="span-3 last prepend-11">
+<a href="#" class="login-only" id="logout">Quitter</a>
+</div>
+</div>
+
 </div>
 
 

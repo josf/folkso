@@ -434,6 +434,11 @@ $(document).ready(
         var userDataUpdateSuccess = function(xml, status, xhr) 
         {
             if (xhr.status == 200) {
+                $("#validerMessage").html("OK");
+                var validerOkTimer = setTimeout(
+                    function() {
+                        $("#validerMessage").html("");
+                    }, 7000);
                 var firstname = $("firstname", xml).text(),
                 lastname = $("lastname", xml).text(),
                 fullname = firstname +  " " + lastname;
@@ -486,10 +491,13 @@ $(document).ready(
                            folksosetcv: $("body", $($("#cveditor_ifr").contents()[0])).html()
                            };
 
+                       $("#validerMessage").html("Envoi...");
                        $.ajax(fK.fn.userPostObject(data, userDataUpdateSuccess, 
                                                    fK.fn.errorChoose(
                                                        notLogged,
-                                                       function() { alert("error"); }
+                                                       function() { 
+                                                           $("#validerMessage").html("Error");
+                                                           alert("error"); }
                                                        )));
                    });
 
