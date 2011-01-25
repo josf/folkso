@@ -965,9 +965,7 @@
                                                function(xhr, msg) {
                                                    alert("Failed to create new user");
                                                });
-                 LOG(if (window.console) {
-                         console.log("about to call createFBuser");
-                     })
+
 
                  aj.dataType = "xml";
                  jQuery.ajax(aj);

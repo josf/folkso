@@ -677,6 +677,7 @@ fK.tinymceInit =
             if ($cveditor.is(":hidden")) {
                 $cveditor.show();
             }
+            LOG(console.log("initializing tinymce");)
             $cveditor.tinymce({
                                   script_url: '/tags/js/tinymce/jscripts/tiny_mce/tiny_mce.js',
 /*                                  theme: "advanced",
