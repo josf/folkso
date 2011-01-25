@@ -111,7 +111,7 @@ fK.fb.onLogin = function() {
                                        });
 
                         /* Sets up event handler: $(fK.events).bind("loggedIn") */
-                        fK.fn.pollFolksoCookie();
+//                        fK.fn.pollFolksoCookie();
 
                         /* Facebook connect login and logout events */
                         fK.fb.loggedUser = function()
