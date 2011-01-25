@@ -151,12 +151,15 @@ ul#userNav a, ul#userNav a:link, ul#userNav a:visited, ul#userNav a:active {
 }
 
 div#user-intro {
-    padding-top: 1em;
+    padding-top: 1em; 
+    padding-bottom: 1em;
     border-top: 1px dotted #d45500;
     border-bottom: 1px dotted #d45500;
+    margin-bottom: 0.3em;
+
 }
 
-a#addsub, a#userdata-send, #logout {
+a#addsub, a#userdata-send {
     color: white;
     background-color: #d45500;
     font-weight: bold;
@@ -204,6 +207,33 @@ div#recently h2 {
    color: gray;
    font-style: italic;
 }
+
+div#cv-view {
+    border: 1px dotted gray;
+    padding: 1em;
+    margin: 0.5em;
+}
+
+div#cv-view p {
+    padding-left: 0;
+}
+
+div#cv-view li  {
+    list-style: disc;
+    margin-left: 1em;
+}
+
+div#lastNav {
+    border-bottom: 1px dotted #d45500;
+}
+
+div#lastNav p, #logout {
+    color: #d45500;
+    font-size: small;
+    border-bottom: none;
+}
+
+
 
 }
 
@@ -539,7 +569,7 @@ Si vous ne souhaitez pas publier ces informations, il suffit de vous assurer que
 
 <div class="user-cv">
   <p><span class="inputlabel">CV:  </p>
-<div class="cv-view"></div>
+<div id="cv-view"></div>
   <textarea cols="80" rows="20" class="cv-write" id="cveditor" name="cveditor"></textarea>
   </input>
 </div>

@@ -400,11 +400,11 @@ $(document).ready(
         U.addBasic("cv",
                    {selector: "div.user-cv",
                     init: function(sel, $place, data) {
-                        $(sel + " div.cv-view", $place).html(data);
+                        $(sel + " div#cv-view", $place).html(data);
                         $(sel + " textarea.cv-write", $place).val(data);
                     },
                     update: function(sel, $place, data) {
-                        $(sel + " div.cv-view", $place).html(data);
+                        $(sel + " div#cv-view", $place).html(data);
 
                         // contents to get inside the iframe, first and 
                         // only elem is html.
@@ -413,7 +413,7 @@ $(document).ready(
                         $body.html(data);
                     },
                     deleteElem: function(sel, $place, data) {
-                        $(sel + " div.cv-view", $place).html('');
+                        $(sel + " div#cv-view", $place).html('');
                         var $ifrHtml = $($("#cveditor_ifr").contents()[0]);
                         var $body = $("body", $ifrHtml);
                         $body.html('');
