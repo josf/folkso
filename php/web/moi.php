@@ -2,7 +2,7 @@
   /**
    * @package Folkso
    * @author Joseph Fahey
-   * @copyright 2010 Gnu Public Licence (GPL)
+   * @copyright 2010-2011 Gnu Public Licence (GPL)
    * @subpackage webinterface
    */
 
@@ -138,7 +138,7 @@ else {
   }
 #endif 
 }
-
+$page_titre = 'Fabula - Page personnelle';
 require("/var/www/dom/fabula/commun3/head_libs.php");
 require("/var/www/dom/fabula/commun3/head_folkso.php");
 require("/var/www/dom/fabula/commun3/head_dtd.php");
