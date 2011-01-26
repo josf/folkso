@@ -690,7 +690,12 @@ function getUserData (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) 
   $df = new folksoDisplayFactory();
   $ud = $df->userData();
   $r->t($ud->startform());
-    
+
+  // leaving this here to get meaningful 
+  // error in case of problem.
+  require_once('HTMLPurifier.auto.php');
+  $pure = new HTMLPurifier();
+
   $r->t($ud->line(
                   $user->userid,
                   htmlspecialchars(excludeSQLnullKeyWord($user->firstName)),
@@ -700,7 +705,7 @@ function getUserData (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) 
                   htmlspecialchars(excludeSQLnullKeyWord($user->institution)),
                   htmlspecialchars(excludeSQLnullKeyWord($user->pays)),
                   htmlspecialchars(excludeSQLnullKeyWord($user->fonction)),
-                  excludeSQLnullKeyWord($user->cv),
+                  $pure->purify(excludeSQLnullKeyWord($user->cv)),
                   $user->eventCount
                   ));
   $r->t($ud->endform());
