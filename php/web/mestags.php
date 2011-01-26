@@ -367,6 +367,15 @@ require("/var/www/dom/fabula/commun3/html_start.php");
 <h1>Espace tags</h1>
 <div id="docContainer">
 <div id="docGenerale" class="quiet">
+
+<p><strong>Qu'est-ce qu'un <emph>tag</emph> ?</strong> Le terme anglais <emph>tag</emph> 
+désigne une étiquette ou <strong>mot clé</strong>. <a href="#" class="morelink">(suite)</a><span class="moretext">(Voir l'<a 
+ href="http://fr.wikipedia.org/wiki/Tag_%28m%C3%A9tadonn%C3%A9e%29">article Wikipédia</a>.)
+  Sur Fabula, les <emph>tags</emph> sont appliqués par les lecteurs afin de faciliter l'accès
+aux informations sur le site, de façon plus pertinente que les moteurs de recherche. Vous êtes 
+invité(e) à <emph>«&#160;tagger&#160;</emph> autant de pages que vous souhaitez. Ce faisant, 
+vous enrichissez le site pour tous les utilisateurs.</span></p>
+
 <p>
 <strong>Qu'est-ce que c'est ?</strong> Cette page vous permet de choisir des 
   <emph>tags</emph> qui vous intéressent, et de les <emph>suivre</emph> : chaque fois
@@ -375,16 +384,10 @@ require("/var/www/dom/fabula/commun3/html_start.php");
 un lien vers la ressource apparaîtra dans la liste <emph>Vos ressources</emph>, à droite.</span>
 </p>
 <p>
-Vous pouvez également gérer vos informations personnelles ici, si vous souhaitez 
-publiquement, et connaître les <emph>tags</emph> que vous appliquez le plus souvent.
+La page "Espace tags" vous donne également la possibilité de vous présenter et de publier 
+un mini-CV. 
 </p>
-<p><strong>Qu'est-ce qu'un <emph>tag</emph> ?</strong> Le terme anglais <emph>tag</emph> 
-désigne une étiquette ou <strong>mot clé</strong>. <a href="#" class="morelink">(suite)</a><span class="moretext">(Voir l'<a 
- href="http://fr.wikipedia.org/wiki/Tag_%28m%C3%A9tadonn%C3%A9e%29">article Wikipédia</a>.)
-  Sur Fabula, les <emph>tags</emph> sont appliqués par les lecteurs afin de faciliter l'accès
-aux informations sur le site, de façon plus pertinente que les moteurs de recherche. Vous êtes 
-invité(e) à <emph>«&#160;tagger&#160;</emph> autant de pages que vous souhaitez. Ce faisant, 
-vous enrichissez le site pour tous les utilisateurs.</span></p>
+
 </div>
 </div>
 
