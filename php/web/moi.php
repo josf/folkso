@@ -109,7 +109,15 @@ else {
 //    $debug .= '<p>userData failed to load as xml</p>';
 #endif
   }
-  else {  // process and build $userDataHtml which will be used in the page
+  else {  
+    // extract user name
+    $firstnameList = $userData_DOM->getElementsByTagName("firstname");
+    $lastnameList =  $userData_DOM->getElementsByTagName("lastname");
+    $firstname = $firstnameList->item(0)->textContent;
+    $lastname = $lastnameList->item(0)->textContent;
+    $fullname = $firstname . ' ' . $lastname;
+
+    // process and build $userDataHtml which will be used in the page
     $udataXsl = new DOMDocument();
     $udataXsl->load($loc->xsl_dir . "userdata_display.xsl");
     $udataProc = new XsltProcessor();
@@ -138,7 +146,7 @@ else {
   }
 #endif 
 }
-$page_titre = 'Fabula - Page personnelle';
+$page_titre = 'Fabula - Page personnelle de ' . $fullname;
 require("/var/www/dom/fabula/commun3/head_libs.php");
 require("/var/www/dom/fabula/commun3/head_folkso.php");
 require("/var/www/dom/fabula/commun3/head_dtd.php");
