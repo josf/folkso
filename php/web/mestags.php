@@ -167,6 +167,10 @@ a#addsub, a#userdata-send {
     border-bottom: none;
 }
 
+a#userdata-send {
+    margin-top: 8px; // ne marche pas, espace mangé par tinymce
+}
+
 div#currentTags {
     padding-top: 1.5em
 }
@@ -377,7 +381,7 @@ invité(e) à <emph>«&#160;tagger&#160;</emph> autant de pages que vous souhait
 vous enrichissez le site pour tous les utilisateurs.</span></p>
 
 <p>
-<strong>Qu'est-ce que c'est ?</strong> Cette page vous permet de choisir des 
+ <strong>A quoi sert votre «&#160;Espace Tags&#160;» ?</strong> Cette page vous permet de choisir des 
   <emph>tags</emph> qui vous intéressent, et de les <emph>suivre</emph> : chaque fois
   que quelqu'un applique l'un  de vos <emph>tags</emph><a href="#" class="morelink">(suite)</a><span class="moretext">  à une nouvelle ressource sur Fabula 
 (une annonce dans les nouvelles, un texte de l'Atelier,  un compte-rendu dans Acta Fabula, etc.),
