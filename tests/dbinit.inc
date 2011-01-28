@@ -2,7 +2,37 @@
 
 require_once('folksoTags.php');
 
-function test_db_init($megadynDefault = 10) {
+function test_db_init () {
+  //  truncate_all_tables();
+  system('mysql -u root --password=hellyes testostonomie < /home/joseph/sect/fab/testdump.sql');
+}
+
+function truncate_all_tables() {
+ $tables = array('user_subscription', 'ean13', 'exclude', 'tagevent',
+                  'memoize_tagnormal', 
+                  'note', 'replace_characters', 'resource',
+                  'tag',  
+                  'metatag', 'user_data', 'fb_ids', 'oid_urls', 'sessions', 'users_rights', 'users' );
+
+  $dbc = new folksoDBconnect('localhost', 'tester_dude', 'testy', 'testostonomie');
+  $i = new folksoDBinteract($dbc);
+
+  if (! $i->db instanceof mysqli) {
+    trigger_error("No mysqli object, cannot set things up.",
+                  E_USER_ERROR);
+  }
+
+  /** start over **/
+   foreach ($tables as $tab) {
+     $i->query("truncate table $tab");
+     if ($i->result_status == 'ERROR') {
+       print 'Truncating error: ' .  $i->error_info();
+     }
+   }
+}
+
+
+function db_initialize($megadynDefault = 10) {
 
   $tables = array('user_subscription', 'ean13', 'exclude', 'tagevent',
                   'memoize_tagnormal', 
@@ -18,15 +48,7 @@ function test_db_init($megadynDefault = 10) {
                   E_USER_ERROR);
   }
 
-
-  
-  /** start over **/
-   foreach ($tables as $tab) {
-     $i->query("truncate table $tab");
-     if ($i->result_status == 'ERROR') {
-       print 'Truncating error: ' .  $i->error_info();
-     }
-   }
+  truncate_all_tables();
 
 
   $user = array( 'marcelp' => array('Marcel', 'Proust', 'marcelp@temps.eu', 
@@ -37,7 +59,15 @@ function test_db_init($megadynDefault = 10) {
                                   543210, ''),
                  'vicktr' => array('Victor', 'Hugo', 'vhugo@guernsey.co.uk',
                                    0, 'http://myspace.com/victorhugo'),
-                 'michl' => array('Michel', 'de Montaigne', 'montaigne@mairie-bordeaux.fr', 0, 'http://michl2m.blogspot.com')
+                 'michl' => array('Michel', 'de Montaigne', 'montaigne@mairie-bordeaux.fr', 
+                                  0, 'http://michl2m.blogspot.com'),
+                 'pascal75' => array('Blaise', 'Pascal', 'blaisep@port-royal.fr', 
+                                     0, 'http://flickr.com/photos/pascal75'),
+                 'descartes' => array('Réné', 'Descartes', 'je@am.me', 
+                                      1233455, ''),
+                 'chuckyb' => array('Charles', 'Baudelaire', 'charlesb@interflora.com', 0, 
+                                    'http://myspace.com/charlesbaudlr'),
+                 'zola' => array('Emile', 'Zola', 'ezola@wikileeeks.com', 2122112, '')
                  );
 
 
@@ -159,7 +189,7 @@ function test_db_init($megadynDefault = 10) {
     }
 
     foreach ($tags as $t) {
-      $i->sp_query("call tag_resource('gustav-2010-001', 'http://example.com/1', '', '$t', '', '', 1 )");
+      $i->sp_query("call tag_resource('gustav-2011-001', 'http://example.com/1', '', '$t', '', '', 1 )");
       if ($i->db_error()) { 
         print "bad tag resource<br/>";
         print $i->error_info();
@@ -168,7 +198,7 @@ function test_db_init($megadynDefault = 10) {
 
     foreach ($dynreslist as $dres => $dtags) {
       foreach ($dtags as $dyno) {
-        $i->sp_query("call tag_resource('gustav-2010-001', '$dres', '', '$dyno', '', '', 1)");
+        $i->sp_query("call tag_resource('gustav-2011-001', '$dres', '', '$dyno', '', '', 1)");
         if ($i->db_error()) {
           print "bad dynamic tag resource<br/>";
           print $i->error_info();
@@ -177,20 +207,20 @@ function test_db_init($megadynDefault = 10) {
     }
 
     $i->query("insert into users_rights (userid, rightid) values "
-              ."('rambo-2010-001', 'redac'), "
-              ."('rambo-2010-001', 'create'), "
-              ."('marcelp-2010-001', 'tag'), "
-              ."('marcelp-2010-001', 'create'), "
-              ."('marcelp-2010-001', 'redac'), "
-              ."('vicktr-2010-001', 'admin'), "
-              ."('gustav-2010-001', 'redac')");
+              ."('rambo-2011-001', 'redac'), "
+              ."('rambo-2011-001', 'create'), "
+              ."('marcelp-2011-001', 'tag'), "
+              ."('marcelp-2011-001', 'create'), "
+              ."('marcelp-2011-001', 'redac'), "
+              ."('vicktr-2011-001', 'admin'), "
+              ."('gustav-2011-001', 'redac')");
 
     $i->query('insert into user_subscription (userid, tag_id) values '
-              . " ('rambo-2010-001', 1), "
-              . " ('rambo-2010-001', 2), "
-              . " ('rambo-2010-001', 3), "
-              . " ('rambo-2010-001', 8), "
-              . " ('rambo-2010-001', 14) ");
+              . " ('rambo-2011-001', 1), "
+              . " ('rambo-2011-001', 2), "
+              . " ('rambo-2011-001', 3), "
+              . " ('rambo-2011-001', 8), "
+              . " ('rambo-2011-001', 14) ");
 
     //    $i->query("insert into fb_ids (userid, fb_uid) values "
     //              ." ('rambo-2010-001', 123456) ");
