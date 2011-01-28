@@ -66,5 +66,12 @@ class folksoOnServer extends folksoInteract {
     return $r;
    }
   
+  public function getUserSubs (folksoUser $u) {
+    $r = userSubscriptions(new folksoQuery(array(), array(),
+                                           array('folksouid' => $u->userid)),
+                           $this->dbc, 
+                           $this->dummy_fks);
+    return $r;
+  }
 
 }

@@ -92,6 +92,7 @@ $debug = '';
 $fkint = new folksoOnServer($dbc);
 $userDataReq = $fkint->userDataReq($u);
 $userFaveReq = $fkint->userFavoriteTags($u);
+$userSubsReq = $fkint->getUserSubs($u);
 
 if (! ($userDataReq->status  == 200)) {
   $noUserData = true;
@@ -147,6 +148,23 @@ else {
 #endif 
 }
 $page_titre = 'Fabula - Page personnelle de ' . $fullname;
+
+if ($userSubsReq->status !== 200) {
+  $noUserSubs = true;
+}
+else {
+  $userSubs_DOM = new DOMDocument();
+  $userSubs_DOM->loadXML($userSubsReq->body());
+  
+  $userSubsXsl = new DOMDocument();
+  $userSubsXsl->load($loc->xsl_dir . 'usersubs_display.xsl');
+  $userSubsProc = new XsltProcessor();
+  $userSubsXsl = $userSubsProc->importStylesheet($userSubsXsl);
+  $userSubsTrans = $userSubsProc->transformToDoc($userSubs_DOM);
+  $userSubsHtml = $userSubsTrans->saveXML();
+}
+
+
 require("/var/www/dom/fabula/commun3/head_libs.php");
 require("/var/www/dom/fabula/commun3/head_folkso.php");
 require("/var/www/dom/fabula/commun3/head_dtd.php");
@@ -184,15 +202,36 @@ require("/var/www/dom/fabula/commun3/html_start.php");
     print "<p>Les informations concernant cet utilisateur ne sont pas disponibles actuellement.</p>";
   }
   else {
-    print $userDataHtml;
-    
-    if (strlen($userFaveHtml) > 0) {
-      print $userFaveHtml;
-    }
+    ?>
+    <div  id="basicPresentation">
+    <?php print $userDataHtml; ?>
+
+
+    </div>
+<?php
   }
 ?>
-<a href="/tags/mestags.php">Éditer mes propres informations</a>
-</div></div>
+<a href="/tags/mestags.php">Éditer mes propres informations (Espace Tags)</a>
+</div>
+<div id="colonnes-deux">
+  <div id="decoration-holder">&#160;</div>
+      <?php 
+  if (strlen($userSubsHtml) > 0) {
+    print $userSubsHtml;
+  }
+  else {
+    print $userSubsReq->status;
+
+  }
+
+
+      if (strlen($userFaveHtml) > 0) {
+        print $userFaveHtml;
+      }
+      ?>
+
+</div>
+</div>
 <?php
 
 include("/var/www/dom/fabula/commun3/foot.php");
