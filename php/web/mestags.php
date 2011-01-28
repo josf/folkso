@@ -421,7 +421,7 @@ print $fp->facebookConnectButton();
 
 
 
-<div id="user-intro" class="login-only span-15 prepend-bottom">
+<div id="user-intro" class="login-only span-15">
 <div class="span-6" id="greeting">
 <p>Bonjour <span class="userhello"></span> !</p>
  <p id="loggedVia" class="quiet">Loggé(e) via <span id="loginSource"></span></p>
@@ -447,7 +447,7 @@ if ($userUrl) {
 
 <p id="tag-brag" class="login-only quiet">Vous avez appliqué <span id="tagcount"></span> tags.</p>
 
-<div id="currentTags" class="span-15 login-only prepend-bottom">
+<div id="currentTags" class="span-15 login-only">
 <div id="subscriptions" class="login-only  span-7">
 <h2>Vos abonnements</h2>
   <p>Les tags auxquels vous êtes actuellement abonné(e) : </p>
@@ -464,7 +464,7 @@ if ($userUrl) {
 </div>
 </div>
 
-<div id="newsubscriptions" class="login-only">
+<div id="newsubscriptions" class="login-only span-15">
 <h2>Vous abonner à de nouveaux tags</h2> 
 <p>Choisir un nouveau tag:</p>
 <input type="text" class="fKTaginput login-only" id="newsubbox" size="60">
