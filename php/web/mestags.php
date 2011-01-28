@@ -100,7 +100,7 @@ div.doc .doc-content {
 }
 
 div#title-and-docs {
-    height: 300px;
+    min-height: 300px;
     padding-left: 220px;
     background: url('/tags/images/taglogo.png') 0% 40%;
     background-repeat: no-repeat;
@@ -165,6 +165,10 @@ a#addsub, a#userdata-send {
     font-weight: bold;
     padding: 2px;
     border-bottom: none;
+}
+
+div#newsubscriptions {
+    padding-top: 1em;
 }
 
 a#userdata-send {
