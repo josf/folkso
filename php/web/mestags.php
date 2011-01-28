@@ -382,8 +382,8 @@ vous enrichissez le site pour tous les utilisateurs.</span></p>
 
 <p>
  <strong>A quoi sert votre «&#160;Espace Tags&#160;» ?</strong> Cette page vous permet de choisir des 
-  <emph>tags</emph> qui vous intéressent, et de les <emph>suivre</emph> : chaque fois
-  que quelqu'un applique l'un  de vos <emph>tags</emph><a href="#" class="morelink">(suite)</a><span class="moretext">  à une nouvelle ressource sur Fabula 
+  <emph>tags</emph> qui vous intéressent, et de les <emph>suivre</emph>.  <a href="#" class="morelink">(suite)</a><span class="moretext">Chaque fois
+  que quelqu'un applique l'un  de vos <emph>tags</emph>  à une nouvelle ressource sur Fabula 
 (une annonce dans les nouvelles, un texte de l'Atelier,  un compte-rendu dans Acta Fabula, etc.),
 un lien vers la ressource apparaîtra dans la liste <emph>Vos ressources</emph>, à droite.</span>
 </p>
