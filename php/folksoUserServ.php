@@ -351,8 +351,21 @@ function userSubscriptions (folksoQuery $q,
   $r = new folksoResponse();
   $u = $fks->userSession();
 
-  if (! $u instanceof folksoUser) {
+  /*  A Zuckerberg moment: I decide that subscriptions are public data 
+      if (! $u instanceof folksoUser) {
     return $r->unAuthorized($u);
+    }*/
+
+  if ($q->is_param('uid')) {
+    $userId = $q->get_param('uid');
+  }
+  elseif ($u instanceof folksoUser) {
+    $userId = $u->userid;
+  }
+  else {
+    return $r->setError(404, "User not identified", 
+                        "No information was supplied to identify the user. "
+                        . " Try logging in first.");
   }
 
   try {
@@ -362,7 +375,7 @@ function userSubscriptions (folksoQuery $q,
                    .' from tag t '
                    .' join user_subscription us on us.tag_id = t.id '
                    ." where us.userid = '%s'",
-                   $i->dbescape($u->userid));
+                   $i->dbescape($userId));
     $i->query($sql);
   }
   catch (dbException $e) {
