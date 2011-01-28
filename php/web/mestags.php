@@ -419,6 +419,7 @@ OpenId
 </div>
 
 <div id="tabs-2">
+<div id="fb-root"></div>
 <?php
 
 print $fp->facebookConnectButton(); 
