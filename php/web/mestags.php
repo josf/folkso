@@ -276,14 +276,18 @@ display: inline;
 <link rel="stylesheet" type="text/css" href="/tags/css/jquery-ui-1.8.4.custom.css" media="screen"/>
 
 
-<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.js"></script>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.js"></script> 
+
+
+
 <script type="text/javascript"
   src="/tags/js/tinymce/jscripts/tiny_mce/jquery.tinymce.js">
 </script>
 <script type="text/javascript" src="/tags/js/jquery-ui-1.8.4.custom.min.js"></script>
-<script 
+<script src="http://connect.facebook.net/en_US/all.js"></script>
+<!-- <script 
   src="http://static.ak.connect.facebook.com/js/api_lib/v0.4/FeatureLoader.js.php/en_US" 
-  type="text/javascript"></script>
+  type="text/javascript"></script> -->
 <script type="text/javascript" src="/tags/js/jquery.folksodeps.js"></script>
 <script type="text/javascript" src="/tags/js/folksonomie.min.js"></script> 
 
