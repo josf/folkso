@@ -7,17 +7,23 @@
 
 
   <xsl:template match="taglist">
-    <xsl:element name="h4">
-      <xsl:text>Tags les plus fréquents</xsl:text>
-    </xsl:element>
-    <xsl:element name="p">
-      <xsl:text>Les tags que cet utilisateur applique le plus souvent.</xsl:text>
-    </xsl:element>
-    <xsl:element name="ul">
+
+    <xsl:element name="div">
       <xsl:attribute name="class">favorite-tags</xsl:attribute>
-      <xsl:apply-templates/>
+      <xsl:element name="h4">
+        <xsl:text>Tags les plus fréquents</xsl:text>
+      </xsl:element>
+      <xsl:element name="p">
+        <xsl:text>Les tags que cet utilisateur applique le plus souvent.</xsl:text>
+      </xsl:element>
+      <xsl:element name="ul">
+        <xsl:attribute name="class">favorite-tags</xsl:attribute>
+        <xsl:apply-templates/>
+      </xsl:element>
     </xsl:element>
+
   </xsl:template>
+
 
   <xsl:template match="tag">
     <xsl:element name="li">
