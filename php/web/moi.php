@@ -172,7 +172,72 @@ require("/var/www/dom/fabula/commun3/head_dtd.php");
 print "<html>\n<head>";
 
 require("/var/www/dom/fabula/commun3/head_meta.php");
+
+?>
+<link rel="stylesheet" href="/tags/css/blueprint/screen.css" type="text/css" media="screen, projection"/>
+<link rel="stylesheet" href="/tags/css/blueprint/print.css" type="text/css" media="print"/>	
+<!--[if lt IE 8]><link rel="stylesheet" href="/tags/css/blueprint/ie.css" type="text/css" media="screen, projection"><![endif]-->
+
+<?php 
+
 require("/var/www/dom/fabula/commun3/head_css.php");
+
+?>
+
+<style>
+
+dl.user-data-list {
+    padding-top: 0.7em;
+}
+
+dl.user-data-list dt {
+    font-size: smaller;
+}
+
+dl.user-data-list dd {
+    padding-top: 0.5em;
+    padding-left: 2em;
+    margin-bottom: 0.7em;
+}
+
+ul.favorite-tags li, div.user-subs li {
+    list-style: disc;
+    display: inline;
+    margin-right: 1em;
+}
+
+div.cv-text {
+    padding: 1em;
+    border: 1px dotted gray;
+    margin-bottom: 0.5em;
+}
+
+div.user-subs, div.favorite-tags {
+    margin-top: 1em;
+}
+
+div.user-subs h4, div.favorite-tags h4 {
+    font-weight: bold;
+    padding-bottom: 0.3em;
+}
+
+div.user-subs a, ul.favorite-tags a, div.user-subs a:visited, ul.favorite-tags a:visited, div.user-subs a:link, ul.favorite-tags a:link {
+    border-bottom: none;
+}
+
+#decoration-holder {
+    padding-top: 100px;
+    background-image: url('/tags/images/taggroup.png');
+    background-repeat: no-repeat;
+    background-position: 50% 0%;
+}
+
+div.cv-text ul li {
+    list-style: disc;
+    margin-left: 1em;
+}
+</style>
+<?php
 
 require("/var/www/dom/fabula/commun3/head_javascript_folkso.php");
 
