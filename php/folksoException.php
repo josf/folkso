@@ -46,3 +46,5 @@ class badUrlbaseException extends userException { }
 class rightException extends userException { }
 class rightAlreadyPresentException extends rightException { }
 class rightInvalidException extends rightException { }
+
+class folksoFacebookException extends Exception {}

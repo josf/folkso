@@ -188,25 +188,30 @@ function loginFBuser (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) 
     return $r;
   }
 
-
   $loc = new folksoFabula();
-  $fb = new Facebook($loc->snippets['facebookApiKey'],
-                     $loc->snippets['facebookSecret']);
+  $faceHelp = new folksoFacebookHelper($loc);
+  try {
+    $faceHelp->init();
+  }
+  catch (FacebookApiException $e) {
+    return $r->setError(500, "Facbook API error", 
+                        "Somemthing strange happened. This might be somebody else's fault.");
+  }
+
+
+
   $fbu = new folksoFBuser($dbc);
 
-  $fb_uid = $fb->get_loggedin_user();
-
-  if (! $fb_uid) {
+  if (! $faceHelp->uid()) {
     return $r->setError(400, "Insufficient information",
                  'Unable to obtain necessary login information');
-
   }
   else {
 
     /** user already known **/
-    if ($fbu->exists($fb_uid)) {
+    if ($fbu->exists($faceHelp->uid())) {
       $fks = new folksoSession($dbc);
-      $u = $fbu->userFromLogin($fb_uid);
+      $u = $fbu->userFromLogin($faceHelp->uid());
       try {
         $fks->startSession($u->userid);
         $r->setOk(200, "User found, session started");
@@ -235,21 +240,28 @@ function loginFBuser (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) 
  */
 function createFBuser (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
 
-  $loc = new folksoFabula();
-  $fb = new Facebook($loc->snippets['facebookApiKey'],
-                     $loc->snippets['facebookSecret']);
-  $fbu = new folksoFBuser($dbc);
   $r = new folksoResponse();
+  $loc = new folksoFabula();
+  $faceHelp = new folksoFacebook($loc);
+
+  try {
+    $faceHelp->init();
+  }
+  catch (FacebookApiException $e) {
+    return $r->setError(500, "Facebook API Error", "This might not be our fault");
+  }
+
+  $fbu = new folksoFBuser($dbc);
+
 
   /*
    * Getting the FB user depends on cookies available to the Facebook API.
    */
-  $fb_uid = $fb->get_loggedin_user();
-  if (! $fb_uid) {
+  if (! $faceHelp->uid()) {
     return $r->setError(400, "Insufficient information",
                  'Unable to obtain necessary login information. Are you logged in to Facebook?');
   }
-  $fbu->setLoginId($fb_uid);
+  $fbu->setLoginId($faceHelp->uid());
 
   try {
     $fbu->writeNewUser();
