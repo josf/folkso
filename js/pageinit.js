@@ -146,6 +146,7 @@ fK.fb.onLogin = function() {
                         fK.fb.unLoggedUser = function()
                         {
                             fK.fbLogin = false;
+                            $(fK.events).trigger("loggedOut");
                             // Do nothing. See above.
                             // $('body').trigger('loggedOut');
                         };
@@ -156,13 +157,41 @@ fK.fb.onLogin = function() {
                          *  fK.cf.facebookReload is set, we reload instead.
                          */
                         if (FB && fK.fb.sitevars) {
-                            FB.init(fK.fb.sitevars.apikey,
-                                    fK.fb.sitevars.xdm,
-                                    fK.cf.facebookReload ? 
-                                    {"reloadIfSessionStateChanged" : true } 
-                                    : {"ifUserConnected": fK.fb.loggedUser,
-                                       "ifUserNotConnected": fK.fb.unLoggedUser}
-                                   );
+                            FB.init({
+                                        appId: fK.fb.sitevars.apikey,
+                                        status: true,
+                                        cookie: true,
+                                        xfbml: true});
+
+                            FB.Event.subscribe('auth.login',
+                                               function() {
+                                                   /* CLAG(console.log("FB auth login fired");) */
+                                                   fK.fb.loggedUser();
+                                               });
+                            FB.Event.subscribe('auth.logout',
+                                               function() {
+                                                   /* CLAG(console.log("FB auth logout event fired");) */
+                                                   fK.fb.unLoggedUser();
+                                               });
+
+
+                            /* Runs only on initial page load */
+                            FB.getLoginStatus(
+                                function(resp) {
+                                    if (resp.session) {
+                                        /* CLAG(console.log("FB.getLoginStatus: resp.session is true");)*/
+                                        /* CLAG(console.log(resp.session);) */
+                                        fK.fb.loggedUser();
+                                    }
+                                    else {
+                                        /* CLAG(console.log("FB.getLoginStatus: resp.session is false");) */
+                                        $("#fb-login").click(
+                                            function(ev) {
+                                                ev.preventDefault();
+                                                FB.login();
+                                            });
+                                    }
+                                });
                         }
 
                         var hostAndPath = '/tags/';
