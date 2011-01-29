@@ -23,7 +23,7 @@ require("/var/www/dom/fabula/commun3/head_folkso.php");
 $page_titre = 'Fabula - Espace tags et gestion de compte';
 $loggedIn = false;
 $redacRight = false;
-$adminRight = true;
+$adminRight = false; // this was "true" before. why?
 
 if ($fks->status()) {
     $loggedIn = true;
