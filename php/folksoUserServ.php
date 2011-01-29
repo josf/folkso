@@ -815,6 +815,37 @@ function getFavoriteTags (folksoQuery $q, folksoDBconnect $dbc, folksoSession $f
   catch(dbException $e) {
     return $r->handleDBexception($e);
   }
+}
+
+class folksoFacebookHelper {
+  public $fb;
+  private $uid;
+  private $session;
+
+  function __construct (folksoFabula $loc) {
+    $this->fb = new Facebook(
+                             array('appId' => $loc->snippets['facebookApiKey'], 
+                                   'secret' => $loc->snippets['facebookSecret'],
+                                   'cookie' => true));
+  }
+
+  /**
+   * should be called inside a try block, catching FacebookApiException
+   */ 
+  function init () {
+    if (! $this->session) {
+      $this->session = $this->fb->getSession();
+    }
+    $this->uid = $this->fb->getUser();
+  }
+
+  function uid () {
+    if (! $this->session) {
+      throw new folksoFacebookException("folksoFacebookHelper does not have a valid session. "
+                                        ." init() method should have been called first");
+    }
+    return $this->uid;
+  }
 
 
 }
