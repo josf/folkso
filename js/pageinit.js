@@ -82,6 +82,7 @@ fK.fb.onLogin = function() {
 
                         $(fK.events).bind('loggedIn',
                                        function() {
+                                           /* CLAG(console.log("pageinit: loggedIn triggered");) */
                                            $("#fbkillbox", fK.cf.container).hide();
                                            $(".fKTagbutton").show();
                                            $(".fKTaginput", fK.cf.container).show();
@@ -101,6 +102,7 @@ fK.fb.onLogin = function() {
 
                         $(fK.events).bind('loggedOut',
                                        function() { 
+                                           /* CLAG(console.log("pageinit: loggedOut triggered");) */
                                            fK.loginStatus = false;
                                            if ($.cookie('folksofblogin')) {
                                                $.cookie("folksofblogin",
@@ -117,7 +119,7 @@ fK.fb.onLogin = function() {
                         fK.fb.loggedUser = function()
                         {
                             fK.fn.completeFBlogin(
-                                function()
+                                function() // the okFunc
                                 { 
                                     if (fK.loginStatus === false) {
                                         $(fK.events).trigger('loggedIn');
