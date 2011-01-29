@@ -262,7 +262,7 @@ fK.fb.onLogin = function() {
                                 function(ev){
                                     ev.preventDefault();
                                     if ($.cookie('folksofblogin') == "fb") {
-                                        FB.Integration.logout(
+                                        FB.logout(
                                             function()
                                             {
                                                 $.cookie("folksosess", null,
