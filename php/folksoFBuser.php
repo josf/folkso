@@ -5,7 +5,7 @@
    * @package Folkso
    * @subpackage
    * @author Joseph Fahey
-   * @copyright 2009 Gnu Public Licence (GPL)
+   * @copyright 2009-2011 Gnu Public Licence (GPL)
    */
 require_once('folksoUser.php');
   /**
