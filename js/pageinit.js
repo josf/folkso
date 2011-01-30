@@ -54,6 +54,10 @@ fK.fb.onLogin = function() {
 
                         // setup according to login state
                         fK.cf.container = $("#folksocontrol");
+
+                        /* CLAG(if ($("#folksocontrol").length  == 0) 
+                          {console.error("folksocontrol div not found"); } )*/
+
                         
                         // temporary (Open Id disabled)
                         $(".fKLoginButton", fK.cf.container).hide();
@@ -90,7 +94,7 @@ fK.fb.onLogin = function() {
                                            $("fb:login-button").hide();
                                            $("#login-tabs").hide();
                                            $("#logout, #logout2").show();
-                                           $("ul.provider_list").hide();
+  //                                          $("ul.provider_list").hide();
                                            $(".firstLogin", fK.cf.container).hide();
                                            $("#folkso-nav").show();
                                            fK.loginStatus = true;
@@ -104,6 +108,13 @@ fK.fb.onLogin = function() {
                                        function() { 
                                            /* CLAG(console.log("pageinit: loggedOut triggered");) */
                                            fK.loginStatus = false;
+                                           $(".fKTaginput", fK.cf.container).hide();
+                                           $(".fKLoginButton", fK.cf.container).show();
+                                           $("fb:login-button").show();
+                                           $("#login-tabs").hide();
+                                           $("#logout, #logout2").hide();
+//                                           $("ul.provider_list", fK.cf.container).hide();
+                                           $("#folkso-nav").hide();
                                            if ($.cookie('folksofblogin')) {
                                                $.cookie("folksofblogin",
                                                         null,
