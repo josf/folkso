@@ -35,9 +35,15 @@ if (strlen($rawUser) > 255) {
   $rawUser = null;
 }
 
-$fb = new Facebook($loc->snippets['facebookApiKey'],
-                   $loc->snippets['facebookSecret']);
-$fb_uid = $fb->get_loggedin_user();
+/*$faceHelp = new folksoFacebookHelper($loc);
+if ($faceHelp->sessionCheck()) {
+  $u = new folksoFBuser($dbc);
+  $u->userFromLogin($faceHelp->uid());
+}
+else {
+
+  }*/
+
 
 // check the userid param first. If someone asks for this, then they know what they want
 if ($rawUser) {
