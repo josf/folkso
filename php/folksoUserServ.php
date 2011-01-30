@@ -859,5 +859,21 @@ class folksoFacebookHelper {
     return $this->uid;
   }
 
-
+  /**
+   * A wrapper for init. To be used when we might not have a session.
+   */
+  function sessionCheck () {
+    try {
+      $this->init();
+      if ($this->session) {
+        return true;
+      }
+      else {
+        return false;
+      }
+    }
+    catch (FacebookApiException $e) {
+      return false;
+    }
+  }
 }
