@@ -1,3 +1,4 @@
+changecom(`@@@')
 define(`LOG',
         ifdef(`DEBUG', `$1'))
 define(`CLAG',
