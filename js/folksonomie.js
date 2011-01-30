@@ -698,9 +698,19 @@
                  tagbox = arguments[0],
                  target = arguments[1],
                  url = arguments[2] || window.location;
+                 /* CLAG(
+                 console.log("tagres react" + arguments[2]);
+                  ) */
+
 
                  return function(ev) {
                      ev.preventDefault();
+
+                     var thisUrl = url;
+/*                  CLAG(console.log("tagres_react url  " + thisUrl);) */
+                     /* CLAG(console.log("tagres_react target");
+                      console.log(target));
+                      */
                      if (tagbox.val().length < 2) {
                          alert("Il faut choisir un tag d'abord"); return;
                      }
@@ -749,7 +759,7 @@
                      },
                      tagAjax = function() {
                          $.ajax( fK.fn.resPostObject({folksotag: tag,
-                                                      folksores: url },
+                                                      folksores: thisUrl + "" },
                                                      onSuccess,
                                                      fK.fn.errorChoose(error404,
                                                                        error401,
