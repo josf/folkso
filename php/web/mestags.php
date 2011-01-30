@@ -285,9 +285,6 @@ display: inline;
 </script>
 <script type="text/javascript" src="/tags/js/jquery-ui-1.8.4.custom.min.js"></script>
 <script src="http://connect.facebook.net/en_US/all.js"></script>
-<!-- <script 
-  src="http://static.ak.connect.facebook.com/js/api_lib/v0.4/FeatureLoader.js.php/en_US" 
-  type="text/javascript"></script> -->
 <script type="text/javascript" src="/tags/js/jquery.folksodeps.js"></script>
 <script type="text/javascript" src="/tags/js/folksonomie.min.js"></script> 
 
