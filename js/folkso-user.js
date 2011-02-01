@@ -96,7 +96,9 @@ $(document).ready(
                                                      }),
                                     notLogged,
                                     function() {
-                                        alert("Resource list problem");
+                                        if (! $.browser.msie) {
+                                            alert("Resource list problem");
+                                        }
                                     }));
         getRecently_aj.dataType = "xml";
 
@@ -185,13 +187,16 @@ $(document).ready(
         };
 
 
-        var getList_aj = fK.fn.userGetObject({folksosubscribed: 1},
-                                             gotList,
-                                             fK.fn.errorChoose(err204, notLogged,
-                                                               function(xhr, textStatus, e) { 
-                                                                   alert("list getting failed"); 
-                                                 })
-                                             );
+        var getList_aj = 
+            fK.fn.userGetObject({folksosubscribed: 1},
+                                gotList,
+                                fK.fn.errorChoose(err204, notLogged,
+                                                  function(xhr, textStatus, e) { 
+                                                      if (! $.browser.msie) {
+                                                          alert("list getting failed"); 
+                                                      }
+                                                  })
+                               );
 
         // tag needs to be defined before using this
         var addSub_aj = fK.fn.userPostObject({folksoaddsubscription: 1,
@@ -200,7 +205,9 @@ $(document).ready(
                                              fK.fn.errorChoose(
                                                  notLogged,
                                                  function(xhr, status, e) {
-                                                 alert("Add subscription failed");
+                                                     if (! $.browser.msie) {
+                                                         alert("Add subscription failed");
+                                                     }
                                                  }
                                              ));
         addSub_aj.complete = function(xhr, status) {
@@ -521,13 +528,9 @@ $(document).ready(
                     notLogged,
                     noUserData,
                     function(xhr, tS, e) { 
-                        alert("Error retrieving user data. " +  xhr.status);
-/*
-#ifdef DEBUG
-                        if (window.console) 
-                            console.log("status: " + xhr.status);
-#endif
-*/
+                        if (! $.browser.msie) {
+                            alert("Error retrieving user data. " +  xhr.status);
+                        }
                     }
                 ));
         getUser_aj.dataType = "xml";
@@ -595,7 +598,9 @@ $(document).ready(
                         fK.fn.errorChoose(noFaves, notLogged, // does not work here because we 
                                           // are asking for json, not xml...
                                           function(xhr, textStatus, e) {
-                                              alert("Problem getting favorites: " + textStatus);
+                                              if (! $.browser.msie) {
+                                                  alert("Problem getting favorites: " + textStatus);
+                                              }
                                           })
                 ));
             }
