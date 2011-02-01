@@ -5,7 +5,7 @@
 $(document).ready(
     function()
     {
-//        var hostAndPath = 'http://localhost/';
+        /* CLAG(console.log("document.ready starting: from folkso-user");) */
         var hostAndPath = '/tags/';
         fK.init({
 //                    autocompleteUrl: hostAndPath + 'tagcomplete.php',
@@ -604,11 +604,8 @@ $(document).ready(
 //       $(fK.events).unbind('loggedIn');
        $(fK.events).bind('loggedIn',
                          function() {
-/*
-#ifdef DEBUG 
-                           console.debug("loggedIn just got triggered. " +
-                                       " loginStatus was " + fK.loginStatus);
-#endif */
+                             /* CLAG(console.debug("loggedIn just got triggered. " +
+                              " loginStatus was " + fK.loginStatus);) */
                              $(".login-only").show();
                              $("h1.not-logged").hide();
                            $("#fbstuff").hide();
@@ -622,6 +619,7 @@ $(document).ready(
 
         $(fK.events).bind('FBlogin',
                           function() {
+                              /* CLAG(console.log("FBlogin event fired");) */
                               $("#loggedVia").show();
                               $("#loginSource").html("Facebook");
                           });
@@ -636,11 +634,8 @@ $(document).ready(
 //        $(fK.events).unbind('loggedOut');
         $(fK.events).bind('loggedOut',
                        function() {
-/*
-#ifdef DEBUG 
-                           console.debug("loggedOut just got triggered. " + 
-                                        "loginStatus was " + fK.loginStatus);
-#endif */
+/*                           CLAG(console.debug("loggedOut just got triggered. " + 
+                                        "loginStatus was " + fK.loginStatus);) */
                            $('div.login-only').hide();
                            $('p.login-only').hide();
                            $("h1.not-logged").show();
