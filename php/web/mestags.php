@@ -243,7 +243,7 @@ div#lastNav p, #logout {
 
 
 
-}
+
 
 <?php 
 if (!$loggedIn) {
