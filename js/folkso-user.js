@@ -648,7 +648,7 @@ $(document).ready(
                            $("#login-tabs").show();
                            var $oidTab = $("#tabs-1");
                            if ($("ul", $oidTab).length === 0) {
-                               $oidTab.append(fK.oid.providerList());
+                               $oidTab.append(fK.oid.providerList()); 
                            }
                        });
 
