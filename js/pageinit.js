@@ -55,9 +55,15 @@ fK.fb.onLogin = function() {
                         // setup according to login state
                         fK.cf.container = $("#folksocontrol");
 
+
+                        /*
+                         * Setup login tabs (cloud only)
+                         */
+                        $("#login-tabs").tabs();
+
+
                         /* CLAG(if ($("#folksocontrol").length  == 0) 
                           {console.error("folksocontrol div not found"); } )*/
-
                         
                         // temporary (Open Id disabled)
                         $(".fKLoginButton", fK.cf.container).hide();
@@ -78,11 +84,6 @@ fK.fb.onLogin = function() {
                                   $("#bloc_folkso")).hide();
 
                             });
-
-                        /*
-                         * Setup login tabs (cloud only)
-                         */
-                        $("#login-tabs").tabs();
 
                         $(fK.events).bind('loggedIn',
                                        function() {
