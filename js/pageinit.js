@@ -177,6 +177,7 @@ fK.fb.onLogin = function() {
                             FB.Event.subscribe('auth.login',
                                                function() {
                                                    /* CLAG(console.log("FB auth login fired");) */
+                                                   /* CLAG(console.log("fK.fb.loggedUser called");) */
                                                    fK.fb.loggedUser();
                                                });
                             FB.Event.subscribe('auth.logout',
@@ -192,6 +193,7 @@ fK.fb.onLogin = function() {
                                     if (resp.session) {
                                         /* CLAG(console.log("FB.getLoginStatus: resp.session is true");)*/
                                         /* CLAG(console.log(resp.session);) */
+                                        /* CLAG(console.log("fK.fb.loggedUser called on load");) */
                                         fK.fb.loggedUser();
                                     }
                                     else {
