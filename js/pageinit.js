@@ -248,7 +248,7 @@ fK.fb.onLogin = function() {
                             notLogged();
                         }
 
-                        $("input.fKTaginput", fK.cf.container)
+                        $("input.fKTaginput")
                             .autocomplete({source: fK.cf.autocompleteUrl,
                                           minLength: 2});
                         $("input.fKTaginput", $("#newsubscriptions"))
