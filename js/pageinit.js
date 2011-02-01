@@ -76,7 +76,6 @@ fK.fb.onLogin = function() {
                                 /* Insert Open Id provider list */
                                 var $oidTab = $("#tabs-1");
                                 if ($("ul", $oidTab).length === 0) {
-//                                    console.log("No ul in tabs-1");
                                     $oidTab.append(fK.oid.providerList());
                                 }
                                 
@@ -88,6 +87,7 @@ fK.fb.onLogin = function() {
                         $(fK.events).bind('loggedIn',
                                        function() {
                                            /* CLAG(console.log("pageinit: loggedIn triggered");) */
+
                                            $("#fbkillbox", fK.cf.container).hide();
                                            $(".fKTagbutton").show();
                                            $(".fKTaginput", fK.cf.container).show();
