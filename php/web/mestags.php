@@ -273,7 +273,7 @@ display: inline;
 #login-tabs { display: none; } 
 </style>
 
-<link rel="stylesheet" type="text/css" href="/tags/css/jquery-ui-1.8.4.custom.css" media="screen"/>
+<link rel="stylesheet" type="text/css" href="/tags/css/jquery-ui-1.8.9.custom.css" media="screen"/>
 
 
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.js"></script> 
@@ -283,7 +283,7 @@ display: inline;
 <script type="text/javascript"
   src="/tags/js/tinymce/jscripts/tiny_mce/jquery.tinymce.js">
 </script>
-<script type="text/javascript" src="/tags/js/jquery-ui-1.8.4.custom.min.js"></script>
+<script type="text/javascript" src="/tags/js/jquery-ui-1.8.9.custom.min.js"></script>
 <script src="http://connect.facebook.net/en_US/all.js"></script>
 <script type="text/javascript" src="/tags/js/jquery.folksodeps.js"></script>
 <script type="text/javascript" src="/tags/js/folksonomie.min.js"></script> 
