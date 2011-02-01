@@ -134,7 +134,7 @@ fK.ufn.loggedIn = function() {
                       . $fp->fbJsVars());
 ?>
 </head>
-<body><div id="titre_fab_imprimer"/>Fabula, la recherche en littérature ()</div>
+<body><div id="titre_fab_imprimer"/>Fabula, la recherche en littérature ()</div><div id="fb-root"></div>
 <div id="container"/>
 <div id="header"/>
   <div id="titre"/><img src="http://www.fabula.org/commun3/titre.gif" alt="Fabula, la recherche en littérature"/> </div>
