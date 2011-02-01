@@ -98,8 +98,10 @@ div.doc-expert {
 display: none;
 }
 </style>
-
+<script type="text/javascript" src="/tags/js/jquery.folksodeps.js"></script>
+<script type="text/javascript" src="/tags/js/folksonomie.min.js"></script>
 <?php
+require("/var/www/dom/fabula/commun3/head_javascript.php");
 require("/var/www/dom/fabula/commun3/head_javascript_folkso.php");
 
 ?> 
@@ -118,14 +120,10 @@ require("/var/www/dom/fabula/commun3/head_javascript_folkso.php");
 
 <?php
 
-require ('/var/www/dom/fabula/commun3/browser_detect.php');
 if (stristr($_SERVER['HTTP_USER_AGENT'], 'iPhone')) {
 echo ("</head>\n<body>");
 echo ("<h1 class=\"titre_iphone\">Visitez notre site optimis<C3><A9> <br><a href=\"http://iphone.fabula.org\">iphone.fabula.org</a></h1>");
 } else {
-if ( (browser_detection( 'os' )== "mac" ) && (browser_detection( 'browser' ) =="moz") ) {
-echo "<style>\n#tabs-menu {\nheight: 17px;\n}\n</style>";
-}
 echo ("</head>\n<body>");
 }
 
