@@ -203,7 +203,7 @@ group by tag_id;
                      . " JOIN metatag meta ON te.meta_id = meta.id "
                      . " JOIN resource r ON r.id = te.resource_id "
                      . " join users u on te.userid = u.userid "
-                     . " join user_data ud on u.userid = ud.userid "
+                     . " left join user_data ud on u.userid = ud.userid "
                      . " WHERE "),
                
                array('type' => 'isnum',
