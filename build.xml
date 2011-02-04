@@ -212,7 +212,7 @@
 
   <target 
       name="js.prod-no-min"
-      depends="js.preprocess.prod,js.minify,js.folksonomie.concat">
+      depends="js.prod.staging,js.minify,js.folksonomie.concat">
     <copy todir="${dist}/js" 
           file="${build}/js/jquery.folksodeps.js"/>
   </target>
