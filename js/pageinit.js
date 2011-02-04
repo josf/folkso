@@ -61,6 +61,11 @@ fK.fb.onLogin = function() {
                          */
                         $("#login-tabs").tabs();
 
+                        // Fabula specific:
+                        if ((typeof Nifty !== "undefined") && 
+                            $.isFunction(Nifty)) {
+                            Nifty("div#bloc_folkso");
+                        }
 
                         /* CLAG(if ($("#folksocontrol").length  == 0) 
                           {console.error("folksocontrol div not found"); } )*/
