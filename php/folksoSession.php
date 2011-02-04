@@ -105,6 +105,18 @@ class folksoSession {
     }
 
     $sess = $this->newSessionId($uid);
+
+    try {
+      $iClean = new folksoDBinteract($this->dbc);
+      $sqlClean = 'delete from sessions where started < date_sub(now(), interval 2 week)';
+
+      $iClean->query($sqlClean);
+    }
+    catch (dbException $e) {
+      print $e->sqlquery;
+    }
+
+
     try {
       $i = new folksoDBinteract($this->dbc);
       $i->query(
@@ -120,10 +132,13 @@ class folksoSession {
         $i->query('insert into sessions '
                   . ' (token, userid) '
                   . " values ('"
-                  . $i->dbescape(hash('sha256', $uid, 'Retry')) . "', '"
+                  . $i->dbescape(hash('sha256', $uid . 'Retry')) . "', '"
                   . $i->dbescape($uid) . "')"
                   );
       } // if there is a 2nd collision, we are out of luck.
+      else {
+        throw($e);
+      }
     }
     if (! $debug) {
       setcookie('folksosess', $this->sessionId, 
@@ -137,6 +152,7 @@ class folksoSession {
    * Erases any current session id from current object (but not from DB).
    */
   public function newSessionId ($uid) {
+    assert('strlen(time()) > 0');
     $this->sessionId = hash('sha256', time() . $uid . 'OldSalts');
     return $this->sessionId;
   }
