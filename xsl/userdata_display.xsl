@@ -14,6 +14,7 @@
       </xsl:element>
 
       <!-- Tagcount paragraph -->
+      <!-- 
       <xsl:element name="p">
         <xsl:attribute name="class">tagcount</xsl:attribute>
         <xsl:value-of select="concat(./firstname, ' ', ./lastname)"/>
@@ -25,7 +26,7 @@
         <xsl:value-of select="./tagcount"/>
         <xsl:text> tags.</xsl:text>
       </xsl:element>
-
+      -->
 
       <xsl:element name="dl">
         <xsl:attribute name="class">user-data-list</xsl:attribute>
