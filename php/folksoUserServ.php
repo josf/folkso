@@ -644,6 +644,9 @@ function storeUserData (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks
   $df = new folksoDisplayFactory();
   $ud = $df->userData();
   $r->t($ud->startform());
+
+  require_once('HTMLPurifier.auto.php');
+  $pure = new HTMLPurifier();
     
   $r->t($ud->line(
                   $u2->userid,
@@ -654,7 +657,7 @@ function storeUserData (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks
                   htmlspecialchars(excludeSQLnullKeyWord($u2->institution)),
                   htmlspecialchars(excludeSQLnullKeyWord($u2->pays)),
                   htmlspecialchars(excludeSQLnullKeyWord($u2->fonction)),
-                  excludeSQLnullKeyWord($u2->cv),
+                  $pure->purify(excludeSQLnullKeyWord($u2->cv)),
                   $u2->eventCount
                   ));
   $r->t($ud->endform());
