@@ -483,7 +483,7 @@ if ($userUrl) {
 <div id="userdata" class="login-only span-15">
 <h2>Vos données</h2>
   <p>Lorsque vous renseignez les champs "Prénom" et "Nom de famille", 
-  une page personelle sera créée où vous pourriez afficher vos coordonnées et un mini-CV, 
+  une page personnelle sera créée où vous pourrez afficher vos coordonnées et un mini-CV, 
 accessible à l'adresse <code>www.fabula.org/<strong>prénom.nomdefamille</strong></code></p> <!-- ' -->
 <?php
 
