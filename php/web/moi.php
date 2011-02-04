@@ -155,10 +155,8 @@ else {
 }
 $page_titre = 'Fabula - Page personnelle de ' . $fullname;
 
-if ($userSubsReq->status !== 200) {
-  $noUserSubs = true;
-}
-else {
+
+if ($userSubsReq->status === 200) {
   $userSubs_DOM = new DOMDocument();
   $userSubs_DOM->loadXML($userSubsReq->body());
   
@@ -169,6 +167,13 @@ else {
   $userSubsTrans = $userSubsProc->transformToDoc($userSubs_DOM);
   $userSubsHtml = $userSubsTrans->saveXML();
 }
+elseif ($userSubsReq->status === 204) {
+  $userSubsHtml = "L'utilisateur n'est s'est pas encore abonné à des tags";
+}
+
+
+
+
 
 
 require("/var/www/dom/fabula/commun3/head_libs.php");
@@ -290,10 +295,7 @@ require("/var/www/dom/fabula/commun3/html_start.php");
   if (strlen($userSubsHtml) > 0) {
     print $userSubsHtml;
   }
-  else {
-    print $userSubsReq->status;
 
-  }
 
 
       if (strlen($userFaveHtml) > 0) {
