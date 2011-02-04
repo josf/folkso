@@ -296,12 +296,10 @@ require("/var/www/dom/fabula/commun3/html_start.php");
     print $userSubsHtml;
   }
 
-
-
-      if (strlen($userFaveHtml) > 0) {
-        print $userFaveHtml;
-      }
-      ?>
+  if (strlen($userFaveHtml) > 0) {
+    print $userFaveHtml;
+  }
+?>
 
 </div>
 </div>
