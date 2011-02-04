@@ -1,4 +1,5 @@
 <?php
+
 require_once('unit_tester.php');
 require_once('reporter.php');
 require_once('folksoTags.php');
@@ -9,7 +10,7 @@ class testOffolksoSession extends  UnitTestCase {
   public $dbc;
 
   function setUp() {
-    test_db_init();
+
     /** not using teardown because this function does a truncate
         before starting. **/
     $this->dbc = new folksoDBconnect( 'localhost', 'tester_dude', 
@@ -22,7 +23,7 @@ class testOffolksoSession extends  UnitTestCase {
                                       'testy', 'testostonomie');
   }
 
-   function testSession () {
+  function testSessionValidation () { // no DB
          $s   = new folksoSession(
                                   new folksoDBconnect( 'localhost', 'tester_dude', 
                                                       'testy', 'testostonomie'));
@@ -63,8 +64,29 @@ class testOffolksoSession extends  UnitTestCase {
 
          $this->assertFalse($s->checkSession('eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee'),
                             'nonexistant session should not check true');
+   }
 
-         $sess = $s->startSession('gustav-2010-001', true);
+  function testSessionIdCreation () {
+    $s = new folksoSession(
+                           new folksoDBconnect( 'localhost', 'tester_dude', 
+                                                'testy', 'testostonomie'));
+    $this->assertTrue(strlen($s->newSessionId("bogusid")) > 0,
+                      "newSessionId should return string even with invalid uid");
+
+    $first = $s->newSessionId("zoopfest-1776-010");
+    sleep(3);
+    $second = $s->newSessionId("zoopfest-1776-010");
+    $this->assertNotEqual($first, $second, 
+                          "Successive calls to newSessionId should return different hashes");
+  }
+
+  function testSesssion () {
+    test_db_init();
+    $s   = new folksoSession(
+                             new folksoDBconnect( 'localhost', 'tester_dude', 
+                                                  'testy', 'testostonomie'));
+
+    $sess = $s->startSession('gustav-2011-001', true);
          $this->assertTrue($sess,
                            'This session should work');
          $this->assertTrue($s->validateSid($sess),
@@ -74,7 +96,7 @@ class testOffolksoSession extends  UnitTestCase {
 
          $this->assertTrue($s->status(),
                            "status() method should return true for valid session");
-         $this->assertEqual($s->getUserId(), 'gustav-2010-001',
+         $this->assertEqual($s->getUserId(), 'gustav-2011-001',
                             'Not getting user id with getUserId: ' . $s->getUserId());
 
          
@@ -84,7 +106,7 @@ class testOffolksoSession extends  UnitTestCase {
                             'the session should be gone now');
 
          $u = new folksoUser($this->dbc);
-         $u->userFromUserId('gustav-2010-001');
+         $u->userFromUserId('gustav-2011-001');
          $cesse = new folksoSession($this->dbc);
          $cesse->startSession($u, true);
          $this->assertTrue($cesse->status(),
@@ -93,8 +115,9 @@ class testOffolksoSession extends  UnitTestCase {
    }
 
    function testSession2 () {
+     test_db_init();
      $s = new folksoSession($this->dbc);
-         $sess2 = $s->startSession('gustav-2010-001', true);
+         $sess2 = $s->startSession('gustav-2011-001', true);
          $this->assertTrue($sess2,
                            'session creation failed');
          $this->assertTrue($s->checkSession($sess2),
@@ -108,11 +131,50 @@ class testOffolksoSession extends  UnitTestCase {
 
    }
 
+   function testSessionCleanup () {
+     test_db_init();
+     $s = new folksoSession(
+                            new folksoDBconnect( 'localhost', 'tester_dude', 
+                                                  'testy', 'testostonomie'));
+
+     $thisSess = $s->newSessionId('gustav-2011-001');
+     $i = new folksoDBinteract($this->dbc);
+     try {
+       $i->query(sprintf('insert into sessions (token, userid, started) '
+                         . ' values '
+                         . " ('%s', '%s', date_sub(now(), interval 3 week))",
+                         $i->dbescape($thisSess),
+                         $i->dbescape('gustav-2011-001')));
+
+       $i->query("select * from sessions where started < date_sub(now(), interval 2 week)");
+     }
+     catch (dbQueryException $e) {
+       print($e->sqlquery);
+     }
+
+     $this->assertTrue($i->rowCount > 0,
+                       "Old session should be present, none found. Testing the test.");
+
+     $s->startSession('gustav-2011-001', // this should kill the expired session
+                      true); 
+
+     try {
+       $i->query("select * from sessions where started < date_sub(now(), interval 2 week)");
+     }
+     catch (dbQueryException $e) {
+       print("Second time around:  " .  $e->sqlquery);
+     }
+
+     $this->assertTrue($i->rowCount === 0,
+                       "Old session should now be gone");
+
+   }
+
    function testRights () {
      $s = new folksoSession($this->dbc);
      $this->assertIsA($s, 'folksoSession',
                       'No point in testing if we do not have a fkSession obj');
-     $sid = $s->startSession('marcelp-2010-001', true);
+     $sid = $s->startSession('marcelp-2011-001', true);
      $u = $s->userSession($sid, 'folkso', 'tag');
      $this->assertTrue($u, 'userSession returns false');
      $this->assertIsA($u, 'folksoUser',
