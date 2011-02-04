@@ -168,7 +168,7 @@ if ($userSubsReq->status === 200) {
   $userSubsHtml = $userSubsTrans->saveXML();
 }
 elseif ($userSubsReq->status === 204) {
-  $userSubsHtml = "L'utilisateur n'est s'est pas encore abonné à des tags";
+  $userSubsHtml = "L'utilisateur ne s'est pas encore abonné à des tags";
 }
 
 
