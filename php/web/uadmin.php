@@ -41,62 +41,93 @@ require("/var/www/dom/fabula/commun3/head_css.php");
 ?>
 
 <style>
+
 a.taglink {
-font-size: 12pt;
- }
+    font-size: 12pt;
+}
+
 a.unsub {
-font-size: 8pt;
+    font-size: 8pt;
 }
 
 input.rightsel {
-display: inline; margin-left: 0.5em;
+    display: inline; margin-left: 0.5em;
 }
 
 form.rightsel {
-display: inline; 
+    display: inline; 
 }
 
 label.rightsel {
-display: inline;
-  margin-left: 0.2em;
+    display: inline;
+    margin-left: 0.2em;
 }
 
 #masterlist li {
-margin-top: 1em;
-margin-bottom: 0.3em;
-border: 1px grey solid;
-padding: 0.3em;
+    margin-top: 1em;
+    margin-bottom: 0.3em;
+    border: 1px grey solid;
+    padding: 0.3em;
 }
 
 #masterlist .details li {
-margin-top: 0.2em; margin-bottom: 0.1em;
-border: none;
-padding: 0.1em;
+    margin-top: 0.2em; margin-bottom: 0.1em;
+    border: none;
+    padding: 0.1em;
 }
 
 span.realname {
   font-weight: bold;
-size: 14pt;
+  size: 14pt;
 }
 
 a.rightModButton {
-  margin-left: 0.7em;
+    margin-left: 0.7em;
 }
 
 a.delete-user, a.rightModButton {
-color: #e86a24;
-  font-weight: bold;
+    color: #e86a24;
+    font-weight: bold;
 }
 
 span.rightmod-done {
-size: 8pt;
-color: #e86a24;
-  margin-left: 1em;
+    size: 8pt;
+    color: #e86a24;
+    margin-left: 1em;
 }
 
 div.doc-expert {
-display: none;
+    display: none;
 }
+
+ul#adminNav {
+    border-bottom: 1px dotted #d45500;
+    border-top: 1px dotted #d45500;
+    margin-bottom: 2em;
+}
+
+ul#adminNav li {
+    display: inline;
+    padding-left: 20px;
+    list-style: none;
+}
+
+ul#adminNav a, ul#adminNav a:visited, ul#adminNav a:link, ul#adminNav a:active {
+    color: #d45500;
+    font-weight: bold;
+    border: none; 
+    font-size: 10pt;
+} 
+
+a.actionButton {
+    color: white;
+    background-color: #d45500;
+    font-weight: bold;
+    padding: 2px;
+    border-bottom: none;
+}
+
+
 </style>
 <script type="text/javascript" src="/tags/js/jquery.folksodeps.js"></script>
 <script type="text/javascript" src="/tags/js/folksonomie.min.js"></script>
@@ -178,12 +209,17 @@ qu'il s'agit d'une erreur. <!-- ' --></p>
 else {
 ?>
 
-<a href="#" id="logout">Quitter</a>
+<ul id="adminNav">
+<li><a href="/tags/editresources.php">Éditer ressources</a></li>
+<li><a href="/tags/tagedit.php">Éditer tags</a></li>
+<li><a href="/tags/mestags.php">Espace tags</a></li>
+<li><a href="#" id="logout">Quitter</a></li>
+</ul> 
 <div id="usersearch">
 <h2>Recherche d'utilisateur</h2> <!-- ' -->
 
 <input id="searchbox" type="text"></input>
-<a href="#" id="searchok">OK</a>
+<a href="#" id="searchok" class="actionButton">OK</a>
 </div>
 
 <a href="#" class="show-expert">Avancé</a>
