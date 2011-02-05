@@ -4,3 +4,4 @@ define(`LOG',
 define(`CLAG',
         ifdef(`DEBUG', ` */ $1  /* '))
 undefine(`format')
+undefine(`substr')
