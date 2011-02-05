@@ -39,7 +39,9 @@ require("/var/www/dom/fabula/commun3/head_meta.php");
 require("/var/www/dom/fabula/commun3/head_css.php");
 
 ?>
-
+<link rel="stylesheet"
+  href="/tags/css/fk-admin.css"
+  media="screen"></link>
 <style>
 
 a.taglink {
@@ -100,37 +102,9 @@ div.doc-expert {
     display: none;
 }
 
-ul#adminNav {
-    border-bottom: 1px dotted #d45500;
-    border-top: 1px dotted #d45500;
-    margin-bottom: 2em;
-}
-
-ul#adminNav li {
-    display: inline;
-    padding-left: 20px;
-    list-style: none;
-}
-
-ul#adminNav a, ul#adminNav a:visited, ul#adminNav a:link, ul#adminNav a:active {
-    color: #d45500;
-    font-weight: bold;
-    border: none; 
-    font-size: 10pt;
-} 
-
-a.actionButton {
-    color: white;
-    background-color: #d45500;
-    font-weight: bold;
-    padding: 2px;
-    border-bottom: none;
-}
-
 
 </style>
-<script type="text/javascript" src="/tags/js/jquery.folksodeps.js"></script>
-<script type="text/javascript" src="/tags/js/folksonomie.min.js"></script>
+
 <?php
 require("/var/www/dom/fabula/commun3/head_javascript.php");
 require("/var/www/dom/fabula/commun3/head_javascript_folkso.php");

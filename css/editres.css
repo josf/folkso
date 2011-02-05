@@ -2,7 +2,7 @@
 confirmations **/
 
 body {
-     background: white;
+/*      background: white; */
 }
 
 #superscreen {
@@ -65,6 +65,7 @@ ul.editresources li {
     border-top: 2px solid grey;
     padding-left: 4em;
     width: 90%;
+    list-style: none;
 }
 
 iframe.preview {
@@ -151,6 +152,10 @@ ul.suggestions li {
                border: none;
                margin-bottom: 0em; 
                margin-top: 0em;
+}
+
+div.paginations {
+    margin-bottom: 2em;
 }
 
 a.currentpagination, a.currentpagination:visited  {

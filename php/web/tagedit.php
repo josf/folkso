@@ -59,6 +59,12 @@ if (! $user->checkUserRight('folkso', 'redac')) {
   type="text/css" 
   href="/tags/css/jquery-ui-1.8.4.custom.css" media="screen">
 </link>
+<link 
+  rel="stylesheet"
+  type="text/css"
+  href="/tags/css/fk-admin.css"
+  media="screen"></link>
+
 <script type="text/javascript" 
         src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.js"></script>
 
@@ -81,7 +87,7 @@ print $loc->WebPathJS();
 print "</script>\n";
 ?>
 <!-- <script type="text/javascript" src="js/folkso.js"></script> -->
-<script type="text/javascript" src="js/tagedit.js"></script>
+<script type="text/javascript" src="/tags/js/tagedit.js"></script>
 
 </head>
 <body>
@@ -89,14 +95,21 @@ print "</script>\n";
 <div id="pagehead">
 <h1>Gestion des tags : création, suppression, modification, fusion</h1>
 
+<ul id="adminNav">
+<li><a href="/tags/editresources.php">Éditer ressources</a></li>
+<li><a href="/tags/uadmin.php">Gestion utilisateurs</a></li>
+<li><a href="/tags/mestags.php">Espace tags</a></li>
+<li><a href="#" id="logout">Quitter</a></li>
+</ul> 
 <p>
   La <em>suppression</em> d'un tag détruit en même temps et
-  définitivement toutes les références vers ce tag. En revanche, la
+  définitivement toutes les références (c'est-à-dire les actes de taggage 
+faits par les utilisateurs)  vers ce tag. En revanche, la
   <em>fusion</em> d'un tag avec un autre préserve les références en
   les dirigeant vers le tag "cible" de la fusion.
 </p>
 
-<h3>Sélection des tags</h3>
+
 
 <form action="tag.php" method="post">
    <h3>Créer un nouveau tag :</h3>
@@ -106,10 +119,11 @@ print "</script>\n";
    </p>
 </form> 
 
+<h3>Sélection des tags&#160;:</h3>
 <ul class="pagecommands">
-  <li><a href="#" class="seealltags">Afficher tous les tags</a></li>
-  <li><a href="#" class="restags">Afficher seulement les tags <em>déjà utilisés</em></a> (Associés à des ressources)</li>
-  <li><a href="#" class="norestags">Afficher seulement les tags <em>non utilisés</em></a> (Associés à aucune ressource)</li>
+  <li><a href="#" class="seealltags">Tous les tags</a></li>
+  <li><a href="#" class="restags">Tags <em>déjà utilisés</em></a></li>
+  <li><a href="#" class="norestags">Tags <em>non utilisés</em></a></li>
 </ul>
 
 <ul id="letterlist">
@@ -133,14 +147,12 @@ print "</script>\n";
 
 
 ?>
-
-
 <ul class="pagecommands">
-  <li><a href="#" class="seealltags">Afficher tous les tags</a></li>
-  <li><a href="#" class="restags">Afficher seulement les tags <em>déjà utilisés</em></a> (Associés à des ressources)</li>
-  <li><a href="#" class="norestags">Afficher seulement les tags <em>non utilisés</em></a> (Associés à aucune ressource)</li>
-  <li><a href="#">Retour au début de la page</a></li>
+  <li><a href="#" class="seealltags">Tous les tags</a></li>
+  <li><a href="#" class="restags">Tags <em>déjà utilisés</em></a></li>
+  <li><a href="#" class="norestags">Tags <em>non utilisés</em></a></li>
 </ul>
+
 
 </div>
 </body>

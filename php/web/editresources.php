@@ -113,6 +113,12 @@ print ';';
       href="/tags/css/jquery.mcdropdown.css"
       media="screen">
   </link>
+
+  <link 
+  rel="stylesheet" type="text/css"
+  href="/tags/css/fk-admin.css"
+  media="screen"></link>
+
   <link
       rel="stylesheet" type="text/css" 
       href="/tags/css/editres.css"
@@ -126,10 +132,19 @@ print ';';
      <a id="closess" href="#">Fermer</a>
   </div>
   </div> <!-- end of superscreen -->
+
+<div id="container">
+<div id="pagehead">
     <h1>Edition et taggage des ressources</h1>
+  <ul id="adminNav">
+<li><a href="/tags/tagedit.php">Éditer tags</a></li>
+<li><a href="/tags/uadmin.php">Gestion utilisateurs</a></li>
+<li><a href="/tags/mestags.php">Espace tags</a></li>
+<li><a href="#" id="logout">Quitter</a></li>
+</ul> 
 
     <h3>Sélection de l'URL</h3> <!-- ' -->
-    <form action="editresources.php" method="get">
+    <form id="mainForm" action="editresources.php" method="get">
       <p>
         Saisir les premières lettres de l'url (après 'fabula.org') <!-- '-->
         <input type="text" size="5" maxlength="15" name="initial"
@@ -153,6 +168,7 @@ print ';';
         >
         </input>
       </p>
+
 <div id="checklists">
 <div id="tagstatus">
         <h3>Afficher :</h3>
@@ -204,9 +220,10 @@ print ';';
         </input>
       </p>
     </form>
-
-      <h3>Tagger les ressources sélectionnées</h3>
       <div id="grouptagging">
+      <h3>Tagger les ressources sélectionnées</h3>
+  <p>Le tag choisi ici sera appliqué à toutes les ressources ci-dessous où vous aurez coché la case « Taggage groupé ».</p>
+
     <p>
       <span class="infohead">Tag</span>
       <input type="text" size="30" class="tagbox" id="grouptagbox" maxlength="100">
@@ -644,7 +661,18 @@ function metatagSelectBoxOptions (folksoDBinteract $i) {
   return $return;
 }
 
+
 ?>
+
+<ul id="adminNav">
+<li><a href="/tags/tagedit.php">Éditer tags</a></li>
+<li><a href="/tags/uadmin.php">Gestion utilisateurs</a></li>
+<li><a href="/tags/mestags.php">Espace tags</a></li>
+<li><a href="#" id="logout">Quitter</a></li>
+</ul> 
+
+<!-- fermer #container -->
+</div>
 
   </body>
 </html>

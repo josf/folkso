@@ -1,0 +1,82 @@
+
+/**
+* Override site-wide default
+*/
+* { 
+    position: static;
+}
+
+
+ul#adminNav {
+    border-bottom: 1px dotted #d45500;
+    border-top: 1px dotted #d45500;
+    margin-bottom: 2em;
+}
+
+ul#adminNav li {
+    display: inline;
+    padding-left: 20px;
+    list-style: none;
+}
+
+ul#adminNav a, ul#adminNav a:visited, ul#adminNav a:link, ul#adminNav a:active {
+    color: #d45500;
+    font-weight: bold;
+    border: none; 
+    font-size: 10pt;
+} 
+
+a.actionButton {
+    color: white;
+    background-color: #d45500;
+    font-weight: bold;
+    padding: 2px;
+    border-bottom: none;
+}
+
+
+/* tagedit.php */
+#container {
+           padding: 1em;}
+#pagehead { 
+    background-color: white;
+    border-bottom: 2px solid grey; 
+    padding: 1em;
+    margin: 1em; 
+    margin-top: 2em; 
+    padding-top: 3em; }
+
+ul.pagecommands li {
+    display: inline; 
+    list-style: none; 
+    padding-left: 20px;
+}
+
+ul.pagecommands a, ul.pagecommands a:visited, ul.pagecommands a:link, ul.pagecommands a:active {
+    border-bottom: none;
+    color: #d45500; 
+    font-weight: bold;
+   
+}
+
+ul#masterlist li {
+    list-style: none;
+}
+
+/* editresources */
+div#checklists {
+    background-color: white;
+}
+
+div#checklists, div#pagehead {
+    margin: 1em 1em;
+}
+
+form#mainForm { 
+    background-color: white;
+}
+
+div#grouptagging {
+    border: 1px solid gray;
+    padding: 1em; 
+}

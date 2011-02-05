@@ -59,6 +59,10 @@ require("/var/www/dom/fabula/commun3/head_css.php");
 ?>
 
 <style>
+* {
+position: static;
+ }
+
 a.taglink {
     font-size: 12pt;
 }
@@ -241,8 +245,13 @@ div#lastNav p, #logout {
     border-bottom: none;
 }
 
+div.user-cv, div.user-cv p {
+position: static;
+}
 
-
+div.udatafield {
+position: static;
+}
 
 
 <?php 
@@ -475,7 +484,7 @@ if ($userUrl) {
 <p>Choisir un nouveau tag:</p>
 <input type="text" class="fKTaginput login-only" id="newsubbox" size="60">
 </input>
-<a id="addsub" href="#">OK</a>
+<a id="addsub" href="#" class="actionButton">OK</a>
 </div>
 
 
@@ -575,7 +584,7 @@ Si vous ne souhaitez pas publier ces informations, il suffit de vous assurer que
 </div>
 </div>
 
-<div class="udatafield span-15 fonction login-only">
+<div class="udatafield span-15 fonction">
 <div class="span-4 fonction">
   <span class="inputlabel">
   Fonction : 
