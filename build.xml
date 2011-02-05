@@ -35,6 +35,7 @@
     <mkdir dir="${dist}/js"/>
     <mkdir dir="${dist}/web"/>
     <mkdir dir="${dist}/xsl"/>
+    <mkdir dir="${dist}/css"/>
     <mkdir dir="${dist}/tests"/>
   </target>
 
@@ -440,6 +441,16 @@
 </target>
 
 
+
+<!-- CSS -->
+<target name="css.staging" depends="init">
+  <copy todir="${dist}/css">
+    <fileset dir="./css"
+             includes="*.css"/>
+  </copy>
+</target>
+
+
   <!-- DEPLOY -->
   <target name="remote.dev.php" depends="php.dev">
     <scp remoteTodir="${rem.user}@${rem.host}:${rem.php}"
@@ -450,18 +461,26 @@
     </scp>
   </target>
 
-  <target name="remote.dev.web" depends="php.dev">
+  <target name="remote.dev.web" depends="php.dev,css.staging">
     <scp remoteTodir="${rem.user}@${rem.host}:${rem.web}"
          keyfile="${loc.keyfile}"
          passphrase="${loc.passphrase}">
       <fileset dir="${dist}/web"
                includes="*.php"/>
     </scp>
+    <!-- this is probably deprecated -->
     <scp remoteTodir="${rem.user}@${rem.host}:${rem.web}/admin"
          keyfile="${loc.keyfile}"
          passphrase="${loc.passphrase}">
       <fileset dir="${dist}/web"
                includes="admin*.php"/>
+    </scp>
+
+    <scp remoteTodir="${rem.user}@${rem.host}:${rem.web}/css"
+         keyfile="${loc.keyfile}"
+         passphrase="${loc.passphrase}">
+      <fileset dir="${dist}/css"
+               includes="*.css"/>
     </scp>
   </target>
 
