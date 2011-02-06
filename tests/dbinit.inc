@@ -3,8 +3,10 @@
 require_once('folksoTags.php');
 
 function test_db_init () {
-  //  truncate_all_tables();
-  system('mysql -u root --password=hellyes testostonomie < /home/joseph/sect/fab/testdump.sql');
+  // truncate_all_tables();
+  if (system('mysql -u root --password=hellyes testostonomie < /home/joseph/sect/fab/testdump.sql') === false) {
+    echo "Failed to initialize database";
+  }
 }
 
 function truncate_all_tables() {
