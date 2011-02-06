@@ -40,17 +40,18 @@ begin
                 set prev_char = substr(output_tag, -1);
                 set counter = counter + 1;
 
+
+                -- first check for the characters that we can keep
+                if (
                 -- we just take the lower case ascii alphabet here
-                if (((ord(current_char) < 123)  
-                   and
-                   (ord(current_char) > 96))
+                   ((ord(current_char) < 123) and (ord(current_char) > 96))
                    or
-                   ((ord(current_char) > 47) and
-                    (ord(current_char) < 58)) 
+                   -- digits
+                   ((ord(current_char) > 47) and (ord(current_char) < 58)) 
                     or
-                    (current_char = '-')) then
                     -- if original tag has a hyphen, we leave it but
                     -- won't add any more later
+                    ((current_char = '-') and (prev_char <> '-'))) then
 
                    set output_tag = concat(output_tag, current_char);
                  -- otherwise we look up the characters in the table
@@ -60,12 +61,12 @@ begin
                         from replace_characters
                         where ord(current_char) = toreplace_code;
                                     
+                 --  so we found a replacement character         
                  -- if previous character was a -, we don't add another one
-                  if ((length(replaced_char) > 0) and
-                     (((prev_char <> '-')
-                        or
-                        ((prev_char = '-') and (replaced_char <> '-'))))) then
-                        set output_tag = concat(output_tag, replaced_char);
+--                     and (((prev_char <> '-') or 
+  --                        ((prev_char = '-') and (replaced_char <> '-'))))) 
+                  if (length(replaced_char) > 0) then
+                      set output_tag = concat(output_tag, replaced_char);
                   end if;
                   -- any other characters are simply discarded
               end if;
