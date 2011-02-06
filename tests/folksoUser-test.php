@@ -19,6 +19,32 @@ class testOffolksoUser extends  UnitTestCase {
   }
 
 
+  function testStoredRoutines () {
+    test_db_init();
+    /* these mostly do not test folksoUser per se, but the underlying
+       stored routines */
+    $u = new folksoUser($this->dbc);
+    $u->userFromUserId('descartes-2011-001');
+
+
+    $this->assertTrue($u->firstName, 'René',
+                      'First name seems correct (testing the test)');
+
+
+    // This test is WRONG, but we seem to be getting correct results
+    // on the server with the normalize_tag() stored procedure. We
+    // should get "rene" instead of "ren".
+    $this->assertEqual($u->firstName_norm, 'rene',
+                       'Normalized accented first name should be rene, not: ' .
+                       $u->firstName_norm);
+
+    $this->assertEqual($u->lastName_norm, 'descartes',
+                       'Normalized last name should be "descartes", not: ' .
+                       $u->lastName_norm);
+
+  }
+
+
   function testSetters () {
     $u = new folksoUser($this->dbc);
     $u->setUrlbase('stuff');
@@ -149,6 +175,9 @@ class testOffolksoUser extends  UnitTestCase {
                         'Incorrect lastname after DB retrieval');
      $this->assertEqual($u2->cv, 'Wrote a long book',
                         'Cv failed to update after DB retrieval');
+     $this->assertEqual($u2->firstName_norm, 'horace',
+                        'Incorrect normalized first name, expected "horace", got: '
+                        . $u2->firstName_norm);
      
    }
 
@@ -181,7 +210,7 @@ class testOffolksoUser extends  UnitTestCase {
      $u->userFromUserId('marcelp-2011-001');
 
      $this->assertEqual($u->firstName, 'Marcel',
-                        "First name is absent");
+                        "First name is not Marcel: " . $u->firstName);
      $this->assertTrue($u->hasData(),
                        "hasData() should return true here");
 

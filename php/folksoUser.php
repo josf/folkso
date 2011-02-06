@@ -38,7 +38,8 @@ class folksoUser {
   public $dbc;
   public $eventCount;
   public $urlBase;
-  
+  public $firstName_norm;
+  public $lastName_norm;
 
   /** 
    * A folksoRightStore object
@@ -89,6 +90,15 @@ class folksoUser {
   public function setLastName($arg) {
     $this->lastName = trim($arg);
   }
+
+  private function setFirstName_norm($fNorm) {
+    $this->firstName_norm = trim($fNorm);
+  }
+
+  private function setLastName_norm($lNorm) {
+    $this->lastName_norm = trim($lNorm);
+  }
+
   public function setOidUrl($arg) {
     $this->oidUrl = trim($arg);
   }
@@ -259,6 +269,14 @@ class folksoUser {
       $this->setEventCount($params['eventCount']);
     }
 
+    if (array_key_exists('firstname_norm', $params)) {
+      $this->setFirstName_norm($params['firstname_norm']);
+    }
+
+    if (array_key_exists('lastname_norm', $params)) {
+      $this->setLastName_norm($params['lastname_norm']);
+    }
+
     $this->Writeable();
     return array($this);
   }
@@ -273,6 +291,7 @@ class folksoUser {
     $sql = 
       "select u.userid as userid, u.urlbase as urlbase, ud.lastname, ud.firstname, "
       . " ud.email, ud.institution, ud.pays, ud.fonction, ud.cv, "
+      . " ud.firstname_norm, ud.lastname_norm, "
       .' count(te.resource_id) as eventCount '
       . ' from users u '
       . ' left join user_data ud on ud.userid = u.userid '
@@ -304,7 +323,9 @@ class folksoUser {
                             'pays' => $res->pays,
                             'fonction' => $res->fonction,
                             'cv' => $res->cv,
-                            'eventCount' => $res->eventCount));
+                            'eventCount' => $res->eventCount,
+                            'firstname_norm' => $res->firstname_norm,
+                            'lastname_norm' => $res->lastname_norm));
     }
     return $this;
   }
@@ -467,9 +488,11 @@ class folksoUser {
          sprintf(
                  ' insert into user_data ('
                  .' userid, firstname, lastname, nick, email, '
-                 .' institution, pays, fonction, cv '
+                 .' institution, pays, fonction, cv, firstname_norm, '
+                 .' lastname_norm '
                  .") values "
-                 ."('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')",
+                 ."('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', "
+                 ."'%s', normalize_tag('%s'), normalize_tag('%s'))",
                  $i->dbescape($this->userid), 
                  $i->dbescape($this->firstName),
                  $i->dbescape($this->lastName),
@@ -478,7 +501,9 @@ class folksoUser {
                  $i->dbescape($this->institution),
                  $i->dbescape($this->pays),
                  $i->dbescape($this->fonction),
-                 $i->dbescape($this->cv)
+                 $i->dbescape($this->cv),
+                 $i->dbescape($this->firstName),
+                 $i->dbescape($this->lastName)
                  );
      }
      else {
@@ -486,7 +511,9 @@ class folksoUser {
        $sql .=
          sprintf("firstname = '%s', lastname = '%s', nick = '%s', "
                  . " email = '%s', institution = '%s', pays = '%s', fonction = '%s', "
-                 . " cv = '%s' ",
+                 . " cv = '%s', "
+                 . " firstname_norm = normalize_tag('%s'), "
+                 . " lastname_norm = normalize_tag('%s')",
                  $i->dbescape($this->firstName),
                  $i->dbescape($this->lastName),
                  $i->dbescape($this->nick),
@@ -494,7 +521,10 @@ class folksoUser {
                  $i->dbescape($this->institution),
                  $i->dbescape($this->pays),
                  $i->dbescape($this->fonction),
-                 $i->dbescape($this->cv));
+                 $i->dbescape($this->cv),
+                 $i->dbescape($this->firstName),
+                 $i->dbescape($this->lastName)
+);
 
        $sql .= " where userid = '" . $i->dbescape($this->userid) . "'";
      }

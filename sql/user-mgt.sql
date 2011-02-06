@@ -126,9 +126,9 @@ else
 
    if length(concat(firstname, lastname, email, institution, pays, fonction)) > 0 then
       insert into user_data
-      (userid, firstname, lastname, email, institution, pays, fonction)
+      (userid, firstname, lastname, email, institution, pays, fonction, firstname_norm, lastname_norm)
       values
-      (uid, firstname, lastname, email, institution, pays, fonction);
+      (uid, firstname, lastname, email, institution, pays, fonction, normalize_tag(firstname), normalize_tag(lastname));
    end if;
 
    if length(oid_url_val) > 1 then
