@@ -7,9 +7,10 @@ grant select, delete, insert, update, drop on note to 'tester_dude'@'localhost';
 grant select, delete, insert, update, drop on replace_characters to 'tester_dude'@'localhost';
 grant select, delete, insert, update, drop on resource to 'tester_dude'@'localhost';
 grant select, delete, insert, update, drop on tag to 'tester_dude'@'localhost';
-grant select, delete, insert, update, drop on urltest to 'tester_dude'@'localhost';
+
 grant select, delete, insert, update, drop on metatag to 'tester_dude'@'localhost';
 grant select, delete, insert, update, drop on fb_ids to 'tester_dude'@'localhost';
+grant select on fb_users to 'tester_dude'@'localhost';
 grant select, delete, insert, update, drop on oid_urls to 'tester_dude'@'localhost';
 grant select, delete, insert, update, drop on sessions to 'tester_dude'@'localhost';
 grant select, delete, insert, update, drop on user_data to 'tester_dude'@'localhost';

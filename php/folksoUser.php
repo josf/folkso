@@ -163,6 +163,58 @@ class folksoUser {
      }
    }
 
+   public function nameUrl() {
+
+     // base case: we already have the data because the user has been
+     // retrieved from the DB and has a name and lastname in user_data
+     $first = $this->firstName_norm . '.' . $this->lastName_norm;
+     if (strlen($first) > 3) {
+       return $first;
+     }
+
+     // we have the names, but no normalized names
+     // we will need to check for homonyms here
+     if (strlen($this->firstName . $this->lastName) > 0) {
+       $i = new folksoDBinteract($this->dbc);
+       $i->query( sprintf(
+                          "select concat(normalize_tag('%s'), '.', "
+                          ." normalize_tag('%s')) as url ",
+                          $i->dbescape($this->firstName),
+                          $i->dbescape($this->lastName),
+                          $i->dbescape($this->userid)));
+
+       if ($i->rowCount > 0) {
+         $res = $i->result->fetch_object();
+         return $res->url;
+       }
+     }
+
+     // if we have the urlBase, we can assume the user has been loaded from the
+     // DB and just does not have name data.
+     if (isset($this->urlBase) 
+         && (strlen($this->urlBase) > 0)) { 
+       return false;
+     }
+
+
+
+
+     // we (re)load the user, now we really know
+     if (($this->userid) &&
+         ($u->userFromUserId($this->userid))) {
+       $second = $this->firstName_norm  . '.' . $this->lastName_norm;
+       if (strlen($second) > 3) {
+         return $second;
+       }
+       else {
+         return false;
+       }
+     }
+
+
+   }
+
+
 /**
  * Bogus function right now to preserve functionality when not
  * initialized as a subclass.
@@ -368,7 +420,7 @@ class folksoUser {
    $i = new folksoDBinteract($this->dbc);
    $sql = "select "
      ." userid, urlbase, last_visit, lastname, firstname, email, "
-     ." institution, pays, fonction, cv "
+     ." institution, pays, fonction, cv, firstname_norm, lastname_norm "
      ." from "
      ." $view "
      ." where $login_column = '" . $i->dbescape($id) . "'";
@@ -376,7 +428,7 @@ class folksoUser {
    if ($service && $right){
      $sql = "select "
        ." v.userid, urlbase, last_visit, lastname, firstname, email, institution, "
-       ." pays, fonction, cv, ur.rightid "
+       ." pays, fonction, cv, ur.rightid, firstname_norm, lastname_norm "
        ." from "
        ." $view v "
        ." left join users_rights ur on ur.userid = v.userid "
@@ -407,7 +459,9 @@ class folksoUser {
                            'institution' => $res->institution,
                            'pays' => $res->pays,
                            'fonction' => $res->fonction,
-                           'cv' => $res->cv));
+                           'cv' => $res->cv,
+                           'firstname_norm' => $res->firstname_norm,
+                           'lastname_norm' => $res->lastname_norm));
      if ($service &&
          $right && 
          ($res->rightid == $right)) {

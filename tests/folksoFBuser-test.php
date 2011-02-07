@@ -110,28 +110,6 @@ class testOffolksoFBuser extends  UnitTestCase {
    }
 
 
-   function testCreateUser() {
-     $u = new folksoFBuser($this->dbc);
-     $u->loadUser(array('urlbase' => 'charlesbaudelaire',
-                        'firstname' => 'Charles',
-                        'lastname' => 'Baudelaire',
-                        'email' => 'cb@interflora.com',
-                        'userid' => 'charlesbaud-2010-001',
-                        'loginid' => 99119911));
-     $this->assertIsA($u, 'folksoFBuser',
-                      'problem with object creation');
-
-     $this->assertTrue($u->Writeable(),
-                       'Baudelaire object is not writeable');
-     $u->writeNewUser();
-     $ex = new folksoFBuser($this->dbc2);
-     $this->assertTrue($ex->exists(99119911),
-                       'User does not seem to have been created');
-     
-     $u2 = new folksoFBuser($this->dbc);
-     $this->assertTrue($u2->userFromLogin(99119911),
-                       "Should return true here, user loading should have succeeded");
-   }
 
    function testMinimalUserCreation () {
      $u = new folksoFBuser($this->dbc);
@@ -160,7 +138,48 @@ class testOffolksoFBuser extends  UnitTestCase {
                         'Did not get urlbase back after writing: ' . $u2->urlBase);
 
    }
+
+
+   function testCreateUser() {
+     $u = new folksoFBuser($this->dbc);
+     $fbid = 10101010101;
+     $u->loadUser(array('urlbase' => 'margotduras',
+                        'firstname' => 'Margie',
+                        'lastname' => 'Duras',
+                        'email' => 'md@nicolas.fr',
+                        'userid' => 'duras-2011-001',
+                        'loginid' => $fbid));
+     $this->assertIsA($u, 'folksoFBuser',
+                      'problem with object creation');
+
+     $this->assertTrue($u->Writeable(),
+                       'Duras object is not writeable');
+     $u->writeNewUser();
+     $ex = new folksoFBuser($this->dbc2);
+     $this->assertTrue($ex->exists($fbid),
+                       'User does not seem to have been created');
+     
+
+     $u2 = new folksoFBuser($this->dbc);
+     $this->assertTrue($u2->userFromLogin($fbid),
+                       "Should return true here, user loading should have succeeded");
+     $this->assertEqual($u2->firstName_norm, 'margie',
+                        'Incorrect normalized first name, should be margie, not: '
+                        . $u2->firstName_norm);
+
+     $this->assertEqual($u2->lastName_norm, 'duras',
+                        'Incorrect normalized last name, should be duras, not: '
+                        . $u2->lastName_norm);
+
+     $this->assertEqual($u2->nameUrl(), 'margie.duras',
+                        'Incorrect or missing nameUrl, expecting margie.duras, got: '
+                        . $u2->nameUrl());
+
+   }
+
 }//end class
+
+
 
 $test = &new testOffolksoFBuser();
 $test->run(new HtmlReporter());

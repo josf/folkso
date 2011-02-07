@@ -658,7 +658,8 @@ function storeUserData (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks
                   htmlspecialchars(excludeSQLnullKeyWord($u2->pays)),
                   htmlspecialchars(excludeSQLnullKeyWord($u2->fonction)),
                   $pure->purify(excludeSQLnullKeyWord($u2->cv)),
-                  $u2->eventCount
+                  $u2->eventCount,
+                  excludeSQLnullKeyWord($u2->nameUrl())
                   ));
   $r->t($ud->endform());
   $r->setType('xml');
@@ -734,7 +735,8 @@ function getUserData (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) 
                   htmlspecialchars(excludeSQLnullKeyWord($user->pays)),
                   htmlspecialchars(excludeSQLnullKeyWord($user->fonction)),
                   $pure->purify(excludeSQLnullKeyWord($user->cv)),
-                  $user->eventCount
+                  $user->eventCount,
+                  excludeSQLnullKeyWord($user->nameUrl())
                   ));
   $r->t($ud->endform());
   $r->setType('xml');

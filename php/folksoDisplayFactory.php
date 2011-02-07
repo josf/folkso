@@ -351,9 +351,10 @@ class folksoDisplayFactory {
                                       ."\t<pays>XXX</pays>\n"
                                       ."\t<fonction>XXX</fonction>\n"
                                       ."\t<cv>XXX</cv>\n"
-                                      ."\t<tagcount>XXX</tagcount>\n",
+                                      ."\t<tagcount>XXX</tagcount>\n"
+                                      ."\t<nameurl>XXX</nameurl>\n",
                                       'end' => '</user>',
-                                      'argsperline' => 10));
+                                      'argsperline' => 11));
 
 
  }

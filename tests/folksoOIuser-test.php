@@ -10,6 +10,7 @@ class testOffolksoOIuser extends  UnitTestCase {
 
   function setUp() {
     test_db_init();
+
     /** not using teardown because this function does a truncate
         before starting. **/
      $this->dbc = new folksoDBconnect('localhost', 'tester_dude', 
@@ -27,7 +28,7 @@ class testOffolksoOIuser extends  UnitTestCase {
     $this->assertIsA($u, 'folksoUser',
                      'object creation failed');
 
-    $this->assertFalse($u->writeable,
+    $this->assertFalse($u->Writeable(),
                        'initial writable state should be false');
     $simple_u = $u->loadUser(array(
                                    'firstname' => 'Bobness',
@@ -77,6 +78,7 @@ class testOffolksoOIuser extends  UnitTestCase {
 
 
    function testfolksoOIuser () {
+     test_db_init();
          $oi   = new folksoOIuser($this->dbc);
          $this->assertIsA($oi, 'folksoOIuser',
                                'object creation failed');
@@ -119,7 +121,7 @@ class testOffolksoOIuser extends  UnitTestCase {
                           'userFromLogin should not return false');
          $this->assertTrue($gus->Writeable(),
                            'userFromLogin does not fetch a writeable user' );
-         $this->assertEqual($gus->userid, 'gustav-2010-001',
+         $this->assertEqual($gus->userid, 'gustav-2011-001',
                             'Not retreiving userid');
          $this->assertEqual($gus->urlBase, 'gustav',
                             'Not retreiving correct urlbase');
@@ -158,14 +160,20 @@ class testOffolksoOIuser extends  UnitTestCase {
 
 
    function testCreation () {
-         $claud = new folksoOIuser($this->dbc);
-         $claud->loadUser(array(
+     test_db_init();
+     $claud = new folksoOIuser($this->dbc);
+     $claud->loadUser(array(
                                 'firstname' => 'Paul',
                                 'lastname' => 'Claudel',
                                 'email' => 'pclaudel@vatican.com',
                                 'loginid' => 'http://pclaudel.openid.fr'));
-         $this->assertFalse($claud->Writeable(),
-                            'Writeable should return false here because there is no urlbase');
+         $this->assertTrue($claud->Writeable(),
+                           'Writeable should return true here because there is a login id');
+
+         $this->assertEqual($claud->nameUrl(), 'paul.claudel',
+                            'Name url should be possible even before writing to DB.'
+                            . 'Expected paul.claudel, got: ' . $claud->nameUrl());
+
          $claud->writeNewUser();
          $ex = new folksoOIuser($this->dbc2);
          $this->assertTrue($ex->exists('http://pclaudel.openid.fr'),
@@ -177,6 +185,15 @@ class testOffolksoOIuser extends  UnitTestCase {
                             'pclaudel',
                             "Incorrect url base retreived after automatic urlbase creation: " 
                             . $ex2->urlBase);
+
+         $this->assertEqual($ex2->lastName_norm, 'claudel',
+                            'Missing or incorrect lastname_norm, expecting claudel, not: '
+                            . $ex->lastName_norm);
+         $this->assertEqual($ex2->firstName_norm, 'paul',
+                            'Missing or incorrect firstname_norm, expecting paul, not: '
+                            . $ex->firstName_norm);
+
+
          $bad = new folksoOIuser($this->dbc3);
          $bad->loadUser(array('urlbase' => 'celine75',
                               'firstname' => 'Ferdy',
@@ -222,7 +239,7 @@ class testOffolksoOIuser extends  UnitTestCase {
    function testAllRights () {
      $u = new folksoOIuser($this->dbc);
      $u->userFromLogin('http://flickr.com/marcelp');
-     $this->assertEqual($u->userid, 'marcelp-2010-001',
+     $this->assertEqual($u->userid, 'marcelp-2011-001',
                         'Did not load userid');
      $u->loadAllRights();
      $this->assertTrue($u->rights->hasRights(),

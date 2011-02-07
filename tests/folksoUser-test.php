@@ -58,6 +58,11 @@ class testOffolksoUser extends  UnitTestCase {
     $u->setLastName('TheSlob');
     $this->assertEqual($u->lastName, 'TheSlob',
                        'setLastName method: name not showing up in obj');
+    // necessary for nameUrl() which returns 
+    // false if there is no userid
+    $u->userid = '123'; 
+    $this->assertEqual($u->nameUrl(), 'bob.theslob',
+                       'nameUrl() should return bob.theslob, not: ');
     
     $u->setCv('Wrote some books');
     $this->assertEqual($u->cv, 'Wrote some books',
@@ -165,6 +170,8 @@ class testOffolksoUser extends  UnitTestCase {
      $this->assertEqual($u->cv, 'Wrote a long book',
                         'Cv failed to update on object');
 
+
+
      $u->storeUserData();
      $u2 = new folksoUser($this->dbc);
      $u2->userFromUserId('marcelp-2011-001');
@@ -178,6 +185,9 @@ class testOffolksoUser extends  UnitTestCase {
      $this->assertEqual($u2->firstName_norm, 'horace',
                         'Incorrect normalized first name, expected "horace", got: '
                         . $u2->firstName_norm);
+     $this->assertEqual($u2->nameUrl(), 'horace.force',
+                        'Name url should be "horace.force", not: ' .
+                        $u->nameUrl());
      
    }
 
@@ -214,7 +224,12 @@ class testOffolksoUser extends  UnitTestCase {
      $this->assertTrue($u->hasData(),
                        "hasData() should return true here");
 
+     $this->assertEqual($u->nameUrl(), 'marcel.proust',
+                        'nameUrl() should return marcel.proust, not: '
+                        . $u->nameUrl());
+
    }
+
 
    function testDeleteUserWithTags () {
      test_db_init();
