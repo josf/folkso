@@ -201,7 +201,7 @@ class folksoDBinteract {
               $this->result_array[] = $row;
             }
           }
-          else {
+          else { // should this be &$result instead?
             $this->additional_results[] = $result;
           }
         }
