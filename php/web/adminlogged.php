@@ -111,7 +111,6 @@ pageTracker._trackPageview();
 <script type="text/javascript" src="/tags/js/jquery.folksodeps.js"></script>
 <script type="text/javascript" src="/tags/js/folksonomie.min.js"></script> 
 <!-- <script type="text/javascript" src="/tags/js/folksonomie.js"></script> -->
-<script type="text/javascript" src="/tags/js/faboid.js"></script>
 <script type="text/javascript" src="/tags/js/pageinit.js"></script>
 <script type="text/javascript">
   fK.cf.facebookReload = false;
