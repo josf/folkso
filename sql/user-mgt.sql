@@ -206,7 +206,7 @@ create procedure delete_user_with_tags(
        )
 
 begin
-
+        delete from user_subscription where userid = userid_arg;
         delete from user_data where userid = userid_arg;
         delete from fb_ids where userid = userid_arg;
         delete from oid_urls where userid = userid_arg;
