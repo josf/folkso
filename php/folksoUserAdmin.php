@@ -243,7 +243,7 @@ function deleteUserAndTags (folksoQuery $q, folksoDBconnect $dbc, folksoSession 
     }
     $user->deleteUserWithTags();
     $r->t("User successfully deleted.");
-    return $r->setOK("Deleted");
+    return $r->setOK(200, "Deleted");
   }
   catch (dbException $e) {
     return $r->handleDBexception($e);
