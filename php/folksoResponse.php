@@ -169,7 +169,7 @@ class folksoResponse {
   public function setOk ($status, $message = null){
     if (! isset($this->httpStatus[$status])){
       trigger_error("Invalid HTTP status: $status",
-                    e_user_warning);
+                    E_USER_WARNING);
     }
     $this->errorDeclared = false;
     $this->status = $status;
