@@ -270,7 +270,7 @@
                  if (fields[fieldname] && fields[fieldname].type == 'list') {
                      return function() {
                        with( fields[fieldname] ) {
-                           $(selector, $place).children().remove();
+//                           $(selector, $place).children().remove();
                            value = [];
                            appendval = [];
                            removeVal = [];
