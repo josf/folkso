@@ -449,11 +449,13 @@ print $fp->facebookConnectButton();
     <?php
   }
 
-$userUrl = $fp->userUrl();
-if ($userUrl) {
-  echo sprintf('<li><a href="%s">Page publique</a></li>',
-               $userUrl, $userUrl);
-}
+
+ if (($u instanceof folksoUser) 
+     && $u->nameUrl()) {
+       $userUrl =  'http://www.fabula.org/' . $u->nameUrl();
+       echo sprintf('<li><a href="%s">Page publique</a></li>',
+                    $userUrl);
+ }
 ?>
 
 <li><a href="#" id="logout2" class="login-only">Quitter</a></li>
@@ -496,14 +498,14 @@ if ($userUrl) {
 accessible à l'adresse <code>www.fabula.org/<strong>prénom.nomdefamille</strong></code></p> <!-- ' -->
 <?php
 
-  $userUrl = $fp->userUrl();
 if ($userUrl) {
-  echo sprintf('<p>Votre page publique : <a href="%s">%s</a></p>',
-               $userUrl, $userUrl);
+  echo sprintf('<p>Votre page publique : <a class="pagepublique" 
+                                                   href="%s">%s</a></p>',
+               $userUrl,  $userUrl);
 }
 
-
 ?>
+</div>
 <p>
 Si vous ne souhaitez pas publier ces informations, il suffit de vous assurer que ces champs sont vides.
 </p>
