@@ -73,7 +73,8 @@ $(document).ready(
         var gotResList = function(xml, status, xhr) 
         {
             dropResourceList();
-            $("resource", xml)
+            if (xhr.status == 200) {
+                $("resource", xml)
                     .each(function()
                           {
                               var res = {}, $resob = $(this);
@@ -135,16 +136,18 @@ $(document).ready(
         var gotList = function (xml, status, xhr) 
         {
             dropList();
-            $("tag", xml)
-                .each(function()
-                      {
-                          var tag = {}, $tagob = $(this);
-                          tag.numid = $("numid", $tagob).text();
-                          tag.tagnorm = $("tagnorm", $tagob).text();
-                          tag.link = $("link", $tagob).text();
-                          tag.display = $("display", $tagob).text();
-                          appendTag(tag);
-                      });
+            if (xhr.status == 200) {
+                $("tag", xml)
+                    .each(function()
+                          {
+                              var tag = {}, $tagob = $(this);
+                              tag.numid = $("numid", $tagob).text();
+                              tag.tagnorm = $("tagnorm", $tagob).text();
+                              tag.link = $("link", $tagob).text();
+                              tag.display = $("display", $tagob).text();
+                              appendTag(tag);
+                          });
+            }
             $(K).trigger("update");
         };
 
