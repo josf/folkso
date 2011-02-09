@@ -272,6 +272,10 @@
                        with( fields[fieldname] ) {
                            $(selector, $place).children().remove();
                            value = [];
+                           appendval = [];
+                           removeVal = [];
+                           updateVals = [];
+//                           this.updateAllNew();
                        }
                      };
                  }
@@ -358,8 +362,24 @@
                          }
                      }
                  }
+             },
+
+             this.deleteAll = function() {
+                 for (var fieldname in fields) {
+                     with(fields[fieldname]) {
+                         if (type == 'basic') {
+                             value = ''; newval = null;
+                             update(selector, $place, value);
+                         }
+                         else {
+                             value = []; appendval = []; updateVals = [];
+                             $(selector, $place).children().remove();
+                         }
+                     }
+                 }
              };
              $(this).bind("update", this.updateAllNew);
+             $(this).bind("reset", this.deleteAll);
          },
 
 
