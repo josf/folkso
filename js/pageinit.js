@@ -127,6 +127,15 @@ fK.fb.onLogin = function() {
                                                         {domain: ".fabula.org",
                                                          path: "/"});
                                            }
+                        /*
+                         * Event triggered only on actual logout, ie. not on page load. Just when 
+                         * a button gets pushed.
+                         */
+                        $(fK.events).bind('userLogout',
+                                          function() {
+                                              // in folkso-user we eliminate tinyMCE here
+                                          });
+
                                        });
 
                         /* Sets up event handler: $(fK.events).bind("loggedIn") */
