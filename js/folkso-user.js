@@ -689,6 +689,7 @@ $(document).ready(
                            $("h1.not-logged").show();
                            $("#fKTaginput").hide();
                            $("#login-tabs").show();
+
                            var $oidTab = $("#tabs-1");
                            if ($("ul", $oidTab).length === 0) {
                                $oidTab.append(fK.oid.providerList()); 
@@ -716,11 +717,12 @@ fK.tinymceInit =
     function () {
         var $cveditor = $("textarea#cveditor:first"); 
         var sibs = $cveditor.siblings("span.mceEditor").length;
-        if (sibs === 0){
+        var inDiv = $("div.user-cv:first").find("span.mceEditor").length;
+        if ((sibs === 0) && (inDiv === 0)) {
             if ($cveditor.is(":hidden")) {
                 $cveditor.show();
             }
-            LOG(console.log("initializing tinymce");)
+          /*  CLAG(console.log("initializing tinymce");) */
             $cveditor.tinymce({
                                   script_url: '/tags/js/tinymce/jscripts/tiny_mce/tiny_mce.js',
 /*                                  theme: "advanced",
