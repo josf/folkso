@@ -108,8 +108,6 @@ class folksoFBuser extends folksoUser{
      throw new dbConnectionException($i->error_info());
    }
 
-   
-
    $i->sp_query(
                 sprintf("call create_user("
                         ."'%s', '', %d, '%s', '%s', '', %d, '%s', '%s')",
@@ -122,12 +120,13 @@ class folksoFBuser extends folksoUser{
                         $i->dbescape($this->pays),
                         $i->dbescape($this->fonction)));
 
-   if ($i->result_status == 'DBERR') {
-     throw new dbQueryException($i->db->errno,
-                                $i->latest_query 
-                                . ' DB query error on create FB user: ',
-                                $i->db->error);
-   }
+   if ($i->result_status == 'DBERR')
+       {
+         throw new dbQueryException($i->db->errno,
+                                    $i->latest_query 
+                                    . ' DB query error on create FB user: ',
+                                    $i->db->error);
+       }
  }
 
 
@@ -142,9 +141,9 @@ class folksoFBuser extends folksoUser{
  public function useFBname ($name, $overwrite = null) {
     if (strlen($name) < 5){
       throw new Exception('Bad or insufficient FB name given as input to userFBname()');
+    }
 
     $first = ''; $last = '';
-    }
     if (strpos($name, ' ')) {
       $last = substr($name, strrpos($name, ' ') + 1);
       $first = substr($name, 0, strrpos($name, ' '));
