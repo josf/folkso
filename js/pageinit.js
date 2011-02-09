@@ -104,9 +104,7 @@ fK.fb.onLogin = function() {
                                            $(".firstLogin", fK.cf.container).hide();
                                            $("#folkso-nav").show();
                                            fK.loginStatus = true;
-                                           if (jQuery.isFunction(fK.tinymceInit)) {
-                                               fK.tinymceInit();
-                                           }
+
                                        });
 
 
@@ -127,6 +125,8 @@ fK.fb.onLogin = function() {
                                                         {domain: ".fabula.org",
                                                          path: "/"});
                                            }
+                                       });
+
                         /*
                          * Event triggered only on actual logout, ie. not on page load. Just when 
                          * a button gets pushed.
@@ -135,8 +135,6 @@ fK.fb.onLogin = function() {
                                           function() {
                                               // in folkso-user we eliminate tinyMCE here
                                           });
-
-                                       });
 
                         /* Sets up event handler: $(fK.events).bind("loggedIn") */
 //                        fK.fn.pollFolksoCookie();
@@ -327,6 +325,7 @@ fK.fb.onLogin = function() {
                                                          {domain: ".fabula.org",
                                                           path: "/"});
                                                 $(fK.events).trigger("loggedOut");
+                                                $(fK.events).trigger("userLogout");
                                                 notLogged();   
                                             });
                                     }
@@ -335,6 +334,7 @@ fK.fb.onLogin = function() {
                                                  {domain: ".fabula.org",
                                                   path: "/"});
                                         $(fK.events).trigger("loggedOut");
+                                        $(fK.events).trigger("userLogout");
                                         notLogged();                 
                                     }
                                 });

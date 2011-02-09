@@ -656,13 +656,18 @@ $(document).ready(
                               " loginStatus was " + fK.loginStatus);) */
                              $(".login-only").show();
                              $("h1.not-logged").hide();
-                           $("#fbstuff").hide();
-                           $("#login-tabs").hide();
-                           $.ajax(getList_aj);
-                           $.ajax(getRecently_aj);
-                           $.ajax(getUser_aj);
-                           getFaves_doAj();
-                           fK.loginStatus = true;
+                             $("#fbstuff").hide();
+                             $("#login-tabs").hide();
+
+                             // ideally, all showing of hidden elements should be done 
+                             // before initializeing tinyMCE
+                             fK.tinymceInit();
+
+                             $.ajax(getList_aj);
+                             $.ajax(getRecently_aj);
+                             $.ajax(getUser_aj);
+                             getFaves_doAj();
+                             fK.loginStatus = true;
                        });
 
         $(fK.events).bind('FBlogin',
