@@ -83,6 +83,7 @@ $(document).ready(
                               res.title = $("title", $resob).text();
                               appendResource(res);
                           });
+            }
             $(R).trigger("update");
         };
 
@@ -699,15 +700,9 @@ $(document).ready(
                            if ($("ul", $oidTab).length === 0) {
                                $oidTab.append(fK.oid.providerList()); 
                            }
+
                        });
 
-        /*
-         *  Page load actions
-         */
-
-
-
-        /*
         $(fK.events).bind('userLogout',
                           function () {
                               
@@ -731,6 +726,13 @@ $(document).ready(
                               $("p#loggedVia").html('');
                           });
 
+        /*
+         *  Page load actions
+         */
+
+
+
+        /*
          * If we still aren't logged in, we should make sure the right
          * elements are visible on the page.
          */
@@ -743,7 +745,9 @@ $(document).ready(
 
 fK.tinymceInit = 
     function () {
+        /* CLAG(console.log("fK.tinymceInit called");) */
         var $cveditor = $("textarea#cveditor:first"); 
+        /* CLAG(if ($cveditor.length == 0) { console.error("cveditor textarea not found");}) */
         var sibs = $cveditor.siblings("span.mceEditor").length;
         var inDiv = $("div.user-cv:first").find("span.mceEditor").length;
         if ((sibs === 0) && (inDiv === 0)) {
