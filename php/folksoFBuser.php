@@ -142,6 +142,8 @@ class folksoFBuser extends folksoUser{
  public function useFBname ($name, $overwrite = null) {
     if (strlen($name) < 5){
       throw new Exception('Bad or insufficient FB name given as input to userFBname()');
+
+    $first = ''; $last = '';
     }
     if (strpos($name, ' ')) {
       $last = substr($name, strrpos($name, ' ') + 1);
