@@ -413,6 +413,30 @@ $(document).ready(
                     }
                    });
 
+        U.addBasic("nameurl",
+                   {selector: "div#publique",
+                    init: function(sel, $place, data) {
+                        if ($("p", sel).length == 0) {
+                            $(sel).append("<p>Votre page publique :"
+                                          + " <a class='pagepublique' "
+                                          + " href='" + data + "'>"
+                                          + data + "</a></p>");
+
+                        }
+                        else {
+                            $("a", sel).attr('href', data);
+                        }
+                    },
+                    update: function(sel, $place, data) {
+                        $("a", sel).attr('href', data);
+                    },
+                    deleteElem: function(sel, $place, data) {
+                        var $link = $("a", sel);
+                        $link.html('');
+                        $link.attr('href', '');
+                    }
+                   });
+
         U.addBasic("cv",
                    {selector: "div.user-cv",
                     init: function(sel, $place, data) {
@@ -444,8 +468,8 @@ $(document).ready(
         setInstitution = U.setfield("institution"),
         setPays      = U.setfield("pays"),
         setFonction  = U.setfield("fonction"),
-        setCv        = U.setfield("cv");
-
+        setCv        = U.setfield("cv"),
+        setNameUrl   = U.setfield("nameurl");
 
         var userDataUpdateSuccess = function(xml, status, xhr) 
         {
@@ -465,6 +489,8 @@ $(document).ready(
                 setInstitution($("institution", xml).text());
                 setPays($("pays", xml).text());
                 setFonction($("fonction", xml).text());
+                setNameUrl("http://www.fabula.org/" + 
+                           $("nameurl", xml).text());
 
                 /*
                  * The jQuery.xml() method is provided by a plugin: 
