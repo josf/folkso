@@ -495,7 +495,8 @@ print $fp->facebookConnectButton();
 <h2>Vos données</h2>
   <p>Lorsque vous renseignez les champs "Prénom" et "Nom de famille", 
   une page personnelle sera créée où vous pourrez afficher vos coordonnées et un mini-CV, 
-accessible à l'adresse <code>www.fabula.org/<strong>prénom.nomdefamille</strong></code></p> <!-- ' -->
+accessible à l'adresse <code>www.fabula.org/<strong>prenom.nomdefamille</strong></code></p> (Notez que les accents sont supprimés.) <!-- ' -->
+<div id="publique">
 <?php
 
 if ($userUrl) {
