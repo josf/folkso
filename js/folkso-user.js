@@ -477,11 +477,19 @@ $(document).ready(
                 $(W).trigger("update");
             }
             else if (xhr.status == 204) {
-/*
-#ifdef DEBUG                 if (window.console) {
- console.debug("Treating 204 as not an error");
-#endif
-                }*/
+                setFirstName('');
+                setLastName('');
+                setEmail('');
+                setInstitution('');
+                setPays('');
+                setFonction('');
+                setNameUrl('');
+
+                $(U).trigger("update");
+
+                setWelcomeName("");
+                setTagCount("");
+                $(W).trigger("update");
             }
         };
 
