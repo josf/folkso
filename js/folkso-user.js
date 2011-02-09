@@ -426,10 +426,12 @@ $(document).ready(
                         }
                         else {
                             $("a", sel).attr('href', data);
+                            $("a", sel).html(data);
                         }
                     },
                     update: function(sel, $place, data) {
                         $("a", sel).attr('href', data);
+                        $("a", sel).html(data);
                     },
                     deleteElem: function(sel, $place, data) {
                         var $link = $("a", sel);
