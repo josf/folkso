@@ -421,7 +421,7 @@ un mini-CV.
 </ul>
 
 <div id="tabs-1">
-OpenId
+ &#160;
 </div>
 
 <div id="tabs-2">
