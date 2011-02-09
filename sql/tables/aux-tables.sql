@@ -19,6 +19,7 @@ insert into replace_characters
 
        ('c', ord('ç')),
 
+       ('e', 195), -- for terminal
        ('e', ord('é')),
        ('e', ord('è')),
        ('e', ord('ë')),
