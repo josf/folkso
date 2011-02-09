@@ -110,7 +110,7 @@ class folksoFBuser extends folksoUser{
 
    $i->sp_query(
                 sprintf("call create_user("
-                        ."'%s', '', %d, '%s', '%s', '', %d, '%s', '%s')",
+                        ."'%s', '', %d, '%s', '%s', '%s', '%s', '%s', '%s')",
                         $i->dbescape($this->urlBase),
                         $i->dbescape($this->loginId), //that is: facebook id, here
                         $i->dbescape($this->firstName),
