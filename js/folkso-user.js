@@ -703,6 +703,29 @@ $(document).ready(
 
 
         /*
+        $(fK.events).bind('userLogout',
+                          function () {
+                              
+                              // remove tinyMCE
+                              if ((typeof tinyMCE !== "undefined")  &&
+                                  $.isFunction(tinyMCE.get)) {
+                                  var tin = tinyMCE.get("cveditor");
+                                  if (tin) {
+                                      tin.remove();
+                                  }
+                              }
+
+                              // clear editor contents
+                              $("textarea#cveditor").val('');
+                              U.deleteAll();
+                              W.deleteAll();
+                              K.deleteAll();
+                              R.deleteAll();
+                              Fav.deleteAll();
+//                              $("span.userhello").html('');
+                              $("p#loggedVia").html('');
+                          });
+
          * If we still aren't logged in, we should make sure the right
          * elements are visible on the page.
          */
