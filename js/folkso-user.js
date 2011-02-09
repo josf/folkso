@@ -288,6 +288,9 @@ $(document).ready(
                     },
                     update: function (sel, $place, data) {
                         $(sel, $place).html(data);
+                    },
+                    deleteElem: function(sel, $place) {
+                        $(sel).html('');
                     }
                    });
 
@@ -298,6 +301,9 @@ $(document).ready(
                     },
                     update: function (sel, $place, data) {
                         $(sel).html(data);
+                    },
+                    deleteElem: function(sel, $place) {
+                        $(sel).html('');
                     }
                     });
 
@@ -324,7 +330,7 @@ $(document).ready(
                         $(sel + " input.firstnamebox", $place).val(data);
                     },
                     deleteElem: function (sel, $place, data) {
-                        ($sel + " span.firstname", $place).html('');
+                        $(sel + " span.firstname", $place).html('');
                         $(sel + "input.firstnamebox", $place).val('');
                     }
                    });
