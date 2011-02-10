@@ -153,7 +153,7 @@ class folksoQuery {
                       $mults[$new_key] = array();
                   }      
                   array_push($mults[$new_key],
-                         $this->field_shorten($param_val));
+                         $this->$param_val);
               }
               else {
                 /* special cases */
@@ -183,7 +183,7 @@ class folksoQuery {
                   break;
                 }
 
-                $accum[$param_key] = $this->field_shorten($param_val);
+                $accum[$param_key] = $param_val;
               }
           }
       }
