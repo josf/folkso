@@ -248,6 +248,22 @@ class testOffolksoUser extends  UnitTestCase {
      $this->assertEqual($u2->nameUrl(), 'horace.force',
                         'Name url should be "horace.force", not: ' .
                         $u->nameUrl());
+
+     $ch = new folksoUser($this->dbc);
+     $ch->userFromUserId('chuckyb-2011-001');
+     $longCv = 'Here is a very long text. Here is a very long text. Here is a very long text.Here is a very long text.Here is a very long text.Here is a very long text.Here is a very long text.Here is a very long text.Here is a very long text.Here is a very long text.Here is a very long text.Here is a very long text.Here is a very long text.Here is a very long text.Here is a very long text.Here is a very long text.Here is a very long text.Here is a very long text.Here is a very long text.Here is a very long text.Here is a very long text.Here is a very long text.Here is a very long text.Here is a very long text.Here is a very long text.Here is a very long text.Here is a very long text.';
+
+     $ch->setCv($longCv);
+     $this->assertEqual($ch->cv, $longCv,
+                        'Long CV should not be truncated in the object itself');
+
+     $ch->storeUserData();
+     
+     $ch2 = new folksoUser($this->dbc);
+     $ch2->userFromUserId('chuckyb-2011-001');
+     $this->assertEqual($ch2->cv, $longCv,
+                        'Long CV should still be the same after DB retrieval');
+
      
    }
 
