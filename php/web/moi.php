@@ -62,13 +62,24 @@ if ($rawUser) {
 }
 // otherwise we might be getting the name as parameters
 elseif ($_GET['first'] && $_GET['last']) {
-  // letters only in names
+  // letters only in first name (no numbers)
   $first = preg_replace('/[^a-zA-Z-]/', '', $_GET['first']);
+  // might be a number in last name because of ordinality
+  $rawlast = $_GET['last'];
+  $ordinal = 0;
+
+  // here we allow $last to have extraneous numbers, but they will be 
+  // destroyed shortly.
+  if (preg_match('/^(.*[^0-9]+)(\d+)$/', $rawlast, $matches)) {
+    $ordinal = $matches[2];
+    $last = $matches[1];
+  }
+
   $last = preg_replace('/[^a-zA-Z-]/', '', $_GET['last']);
 
   if ((strlen($first) > 1) &&
       (strlen($last) > 1)) {
-    if (! $u->userFromName($first, $last)){
+    if (! $u->userFromName($first, $last, $ordinal)){
       header('HTTP/1.1 404 User not found');
       react404($loc,
                "The user name you have supplied does not correspond to a current user");

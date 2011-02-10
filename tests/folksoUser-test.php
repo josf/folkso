@@ -61,8 +61,8 @@ class testOffolksoUser extends  UnitTestCase {
     // necessary for nameUrl() which returns 
     // false if there is no userid
     $u->userid = '123'; 
-    $this->assertEqual($u->nameUrl(), 'bob.theslob',
-                       'nameUrl() should return bob.theslob, not: ');
+    $this->assertFalse($u->nameUrl(), 
+                       'nameUrl() should return false because this user is not in DB');
     
     $u->setCv('Wrote some books');
     $this->assertEqual($u->cv, 'Wrote some books',
@@ -74,6 +74,63 @@ class testOffolksoUser extends  UnitTestCase {
     $this->assertEqual($u2->cv, 'Wrote stuff',
                        'Cv data failed with call_user_func');
 
+  }
+
+  function testNameUrl () {
+    test_db_init();
+    $rambl = new folksoUser($this->dbc);
+    $stat = new folksoUser($this->dbc);
+    $baud = new folksoUser($this->dbc);
+
+    $this->assertTrue($rambl->exists('rambling-2011-001'),
+                      'Testing the T: user rambling should exist');
+    $this->assertTrue($stat->exists('stationary-2011-001'),
+                      'Testing the T: user stationary should exist');
+    $this->assertTrue($baud->exists('chuckyb-2011-001'),
+                      'Testing the T: user chuckyb should exist');
+
+    $rambl->userFromUserId('rambling-2011-001');
+    $this->assertIsA($rambl, 'folksoUser', '$rambl is not a fkUser object');
+    $stat->userFromUserId('stationary-2011-001');
+    $this->assertIsA($stat, 'folksoUser', '$stat is not a fkUser object');
+    $baud->userFromUserId('chuckyb-2011-001');
+    $this->assertIsA($baud, 'folksoUser', '$baud is not a fkUser object');
+
+    $this->assertEqual($baud->nameUrl(), 'charles.baudelaire',
+                       'Incorrect nameUrl() for Charles Baudelaire. '
+                       . 'expecting charles.baudelaire, got: '
+                       . $baud->nameUrl());
+
+
+    $rambl->setFirstName('Charles');
+    $rambl->setLastName('Baudelaire');
+    $rambl->storeUserData();
+
+    $rambl2 = new folksoUser($this->dbc);
+    $rambl2->userFromUserId('rambling-2011-001');
+    $this->assertEqual($rambl2->nameUrl(), 'charles.baudelaire1',
+                       'rambl2 should now be charles.baudelaire1, not: ' .
+                       $rambl2->nameUrl());
+
+    $stat->setFirstName('Charles');
+    $stat->setLastName('Baudelaire');
+    $stat->storeUserData();
+
+    $stat2 = new folksoUser($this->dbc);
+    $stat2->userFromUserId('stationary-2011-001');
+    $this->assertEqual($stat2->nameUrl(), 'charles.baudelaire2',
+                       'stat2 should now be charles.baudelaire2, not: ' .
+                       $stat2->nameUrl());
+
+    
+    $find = new folksoUser($this->dbc);
+    $this->assertTrue($find->userFromName('charles', 'baudelaire', 2),
+                      'Should find user with ordinal');
+    $this->assertEqual($find->userid, 'stationary-2011-001',
+                       'The found user should have userid stationary-2011-001, not: '
+                       . $find->userid);
+    
+      
   }
 
   function testValidation() {
@@ -158,6 +215,9 @@ class testOffolksoUser extends  UnitTestCase {
                         'Problem with test. firstName incorrect on load');
      $this->assertEqual($u->lastName, 'Proust',
                         'Problem with test. lastName incorrect on load');
+     $this->assertEqual($u->ordinality, 0,
+                        'Ordinality field missing or incorrect. Should be 0, not: '
+                        . $u->ordinality);
      
      $u->setFirstName('Horace');
      $u->setLastName('Force');

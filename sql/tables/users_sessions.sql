@@ -52,7 +52,7 @@ create or replace view fb_users
           ud.lastname as lastname, ud.firstname as firstname, ud.email as email, 
           ud.institution as institution, ud.pays as pays, ud.fonction as fonction,
           ud.cv as cv, ud.firstname_norm as firstname_norm, 
-          ud.lastname_norm as lastname_norm
+          ud.lastname_norm as lastname_norm, ud.ordinal as ordinal
           from users u 
           join fb_ids f on f.userid = u.userid
           left join user_data ud on u.userid = ud.userid;
@@ -67,7 +67,7 @@ create or replace view oi_users
        ud.lastname as lastname, ud.firstname as firstname, ud.email as email, 
        ud.institution as institution, ud.pays as pays, ud.fonction as fonction,
        ud.cv as cv, ud.firstname_norm as firstname_norm, 
-       ud.lastname_norm as lastname_norm              
+       ud.lastname_norm as lastname_norm, ud.ordinal as ordinal              
        from users u
        join oid_urls o on u.userid = o.userid
        left join user_data ud on u.userid = ud.userid;

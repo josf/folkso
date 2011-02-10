@@ -40,7 +40,7 @@ class folksoUser {
   public $urlBase;
   public $firstName_norm;
   public $lastName_norm;
-
+  public $ordinality; // used for keeping track of people with the same name (see nameUrl())
   /** 
    * A folksoRightStore object
    */
@@ -162,31 +162,29 @@ class folksoUser {
        throw new userException('Invalid login id, user creation will fail');
      }
    }
+   /**
+    * This is private because it should only be called when loading
+    * from the DB. We would never want to set it ourselves or try to write it 
+    * to the DB.
+    */
+   private function setOrdinality($ord) {
+     $this->ordinality = $ord;
+   }
 
    public function nameUrl() {
 
      // base case: we already have the data because the user has been
      // retrieved from the DB and has a name and lastname in user_data
-     $first = $this->firstName_norm . '.' . $this->lastName_norm;
+     $ord = ($this->ordinality > 0) ? $this->ordinality : '';
+     $first = $this->firstName_norm . '.' . $this->lastName_norm . $ord;
      if (strlen($first) > 3) {
        return $first;
      }
 
      // we have the names, but no normalized names
-     // we will need to check for homonyms here
+     // we return false because we don't want to give out data that might be wrong.
      if (strlen($this->firstName . $this->lastName) > 0) {
-       $i = new folksoDBinteract($this->dbc);
-       $i->query( sprintf(
-                          "select concat(normalize_tag('%s'), '.', "
-                          ." normalize_tag('%s')) as url ",
-                          $i->dbescape($this->firstName),
-                          $i->dbescape($this->lastName),
-                          $i->dbescape($this->userid)));
-
-       if ($i->rowCount > 0) {
-         $res = $i->result->fetch_object();
-         return $res->url;
-       }
+       return false;
      }
 
      // if we have the urlBase, we can assume the user has been loaded from the
@@ -196,12 +194,10 @@ class folksoUser {
        return false;
      }
 
-
-
-
      // we (re)load the user, now we really know
      if (($this->userid) &&
          ($u->userFromUserId($this->userid))) {
+       $ord = ($this->ordinality > 0) ? $this->ordinality : '';
        $second = $this->firstName_norm  . '.' . $this->lastName_norm;
        if (strlen($second) > 3) {
          return $second;
@@ -329,6 +325,9 @@ class folksoUser {
       $this->setLastName_norm($params['lastname_norm']);
     }
 
+    if (array_key_exists('ordinality', $params)) {
+      $this->setOrdinality($params['ordinality']);
+    }
     $this->Writeable();
     return array($this);
   }
@@ -343,7 +342,7 @@ class folksoUser {
     $sql = 
       "select u.userid as userid, u.urlbase as urlbase, ud.lastname, ud.firstname, "
       . " ud.email, ud.institution, ud.pays, ud.fonction, ud.cv, "
-      . " ud.firstname_norm, ud.lastname_norm, "
+      . " ud.firstname_norm, ud.lastname_norm, ud.ordinal,"
       .' count(te.resource_id) as eventCount '
       . ' from users u '
       . ' left join user_data ud on ud.userid = u.userid '
@@ -377,7 +376,8 @@ class folksoUser {
                             'cv' => $res->cv,
                             'eventCount' => $res->eventCount,
                             'firstname_norm' => $res->firstname_norm,
-                            'lastname_norm' => $res->lastname_norm));
+                            'lastname_norm' => $res->lastname_norm,
+                            'ordinality' => $res->ordinal));
     }
     return $this;
   }
@@ -387,19 +387,26 @@ class folksoUser {
  *
  * @param $first String First name
  * @param $last String Last name
+ * @param $ord Integer ordinal, in case of homonyms
  * @throws DB errors
  * @return Self
  */
-  public function userFromName ($first, $last) {
+  public function userFromName ($first, $last, $ord = 0) {
+    if (! is_numeric($ord)) {
+      throw new userException('Bad ordinality argument in userFromName: ' . $ord);
+    }
+
     $i = new folksoDBinteract($this->dbc);
     $sql = 
       sprintf('select u.userid from users u '
               .' join user_data ud on u.userid = ud.userid '
               .' where '
               ." ud.firstname = '%s' and ud.lastname = '%s'"
+              ." and ud.ordinal = %d "
               .' limit 1',
               $i->dbescape($first),
-              $i->dbescape($last));
+              $i->dbescape($last),
+              $i->dbescape($ord));
 
     $i->query($sql);
     if ($i->result_status == 'OK') {
@@ -420,7 +427,7 @@ class folksoUser {
    $i = new folksoDBinteract($this->dbc);
    $sql = "select "
      ." userid, urlbase, last_visit, lastname, firstname, email, "
-     ." institution, pays, fonction, cv, firstname_norm, lastname_norm "
+     ." institution, pays, fonction, cv, firstname_norm, lastname_norm, ordinal "
      ." from "
      ." $view "
      ." where $login_column = '" . $i->dbescape($id) . "'";
@@ -428,7 +435,7 @@ class folksoUser {
    if ($service && $right){
      $sql = "select "
        ." v.userid, urlbase, last_visit, lastname, firstname, email, institution, "
-       ." pays, fonction, cv, ur.rightid, firstname_norm, lastname_norm "
+       ." pays, fonction, cv, ur.rightid, firstname_norm, lastname_norm, ordinal "
        ." from "
        ." $view v "
        ." left join users_rights ur on ur.userid = v.userid "
@@ -461,7 +468,8 @@ class folksoUser {
                            'fonction' => $res->fonction,
                            'cv' => $res->cv,
                            'firstname_norm' => $res->firstname_norm,
-                           'lastname_norm' => $res->lastname_norm));
+                           'lastname_norm' => $res->lastname_norm,
+                           'ordinality' => $res->ordinal));
      if ($service &&
          $right && 
          ($res->rightid == $right)) {
