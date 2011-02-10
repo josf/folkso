@@ -217,4 +217,92 @@ begin
 
 
 end$$
-delimiter ;      
+delimiter ;
+
+-- Both userdata triggers enforce the relationship between firstname/lastname
+-- and firstname_norm/lastname_norm
+delimiter $$
+drop trigger if exists userdata_insert_check$$
+create trigger userdata_insert_check
+       before insert
+on user_data
+for each row      
+begin
+
+        declare existing_count integer;
+        declare current_max_ord integer;
+        declare new_norm_firstname varchar(255);
+        declare new_norm_lastname varchar(255);
+
+        set new_norm_firstname = normalize_tag(NEW.firstname);
+        set new_norm_lastname = normalize_tag(NEW.lastname);    
+        set NEW.firstname_norm = new_norm_firstname;
+        set NEW.lastname_norm = new_norm_lastname;
+
+
+        select count(*)
+               into existing_count
+               from user_data
+        where firstname_norm=new_norm_firstname
+              and 
+              lastname_norm=new_norm_lastname;
+
+        if (existing_count > 0) then
+
+           select max(ordinal)
+                  into current_max_ord
+                  from (select * from user_data 
+                       where firstname_norm=new_norm_firstname
+                             and 
+                             lastname_norm=new_norm_lastname) as huh;
+                  
+           set NEW.ordinal = current_max_ord + 1;
+        end if;
+
+end$$
+delimiter ;
+ 
+delimiter $$
+drop trigger if exists userdata_update_check$$
+create trigger userdata_update_check
+       before update
+on user_data
+for each row
+begin
+        declare existing_count integer;
+        declare current_max_ord integer;
+        declare new_norm_firstname varchar(255);
+        declare new_norm_lastname varchar(255);
+
+        set new_norm_firstname = normalize_tag(NEW.firstname);
+        set new_norm_lastname = normalize_tag(NEW.lastname);
+        set NEW.firstname_norm = new_norm_firstname;
+        set NEW.lastname_norm = new_norm_lastname;
+
+        if ((new_norm_firstname <> OLD.firstname_norm) ||
+            (new_norm_lastname <> OLD.lastname_norm)) then
+
+            select count(*)
+                   into existing_count
+                   from user_data
+            where firstname_norm = new_norm_firstname
+                  and
+                  lastname_norm = new_norm_lastname;
+
+            if (existing_count > 0) then
+               select max(ordinal)
+                  into current_max_ord
+                  from user_data
+               where firstname_norm=new_norm_firstname
+                 and 
+                 lastname_norm=new_norm_lastname;
+            set NEW.ordinal = current_max_ord + 1;
+
+            else -- this is necessary because we might be changing from a name w/ 
+                 -- dupes to a name without
+            set NEW.ordinal = 0;
+            end if;
+       end if; 
+
+end$$
+delimiter ;
