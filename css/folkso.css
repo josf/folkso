@@ -1,0 +1,25 @@
+* {
+    position: static;
+}
+
+#tagResourceList a.innertag, #tagResourceList a.innertag:link, #tagResourceList a.innertag:active, #tagResourceList a.innertag:visited, #tagResourceList a.innertag:hover, #relatedTags a, #relatedTags a:link, #relatedTags a:active, #relatedTags a:visited, #relatedTags a:hover {
+    border-bottom: none;
+    font-size: 9pt;
+}
+
+div.tagfeeds {
+    padding-left: 500px;
+}
+
+div#tagResourceList ul.resourceList {
+    padding-left: 1em;
+    padding-right: 1em;
+}
+
+#colonnes-un div#tagResourceList  li {
+    margin-left: 0.5em;
+}
+
+#colonnes_nouvelles div#colonnes-un {
+    padding-left: 1em;
+}

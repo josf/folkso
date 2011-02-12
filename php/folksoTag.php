@@ -13,6 +13,7 @@ require_once('folksoAlpha.php');
 require_once('folksoTagQuery.php');
 require_once('folksoTags.php');
 require_once('folksoSession.php');
+require_once('folksoFabulaTemplate.php');
 
 /**
  * Provides all of the tag related functions called directly by
@@ -505,7 +506,7 @@ function tagsToTaglist ($raw) {
   foreach (explode('-', $raw) as $tag) {
     $tags = explode('::', $tag);
     $t = new folksoTagLink(trim($tags[1]));
-    $tagArray[] = sprintf('<li><a href="%s">%s</a></li>',
+    $tagArray[] = sprintf(' <li><a href="%s">%s</a></li> ',
                           $t->getLink(),
                           trim($tags[0]));
   }
@@ -896,21 +897,13 @@ function allTags (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
  * Default html page for tag/thistag requests.
  */
 function tagPage  (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
-  // it hurts me to do this dynamic include, but it really seems like
-  // the best thing to do here.
-  include_once("fdent/fabelements.inc");
   $r = new folksoResponse();
-  $fab = new FabElements();
+  $loc = new folksoFabula();
   
   $relatedResp = relatedTags($q, $dbc, $fks);
   $resourceResp = fancyResource($q, $dbc, $fks);
+  $relatedXML = ''; $resourceXML = '';
 
-  if ($resourceResp->status == 200) {
-    $resourceXML = preg_replace('/<\?xml\s+version="1\.0"\?>/i', 
-                                '', 
-                                $resourceResp->body());
-
-  }
   if ($relatedResp->status == 200) {
     $relatedXML = preg_replace('/<\?xml\s+version="1\.0"\?>/i', 
                                '', 
@@ -918,16 +911,34 @@ function tagPage  (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   }
 
   if ($resourceResp->status == 200) {
-    $r->t(
-          sprintf('<?xml version="1.0"?>'
-                  ."\n<tagpage>\n<related>%s</related>\n"
-                  ."%s</tagpage>",
-                  $relatedXML, $resourceXML)
-          );
+    $resourceXML = preg_replace('/<\?xml\s+version="1\.0"\?>/i', 
+                                '', 
+                                $resourceResp->body());
 
+    $xml = sprintf('<?xml version="1.0"?>'
+                   ."\n<tagpage>\n<related>%s</related>\n"
+                   ."%s</tagpage>",
+                   $relatedXML, $resourceXML);
+
+    $xmlDOM = new DOMDocument();
+    if (! $xmlDOM->loadXML($xml)) {
+      return $r->setError(500, 'Internal error', 
+                          'Invalid XML in tagpage');
+    }
+    $xsl = new DOMDocument();
+    $xsl->load($loc->xsl_dir . 'fab_tagpage.xsl');
+    $proc = new XSLTProcessor();
+    $proc->importStylesheet($xsl);
+
+    if (! $html = $proc->transformToDoc($xmlDOM)) {
+      return $r->setError(500, 'Internal error',
+                          'Could not transform document');
+    }
+
+    $tp = new folksoFabulaTemplate();
     $r->setOk(200, "OK");
-    $r->setStylesheet("fab_tagpage.xsl");
-    $r->setType('html');
+    $r->t($tp->wrapContent($html->saveXML(), '/tags/css/folkso.css'));
+    $r->setType('loose');
     return $r;
   }
   else {

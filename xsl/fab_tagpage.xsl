@@ -2,51 +2,22 @@
 <xsl:stylesheet version="1.0"
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
   <xsl:import href="fab_html.xsl"/>
-  <xsl:output method="xml"
-              doctype-public="-//W3C//DTD XHTML 1.0 Strict//EN"
-              doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"/>
+  <xsl:output method="xml"/>
+<!--              doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"/> -->
 
-
+<!--               doctype-public="-//W3C//DTD XHTML 1.0 Strict//EN"
+-->
 
   <xsl:template match="/">
-    <xsl:element name="html">
-      <xsl:call-template name="fabhead">
-        <xsl:with-param name="pageTitle"
-                        select="concat('Fabula. Tag : ', ./tagpage/tag/tagtitle)"/>
-        <xsl:with-param name="tagnorm"
-                        select="./tagpage/tag/tagnorm"/>
-        <xsl:with-param name="atomfeedp" select="1"/>
-      </xsl:call-template>
-      <xsl:element name="body">
-        <xsl:element name="div">
-          <xsl:attribute name="class">container</xsl:attribute>
-          <xsl:call-template name="fab_docTop"/>
-
-          <xsl:element name="div">
-            <xsl:attribute name="id">container_1col</xsl:attribute>
-            <xsl:apply-templates/>
-          </xsl:element>
-          <xsl:call-template name="fab_docBottom"/>
-        </xsl:element>
-      </xsl:element>
-    </xsl:element>
-
-  </xsl:template>
-
-
-  <xsl:template match="tagpage">
     <xsl:element name="div">
-      <xsl:attribute name="class">tagContent</xsl:attribute>
-
-      <!-- title is inside the "tag" part, so we have to reach it from here  -->
+      <xsl:attribute name="id">tagContainer</xsl:attribute>
       <xsl:element name="h1">
-        <xsl:text>Ressources associées au tag :</xsl:text>
-      </xsl:element>
-      <xsl:element name="h2">
-        <xsl:attribute name="class">tagtitle</xsl:attribute>
-        <xsl:value-of select="./tag/tagtitle"/>
+        <xsl:attribute name="id">tagtitle</xsl:attribute>
+        <xsl:text>Tag : </xsl:text>
+        <xsl:value-of select="tagpage/tag/tagtitle"/>
       </xsl:element>
 
+      <!-- Feed(s) -->
       <xsl:element name="div">
         <xsl:attribute name="class">tagfeeds</xsl:attribute>
 
@@ -64,23 +35,42 @@
         </xsl:element>
       </xsl:element>
 
-  
       <xsl:apply-templates/>
     </xsl:element>
   </xsl:template>
 
-  <!-- related -->
+
+
+
+
+
   <xsl:template match="related">
-    <xsl:element name="h2">
-      <xsl:text>Tags voisins :</xsl:text>
+    <xsl:element name="div">
+      <xsl:attribute name="id">relatedTags</xsl:attribute>
+
+      <xsl:element name="h2">
+        <xsl:text>Tags voisins :</xsl:text>
+      </xsl:element>
+
+      <xsl:copy-of select="./div"/>
     </xsl:element>
-    <!-- related output is already html -->
-    <xsl:copy-of select="./div"/>
   </xsl:template>
 
+
   <xsl:template match="tag">
-    <xsl:apply-templates/>
+    <xsl:element name="div">
+      <xsl:attribute name="id">tagResourceList</xsl:attribute>
+      <xsl:attribute name="class">resourceList</xsl:attribute>
+
+      <xsl:element name="h2">
+        <xsl:text>Ressources associées : </xsl:text>
+      </xsl:element>
+
+  
+      <xsl:apply-templates select="resourcelist"/>
+    </xsl:element>
   </xsl:template>
+
   
   <!-- already dealt with inside tagpage template -->
   <xsl:template match="tagtitle"/>
