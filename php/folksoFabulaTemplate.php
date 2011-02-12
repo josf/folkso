@@ -25,10 +25,11 @@ class folksoFabulaTemplate {
    * @param $css Mixed If not null, a filename + path to a css file
    */
 
-  public function wrapContent ($html, $css = null) {
+  public function wrapContent ($html, $title = '', $css = null) {
     ob_start();
     require($this->fablibDir . 'head_folkso.php');
     require($this->fablibDir . 'head_dtd.php');
+    $page_titre = $title;
     print "<html>\n<head>";
     require($this->fablibDir . 'head_meta.php');
     require($this->fablibDir . 'head_css.php');

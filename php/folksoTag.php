@@ -925,6 +925,10 @@ function tagPage  (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
       return $r->setError(500, 'Internal error', 
                           'Invalid XML in tagpage');
     }
+
+    $tagTitleList = $xmlDOM->getElementsByTagName("tagtitle");
+    $tagTitle = $tagTitleList->item(0)->textContent;
+
     $xsl = new DOMDocument();
     $xsl->load($loc->xsl_dir . 'fab_tagpage.xsl');
     $proc = new XSLTProcessor();
@@ -937,7 +941,9 @@ function tagPage  (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
 
     $tp = new folksoFabulaTemplate();
     $r->setOk(200, "OK");
-    $r->t($tp->wrapContent($html->saveXML(), '/tags/css/folkso.css'));
+    $r->t($tp->wrapContent($html->saveXML(), 
+                           'Fabula - Tag: ' . $tagTitle, 
+                           '/tags/css/folkso.css'));
     $r->setType('loose');
     return $r;
   }
