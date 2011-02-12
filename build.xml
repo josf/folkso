@@ -461,7 +461,7 @@
     </scp>
   </target>
 
-  <target name="remote.dev.web" depends="php.dev,css.staging">
+  <target name="remote.dev.web" depends="php.dev,remote.css">
     <scp remoteTodir="${rem.user}@${rem.host}:${rem.web}"
          keyfile="${loc.keyfile}"
          passphrase="${loc.passphrase}">
@@ -475,7 +475,9 @@
       <fileset dir="${dist}/web"
                includes="admin*.php"/>
     </scp>
+  </target>
 
+  <target name="remote.css" depends="css.staging">
     <scp remoteTodir="${rem.user}@${rem.host}:${rem.web}/css"
          keyfile="${loc.keyfile}"
          passphrase="${loc.passphrase}">
