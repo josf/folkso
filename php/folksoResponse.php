@@ -189,7 +189,7 @@ class folksoResponse {
   }
 
   public function setType($str) {
-    if (! in_array($str, array('xml', 'text', 'html', 'atom', 'rss', 'json'))){
+    if (! in_array($str, array('xml', 'text', 'html', 'loose', 'atom', 'rss', 'json'))){
       trigger_error("Invalid output content type", e_user_warning);
       $str = 'text';
     }
@@ -258,6 +258,9 @@ class folksoResponse {
       break;
     case 'html':
       $type =  'application/xhtml+xml';
+      break;
+    case 'loose':
+      $type = 'text/html';
       break;
     case 'json': 
       $type = 'application/json';
