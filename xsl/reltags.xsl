@@ -45,6 +45,8 @@
       <xsl:value-of select="display"/>
     </xsl:element>
   </xsl:element>
+  <xsl:text> <!-- empty space necessary here to avoid unbreakable lines in browser -->
+  </xsl:text>
 </xsl:template>
 
 </xsl:stylesheet>
