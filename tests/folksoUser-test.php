@@ -4,6 +4,7 @@ require_once('unit_tester.php');
 require_once('reporter.php');
 require_once('folksoTags.php');
 require_once('folksoUser.php');
+
 require_once('dbinit.inc');
 
 class testOffolksoUser extends  UnitTestCase {
@@ -370,7 +371,6 @@ class testOffolksoUser extends  UnitTestCase {
                         'Did not retreive cv data');
    }
 
-   
 }//end class
 
 $test = &new testOffolksoUser();
