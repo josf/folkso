@@ -72,7 +72,7 @@
     <apply executable="cpp" 
            dest="${dist}/tests">
       <fileset dir="./tests"
-               includes="folkso*test.php,dbinit.inc,control.php">
+               includes="folkso*test.php,dbinit.inc,control.php,user-test.php,tag-test.php,resource-test.php">
         <depth max="1"/>
       </fileset>
       <arg line="-P -C"/>
