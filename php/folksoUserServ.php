@@ -29,6 +29,8 @@ require_once('facebook.php');
 function getMyTags (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks){
   $r = new folksoResponse();
   $u = $fks->userSession();
+  $userid = '';
+
   if (! $u instanceof folksoUser) {
     if (! $q->is_param('uid')){
       return $r->unAuthorized($u); // add message about logging in?
