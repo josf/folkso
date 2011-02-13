@@ -445,15 +445,14 @@ print $fp->facebookConnectButton();
   <?php // Admin, redac link
   if ($redacRight || $adminRight) {
     ?>
-    <li><a href="/tags/adminlogin.php">Gestion tags</a></li>
+    <li><a id="adminLink" href="/tags/adminlogin.php">Gestion tags</a></li>
     <?php
   }
 
 
- if (($u instanceof folksoUser) 
-     && $u->nameUrl()) {
+ if (($u instanceof folksoUser) && $u->nameUrl()) {
        $userUrl =  'http://www.fabula.org/' . $u->nameUrl();
-       echo sprintf('<li><a href="%s">Page publique</a></li>',
+       echo sprintf('<li><a id="publicLink" href="%s">Page publique</a></li>',
                     $userUrl);
  }
 ?>

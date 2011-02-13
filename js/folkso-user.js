@@ -484,7 +484,8 @@ $(document).ready(
                     }, 7000);
                 var firstname = $("firstname", xml).text(),
                 lastname = $("lastname", xml).text(),
-                fullname = firstname +  " " + lastname;
+                fullname = firstname +  " " + lastname,
+                nameurl = $("nameurl", xml).text();
 
                 setFirstName(firstname);
                 setLastName(lastname);
@@ -492,8 +493,7 @@ $(document).ready(
                 setInstitution($("institution", xml).text());
                 setPays($("pays", xml).text());
                 setFonction($("fonction", xml).text());
-                setNameUrl("http://www.fabula.org/" + 
-                           $("nameurl", xml).text());
+                setNameUrl("http://www.fabula.org/" + nameurl);
 
                 /*
                  * The jQuery.xml() method is provided by a plugin: 
@@ -510,6 +510,38 @@ $(document).ready(
                 setWelcomeName(fullname);
                 setTagCount($("tagcount", xml).text());
                 $(W).trigger("update");
+
+
+                var $userNav = $("#userNav");
+                if (fullname.length > 3) {
+                    var $publique = $("#publicLink");
+                    if ($publique.length === 1) {
+                        $publique.show();
+                    }
+                    else {
+                        $userNav.append('<li><a id="publicLink" '
+                                        + 'href="/' + nameurl + '">'
+                                       + 'Page publique</a></li>');
+                    }
+                }
+
+                /*
+                 * Activate link to admin interface if user has privs
+                 */
+                var access = $("access", xml).text();
+                if ((access === 'redac') ||
+                    (access === 'admin')) {
+
+                    var $adLink = $("#adminLink");                    
+                    if ($adLink.length === 1) {
+                        $adLink.show();
+                    }
+                    else {
+                        $userNav.prepend('<li><a id="adminLink" '
+                                        + 'href="/tags/adminlogin.php">'
+                                        + 'Gestion tags</a></li>');
+                    }
+                }
             }
             else if (xhr.status == 204) {
                 setFirstName('');
