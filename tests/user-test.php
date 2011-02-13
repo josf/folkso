@@ -495,6 +495,33 @@ class testOfuser extends  UnitTestCase {
 
    }
 
+
+   function testUserAccessLevel () {
+     test_db_init();
+     $rUnAuth = getUserData(new folksoQuery($this->emptyServer, 
+                                            array('folksouid' => 'gustav-2011-001'),
+                                            array()),
+                            $this->dbc,
+                            $this->fks);
+
+     $this->assertPattern('/<access><\/access>/', $rUnAuth->body(),
+                          'Access level should be missing with unauthorized request');
+
+     $this->fks->startSession('gustav-2011-001', true);
+     $rMe = getUserData(new folksoQuery($this->emptyServer, 
+                                        array(),
+                                        array()),
+                        $this->dbc,
+                        $this->fks);
+
+     $this->assertPattern('/<access>redac<\/access>/', $rMe->body(),
+                          'Access level for gustav-2011-001 should be "redac"');
+
+     
+
+
+   }
+
 }//end class
 
 $test = &new testOfuser();
