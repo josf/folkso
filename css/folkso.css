@@ -23,3 +23,22 @@ div#tagResourceList ul.resourceList {
 #colonnes_nouvelles div#colonnes-un {
     padding-left: 1em;
 }
+
+#relatedTags li.cloudclass5 a, #relatedTags li.cloudclass5 a:link, #relatedTags li.cloudclass5 a:active, #relatedTags li.cloudclass5 a:visited, #relatedTags li.cloudclass5 a:hover {
+    font-size: 16pt; 
+}
+
+#relatedTags li.cloudclass4 a, #relatedTags li.cloudclass4 a:link, #relatedTags li.cloudclass4 a:active, #relatedTags li.cloudclass4 a:visited, #relatedTags li.cloudclass4 a:hover {
+    font-size: 14pt; 
+}
+
+#relatedTags li.cloudclass3 a, #relatedTags li.cloudclass3 a:link, #relatedTags li.cloudclass3 a:active, #relatedTags li.cloudclass3 a:visited, #relatedTags li.cloudclass3 a:hover {
+    font-size: 14pt; 
+}
+
+#relatedTags li.cloudclass2 a, #relatedTags li.cloudclass2 a:link, #relatedTags li.cloudclass2 a:active, #relatedTags li.cloudclass2 a:visited, #relatedTags li.cloudclass2 a:hover {
+    font-size: 12pt; 
+}
+#relatedTags li.cloudclass1 a, #relatedTags li.cloudclass1 a:link, #relatedTags li.cloudclass1 a:active, #relatedTags li.cloudclass1 a:visited, #relatedTags li.cloudclass1 a:hover {
+    font-size: 10pt; 
+}
