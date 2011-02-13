@@ -511,11 +511,15 @@ class folksoQuery {
    * necessary, by using is_single_param or is_multiple_param.
    */
   public function is_param ($str) {
-    if ((is_string($this->fk_params[$str])) ||
-        (is_string($this->fk_params['folkso' . $str])) ||
-        ((is_array($this->fk_params[$str])) &&
+    if ((isset($this->fk_params[$str]) && is_string($this->fk_params[$str])) ||
+
+        (isset($this->fk_params['folkso' . $str]) &&
+         is_string($this->fk_params['folkso' . $str])) ||
+
+        (isset($this->fk_params[$str]) && is_array($this->fk_params[$str]) &&
          (count($this->fk_params[$str]) > 0)) ||
-        ((is_array($this->fk_params['folkso' . $str])) &&
+        (isset($this->fk_params['folkso' . $str]) && 
+         is_array($this->fk_params['folkso' . $str]) &&
          (count($this->fk_params['folkso' . $str]) > 0))) {
       return true;
     }
