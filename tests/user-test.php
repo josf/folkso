@@ -9,7 +9,6 @@ require_once('dbinit.inc');
 class testOfuser extends  UnitTestCase {
  
   function setUp() {
-    test_db_init();
     /** not using teardown because this function does a truncate
         before starting. **/
     $lh = 'localhost';
@@ -28,11 +27,15 @@ class testOfuser extends  UnitTestCase {
      $this->fks2 = new folksoSession(new folksoDBconnect($lh, $td, $ty, $tt));
      $this->fks3 = new folksoSession(new folksoDBconnect($lh, $td, $ty, $tt));
      $this->fks4 = new folksoSession(new folksoDBconnect($lh, $td, $ty, $tt));
+
+     $this->emptyServer = array('REQUEST_METHOD' => null,
+                                'HTTP_ACCEPT' => null);
   }
 
    function testGetMyTags () {
-     $this->fks->startSession('gustav-2010-001', true);
-     $r = getMyTags(new folksoQuery(array(),
+    test_db_init();
+     $this->fks->startSession('gustav-2011-001', true);
+     $r = getMyTags(new folksoQuery($this->emptyServer,
                                     array(),
                                     array()),
                     $this->dbc,
@@ -53,8 +56,9 @@ class testOfuser extends  UnitTestCase {
    }
 
    function testGetMyTagsJson () {
-     $this->fks->startSession('gustav-2010-001', true);
-     $r = getMyTags(new folksoQuery(array(),
+     test_db_init();
+     $this->fks->startSession('gustav-2011-001', true);
+     $r = getMyTags(new folksoQuery($this->emptyServer,
                                     array('folksodatatype' => 'json'),
                                     array()),
                     $this->dbc,
@@ -76,8 +80,9 @@ class testOfuser extends  UnitTestCase {
    }
 
    function testGetUserResByTag() {
-     $this->fks->startSession('gustav-2010-001', true);
-     $r = getUserResByTag(new folksoQuery(array(),
+     test_db_init();
+     $this->fks->startSession('gustav-2011-001', true);
+     $r = getUserResByTag(new folksoQuery($this->emptyServer,
                                           array('folksotag' => 'tagone'),
                                           array()),
                           $this->dbc,
@@ -99,7 +104,7 @@ class testOfuser extends  UnitTestCase {
      /** not implemented yet **/
      /*     $this->assertPattern('/tagone/', $r->body(),
             'Not finding tag in response: ' . $r->body());*/
-     $r2 = getUserResByTag(new folksoQuery(array(),
+     $r2 = getUserResByTag(new folksoQuery($this->emptyServer,
                                            array('folksotag' => 'emacs'),
                                            array()),
                            $this->dbc2,
@@ -110,8 +115,8 @@ class testOfuser extends  UnitTestCase {
                         'Unknown tag should throw 204: ' . $r2->status);
 
      /** JSON output **/
-     $this->fks2->startSession('gustav-2010-001', true);
-     $r3 = getUserResByTag(new folksoQuery(array(),
+     $this->fks2->startSession('gustav-2011-001', true);
+     $r3 = getUserResByTag(new folksoQuery($this->emptyServer,
                                            array('folksotag' => 'tagone',
                                                  'folksodatatype' => 'json'),
                                            array()),
@@ -126,7 +131,8 @@ class testOfuser extends  UnitTestCase {
 
    function testCheckFBuserId () {
      /* good user */
-     $r = checkFBuserId(new folksoQuery(array(),
+     test_db_init();
+     $r = checkFBuserId(new folksoQuery($this->emptyServer,
                                         array('folksofbuid' => "543210",
                                               'folksocheck' => "1"),
                                         array()),
@@ -138,7 +144,7 @@ class testOfuser extends  UnitTestCase {
                         'Did not find a valid FB user: ' . $r->statusMessage);
 
      /* unknown user */
-     $r2 = checkFBuserId(new folksoQuery(array(),
+     $r2 = checkFBuserId(new folksoQuery($this->emptyServer,
                                          array('folksofbuid' => '1000000000000',
                                                'folksocheck' => '1'),
                                          array()),
@@ -150,7 +156,7 @@ class testOfuser extends  UnitTestCase {
                         'Incorrect error status for unknown user: ' . $r2->status);
 
      /* invalid user string */
-     $r3 = checkFBuserId(new folksoQuery(array(),
+     $r3 = checkFBuserId(new folksoQuery($this->emptyServer,
                                          array('folksofbuid' => 'wop a doo day',
                                                'folksocheck' => '1'),
                                          array()),
@@ -166,14 +172,14 @@ class testOfuser extends  UnitTestCase {
    }
 
    function testLoginFBuser () {
-
+     test_db_init();
      /*
       * Note: the key logic of the loginFBuser() function can't really
       * be tested here because they require Facebook cookies.
       */
 
-     $this->fks->startSession('gustav-2010-001', true);
-     $r = loginFBuser(new folksoQuery(array(), array(), array()),
+     $this->fks->startSession('gustav-2011-001', true);
+     $r = loginFBuser(new folksoQuery($this->emptyServer, array(), array()),
                       $this->dbc,
                       $this->fks);
      $this->assertIsA($r, 'folksoResponse',
@@ -182,7 +188,7 @@ class testOfuser extends  UnitTestCase {
      $this->assertEqual($r->status, 200,
                         'Already open session should return 200');
 
-     $r2 = loginFBuser(new folksoQuery(array(), array(), array()),
+     $r2 = loginFBuser(new folksoQuery($this->emptyServer, array(), array()),
                        $this->dbc, 
                        $this->fks2);
      $this->assertIsA($r, 'folksoResponse',
@@ -195,7 +201,8 @@ class testOfuser extends  UnitTestCase {
    }
 
    function testLoginOidUser () {
-     $r = loginOidUser(new folksoQuery(array(), 
+     test_db_init();
+     $r = loginOidUser(new folksoQuery($this->emptyServer, 
                                        array('folksooid' => 'http://myspace.com/gustav',
                                              'folksodebug' => 1), 
                                        array()),
@@ -208,7 +215,8 @@ class testOfuser extends  UnitTestCase {
    }
 
    function testCreateOidUser () {
-     $r = createOidUser(new folksoQuery(array(),
+     test_db_init();
+     $r = createOidUser(new folksoQuery($this->emptyServer,
                                         array('folksooid' => 'http://whatever.eu',
                                               'folksocreate' => 1,
                                               'folksodebug' => 1),
@@ -225,8 +233,9 @@ class testOfuser extends  UnitTestCase {
 
 
    function testGetSubscriptions () {
-     $this->fks->startSession('gustav-2010-001', true);
-     $r = userSubscriptions(new folksoQuery(array(), array(), array()),
+     test_db_init();
+     $this->fks->startSession('gustav-2011-001', true);
+     $r = userSubscriptions(new folksoQuery($this->emptyServer, array(), array()),
                             $this->dbc,
                             $this->fks);
      $this->assertIsA($r, 'folksoResponse',
@@ -235,8 +244,8 @@ class testOfuser extends  UnitTestCase {
                         'Expecting 204 status (no subscriptions for gustav): ' 
                         . $r->status);
 
-     $this->fks2->startSession('rambo-2010-001', true);
-     $r2 = userSubscriptions(new folksoQuery(array(), array(), array()),
+     $this->fks2->startSession('rambo-2011-001', true);
+     $r2 = userSubscriptions(new folksoQuery($this->emptyServer, array(), array()),
                              $this->dbc,
                              $this->fks2);
      $this->assertIsA($r2, 'folksoResponse',
@@ -248,8 +257,9 @@ class testOfuser extends  UnitTestCase {
 
 
    function testAddSubscription () {
-     $this->fks->startSession('rambo-2010-001', true);
-     $r = addSubscription(new folksoQuery(array(), array('folksotag' => 'dyn3'), 
+     test_db_init();
+     $this->fks->startSession('rambo-2011-001', true);
+     $r = addSubscription(new folksoQuery($this->emptyServer, array('folksotag' => 'dyn3'), 
                                           array()),
                           $this->dbc,
                           $this->fks);
@@ -265,7 +275,7 @@ class testOfuser extends  UnitTestCase {
                        'xml failed to load');
 
 
-     $check = userSubscriptions(new folksoQuery(array(), array(), array()),
+     $check = userSubscriptions(new folksoQuery($this->emptyServer, array(), array()),
                                 $this->dbc2,
                                 $this->fks);
      $this->assertPattern('/dyn3/', $check->body(),
@@ -276,8 +286,9 @@ class testOfuser extends  UnitTestCase {
    }
 
    function testRemoveSubscription () {
-     $this->fks->startSession('rambo-2010-001', true);
-     $r = removeSubscription(new folksoQuery(array(), array('folksotag' => 1), array()),
+     test_db_init();
+     $this->fks->startSession('rambo-2011-001', true);
+     $r = removeSubscription(new folksoQuery($this->emptyServer, array('folksotag' => 1), array()),
                              $this->dbc,
                              $this->fks);
      $this->assertIsA($r, 'folksoResponse',
@@ -291,10 +302,10 @@ class testOfuser extends  UnitTestCase {
      $this->assertTrue($xxx->loadXML($r->body()),
                        'xml failed to load');
 
-     $check = userSubscriptions(new folksoQuery(array(), array(), array()),
+     $check = userSubscriptions(new folksoQuery($this->emptyServer, array(), array()),
                                 $this->dbc2,
                                 $this->fks);
-     $check = userSubscriptions(new folksoQuery(array(), array(), array()),
+     $check = userSubscriptions(new folksoQuery($this->emptyServer, array(), array()),
                                 $this->dbc2,
                                 $this->fks);
      $this->assertNoPattern('/tagone/', $check->body(),
@@ -303,8 +314,9 @@ class testOfuser extends  UnitTestCase {
    }
 
    function testRecentlyTagged() {
-     $this->fks->startSession('rambo-2010-001', true);
-     $r = recentlyTagged(new folksoQuery(array(), array(), array()),
+     test_db_init();
+     $this->fks->startSession('rambo-2011-001', true);
+     $r = recentlyTagged(new folksoQuery($this->emptyServer, array(), array()),
                          $this->dbc,
                          $this->fks);
      $this->assertIsA($r, 'folksoResponse', "ob prob");
@@ -319,13 +331,15 @@ class testOfuser extends  UnitTestCase {
    
 
    function testStoreUserData () {
-     $this->fks->startSession('vicktr-2010-001', true);
-     $r = storeUserData(new folksoQuery(array(), array('folksosetfirstname' => 'Vick',
-                                                       'folksosetlastname' => 'Hugo',
-                                                       'folksosetnick' => 'vickh',
-                                                       'folksosetemail' => 'victor@miserables.com',
-                                                       'folksosetinstitution' => 'A lui tout seul',
-                                                       'folksosetcv' => 'Tout'), array()),
+     test_db_init();
+     $this->fks->startSession('vicktr-2011-001', true);
+     $r = storeUserData(new folksoQuery($this->emptyServer, 
+                                        array('folksosetfirstname' => 'Vick',
+                                              'folksosetlastname' => 'Hugo',
+                                              'folksosetnick' => 'vickh',
+                                              'folksosetemail' => 'victor@miserables.com',
+                                              'folksosetinstitution' => 'A lui tout seul',
+                                              'folksosetcv' => 'Tout'), array()),
                         $this->dbc,
                         $this->fks);
      $this->assertIsA($r, 'folksoResponse', "ob prob");
@@ -346,8 +360,9 @@ class testOfuser extends  UnitTestCase {
    }
 
    function testGetUserData  () {
-     $this->fks->startSession('gustav-2010-001', true);
-     $r = getUserData(new folksoQuery(array(), array(), array()),
+     test_db_init();
+     $this->fks->startSession('gustav-2011-001', true);
+     $r = getUserData(new folksoQuery($this->emptyServer, array(), array()),
                       $this->dbc, 
                       $this->fks);
      $this->assertIsA($r, 'folksoResponse', "ob prob");
@@ -369,21 +384,22 @@ class testOfuser extends  UnitTestCase {
 
 
    function testGetUserDataErrors () {
-     $r = getUserData( new folksoQuery(array(), array(), array()),
+     test_db_init();
+     $r = getUserData( new folksoQuery($this->emptyServer, array(), array()),
                        $this->dbc,
                        $this->fks);
      $this->assertEqual($r->status, 400,
                         "No user specified, should get 404 here, not: " .
                         $r->status . " " . $r->statusMessage);
 
-     $r2 = getUserData( new folksoQuery(array(), array('folksouid' => 'bob-1999-002'),
+     $r2 = getUserData( new folksoQuery($this->emptyServer, array('folksouid' => 'bob-1999-002'),
                                         array()),
                         $this->dbc,
                         $this->fks);
      $this->assertEqual($r2->status, 404,
                         "User unknown: should get 404, not: " . $r2->status);
 
-     $r3 = getUserData(new folksoQuery(array(), array('folksouid' => 'fred-smead'),
+     $r3 = getUserData(new folksoQuery($this->emptyServer, array('folksouid' => 'fred-smead'),
                                        array()),
                        $this->dbc,
                        $this->fks);
@@ -392,8 +408,9 @@ class testOfuser extends  UnitTestCase {
    }
 
    function testFaveTags () {
-     $r = getFavoriteTags(new folksoQuery(array(), array(), 
-                                          array('folksouid' => 'gustav-2010-001')),
+     test_db_init();
+     $r = getFavoriteTags(new folksoQuery($this->emptyServer, array(), 
+                                          array('folksouid' => 'gustav-2011-001')),
                           $this->dbc,
                           $this->fks);
      $this->assertIsA($r, 'folksoResponse', "ob prob");
@@ -405,22 +422,25 @@ class testOfuser extends  UnitTestCase {
      $this->assertTrue($xxx->loadXML($r->body()),
                        'xml failure ' . $r->body());
 
-     $r_missing_uid = getFavoriteTags(new folksoQuery(array(), array(), array()),
+     $r_missing_uid = getFavoriteTags(new folksoQuery($this->emptyServer, array(), array()),
                                       $this->dbc, $this->fks);
+     $this->assertIsA($r_missing_uid, 'folksoResponse',
+                      'getFavoriteTags is not returning a folksoResponse obj');
+
      $this->assertEqual($r_missing_uid->status, 400, 
-                        "No uid at all should give 400, not: " . $r->missing_uid->status);
+                        "No uid at all should give 400, not: " . $r_missing_uid->status);
                                                       
 
 
-     $r_maluser = getFavoriteTags(new folksoQuery(array(), array(),
+     $r_maluser = getFavoriteTags(new folksoQuery($this->emptyServer, array(),
                                                   array('folksouid' => 'zorkzork')),
                                   $this->dbc,
                                   $this->fks);
      $this->assertEqual($r_maluser->status, 400,
                         'malformed uid should return 400, not: ' . $r_maluser->status);
 
-     $r_nouser = getFavoriteTags(new folksoQuery(array(), array(),
-                                                 array('folksouid' => 'nobody-2010-001')),
+     $r_nouser = getFavoriteTags(new folksoQuery($this->emptyServer, array(),
+                                                 array('folksouid' => 'nobody-2011-001')),
                                  $this->dbc,
                                  $this->fks);
 
@@ -431,8 +451,9 @@ class testOfuser extends  UnitTestCase {
    }
 
    function testCv () {
-     $this->fks->startSession('gustav-2010-001', true);
-     $q = new folksoQuery(array(), 
+     test_db_init();
+     $this->fks->startSession('gustav-2011-001', true);
+     $q = new folksoQuery($this->emptyServer, 
                           array('folksosetcv' => 'This and that'),
                           array());
      $this->assertTrue($q->is_param('setcv'), 'testing the t: no setcv param here');
@@ -446,14 +467,14 @@ class testOfuser extends  UnitTestCase {
                         "Failure on add cv data: " . $r->status);
 
      $u = new folksoUser($this->dbc);
-     $this->assertTrue($u->userFromUserId('gustav-2010-001'),
+     $this->assertTrue($u->userFromUserId('gustav-2011-001'),
                        'Failed to create user from userid... (testing the test)');
      $this->assertEqual($u->cv, 'This and that',
                         'Did not find cv data in user object');
 
 
-     $r_get = getUserData(new folksoQuery(array(),
-                                          array('folksouid' => 'gustav-2010-001'),
+     $r_get = getUserData(new folksoQuery($this->emptyServer,
+                                          array('folksouid' => 'gustav-2011-001'),
                                           array()),
                           $this->dbc,
                           $this->fks2);
@@ -467,9 +488,10 @@ class testOfuser extends  UnitTestCase {
 
 
    function testCvWithTags () {
-     $this->fks->startSession('gustav-2010-001', true);
+     test_db_init();
+     $this->fks->startSession('gustav-2011-001', true);
      $complicated_html = '<h2>things</h2><ul><li>This</li><li>and</li><li>that</li></ul>';
-     $q = new folksoQuery(array(), 
+     $q = new folksoQuery($this->emptyServer, 
                           array('folksosetcv' => $complicated_html),
                           array());
      $this->assertEqual($q->get_param('setcv'), $complicated_html,
@@ -480,13 +502,14 @@ class testOfuser extends  UnitTestCase {
 
 
    function testGetCV () {
+     test_db_init();
      $u = new folksoUser($this->dbc);
-     $u->userFromUserId('gustav-2010-001');
+     $u->userFromUserId('gustav-2011-001');
      $u->setCv('Wrote a book');
      $u->storeUserData();
 
-     $r = getUserData(new folksoQuery(array(),
-                                      array('folksouid' => 'gustav-2010-001'),
+     $r = getUserData(new folksoQuery($this->emptyServer,
+                                      array('folksouid' => 'gustav-2011-001'),
                                       array()),
                       $this->dbc,
                       $this->fks);
