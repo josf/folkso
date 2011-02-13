@@ -80,9 +80,9 @@ class folksoDataDisplay {
       if ($display['type'] == $type) {
         $this->lineformat = $display['lineformat'];
         $this->argsperline = $display['argsperline'];
-        $this->titleformat = $display['titleformat'];
-        $this->start = $display['start'];
-        $this->end = $display['end'];
+        $this->titleformat = (isset($display['titleformat'])) ? $display['titleformat'] : null;
+        $this->start = (isset($display['start'])) ? $display['start'] : null;
+        $this->end = (isset($display['end'])) ? $display['end'] : null;
         $changed = true;
     	$this->type = $type;
         break;
