@@ -766,7 +766,7 @@ function getFavoriteTags (folksoQuery $q, folksoDBconnect $dbc, folksoSession $f
   $emptyU = new folksoUser($dbc);
 
   // Will contain the uid of the user whose tags we are getting.
-  $userid;
+  $userid = '';
 
   // $userid is either a parameter...
   if ($q->is_param('uid')) {
@@ -785,7 +785,8 @@ function getFavoriteTags (folksoQuery $q, folksoDBconnect $dbc, folksoSession $f
     }
   }
   
-  if (strlen($userid) < 5) {
+  if ((! $userid) ||
+      (strlen($userid) < 5)) {
     return $r->setError(400, "No user specified", 
                         "You must either log in or set the uid parameter");
   }
