@@ -659,7 +659,8 @@ function storeUserData (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks
                   htmlspecialchars(excludeSQLnullKeyWord($u2->fonction)),
                   $pure->purify(excludeSQLnullKeyWord($u2->cv)),
                   $u2->eventCount,
-                  excludeSQLnullKeyWord($u2->nameUrl())
+                  excludeSQLnullKeyWord($u2->nameUrl()),
+                  ''
                   ));
   $r->t($ud->endform());
   $r->setType('xml');
@@ -715,6 +716,17 @@ function getUserData (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) 
 
   $r->setOk(200, 'User data found');
 
+
+  $rightString = '';
+  if ($u instanceof folksoUser) {
+    $u->loadAllRights();
+    if (($u->userid == $user->userid) ||
+        $u->checkRight('folkso', 'admin')) {
+      $user->loadAllRights();
+      $rightString = $user->rights->maxRight();
+    }
+  }
+
   // return xml representation of userdata
   $df = new folksoDisplayFactory();
   $ud = $df->userData();
@@ -736,8 +748,12 @@ function getUserData (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) 
                   htmlspecialchars(excludeSQLnullKeyWord($user->fonction)),
                   $pure->purify(excludeSQLnullKeyWord($user->cv)),
                   $user->eventCount,
-                  excludeSQLnullKeyWord($user->nameUrl())
+                  excludeSQLnullKeyWord($user->nameUrl()),
+                  $rightString
                   ));
+
+  
+
   $r->t($ud->endform());
   $r->setType('xml');
   return $r;

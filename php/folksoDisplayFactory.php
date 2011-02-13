@@ -352,9 +352,10 @@ class folksoDisplayFactory {
                                       ."\t<fonction>XXX</fonction>\n"
                                       ."\t<cv>XXX</cv>\n"
                                       ."\t<tagcount>XXX</tagcount>\n"
-                                      ."\t<nameurl>XXX</nameurl>\n",
+                                      ."\t<nameurl>XXX</nameurl>\n"
+                                      ."\t<access>XXX</access>\n",
                                       'end' => '</user>',
-                                      'argsperline' => 11));
+                                      'argsperline' => 12));
 
 
  }
