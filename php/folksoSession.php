@@ -241,7 +241,9 @@ class folksoSession {
    $sql = '';
    if (is_null($service) || is_null($right)){
      $sql = 'select u.userid, u.urlbase as urlbase,'
-       .'  ud.firstname as firstname,  ud.lastname as lastname, ud.email as email '
+       .'  ud.firstname as firstname,  ud.lastname as lastname, ud.email as email, '
+       .' ud.firstname_norm as firstname_norm, ud.lastname_norm as lastname_norm, '
+       .' ud.ordinal as ordinal '
        .' from sessions s '
        .' join users u on u.userid = s.userid '
        .' left join user_data ud on ud.userid = u.userid '
@@ -251,6 +253,8 @@ class folksoSession {
    else {
      $sql = 'select u.userid as userid, u.urlbase as urlbase, ud.firstname as firstname, '
        .'  ud.lastname as lastname, ud.email as email, '
+       .' ud.firstname_norm as firstname_norm, ud.lastname_norm as lastname_norm, '
+       .' ud.ordinal as ordinal, '
        .' dr.rightid, dr.service '
        .' from sessions s '
        .' join users u on u.userid = s.userid '
@@ -272,7 +276,10 @@ class folksoSession {
                         'firstname' => $res->firstname,
                         'lastname' => $res->lastname,
                         'email' => $res->email,
-                        'userid' => $res->userid
+                        'userid' => $res->userid,
+                        'firstname_norm' => $res->firstname_norm,
+                        'lastname_norm' => $res->lastname_norm,
+                        'ordinality' => $res->ordinal
                         ));
 
      if (($right && $service) &&
