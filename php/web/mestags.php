@@ -253,6 +253,13 @@ div.udatafield {
 position: static;
 }
 
+div#tabs-1 a, div#tabs-1 a:link, div#tabs-1 a:active, div#tabs-1 a:hover, div#tabs-1 a:visited {
+  border-bottom: none;
+}
+
+div#tabs-1 li {
+  list-style: none;
+}
 
 <?php 
 if (!$loggedIn) {
