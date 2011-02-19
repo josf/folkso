@@ -253,15 +253,13 @@ class folksoPage {
        */
       public function userUrl () {
          if ($this->loginCheck() 
-             && ($this->user instanceof folksoUser)
-             && (strlen($this->user->firstName) > 1)
-             && (strlen($this->user->lastName) > 1)){
-           return 
-             $this->loc->web_url . '/'.  strtolower($this->user->firstName) 
-             . '.' . strtolower($this->user->lastName);
+             && ($this->user instanceof folksoUser)) {
+           return $this->user->nameUrl();
          }
-         return false;
-       }
+         else {
+           return false;
+         }
+      }
 
      public function facebookApiKey() {
        return $this->loc->snippets['facebookApiKey'];
