@@ -791,14 +791,15 @@ fK.tinymceInit =
           /*  CLAG(console.log("initializing tinymce");) */
             $cveditor.tinymce({
                                   script_url: '/tags/js/tinymce/jscripts/tiny_mce/tiny_mce.js',
-/*                                  theme: "advanced",
+                                  theme: "advanced",
                                   theme_advanced_toolbar_location: "top",
                                   theme_advanced_disable: "strikethrough,outdent,code,anchor,forecolor,backcolor,newdocument,visualaid,sub,image,indent,styleselect,formatselect",
                                   theme_advanced_buttons1: "bold,italic,underline,justifyleft,justifycenter,justifyright,justifyfull,bullist,numlist",
-                                  theme_advanced_buttons2: "link,unlink,cleanup,hr,removeformat,superscript,charmap",
+                                  theme_advanced_buttons2: "link,unlink,cleanup,hr,removeformat,sup,charmap",
                                   theme_advanced_buttons3: "",
-                                  valid_elements: "a[href],strong/b,em/i,ul,li,p,h2,h3,h4",
-                                  width: "500", */
+                                  valid_elements: "a[href],span[style],strong/b,em/i,ul,li,sup,p,h1,h2,h3,h4,img",
+                                  width: "500", 
+                                  remove_redundant_brs: false,
 
                              /*
                               * It is crucial to use raw here. Otherwise 
