@@ -650,4 +650,3 @@ plus haut dans la liste.</p>
 
 include("/var/www/dom/fabula/commun3/foot.php");
 
-?>
