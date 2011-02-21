@@ -133,7 +133,7 @@ class folksoQuery {
             // to avoid XSS -- no html allowed anywhere, except for exceptions.
             if (array_key_exists($shortParamKey, $this->tagsAllowed) &&
                 $this->tagsAllowed[$shortParamKey]) {
-              $param_val = strip_tags($param_val, '<p><a><ul><li><b><i><strong><em><h1><h2><h3><h4>');
+              $param_val = strip_tags($param_val, '<p><a><ul><li><b><i><strong><em><span><br><h1><h2><h3><h4><sup><img>');
             }
             else {
               $param_val = strip_tags($param_val);
