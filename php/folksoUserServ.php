@@ -614,6 +614,7 @@ function storeUserData (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks
     return $r->unAuthorized($u);
   }
 
+  $u->loadAllRights();
   $fields = array('firstname' => 'setFirstName',
                   'lastname' => 'setLastName',
                   'nick' => 'setNick',
@@ -642,6 +643,8 @@ function storeUserData (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks
 
   $r->setOk(200, 'User data stored');
 
+  $u2->loadAllRights();
+
   // return xml representation of userdata
   $df = new folksoDisplayFactory();
   $ud = $df->userData();
@@ -659,7 +662,7 @@ function storeUserData (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks
                   htmlspecialchars(excludeSQLnullKeyWord($u2->institution)),
                   htmlspecialchars(excludeSQLnullKeyWord($u2->pays)),
                   htmlspecialchars(excludeSQLnullKeyWord($u2->fonction)),
-                  $pure->purify(excludeSQLnullKeyWord($u2->cv)),
+                  $pure->purify(excludeSQLnullKeyWord($u2->getCv($u2->rights->maxRight()))),
                   $u2->eventCount,
                   excludeSQLnullKeyWord($u2->nameUrl()),
                   ''
@@ -719,12 +722,21 @@ function getUserData (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) 
   $r->setOk(200, 'User data found');
 
 
+
+
+  // get the rights of the user whose data we are getting. (For CV filtering
+  // and possibly to be included in the response.)
+  $user->loadAllRights();
+
+  // if this is called in a session, we might want to know the user's rights but
+  // the general public does not need to know. $rightString is the string that 
+  // will be sent back in the request, if necessary. We need to know $user's rights
+  // anyway to know how to filter his CV (links and images or not).
   $rightString = '';
   if ($u instanceof folksoUser) {
     $u->loadAllRights();
     if (($u->userid == $user->userid) ||
         $u->checkRight('folkso', 'admin')) {
-      $user->loadAllRights();
       $rightString = $user->rights->maxRight();
     }
   }
@@ -748,7 +760,7 @@ function getUserData (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) 
                   htmlspecialchars(excludeSQLnullKeyWord($user->institution)),
                   htmlspecialchars(excludeSQLnullKeyWord($user->pays)),
                   htmlspecialchars(excludeSQLnullKeyWord($user->fonction)),
-                  $pure->purify(excludeSQLnullKeyWord($user->cv)),
+                  $pure->purify(excludeSQLnullKeyWord($user->getCv($user->rights->maxRight()))),
                   $user->eventCount,
                   excludeSQLnullKeyWord($user->nameUrl()),
                   $rightString
