@@ -66,13 +66,13 @@ class testOffolksoUser extends  UnitTestCase {
                        'nameUrl() should return false because this user is not in DB');
     
     $u->setCv('Wrote some books');
-    $this->assertEqual($u->cv, 'Wrote some books',
+    $this->assertEqual($u->getCv(), 'Wrote some books',
                        'Failed to set cv');
 
 
     $u2 = new folksoUser($this->dbc);
     call_user_func(array($u2, 'setCv'), 'Wrote stuff');
-    $this->assertEqual($u2->cv, 'Wrote stuff',
+    $this->assertEqual($u2->getCv(), 'Wrote stuff',
                        'Cv data failed with call_user_func');
 
   }
@@ -228,7 +228,7 @@ class testOffolksoUser extends  UnitTestCase {
                         'Incorrect firstname after attempt to change');
      $this->assertEqual($u->lastName, 'Force',
                         'Incorrect lastname after attempt to change');
-     $this->assertEqual($u->cv, 'Wrote a long book',
+     $this->assertEqual($u->getCv(), 'Wrote a long book',
                         'Cv failed to update on object');
 
 
@@ -241,7 +241,7 @@ class testOffolksoUser extends  UnitTestCase {
                         'Incorrect firstname after DB retrieval');
      $this->assertEqual($u2->lastName, 'Force',
                         'Incorrect lastname after DB retrieval');
-     $this->assertEqual($u2->cv, 'Wrote a long book',
+     $this->assertEqual($u2->getCv(), 'Wrote a long book',
                         'Cv failed to update after DB retrieval');
      $this->assertEqual($u2->firstName_norm, 'horace',
                         'Incorrect normalized first name, expected "horace", got: '
@@ -255,14 +255,14 @@ class testOffolksoUser extends  UnitTestCase {
      $longCv = 'Here is a very long text. Here is a very long text. Here is a very long text.Here is a very long text.Here is a very long text.Here is a very long text.Here is a very long text.Here is a very long text.Here is a very long text.Here is a very long text.Here is a very long text.Here is a very long text.Here is a very long text.Here is a very long text.Here is a very long text.Here is a very long text.Here is a very long text.Here is a very long text.Here is a very long text.Here is a very long text.Here is a very long text.Here is a very long text.Here is a very long text.Here is a very long text.Here is a very long text.Here is a very long text.Here is a very long text.';
 
      $ch->setCv($longCv);
-     $this->assertEqual($ch->cv, $longCv,
+     $this->assertEqual($ch->getCv(), $longCv,
                         'Long CV should not be truncated in the object itself');
 
      $ch->storeUserData();
      
      $ch2 = new folksoUser($this->dbc);
      $ch2->userFromUserId('chuckyb-2011-001');
-     $this->assertEqual($ch2->cv, $longCv,
+     $this->assertEqual($ch2->getCv(), $longCv,
                         'Long CV should still be the same after DB retrieval');
 
      
@@ -367,8 +367,34 @@ class testOffolksoUser extends  UnitTestCase {
      $u2 = new folksoUser($this->dbc);
      $u2->userFromUserId('gustav-2011-001');
 
-     $this->assertEqual($u2->cv, 'Wrote a book',
+     $this->assertEqual($u2->getCv(), 'Wrote a book',
                         'Did not retreive cv data');
+   }
+
+
+   function testCVFiltering () { // without DB
+
+     $u = new folksoUser($this->dbc);
+     $u->setCv('<a href="javascript:do_evil()">Hello LOLCat</a><script>do_more_evil()</script>');
+
+     $this->assertNoPattern('/javascript/', $u->getCv(),
+                            "Not filtering 'javascript:' href in getCv()");
+     $this->assertNoPattern('/do_more_evil/', $u->getCv(),
+                            "Not filtering contents of script tag in getCv()");
+     $this->assertNoPattern('/script/', $u->getCv(),
+                            "Not filtering script tag in getCv()");
+     $this->assertNoPattern('/a\s+href/', $u->getCv(),
+                            'Evil href gets the whole link suppressed.');
+
+     $u->setCv('<a href="http://lolcats.com">LOL</a>');
+
+     $this->assertPattern('/a\s+href/', $u->getCv('admin'),
+                          'Admin user gets to publish links');
+     $this->assertPattern('/a\s+href/', $u->getCv('redac'),
+                          'Redac user gets to publish links');
+     $this->assertNoPattern('/a\s+href/', $u->getCv(),
+                            'Unpriv user should not get to publish links');
+
    }
 
 }//end class

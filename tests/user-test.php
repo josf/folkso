@@ -469,7 +469,7 @@ class testOfuser extends  UnitTestCase {
      $u = new folksoUser($this->dbc);
      $this->assertTrue($u->userFromUserId('gustav-2011-001'),
                        'Failed to create user from userid... (testing the test)');
-     $this->assertEqual($u->cv, 'This and that',
+     $this->assertEqual($u->getCv(), 'This and that',
                         'Did not find cv data in user object');
 
 

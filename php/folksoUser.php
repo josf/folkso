@@ -7,6 +7,8 @@
    */
 require_once('folksoTags.php');
 require_once('folksoRights.php');
+require_once('HTMLPurifier.auto.php');
+
 /**
  * @package Folkso
  */
@@ -34,7 +36,7 @@ class folksoUser {
   public $fonction;
   public $uid;
   public $loginId;
-  public $cv;
+  private $cv;
   public $dbc;
   public $eventCount;
   public $urlBase;
@@ -169,6 +171,34 @@ class folksoUser {
     */
    private function setOrdinality($ord) {
      $this->ordinality = $ord;
+   }
+
+   /**
+    * By default, returns a filtered version of the CV for HTML consumption.
+    *
+    * Privileged users can benefit from less restrictive filtering.
+    *
+    * @param $userLevel String Default 'user' (other values: 'admin', 'redac')
+    * @param $unfiltered Boolean TRUE for raw content, default is false.
+    *
+    */
+   public function getCv($userLevel = 'user', $unfiltered = false) {
+
+     if ($unfiltered) {
+       return $this->cv;
+     }
+     else {
+       $config = HTMLPurifier_Config::createDefault();
+       if (($userLevel == 'admin') ||
+           ($userLevel == 'redac')) {
+         $config->set('HTML.Allowed', 'a[href],img[src],p,span[style],ul,ol,li,div,strong,b,i,em,sup,h1,h2,h3,h4');
+         $purist = new HTMLPurifier($config);
+         return $purist->purify($this->cv);
+       }
+       $config->set('HTML.Allowed', 'p,span[style],ul,ol,li,div,strong,b,i,em,sup,h1,h2,h3,h4');
+       $pure = new HTMLPurifier($config);
+       return $pure->purify($this->cv);
+     }
    }
 
    public function nameUrl() {
