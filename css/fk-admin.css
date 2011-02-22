@@ -81,3 +81,10 @@ div#grouptagging {
     border: 1px solid gray;
     padding: 1em; 
 }
+
+/* admincv.php */
+div#adminEditorContainer {
+    padding: 1em;
+    padding-top: 2em;
+
+}
