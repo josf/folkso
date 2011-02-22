@@ -226,9 +226,9 @@ class folksoUser {
 
      // we (re)load the user, now we really know
      if (($this->userid) &&
-         ($u->userFromUserId($this->userid))) {
+         ($this->userFromUserId($this->userid))) {
        $ord = ($this->ordinality > 0) ? $this->ordinality : '';
-       $second = $this->firstName_norm  . '.' . $this->lastName_norm;
+       $second = $this->firstName_norm  . '.' . $this->lastName_norm . $ord;
        if (strlen($second) > 3) {
          return $second;
        }
