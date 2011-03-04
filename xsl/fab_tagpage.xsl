@@ -24,7 +24,7 @@
         <xsl:element name="a">
           <xsl:attribute name="href">
             <xsl:value-of select="concat('http://www.fabula.org/tag/',
-                                          ./tag/tagnorm,
+                                          ./tagpage/tag/tagnorm,
                                           '/feed/atom')"/>
           </xsl:attribute>
           <xsl:element name="img">
