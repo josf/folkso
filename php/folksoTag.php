@@ -926,8 +926,22 @@ function tagPage  (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
                           'Invalid XML in tagpage');
     }
 
+
+
     $tagTitleList = $xmlDOM->getElementsByTagName("tagtitle");
     $tagTitle = $tagTitleList->item(0)->textContent;
+
+    $tagNormList = $xmlDOM->getElementsByTagName("tagnorm");
+    $tagNorm = $tagNormList->item(0)->textContent;
+
+    $headContent = '';
+    if ($tagNorm) {
+      $headContent = 
+        sprintf('<link rel="alternate" type="application/atom+xml" '
+                .'title="%s" href="%s/tag/%s/feed/atom" />',
+                $tagTitle, $loc->web_url, $tagNorm);
+    }
+
 
     $xsl = new DOMDocument();
     $xsl->load($loc->xsl_dir . 'fab_tagpage.xsl');
@@ -943,7 +957,8 @@ function tagPage  (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
     $r->setOk(200, "OK");
     $r->t($tp->wrapContent($html->saveXML(), 
                            'Fabula - Tag: ' . $tagTitle, 
-                           '/tags/css/folkso.css'));
+                           '/tags/css/folkso.css',
+                           $headContent));
     $r->setType('loose');
     return $r;
   }

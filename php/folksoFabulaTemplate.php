@@ -25,17 +25,21 @@ class folksoFabulaTemplate {
    * @param $css Mixed If not null, a filename + path to a css file
    */
 
-  public function wrapContent ($html, $title = '', $css = null) {
+  public function wrapContent ($html, $title = '', $css = null, $headContent = '') {
     ob_start();
     require($this->fablibDir . 'head_folkso.php');
     require($this->fablibDir . 'head_dtd.php');
     $page_titre = $title;
     print "<html>\n<head>";
     require($this->fablibDir . 'head_meta.php');
+    if ($headContent) {
+      print $headContent;
+    }
     require($this->fablibDir . 'head_css.php');
     if ($css) {
       print '<link rel="stylesheet" type="text/css" href="' .  $css . '"></link>';
     }
+
     print "</head>\n<body>";
     require($this->fablibDir . 'html_start.php');
     print "<div id='colonnes_nouvelles'>";
