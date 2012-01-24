@@ -185,7 +185,8 @@ fK.fb.onLogin = function() {
                                         appId: fK.fb.sitevars.apikey,
                                         status: true,
                                         cookie: true,
-                                        xfbml: true});
+                                        xfbml: true,
+                                        oauth: false});
 
                             FB.Event.subscribe('auth.login',
                                                function() {
