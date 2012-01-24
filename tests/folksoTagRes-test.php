@@ -13,7 +13,7 @@ class testOffolksoTagRes extends  UnitTestCase {
     $this->loc = new folksoFabula();
 
     $tr = new folksoTagRes($this->loc, 5775);
-    $this->assertIsA($tr, 'folksoTagRes);'
+    $this->assertIsA($tr, 'folksoTagRes');
     $this->assertEqual($tr->url, 5775);
     $this->assertNull($tr->html);
     $this->assertNull($tr->xml);
@@ -38,7 +38,7 @@ class testOffolksoTagRes extends  UnitTestCase {
     $this->assertNotNull($tr->xml);
     $this->assertTrue(is_string($tr->xml));
     $this->assertTrue(strlen($tr->xml) > 200);
-    $this->assertIsA($tr->xml_DOM(), 'DOMDocument);'
+    $this->assertIsA($tr->xml_DOM(), 'DOMDocument');
   }
 
   function testReslist () {
@@ -50,7 +50,7 @@ class testOffolksoTagRes extends  UnitTestCase {
     /**  making sure that this all works when called from resList() **/
     $this->assertTrue($tr->is_valid());
     $this->assertTrue(strlen($tr->xml) > 200);
-    $this->assertIsA($tr->xml_DOM(), 'DOMDocument);'
+    $this->assertIsA($tr->xml_DOM(), 'DOMDocument');
 
     $this->assertTrue(is_string($tr->html));
     $this->assertTrue(strlen($tr->html) > 300);
