@@ -240,19 +240,25 @@ class folksoSession {
    $i = new folksoDBinteract($this->dbc);
    $sql = '';
    if (is_null($service) || is_null($right)){
-     $sql = 'select u.userid, u.urlbase as urlbase,'
-       .'  ud.firstname as firstname,  ud.lastname as lastname, ud.email as email, '
+     $sql = 
+       'select '
+       .' u.userid, u.urlbase as urlbase,'
+       .' ud.firstname as firstname,  ud.lastname as lastname, ud.email as email, '
        .' ud.firstname_norm as firstname_norm, ud.lastname_norm as lastname_norm, '
        .' ud.ordinal as ordinal '
-       .' from sessions s '
+       .' from '
+       .' sessions s '
        .' join users u on u.userid = s.userid '
        .' left join user_data ud on ud.userid = u.userid '
-       ." where s.token = '" . $i->dbescape($sid) . "'"
+       ." where "
+       ." s.token = '" . $i->dbescape($sid) . "'"
        ." and s.started > now() - 1209600 ";
    }
    else {
-     $sql = 'select u.userid as userid, u.urlbase as urlbase, ud.firstname as firstname, '
-       .'  ud.lastname as lastname, ud.email as email, '
+     $sql = 
+       'select '
+       .' u.userid as userid, u.urlbase as urlbase, ud.firstname as firstname, '
+       .' ud.lastname as lastname, ud.email as email, '
        .' ud.firstname_norm as firstname_norm, ud.lastname_norm as lastname_norm, '
        .' ud.ordinal as ordinal, '
        .' dr.rightid, dr.service '
