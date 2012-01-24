@@ -1,7 +1,7 @@
 #!/usr/local/bin/perl
 use strict;
 use warnings;
-### Time-stamp: <2012-01-06 15:09:38 joseph>
+### Time-stamp: <2012-01-06 16:45:41 joseph>
 
 use DBI;
 use LWP::UserAgent;
@@ -19,9 +19,10 @@ my $dbh = DBI->connect('DBI:mysql:folksonomie',
   die "Echec de connexion mysql: $DBI::errstr";
 
 
-my $sth = $dbh->prepare('select uri_raw, id  from resource '
+my $sth = $dbh->prepare('select distinct r.uri_raw, r.id  from resource r'
+                       . ' join tagevent te on r.id = te.resource_id '
                        . ' where linkStatusTime < now() - interval 1 day'
-                       . ' limit 5');
+                       . ' limit 5000');
 $sth->execute();
 
 my $sthUpdate = 
