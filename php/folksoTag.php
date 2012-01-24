@@ -192,7 +192,7 @@ function getTagResources (folksoQuery $q, folksoDBconnect $dbc, folksoSession $f
         "WHERE tag.tagnorm = normalize_tag('" .
         $i->dbescape($q->tag) . "')";
     }
-
+    $querybase .= " AND r.linkstatus = 'OK' ";
     $querybase .= " ORDER BY r.visited DESC ";  
 
     //pagination
@@ -428,6 +428,7 @@ function fancyResource (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks
       $querywhere = "WHERE t.tagnorm = normalize_tag('" . 
         $i->dbescape($q->tag) . "') ";
     }
+    $querywhere .= " and r.linkstatus = 'OK' ";
 
     $total_query = sprintf("(%s) UNION \n (%s %s %s)",
                            $querytagtitle, $querystart, 
