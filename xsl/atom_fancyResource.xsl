@@ -50,7 +50,7 @@
         <xsl:attribute name="href">
           <xsl:text>http://www.fabula.org/tag/</xsl:text>
           <xsl:value-of select="."/>
-          <xsl:text>/atom</xsl:text>
+          <xsl:text>/feed/atom</xsl:text>
         </xsl:attribute>
       </xsl:element>
   </xsl:template>
