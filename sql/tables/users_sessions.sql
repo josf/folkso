@@ -110,6 +110,7 @@ create table sessions
        (token char(64) primary key,
        userid varchar(255) not null,
        started timestamp not null default current_timestamp,
+       dest_url tinytext null,
        foreign key (userid) references users (userid)
        )      
 ENGINE=InnoDB;
