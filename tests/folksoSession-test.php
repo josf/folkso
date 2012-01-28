@@ -187,6 +187,42 @@ class testOffolksoSession extends  UnitTestCase {
                        'checkUserRight() not returning true');
    }
 
+   function testDestUrl () {
+     $s = new folksoSession($this->dbc);
+     $sid = $s->startSession('marcelp-2011-001', true);
+     $this->assertTrue($s->sessionId, "session id should exist");
+     
+     $this->assertFalse($s->getDestUrl(),
+                        "Dest url not set yet, should return false");
+     $this->assertTrue($s->status(), "status should be true");
+     $s->setDestUrl('http://example.com');
+     $this->assertEqual($s->destUrl, 'http://example.com',
+                        "destUrl should be set in object");
+
+     /**
+      * This only tests whether we can get the url back from the
+      * object, not whether the url is stored in the DB. See below.
+      */
+     $this->assertEqual($s->getDestUrl(), "http://example.com",
+                        "Should retreive url (http://example.com), not: " .
+                        $s->getDestUrl());
+   }
+
+   function testDestUrlDB () {
+     $s = new folksoSession($this->dbc);
+     $sid = $s->startSession('chuckyb-2011-001', true);
+     $s->setDestUrl('http://example.com');
+
+     $s->destUrl = false; // kill destUrl in the object
+
+     $this->assertEqual($s->getDestUrl(), "http://example.com",
+                        "Should still get destUrl from DB, even "
+                        ." when not present in obj.");
+
+
+   }
+
+
 }//end class
 
 $test = &new testOffolksoSession();
