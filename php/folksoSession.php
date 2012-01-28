@@ -23,6 +23,11 @@ class folksoSession {
   private $loc;
 
   /**
+   * Where the user may want to go after logging in.
+   */
+  public $destUrl;
+
+  /**
    * When a user object is retreived, it is cached here. Subsequent
    * calls to userSession will simply return the cached version.
    */
@@ -116,7 +121,6 @@ class folksoSession {
       print $e->sqlquery;
     }
 
-
     try {
       $i = new folksoDBinteract($this->dbc);
       $i->query(
@@ -167,14 +171,17 @@ class folksoSession {
     if ($i->db_error()) {
       trigger_error("Database connection error: " .  $i->error_info(), 
                    E_USER_ERROR);
-   }    
-   if ($this->validateSid($session_id) === false){
+    }    
+    if ($session_id && ($this->validateSid($session_id) === false)){
      trigger_error("Bad session id", E_USER_WARNING);
    }
 
-   $i->query("select userid, started from sessions where token = '"
+   $i->query("select userid, started, dest_url from sessions where token = '"
              . $i->dbescape($session_id) . "'  and started > now() - 1209600");
    if( $i->result_status == 'OK') {
+
+     $row = $i->result->fetch_object();
+     $this->destUrl = $row->dest_url;
      return true;
    }
    elseif ($i->result_status == 'NOROWS'){
@@ -203,7 +210,41 @@ class folksoSession {
      }
      return false;
    }
-  
+
+
+   
+   /**
+    * @return String / false 
+    */
+   public function getDestUrl () {
+     if ($this->destUrl) {
+       return $this->destUrl;
+     }
+     else {
+       $this->checkSession($this->sessionId);
+       if ($this->destUrl && 
+           (strlen($this->destUrl) > 9)) {
+         return $this->destUrl;
+       }
+     }
+     return false;
+   }
+
+
+   /**
+    * @throws Database exceptions
+    * @param $url
+    */
+   public function setDestUrl ($url) {
+     if ($this->sessionId && (strlen($url) > 9)) {
+       $this->destUrl = $url;
+       $i = new folksoDBinteract($this->dbc);
+       $i->query('update sessions '
+                 ." set dest_url = '" . $i->dbescape($url) . "'"
+                 ." where token = '" . $i->dbescape($this->sessionId) . "'");
+     }
+   }
+
 
 /**
  * @param $session_id (optional)
