@@ -8,6 +8,38 @@ drop table if exists users_rights;
 drop table if exists rights;
 drop table if exists users;
 
+drop table if exists id_services;
+create table id_services
+       (service_id char(4) primary key,
+       fullname varchar(100) not null,
+       provider_name varchar(50) not null
+)      
+ENGINE=InnoDB;      
+
+insert into id_services (service_id, fullname, provider_name)
+       values
+       ('goog', 'Google', 'Google'),
+       ('face', 'Facebook', 'Facebook'),
+       ('twit', 'Twitter', 'Twitter'),
+       ('link', 'LinkedIn', 'LinkedIn'),
+       ('open', 'OpenId', 'OpenId'),
+       ('yaho', 'Yahoo!', 'Yahoo');
+grant select on id_services to 'folkso'@'localhost';
+grant select on id_services to 'folkso-rw'@'localhost';
+-- no need to write to this table
+
+
+create table user_services 
+       (userid varchar(255) primary key,
+       service_id char(4) not null,
+       identifier varchar(255) not null,
+       foreign key (service_id) references id_services(service_id),
+       foreign key (userid) references users(userid),
+       index by_identifier (identifier, userid),
+       index by_service (identifier, service_id, userid))
+ENGINE=InnoDB;
+grant select on user_services to 'folkso'@'localhost';
+grant select, insert, update, delete on user_services to 'folkso-rw'@'localhost';
 
 create table user_data
        (userid varchar(255) primary key,
