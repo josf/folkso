@@ -12,7 +12,7 @@ class testOffolksoUser extends  UnitTestCase {
 
 
   function setUp() {
-    //    test_db_init();
+    test_db_init();
     /** not using teardown because this function does a truncate
         before starting. **/
      $this->dbc = new folksoDBconnect('localhost', 'tester_dude', 
@@ -28,8 +28,8 @@ class testOffolksoUser extends  UnitTestCase {
     $u->userFromUserId('descartes-2011-001');
 
 
-    $this->assertTrue($u->firstName, 'René',
-                      'First name seems correct (testing the test)');
+    $this->assertEqual($u->firstName, 'René',
+                       'First name seems correct (testing the test)');
 
 
     // This test is WRONG, but we seem to be getting correct results
@@ -48,10 +48,6 @@ class testOffolksoUser extends  UnitTestCase {
 
   function testSetters () {
     $u = new folksoUser($this->dbc);
-    $u->setUrlbase('stuff');
-    $this->assertEqual($u->urlBase, 'stuff');
-
-
     $u->setFirstName('Bob');
     $this->assertEqual($u->firstName, 'Bob',
                        'setFirstName method: name not showing up in obj');
@@ -134,28 +130,6 @@ class testOffolksoUser extends  UnitTestCase {
       
   }
 
-  function testValidation() {
-    $u = new folksoUser($this->dbc);
-    $this->assertTrue($u->validUrlbase('marcelp'), "Basic urlbase should validate");
-    $this->assertTrue($u->validUrlbase('marcelp123'), 
-                      "Alphanumeric urlbase should validate");
-    $this->assertTrue($u->validUrlbase('marcel.proust'),
-                      "Period in urlbase is allowed");
-    $this->assertFalse($u->validUrlbase(''),
-                       "Empty string is not a valid urlbase");
-    $this->assertFalse($u->validUrlbase('marcel!'),
-                       "Non alphanumeric should be refused");
-    $this->assertTrue($u->validUrlbase('1221343243'),
-                      "All number url base should be allowed");
-    $this->assertFalse($u->validUrlbase('abc'),
-                       "Three letter urlbase should be rejected");
-    $this->assertFalse($u->validUrlbase('Marcel.Proust'),
-                       "Capital letters should be rejected");
-    $this->assertFalse($u->validUrlbase('abcd'),
-                       'Four letter urlbase should be rejected');
-    $this->assertTrue($u->validUrlbase('abcde'),
-                      'Five letter urlbase should be accepted');
-  }
 
 
   function testValidateUid () {
@@ -195,8 +169,6 @@ class testOffolksoUser extends  UnitTestCase {
                         'userid' => 'marcelp-2011-001'));
      $this->assertIsA($u, 'folksoUser',
                       'problem with object creation');
-     $this->assertEqual($u->urlBase, 'proust.marcel',
-                        'missing urlbase in user object');
      $this->assertEqual($u->email, 'marcelp@temps.eu',
                         'Email incorrect after loadUser');
      $this->assertEqual($u->userid, 'marcelp-2011-001',

@@ -57,34 +57,6 @@ class folksoUser {
     $this->rights = new folksoRightStore();
   }
 
-  /**
-   * Will throw an exception on malformed urlbases
-   */
-  public function setUrlbase($ubase) {
-    $ubase = strtolower($ubase);
-    if ($this->validUrlbase($ubase)) {
-      $this->urlBase = $ubase;
-    }
-    else {
-      throw new badUrlbaseException("Bad urlbase: " . $ubase);
-    }
-  }
-
-  /**
-   * urlbase must be lowercase, all letters and numbers, and at least 5
-   * characters long. Periods are allowed.
-   */
-  public function validUrlbase($ubase = null){
-    $ubase = $ubase ? $ubase : $this->urlBase;
-    if (preg_match('/^[.a-z0-9]{5,}$/',
-                   $ubase) === 0){
-      return false;
-    }
-    else {
-      return true;
-    }
-  }
-
   public function setFirstName($first){
     $this->firstName = trim($first);
   }
@@ -305,13 +277,10 @@ class folksoUser {
         to generate it after the user object is loaded, for instance
         when we are not loading from the db but actually creating the
         user for the first time.**/
-    if (isset($params['urlbase'])) {
-      $this->setUrlbase($params['urlbase']);
-    }
+
     if (isset($params['userid'])) {
       $this->setUid($params['userid']);
     }
-
     if (isset($params['loginid'])) {
       $this->setLoginId($params['loginid']);
     }
