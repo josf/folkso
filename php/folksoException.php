@@ -41,7 +41,10 @@ class dbQueryException extends dbException {
 class dbSessionQueryException extends dbQueryException { }
 
 class userException extends Exception {}
+class unknownUserException extends Exception {}
 class badUseridException extends userException { }
+class malformedIdentifierException extends userException { }
+class unknownServiceException extends userException { }
 class badUrlbaseException extends userException { }
 class rightException extends userException { }
 class rightAlreadyPresentException extends rightException { }
