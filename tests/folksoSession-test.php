@@ -87,47 +87,44 @@ class testOffolksoSession extends  UnitTestCase {
                                                   'testy', 'testostonomie'));
 
     $sess = $s->startSession('gustav-2011-001', true);
-         $this->assertTrue($sess,
-                           'This session should work');
-         $this->assertTrue($s->validateSid($sess),
-                           'startSession() should return a valid session id');
-         $this->assertTrue($s->checkSession($sess),
-                           'Session is there, we should see it with check');
-
-         $this->assertTrue($s->status(),
-                           "status() method should return true for valid session");
-         $this->assertEqual($s->getUserId(), 'gustav-2011-001',
-                            'Not getting user id with getUserId: ' . $s->getUserId());
+    $this->assertTrue($sess, 'This session should work');
+    $this->assertTrue($s->validateSid($sess),
+                      'startSession() should return a valid session id');
+    $this->assertTrue($s->checkSession($sess),
+                      'Session is there, we should see it with check');
+    $this->assertTrue($s->status(),
+                      "status() method should return true for valid session");
+    $this->assertEqual($s->getUserId(), 'gustav-2011-001',
+                       'Not getting user id with getUserId: ' . $s->getUserId());
 
          
-         $s->killSession($sess);
+    $s->killSession($sess);
 
-         $this->assertFalse($s->checkSession($sess),
-                            'the session should be gone now');
+    $this->assertFalse($s->checkSession($sess),
+                       'the session should be gone now');
 
-         $u = new folksoUser($this->dbc);
-         $u->userFromUserId('gustav-2011-001');
-         $cesse = new folksoSession($this->dbc);
-         $cesse->startSession($u, true);
-         $this->assertTrue($cesse->status(),
-                           "Session from user object. Should be valid");
+    $u = new folksoUser($this->dbc);
+    $u->userFromUserId('gustav-2011-001');
+    $cesse = new folksoSession($this->dbc);
+    $cesse->startSession($u, true);
+    $this->assertTrue($cesse->status(),
+                      "Session from user object. Should be valid");
 
-   }
+  }
 
    function testSession2 () {
      test_db_init();
      $s = new folksoSession($this->dbc);
-         $sess2 = $s->startSession('gustav-2011-001', true);
-         $this->assertTrue($sess2,
-                           'session creation failed');
-         $this->assertTrue($s->checkSession($sess2),
-                           'session not valid (sess2)');
-         $u = $s->userSession($sess2);
-         $this->assertIsA($u, 'folksoUser',
-                          'userSession not returning folksoUser object');
-
-         $this->assertEqual($u->firstName, 'Gustave',
-                            'First name not correctly retrieved: ' . $u->firstName);
+     $sess2 = $s->startSession('gustav-2011-001', true);
+     $this->assertTrue($sess2,
+                       'session creation failed');
+     $this->assertTrue($s->checkSession($sess2),
+                       'session not valid (sess2)');
+     $u = $s->userSession($sess2);
+     $this->assertIsA($u, 'folksoUser',
+                      'userSession not returning folksoUser object');
+     $this->assertEqual($u->firstName, 'Gustave',
+                        'First name not correctly retrieved: ' . $u->firstName);
 
    }
 
