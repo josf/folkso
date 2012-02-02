@@ -116,10 +116,9 @@ class testOffolksoSession extends  UnitTestCase {
      test_db_init();
      $s = new folksoSession($this->dbc);
      $sess2 = $s->startSession('gustav-2011-001', true);
-     $this->assertTrue($sess2,
-                       'session creation failed');
-     $this->assertTrue($s->checkSession($sess2),
-                       'session not valid (sess2)');
+     $this->assertTrue($sess2, 'session creation failed');
+     $this->assertTrue($s->checkSession($sess2), 'session not valid (sess2)');
+
      $u = $s->userSession($sess2);
      $this->assertIsA($u, 'folksoUser',
                       'userSession not returning folksoUser object');

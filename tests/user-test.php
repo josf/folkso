@@ -17,23 +17,23 @@ class testOfuser extends  UnitTestCase {
     $tt = 'testostonomie';
     /** not using teardown because this function does a truncate
         before starting. **/
-     $this->dbc = new folksoDBconnect('localhost', 'tester_dude', 
+    $this->dbc = new folksoDBconnect('localhost', 'tester_dude', 
                                       'testy', 'testostonomie');
-     $this->dbc2 = new folksoDBconnect('localhost', 'tester_dude', 
+    $this->dbc2 = new folksoDBconnect('localhost', 'tester_dude', 
                                       'testy', 'testostonomie');
-     $this->dbc3 =new folksoDBconnect('localhost', 'tester_dude', 
+    $this->dbc3 =new folksoDBconnect('localhost', 'tester_dude', 
                                       'testy', 'testostonomie'); 
-     $this->fks = new folksoSession(new folksoDBconnect($lh, $td, $ty, $tt));
-     $this->fks2 = new folksoSession(new folksoDBconnect($lh, $td, $ty, $tt));
-     $this->fks3 = new folksoSession(new folksoDBconnect($lh, $td, $ty, $tt));
-     $this->fks4 = new folksoSession(new folksoDBconnect($lh, $td, $ty, $tt));
+    $this->fks = new folksoSession(new folksoDBconnect($lh, $td, $ty, $tt));
+    $this->fks2 = new folksoSession(new folksoDBconnect($lh, $td, $ty, $tt));
+    $this->fks3 = new folksoSession(new folksoDBconnect($lh, $td, $ty, $tt));
+    $this->fks4 = new folksoSession(new folksoDBconnect($lh, $td, $ty, $tt));
 
-     $this->emptyServer = array('REQUEST_METHOD' => null,
-                                'HTTP_ACCEPT' => null);
+    $this->emptyServer = array('REQUEST_METHOD' => null,
+                               'HTTP_ACCEPT' => null);
   }
 
    function testGetMyTags () {
-    test_db_init();
+     test_db_init();
      $this->fks->startSession('gustav-2011-001', true);
      $r = getMyTags(new folksoQuery($this->emptyServer,
                                     array(),
@@ -41,18 +41,16 @@ class testOfuser extends  UnitTestCase {
                     $this->dbc,
                     $this->fks);
 
-     $this->assertIsA($r, 'folksoResponse',
-                      'Not getting response object back');
-     $this->assertEqual($r->status, 200,         
-                        'Not getting 200: ' . $r->status);
-     $this->assertNotEqual($r->status, 204,
-                           'Getting no data back (204)');
+     $this->assertIsA($r, 'folksoResponse', 'Not getting response object back');
+     $this->assertEqual($r->status, 200, 'Not getting 200: ' . $r->status);
+     $this->assertNotEqual($r->status, 204, 'Getting no data back (204)');
+
      $this->assertTrue((strlen($r->body()) > 100),
                        'Response body is suspiciously short (less than 100 chars)');
+
      $xxx = new DOMDocument();
      $this->assertTrue($xxx->loadXML($r->body()),
                        'xml failed to load');
-
    }
 
    function testGetMyTagsJson () {
