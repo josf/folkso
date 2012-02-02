@@ -39,7 +39,6 @@ class folksoUser {
   private $cv;
   public $dbc;
   public $eventCount;
-  public $urlBase;
   public $firstName_norm;
   public $lastName_norm;
   public $ordinality; // used for keeping track of people with the same name (see nameUrl())
@@ -189,12 +188,6 @@ class folksoUser {
        return false;
      }
 
-     // if we have the urlBase, we can assume the user has been loaded from the
-     // DB and just does not have name data.
-     if (isset($this->urlBase) 
-         && (strlen($this->urlBase) > 0)) { 
-       return false;
-     }
 
      // we (re)load the user, now we really know
      if (($this->userid) &&
@@ -339,7 +332,7 @@ class folksoUser {
 
     $i = new folksoDBinteract($this->dbc);
     $sql = 
-      "select u.userid as userid, u.urlbase as urlbase, ud.lastname, ud.firstname, "
+      "select u.userid as userid, ud.lastname, ud.firstname, "
       . " ud.email, ud.institution, ud.pays, ud.fonction, ud.cv, "
       . " ud.firstname_norm, ud.lastname_norm, ud.ordinal,"
       .' count(te.resource_id) as eventCount '
@@ -364,7 +357,6 @@ class folksoUser {
 
       $this->loadUser(array(
                             'userid' => $res->userid,
-                            'urlbase' => $res->urlbase,
                             'firstname' => $res->firstname,
                             'lastname' => $res->lastname,
                             'email' => $res->email,

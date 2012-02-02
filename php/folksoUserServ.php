@@ -288,9 +288,8 @@ function createFBuser (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks)
                  .'<facebookid>%d</facebookid>'
                  .'<firstname>%s</firstname>'
                  .'<lastname>%s</lastname>'
-                 .'<url>%s</url>'
                  .'</user>',
-                 $u2->loginId, $u2->firstName, $u2->lastName, $u2->urlBase);
+                 $u2->loginId, $u2->firstName, $u2->lastName);
   $r->setOk(201, 'User successfully created');
   $r->t($xml);
   $fks->startSession($u2->userid);

@@ -283,7 +283,7 @@ class folksoSession {
    if (is_null($service) || is_null($right)){
      $sql = 
        'select '
-       .' u.userid, u.urlbase as urlbase,'
+       .' u.userid, '
        .' ud.firstname as firstname,  ud.lastname as lastname, ud.email as email, '
        .' ud.firstname_norm as firstname_norm, ud.lastname_norm as lastname_norm, '
        .' ud.ordinal as ordinal '
@@ -298,7 +298,7 @@ class folksoSession {
    else {
      $sql = 
        'select '
-       .' u.userid as userid, u.urlbase as urlbase, ud.firstname as firstname, '
+       .' u.userid as userid, ud.firstname as firstname, '
        .' ud.lastname as lastname, ud.email as email, '
        .' ud.firstname_norm as firstname_norm, ud.lastname_norm as lastname_norm, '
        .' ud.ordinal as ordinal, '
@@ -319,7 +319,6 @@ class folksoSession {
      $u = new folksoUser($this->dbc);
      $res = $i->result->fetch_object();
      $u->loadUser(array(
-                        'urlbase' => $res->urlbase,
                         'firstname' => $res->firstname,
                         'lastname' => $res->lastname,
                         'email' => $res->email,

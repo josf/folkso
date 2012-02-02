@@ -3,9 +3,8 @@
 delimiter $$
 drop procedure if exists create_user$$
 create procedure create_user(
-                  userid_base_arg varchar(70),
-                  oid_url_val text,
-                  fb_id bigint,
+                  identifier_arg varchar(255),
+                  service_id_arg char(4),
                   firstname varchar(255),
                   lastname varchar(255),
                   email varchar(255),
@@ -17,34 +16,28 @@ begin
 
 -- declare variables
 
-declare fb_test bigint default 0;
-declare oid_test varchar(255) default '';
-declare uid varchar(79) default '';
-declare url varchar(100) default '';
-declare userid_base varchar(70);
-declare urlbase_var varchar(100) default '';
+declare uid varchar(255) default '';
+declare url varchar(255) default '';
+declare identifier_var varchar(255) default '';
+declare userid_base varchar(255) default '';
 declare counting int default 1;
 declare basecounting int default 0;
 declare loopcheck int default 0;
 declare err_msg varchar(255) default '';
-declare test_uid varchar(79) default '';
-declare test_url varchar(100) default '';
+-- declare test_identifier varchar(255) default '';
+declare test_uid varchar(255) default '';
+declare test_identifier int default 0;
 
--- dots are allowed in the urlbase but not in the userid
-set urlbase_var = lcase(userid_base_arg);
-set userid_base = replace(urlbase_var, '.', '');
-set url = urlbase_var;
+set identifier_var = identifier_arg;
+set userid_base = replace(identifier_var, '.', '');
+set userid_base = replace(userid_base, '/', '');
+
 
 set counting = 1;
 set basecounting = 0;
 
 if length(userid_base) < 5 then
    set err_msg =  'ERROR: useridbase is less than 5 characters long';
-elseif length(oid_url_val) = 0 and fb_id = 0 then
-   set err_msg = 'ERROR: no login id data (fb and oid are empty)';
-elseif length(oid_url_val) > 0 and fb_id > 0 then
-   set err_msg = 'ERROR: we have both fb and oid. This will not work';
-
 else
 
 -- build userid from userid_base
@@ -73,55 +66,26 @@ else
     end if;          
  end loop UID;
 
--- build the user url
--- decided to store this separately so that it can be customized later without 
--- touching the structure of the userid
- URL: loop
-
-  select urlbase into test_url
-   from users
-   where urlbase = url
-   limit 1;
-
-  if length(test_url) > 0 then
-     set url = make_urlbase(urlbase_var, basecounting);
-     set basecounting = basecounting + 1;
-     set test_url = '';
-     if basecounting > 999 then 
-       set err_msg = 'ERROR: incremented up to 999 with basecounting';
-       leave URL;
-     end if;
-  else
-    leave URL;    -- no existing url, we are done. variable is ready to be 
-  end if;
- end loop URL;
-
  end if;  -- end of data checks (we avoid the loop if we already have errors)
 
+ -- check for existing identifier
+ 
+  select count(*) into test_identifier
+    from user_services
+    where identifier = identifier_arg;
 
-   -- check for existing oid_url or fb_id
-   if length(oid_url_val) > 0 then
-       select oid_url into oid_test from oid_urls
-       where oid_url = oid_url_val;
-       
-       if length(oid_test) > 0 then
-          set err_msg = 'ERROR: oid_url already exists, cannot create user';
-       end if;
-  elseif fb_id > 0 then
-       select fb_uid into fb_test from fb_ids
-       where fb_uid = fb_id;
 
-       if fb_test > 0 then
-          set err_msg = 'ERROR: fb_id already exists, cannot create user';
-      end if;
-  end if;
+   if test_identifier > 0 then
+     set err_msg = 'ERROR: identifier already attributed to a user';
+   end if;
+   
 
   if length(err_msg) > 1 then
      select err_msg as error_message;
   else
    start transaction;
    insert into users 
-        (userid, urlbase) values (uid, url);
+        (userid) values (uid);
 
 
    if length(concat(firstname, lastname, email, institution, pays, fonction)) > 0 then
@@ -131,20 +95,15 @@ else
       (uid, firstname, lastname, email, institution, pays, fonction, normalize_tag(firstname), normalize_tag(lastname));
    end if;
 
-   if length(oid_url_val) > 1 then
-   insert into oid_urls
-          (userid, oid_url)
-          values
-          (uid, oid_url_val);
-   else
-   insert into fb_ids
-          (userid, fb_uid)
-          values
-          (uid, fb_id);
-   end if;
+   insert into user_services
+   (userid, service_id, identifier)
+   values
+   (uid, service_id_arg, identifier_arg);
+
+
    commit;
 
-   select userid, firstname, lastname, email, institution, pays, fonction
+   select userid
    from users 
    where userid = uid;
 end if;
