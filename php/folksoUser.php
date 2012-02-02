@@ -21,6 +21,13 @@ class folksoUser {
   public $userid;
 
   /**
+   * String provided by identity service (OAuth or OpenId). A user can
+   * have multiple accounts and thus multiple identifiers, but this
+   * identifier will be considered the active one.
+   */
+  public $identifer;
+
+  /**
    * User's screen name.
    */
   public $nick;
@@ -258,6 +265,34 @@ class folksoUser {
     return true;
   }
 
+/**
+ * @param 
+ */
+ public function writeNewUser ($service) {
+   if ($this->exists($this->loginId)) {
+     throw new userException('User already exists, cannot be created');
+   }
+   if ((! is_string($service)) ||
+       (! (strlen($service) == 4))) {
+     throw new unknownServiceException();
+   }
+
+   $i = new folksoDBinteract($this->dbc);
+   $i->sp_query(
+                sprintf("call create_user('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')",
+                        $i->dbescape($this->loginId),
+                        $i->dbescape($service),
+                        $i->dbescape($this->firstName),
+                        $i->dbescape($this->lastName),
+                        $i->dbescape($this->email),
+                        $i->dbescape($this->institution),
+                        $i->dbescape($this->pays),
+                        $i->dbescape($this->fonction)));
+
+ }
+
+
+
   /**
    * @param $params
    *
@@ -408,73 +443,64 @@ class folksoUser {
     return false;
  }
 
+  /**
+   * Given a users identity string (Facebook, Google etc.), load the
+   * available user data. If no user is found, throws unknownUserException.
+   *
+   * @param $loginId Identification string from an identity provider (FB etc.).
+   *
+   */
 
-  public function userFromLogin_base ($id, $view, $login_column, 
-                                      $service = null, $right = null) {
-   if ($this->validateLoginId($id) === false) {
-     return false; // exception ? warning ?
-   }
+  public function userFromLogin($loginId = null) {
+    if ((! $loginId) ||
+        (strlen($loginId) < 4)) {
+      throw new  malformedIdentifierException();
+    }
 
-   $i = new folksoDBinteract($this->dbc);
-   $sql = "select "
-     ." userid, urlbase, last_visit, lastname, firstname, email, "
-     ." institution, pays, fonction, cv, firstname_norm, lastname_norm, ordinal "
-     ." from "
-     ." $view "
-     ." where $login_column = '" . $i->dbescape($id) . "'";
+    $i = new folksoDBinteract($this->dbc);
+    $sql = "select"
+      ." u.userid as userid, u.last_visit, u.created,  "
+      ." ud.lastname as lastname, ud.firstname as firstname, "
+      ." ud.email as email, ud.institution as institution, ud.pays as pays, "
+      ." ud.fonction as fonction, ud.cv as cv, ud.firstname_norm as firstname_norm, "
+      ." ud.lastname_norm as lastname_norm, ud.ordinal  as ordinal "
+      ." from "
+      ." users u "
+      ." left outer join user_data ud on u.userid = ud.userid "
+      ." join user_services us on us.userid = u.userid "
+      ." where us.identifier = '" . $i->dbescape($loginId) . "'";
 
-   if ($service && $right){
-     $sql = "select "
-       ." v.userid, urlbase, last_visit, lastname, firstname, email, institution, "
-       ." pays, fonction, cv, ur.rightid, firstname_norm, lastname_norm, ordinal "
-       ." from "
-       ." $view v "
-       ." left join users_rights ur on ur.userid = v.userid "
-       ." left join rights rs on rs.rightid = ur.rightid "
-       ." where v.$login_column = '" . $i->dbescape($id) . "' "
-       ." and "
-       ." service = '" . $i->dbescape($service) . "'"
-       ." and "
-       ." rs.rightid = '" . $i->dbescape($right) . "'";
-   }
 
-   $i->query($sql);
+      $i->query($sql);
 
-   switch ($i->result_status) {
-   case 'NOROWS':
-     print "User not found";
-     return false;
-     break;
-   case 'OK':
-     $res = $i->result->fetch_object();
-     $this->loadUser(array('loginid' => $id,
-                           'userid' => $res->userid,
-                           'urlbase' => $res->urlbase,
-                           'firstname' => $res->firstname,
-                           'lastname' => $res->lastname,
-                           'email' => $res->email,
-                           'userid' => $res->userid,
-                           'institution' => $res->institution,
-                           'pays' => $res->pays,
-                           'fonction' => $res->fonction,
-                           'cv' => $res->cv,
-                           'firstname_norm' => $res->firstname_norm,
-                           'lastname_norm' => $res->lastname_norm,
-                           'ordinality' => $res->ordinal));
-     if ($service &&
-         $right && 
-         ($res->rightid == $right)) {
-       $this->rights->addRight(new folksoRight($service, $res->rightid));
-     }
-   }
-   return $this;
+      if ($i->result_status === 'NOROWS') {
+        throw new unknownUserException();
+      }
+
+      $res = $i->result->fetch_object();
+
+
+      $this->loadUser(array('loginid' => $loginId,
+                            'userid' => $res->userid,
+                            'firstname' => $res->firstname,
+                            'lastname' => $res->lastname,
+                            'email' => $res->email,
+                            'userid' => $res->userid,
+                            'institution' => $res->institution,
+                            'pays' => $res->pays,
+                            'fonction' => $res->fonction,
+                            'cv' => $res->cv,
+                            'firstname_norm' => $res->firstname_norm,
+                            'lastname_norm' => $res->lastname_norm,
+                            'ordinality' => $res->ordinal));
+      return $this;
   }
 
 
 
 
   /**
-   * Slight different from the subclass versions of exists(). Takes
+   * Slightly different from the subclass versions of exists(). Takes
    * userid as argument rather than login id.
    *
    * @param $id userid
@@ -577,12 +603,50 @@ class folksoUser {
                  $i->dbescape($this->cv),
                  $i->dbescape($this->firstName),
                  $i->dbescape($this->lastName)
-);
+                 );
 
        $sql .= " where userid = '" . $i->dbescape($this->userid) . "'";
      }
      $i->query($sql);
    }
+
+
+
+   /**
+    * @param string $identifier
+    * @param string $service 4 character service identifier ("face", "goog", etc.)
+    */
+   public function associateUserWithIdentifier ($identifier, $service) {
+     $idLen = strlen($identifier);
+     if (($idLen < 4) || ($idLen > 255)) {
+       throw new malformedIdentifierException();
+     }
+
+     try {
+       $i = new folksoDBinteract($this->dbc);
+       $sql = sprintf('insert into user_services '
+                      .' (userid, service_id, identifier) '
+                      .' values '
+                      ." (%s, %s, %s)",
+                      $this->userId,
+                      $i->dbescape($identifier),
+                      $i->dbescape(strtolower($service)));
+
+       $i->query($sql);
+     }
+     catch (dbQueryException $qe) {
+       if (($qe->sqlcode == 1452) &&
+           (strpos($qe->message, 'service_id'))) {
+         throw new unknownServiceException();
+       }
+       elseif (($qe->sqlcode == 1452) &&
+               (strpos($qe->message, 'userid'))) {
+         throw new badUseridException("userid is not known or is missing");
+       }
+     }
+   }
+
+
 
 /**
  * @param 

@@ -369,6 +369,32 @@ class testOffolksoUser extends  UnitTestCase {
 
    }
 
+   function testWriteNewUser () {
+     test_db_init();
+
+     $u = new folksoUser($this->dbc);
+     $u->setLoginId('iyamwhatiyam');
+     $u->writeNewUser('face');
+
+     $u2 = new folksoUser($this->dbc);
+     $found = true;
+     try {
+       $u2->userFromLogin('iyamwhatiyam');
+     }
+     catch (userException $ue) {
+       $found = false;
+     }
+     $this->assertTrue($found, 'Should have found newly created user here');
+   }
+
+
+   function testUserFromLogin () {
+     $u = new folksoUser($this->dbc);
+     $u->userFromLogin('2222222222');
+     $this->assertEqual($u->userid, 'chuckyb-2011-001', 'Should get userid here');
+   }
+
+
 }//end class
 
 $test = &new testOffolksoUser();
