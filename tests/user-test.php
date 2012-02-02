@@ -17,13 +17,13 @@ class testOfuser extends  UnitTestCase {
     $tt = 'testostonomie';
     /** not using teardown because this function does a truncate
         before starting. **/
-    $this->dbc = new folksoDBconnect('localhost', 'tester_dude', 
+    $this->dbc  = new folksoDBconnect('localhost', 'tester_dude', 
                                       'testy', 'testostonomie');
     $this->dbc2 = new folksoDBconnect('localhost', 'tester_dude', 
                                       'testy', 'testostonomie');
-    $this->dbc3 =new folksoDBconnect('localhost', 'tester_dude', 
+    $this->dbc3 = new folksoDBconnect('localhost', 'tester_dude', 
                                       'testy', 'testostonomie'); 
-    $this->fks = new folksoSession(new folksoDBconnect($lh, $td, $ty, $tt));
+    $this->fks  = new folksoSession(new folksoDBconnect($lh, $td, $ty, $tt));
     $this->fks2 = new folksoSession(new folksoDBconnect($lh, $td, $ty, $tt));
     $this->fks3 = new folksoSession(new folksoDBconnect($lh, $td, $ty, $tt));
     $this->fks4 = new folksoSession(new folksoDBconnect($lh, $td, $ty, $tt));
