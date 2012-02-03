@@ -173,6 +173,10 @@ class folksoUser {
      }
    }
 
+   /**
+    * @return String User's personal URL (firstname.lastname) if possible
+    */
+
    public function nameUrl() {
 
      // base case: we already have the data because the user has been
