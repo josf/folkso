@@ -57,13 +57,26 @@ $srv->addResponseObj(new folksoResponder('post',
      
 $srv->addResponseObj(new folksoResponder('post',
                                          array('required' => array('rmsub', 'tag'),
-                                               'exclude' => array('setfirstname', 'setlastname')),
+                                               'exclude' => array('setfirstname', 
+                                                                  'setlastname',
+                                                                  'newuser')),
                                          'removeSubscription'));
 $srv->addResponseObj(new folksoResponder('post',
                                          array('required' => array('setfirstname',
                                                                    'setlastname'),
-                                               'exclude' => array('rmsub', 'tag')),
+                                               'exclude' => array('rmsub', 
+                                                                  'tag', 
+                                                                  'setloginid',
+                                                                  'newuser')),
                                          'storeUserData'));
+
+$srv->addResponseObj(new folksoResponder('post',
+                                         array('required' => array('setloginid',
+                                                                   'newuser'),
+                                               'exclude' => array('addsubscription',
+                                                                  'tag',
+                                                                  'rmsub')),
+                                         'createUser'));
                                                
 $srv->Respond();
   
