@@ -238,50 +238,65 @@ function loginFBuser (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) 
 
 
 /*
- * Creates new FB user account and logs the new user in.
+ * Creates new user account and logs the new user in. There is no
+ * access control on this method but the only hack possible would be
+ * to create an account for somebody else, which would only be
+ * accessible to that person.
  */
-function createFBuser (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
+function createUser (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
 
   $r = new folksoResponse();
   $loc = new folksoFabula();
-  $faceHelp = new folksoFacebook($loc);
+  $u = new folksoUser($dbc);
 
+  $u->setLoginId($q->get_param('setloginid'));
+
+  // load available fields from parameters
+  $fields = array('loginid'     => 'setLoginId',
+                  'firstname'   => 'setFirstName',
+                  'lastname'    => 'setLastName',
+                  'nick'        => 'setNick',
+                  'email'       => 'setEmail',
+                  'institution' => 'setInstitution',
+                  'pays'        => 'setPays',
+                  'fonction'    => 'setFonction',
+                  'cv'          => 'setCv');
+
+  foreach ($fields as $param => $meth) {
+    if ($q->is_param('set' . $param)) {
+      call_user_func(array($u, $meth), $q->get_param('set' . $param));
+    }
+  }
+    
   try {
-    $faceHelp->init();
+    $u->writeNewUser($q->get_param('service'));
   }
-  catch (FacebookApiException $e) {
-    return $r->setError(500, "Facebook API Error", "This might not be our fault");
+  catch (unknownServiceException $usE) {
+    return $r->setError(400,
+                        'Unknown or missing identification provider',
+                        'Bizarre...');
   }
-
-  $fbu = new folksoFBuser($dbc);
-
-
-  /*
-   * Getting the FB user depends on cookies available to the Facebook API.
-   */
-  if (! $faceHelp->uid()) {
-    return $r->setError(400, "Insufficient information",
-                 'Unable to obtain necessary login information. Are you logged in to Facebook?');
-  }
-  $fbu->setLoginId($faceHelp->uid());
-
-  try {
-    $fbu->writeNewUser();
-  }
-  catch (userException $e) {
-    return $r->setError(500, 'Error creating new user', 'Error: ' . $e->getMessage());
+  catch (userException $ue) {
+    return $r->setError(500, 
+                        'Error creating new user', 
+                        'Error: ' . $ue->getMessage());
   }
   catch (dbException $e) {
     return $r->handleDBexception($e);
   }
 
-  $fbu2 = new folksoFBuser($dbc);
-  $u2 = $fbu2->userFromLogin($fb_uid);
-      
-  if (! $u2 instanceof folksoFBuser) {
-    return $r->setError(500, 'Strange error creating new account',
-                        'New user not found.');
+
+  try {
+    $u2 = new folksoUser($dbc);
+    $u2->userFromLogin($u->loginId);
   }
+  catch (unknownUserException $uuE) {
+    return $r->setError(500,
+                        "Echec de la création de l'utilisateur",
+                        "Erreur : l'utilisateur n'a pas pu être créé.");
+  }
+
+      
   // TODO: correct format for user url
   $xml = sprintf('<?xml version="1.0"?>'
                  .'<user>'
