@@ -109,6 +109,8 @@ else
 end if;
 end$$
 delimiter ;
+grant execute on procedure folksonomie.create_user to 'folkso'@'localhost';
+grant execute on procedure folksonomie.create_user to 'folkso-rw'@'localhost';
 
 
 delimiter $$
