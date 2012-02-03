@@ -131,16 +131,10 @@ class folksoUser {
    * @param $id
    */
    public function setLoginId ($id) {
-     if ((! is_string($id)) && (! is_numeric($id))) {
-       throw new userException('Internal error, bad data for setLoginId');
+     if ((strlen($id) == 0) || (strlen($id) > 255)) {
+       throw new malformedIdentifierException('Internal error, bad data for setLoginId');
      }
-
-     if ($this->validateLoginId(trim($id))) {
-       $this->loginId = trim($id);
-     }
-     else {
-       throw new userException('Invalid login id, user creation will fail');
-     }
+     $this->loginId = trim($id);
    }
    /**
     * This is private because it should only be called when loading
