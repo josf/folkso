@@ -260,15 +260,20 @@ class folksoUser {
   }
 
 /**
- * @param 
+ * If given a 4-character argument, assumes that it is a
+ * service_id. Otherwise tries to find the service_id in the database.
+ *
+ * @param $service Either the 4-char service_id or the provider name
  */
  public function writeNewUser ($service) {
    if ($this->exists($this->loginId)) {
      throw new userException('User already exists, cannot be created');
    }
-   if ((! is_string($service)) ||
-       (! (strlen($service) == 4))) {
+   if (! is_string($service)) {
      throw new unknownServiceException();
+   } 
+   if (strlen($service) !== 4) {
+     $service = $this->getServiceIdFromName($service);
    }
 
    $i = new folksoDBinteract($this->dbc);
@@ -285,6 +290,30 @@ class folksoUser {
 
  }
 
+ /**
+  * @return String the four-character string for the given identity service
+  */
+ public function getServiceIdFromName ($name) {
+   /* Ideally, this could be done in the stored procedure, but might 
+    be handy to have on the application level. */
+
+   $i = new folksoDBinteract($this->dbc);
+   $i->query('select service_id '
+             .' from id_services '
+             .' where '
+             ." provider_name = '" . $i->dbescape($name) . "' "
+             .' or '
+             ." fullname = '" . $i->dbescape($name) . "'");
+
+   if ($i->result_status == 'OK') {
+     $res = $i->result->fetch_object();
+     return $res->service_id;
+   }
+
+   if ($i->result_status == 'NOROWS') {
+     throw new unknownServiceException();
+   }
+ }
 
 
   /**
