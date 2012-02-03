@@ -84,13 +84,6 @@ class folksoUser {
   }
    
 
-  /**
-   * @param $id Facebook id
-   */
-  public function setFbId ($id) {
-    $this->fbId = $id;
-  }
-
   public function setNick($arg) {
     $this->nick = trim($arg);
   }
