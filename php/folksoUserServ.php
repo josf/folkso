@@ -305,11 +305,16 @@ function createUser (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
   // TODO: correct format for user url
   $xml = sprintf('<?xml version="1.0"?>'
                  .'<user>'
-                 .'<facebookid>%d</facebookid>'
+                 .'<identifier>%s</identifier>'
                  .'<firstname>%s</firstname>'
                  .'<lastname>%s</lastname>'
+                 .'<userid>%s</userid>'
                  .'</user>',
-                 $u2->loginId, $u2->firstName, $u2->lastName);
+                 htmlspecialchars($u->loginId), // note that this is in the original $u
+                 htmlspecialchars($u2->firstName), 
+                 htmlspecialchars($u2->lastName), 
+                 htmlspecialchars($u2->userid)
+                 );
   $r->setOk(201, 'User successfully created');
   $r->t($xml);
   $fks->startSession($u2->userid);
