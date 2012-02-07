@@ -211,18 +211,23 @@ class folksoUser {
  *  @param $id 
  */
  public function validateLoginId ($id) {
-   return true;
+    $len = strlen($uid);
+    if (($len > 5) || ($len < 255)) {
+      return true;
+    }
+    return false;
  }
 
   /**
    * this function exists in folksoSession too. They should be identical.
    *
+   * We can no longer validate with any detail here because we don't
+   * know much about the form of the identifier.
+   *
    * @param $uid
    */
   public function validateUid ($uid) {
-    if ((strlen($uid) > 11) &&
-        (strlen($uid) < 100) &&
-        preg_match('/^[a-z0-9]+-\d+-\d+/',  $uid)){
+    if (preg_match('/-\d{4}-\d{3}/', $uid)) {
       return true;
     }
     return false;
