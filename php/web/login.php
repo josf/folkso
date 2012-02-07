@@ -13,6 +13,7 @@ $dbc = $loc->locDBC();
 $message = '';
 $error = '';
 $user_create = false;
+$u = null; // will be the folksoUser object if all goes well
 
 if ($sessionValid == true) {
   // check here if there is a redirect url. If not we send to home
@@ -86,8 +87,8 @@ if ($message) {
 
 // if not identified, present "selectionner service" menu
 if ((! $provider) ||  // no provider (in $_GET) OR...
-    ($Auth 
-     && (count($Auth->getConnectedProviders()) == 0))) // ...provider but no Auth or connection
+    ($fa
+     && (count($fa->getConnectedProviders()) == 0))) // ...provider but no Auth or connection
   {
 ?>
 
@@ -180,16 +181,19 @@ elseif ($user_create) { // providers, but user unknown to Fabula : create accoun
 <?php
 
 }
+elseif ($u instanceof folksoUser) {
+?> <p>Vous êtes loggé</p> <?php
+
+}
 else {
 ?>
 <p>Erreur logique. Ceci n'est pas de votre faute.</p> //'
 
 <p><?php echo $error; ?></p>
-<p><?php print $errorObj->getMessage();  ?></p>
-<p><?php print $errorObj->getTraceAsString(); ?></p>
- <?php 
-
+<?php
+  if ($errorObj) {
+    print "<p>". $errorObj->getMessage() . "</p>";
+    print "<p>" .   $errorObj->getTraceAsString() . "</p>";
+  }
 }
-
-
 require '/var/www/dom/fabula/commun3/foot.php';
