@@ -79,11 +79,6 @@ class folksoUser {
     $this->lastName_norm = trim($lNorm);
   }
 
-  public function setOidUrl($arg) {
-    $this->oidUrl = trim($arg);
-  }
-   
-
   public function setNick($arg) {
     $this->nick = trim($arg);
   }
