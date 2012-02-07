@@ -19,11 +19,17 @@ if ($sessionValid == true) {
   // check here if there is a redirect url. If not we send to home
   // page after a short delay (via js ?)
   $dest_url = '/tags/mestags.php';
+
+  // destUrl is implemented but not currently used anywhere
   if ($fks->getDestUrl()) {
     $dest_url = $fks->getDestUrl();
   }
-  header('Location: ' . $dest_url);
 
+  if ( isset($_GET['retour']) &&
+       $_GET['retour']) {
+    $dest_url = checkRetourUrl($_GET['retour']);
+  }
+  header('Location: ' . $dest_url);
 
   $message = "Vous êtes déjà connecté(e) sur Fabula. " .
     "Vous allez être dirigé vers votre page personnelle.";
@@ -197,3 +203,15 @@ else {
   }
 }
 require '/var/www/dom/fabula/commun3/foot.php';
+
+
+/**
+ * @param $rawUrl
+ */
+function checkRetourUrl ($rawUrl) {
+  if ((preg_match('/http:\/\//', $rawUrl)) && // absolute url, so we check
+      (! (preg_match('/http:\/\/(?:www\.)?fabula\.org/', $rawUrl)))) {
+    return '';
+  }
+  return $rawUrl;
+}
