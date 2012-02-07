@@ -116,26 +116,29 @@ grant execute on procedure folksonomie.create_user to 'folkso-rw'@'localhost';
 delimiter $$
 drop function if exists make_userid$$
 create function make_userid( 
-                              nick varchar(70),
+                              base_arg varchar(255),
                               counting int
                  )      
-returns varchar(79) deterministic
+returns varchar(255) deterministic
 begin
 
-declare uid varchar(79) default '';
+declare uid varchar(255) default '';
+declare base varchar(255) default '';
 
 if counting > 999 then 
    return '';
 end if;
 
-set uid = concat(nick, '-', 
+set uid = concat(substring(base_arg, 1, 245),
+                 '-', 
                  year(now()), '-', 
                  lpad(counting, 3, '0'));
 return uid;
 
 end$$
 delimiter ;
-
+grant execute on function folksonomie.make_userid to 'folkso'@'localhost';
+grant execute on function folksonomie.make_userid to 'folkso-rw'@'localhost';
 
 delimiter $$
 drop function if exists make_urlbase$$
