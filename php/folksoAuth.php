@@ -87,6 +87,15 @@ class folksoAuth {
   }
 
 
+  
+  /**
+   * @return List of connected providers. See hybridauth docs.
+   */
+  public function getConnectedProviders () {
+    return $this->Auth->getConnectedProviders();
+  }
+
+
   /**
    *
    * @param $provider String Provider name
@@ -115,13 +124,8 @@ class folksoAuth {
     try {
       $this->adapter = $this->Auth->authenticate($this->provider);
       $this->profile = $this->adapter->getUserProfile();
-      if ($this->profile->identifier) {
-        $this->user->userFromLogin($this->profile->identifier);
-      }
-      else {
-        print "WTF";
-      }
-      return $user;
+      $this->user->userFromLogin($this->profile->identifier);
+      return $this->user;
     }
     catch (unknownUserException $ukE) {
       throw 
