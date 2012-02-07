@@ -287,6 +287,11 @@ function createUser (folksoQuery $q, folksoDBconnect $dbc, folksoSession $fks) {
 
 
   try {
+    /**
+     * By reloading the user, not only we check that the user was
+     * properly created, but we get the new userid which we cannot
+     * know before the user is created in the database.
+     */
     $u2 = new folksoUser($dbc);
     $u2->userFromLogin($u->loginId);
   }
