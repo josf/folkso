@@ -3,6 +3,8 @@
 require '/var/www/dom/fabula/commun3/head_folkso2.php';
 require_once('folksoDBconnect.php');
 require_once('folksoDBinteract.php');
+require_once('folksoAuth.php');
+require_once('folksoUser.php');
 
 
 $loc = new folksoFabula();
@@ -26,66 +28,27 @@ if ($sessionValid == true) {
     "Vous allez être dirigé vers votre page personnelle.";
 }
 
-
-$config = '/var/www/dom/fabula/www/auth/hybridauth/config.php';
-require_once('/var/www/dom/fabula/www/auth/hybridauth/Hybrid/Auth.php');
-
-
+require_once('/var/www/dom/fabula/commun3/hybridauth/Hybrid/Auth.php');
 
 if (isset( $_GET['provider']) && $_GET['provider']
     && ($sessionValid == false))  {
   $provider = @ trim( strip_tags( $_GET['provider'] ));
 
   try {
-    $Auth = new Hybrid_Auth($config);
+    $fa = new folksoAuth($provider);
+    $u = $fa->authenticate();
+    $uProfile = $fa->profile;
   }
-  catch (Exception $e) {
-    // This is not pretty, but really should never happen except in dev
-    print "Problème de l'installation de hybridauth: ";
-    print $e->getMessage();
-    print "\n\n";
-    print $e->getTraceAsString();
-    exit();
-  }
-
-  // check for existence of provider
-  if (! array_key_exists($provider, Hybrid_Auth::$config["providers"])) {
-    print "Erreur : fournisseur d'identité inconnu";
-    exit();
-  }
-
-
-  // if the authentication request fails, an error is thrown and we log out.
-  try {
-    $adapter = $Auth->authenticate($provider);
-    $uProfile = $adapter->getUserProfile();
-    $u = new folksoUser($dbc);
-    try {
-      $u->userFromLogin($uProfile->identifier);
-      $message .= "looking for user";
-    }
-    catch (unknownUserException $ukE) { // thrown by $u->userFromLogin()
+  catch (unknownUserException $ukE) { //
       // create a new user
-      $user_create = true;
-    }
+    $user_create = true;
   }
-  catch (Exception $e) {
-    // exceptions thrown by Provider_Adapter::factory
-    switch ($e->getCode()) {
-
-    case 0 : $error = "Unspecified error."; break;
-    case 1 : $error = "Hybridauth configuration error."; break;
-    case 2 : $error = "Provider not properly configured."; break;
-    case 3 : $error = "Unknown or disabled provider."; break;
-    case 4 : $error = "Missing provider application credentials."; break;
-    case 5 : $error = "Authentification failed. The user has canceled the authentication or the provider refused the connection."; break;
-    case 6 : $error = "User profile request failed. Most likely the user is not connected to the provider and should try to authenticate again."; 
-      $adapter->logout(); 
-      break;
-    case 7 : $error = "User not connected to the provider."; 
-      $adapter->logout(); 
-      break;
-    }
+  catch (configurationException $confE) {
+    $error = "Problème interne.";
+    $errorObj = $confE;
+  }
+  catch (failedAuthenticationException $failE) {
+    $error = "Erreur d'authentification.";
   }
 } // _GET['provider'] not set
 
@@ -123,8 +86,7 @@ if ($message) {
 
 // if not identified, present "selectionner service" menu
 if ((! $provider) ||  // no provider (in $_GET) OR...
-    ($provider 
-     && $Auth 
+    ($Auth 
      && (count($Auth->getConnectedProviders()) == 0))) // ...provider but no Auth or connection
   {
 ?>
@@ -149,7 +111,7 @@ if ((! $provider) ||  // no provider (in $_GET) OR...
 <?php 
 } // end of "not identified"
 
-else { // providers, but user unknown to Fabula : create account
+elseif ($user_create) { // providers, but user unknown to Fabula : create account
 
 ?>
 
@@ -180,19 +142,19 @@ else { // providers, but user unknown to Fabula : create account
    <label for="firstNameInput">Prénom *</label>
    <input id="firstNameInput" type="text" 
           maxlength="60" size="40" class="oblig"
-          value="<?php echo $uProfile->firstName; ?>"></input>
+          value="<?php echo $fa->profile->firstName; ?>"></input>
 </li>
 <li>
   <label for="lastNameInput">Nom de famille *</label>
   <input id="lastNameInput" type="text"
          maxlength="60" size="40" class="oblig"
-         value="<?php echo $uProfile->lastName; ?>"></input>
+         value="<?php echo $fa->profile->lastName; ?>"></input>
 </li>
 <li>
   <label for="emailInput">Courrier électronique *</label>
   <input id="emailInput" type="text"
          maxlength="80" size="50" class="oblig"
-         value="<?php echo $uProfile->email; ?>"></input>
+         value="<?php echo $fa->profile->email; ?>"></input>
 </li>
 <li>
   <label for="institutionInput">Institution</label>
@@ -208,7 +170,7 @@ else { // providers, but user unknown to Fabula : create account
   <lable for="paysInput">Pays</lable>
   <input id="paysInput" type="text"
          maxlength="60" size="40" class="facul"
-         value="<?php echo $uProfile->country; ?>"></input>
+         value="<?php echo $fa->profile->country; ?>"></input>
 </li>
 </ul>
 <button id="newUserFormButton" 
@@ -216,8 +178,18 @@ else { // providers, but user unknown to Fabula : create account
         type="submit">Créer</button>
 </form>
 <?php
-  
 
 }
+else {
+?>
+<p>Erreur logique. Ceci n'est pas de votre faute.</p> //'
+
+<p><?php echo $error; ?></p>
+<p><?php print $errorObj->getMessage();  ?></p>
+<p><?php print $errorObj->getTraceAsString(); ?></p>
+ <?php 
+
+}
+
 
 require '/var/www/dom/fabula/commun3/foot.php';
