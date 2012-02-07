@@ -44,25 +44,6 @@ class folksoSession {
 
 /**
  *
- * Makes sure a uid respects the basic format, which is:
- *
- * At least 5 letters, a hyphen, a group of numbers a hyphen, a second
- * group of numbers.
- *
- * @param $uid
- */
- public function validateUid ($uid) {
-   if ((strlen($uid) > 11) &&
-       (strlen($uid) < 100) &&
-       preg_match('/^[a-z0-9]+-\d+-\d+/',  $uid)){
-     return true;
-    }
-   return false;
- }
-
-
-/**
- *
  * @param $session_id String (actually should be a hash...)
  */
  public function validateSid ($session_id) {
@@ -105,7 +86,8 @@ class folksoSession {
      $uid = $uarg;
    }
 
-    if ($this->validateUid($uid) === false) {
+   $u = new folksoUser($this->dbc);
+   if ($u->validateUid($uid) === false) {
       throw new userException('Missing userid');
     }
 
