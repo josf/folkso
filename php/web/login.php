@@ -15,15 +15,20 @@ $error = '';
 $user_create = false;
 $u = null; // will be the folksoUser object if all goes well
 
+$dest_url = '/tags/mestags.php';
+if ( isset($_GET['retour']) &&
+     $_GET['retour']) {
+  $dest_url = checkRetourUrl($_GET['retour']);
+}
+
 if ($sessionValid == true) {
   // check here if there is a redirect url. If not we send to home
   // page after a short delay (via js ?)
-  $dest_url = '/tags/mestags.php';
-
+ 
   // destUrl is implemented but not currently used anywhere
-  if ($fks->getDestUrl()) {
+  /*  if ($fks->getDestUrl()) {
     $dest_url = $fks->getDestUrl();
-  }
+    }*/
 
   if ( isset($_GET['retour']) &&
        $_GET['retour']) {
@@ -188,8 +193,16 @@ elseif ($user_create) { // providers, but user unknown to Fabula : create accoun
 
 }
 elseif ($u instanceof folksoUser) {
-?> <p>Vous êtes loggé</p> <?php
+?> 
+<p>Vous êtes loggé</p>
 
+<script type="text/javascript">
+    setTimeout(function() {
+        window.location = "<?php echo $dest_url; ?>";
+        },
+      2000);
+</script>
+<?php
 }
 else {
 ?>
