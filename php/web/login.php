@@ -124,7 +124,7 @@ elseif ($user_create) { // providers, but user unknown to Fabula : create accoun
 
   <script type="text/javascript">
   fK = window.fK || {};
-  fK.userIdentifier = "<?php echo $uProfile->identifier; ?>";
+  fK.userIdentifier = "<?php echo $fa->profile->identifier; ?>";
   fK.userService    = "<?php echo $provider; ?>";
   </script>
 
