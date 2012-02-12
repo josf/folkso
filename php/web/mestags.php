@@ -2,7 +2,7 @@
   /**
    * @package Folkso
    * @author Joseph Fahey
-   * @copyright 2010 Gnu Public Licence (GPL)
+   * @copyright 2010-2012 Gnu Public Licence (GPL)
    * @subpackage webinterface
    */
 
