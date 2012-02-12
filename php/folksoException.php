@@ -66,7 +66,7 @@ class folksoFacebookException extends Exception {}
  * These should mostly concern details related to hybridauth.
  */
 class authenticationException extends userException {
-  function __construct ($msg = null, $prev = null) {
+  function __construct ($msg = null, $code = null, $prev = null) {
     if ($prev instanceof Exception) {
       parent::__construct($msg, $prev->getCode(), $prev);
     }
