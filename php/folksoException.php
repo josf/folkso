@@ -79,4 +79,4 @@ class authenticationException extends userException {
 class malformedIdentifierException extends authenticationException { }
 class unknownServiceException extends authenticationException { }
 class configurationException extends authenticationException {}
-class failedAuthentication extends authenticationException {}
+class failedAuthenticationException extends authenticationException {}
