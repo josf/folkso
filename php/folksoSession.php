@@ -150,12 +150,8 @@ class folksoSession {
  */
   public function checkSession ($session_id) {
     $i = new folksoDBinteract($this->dbc);
-    if ($i->db_error()) {
-      trigger_error("Database connection error: " .  $i->error_info(), 
-                   E_USER_ERROR);
-    }    
     if ($session_id && ($this->validateSid($session_id) === false)){
-     trigger_error("Bad session id", E_USER_WARNING);
+      throw new badUseridException();
    }
 
    $i->query("select userid, started, dest_url from sessions where token = '"
@@ -168,10 +164,6 @@ class folksoSession {
    }
    elseif ($i->result_status == 'NOROWS'){
      return false;
-   }
-   else {
-     trigger_error("DB query error: " . $i->error_info(),
-                   E_USER_ERROR);
    }
  }
 
