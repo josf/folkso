@@ -33,16 +33,8 @@ class testOffolksoSession extends  UnitTestCase {
          $this->assertIsA($s->dbc, 'folksoDBconnect',
                           'DBconnection object is not there');
 
-
          $this->assertTrue(strlen($s->newSessionId('zorkdork-2289-002')) == 64,
                            'session id not long enough (want 64 chars');
-         $this->assertTrue($s->validateUid('zork-000-124'),
-                           'zork-000-124 should validate as uid.');
-         $this->assertFalse($s->validateUid('zorkisnottooshort'),
-                            'this uid should not validate');
-         $this->assertFalse($s->validateUid('zork-**--000'),
-                            'this uid should not validate either');
-
          $this->assertTrue($s->validateSid('eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee'),
                            'this should be a valid session id');
          $this->assertFalse($s->validateSid('eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee-e'),
