@@ -29,10 +29,10 @@ grant select on id_services to 'folkso-rw'@'localhost';
 -- no need to write to this table
 
 
-create table user_services 
-       (userid varchar(255) primary key,
+create table user_services_bis 
+       (identifier varchar(255) primary key,
+       userid varchar(255) not null,
        service_id char(4) not null,
-       identifier varchar(255) not null,
        foreign key (service_id) references id_services(service_id),
        foreign key (userid) references users(userid),
        index by_identifier (identifier, userid),
