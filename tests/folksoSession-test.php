@@ -116,6 +116,8 @@ class testOffolksoSession extends  UnitTestCase {
                       'userSession not returning folksoUser object');
      $this->assertEqual($u->firstName, 'Gustave',
                         'First name not correctly retrieved: ' . $u->firstName);
+     $this->assertEqual($u->userId, 'gustav-2011-001',
+                        'userid not correctly retrieved: ' . $u->userid);
 
    }
 
