@@ -14,6 +14,10 @@ $message = '';
 $error = '';
 $user_create = false;
 $u = null; // will be the folksoUser object if all goes well
+$authent_fail = false;
+$non_retour = false;
+$ajouter_service = false;
+
 
 $dest_url = '/tags/mestags.php';
 if ( isset($_GET['retour']) &&
@@ -21,46 +25,74 @@ if ( isset($_GET['retour']) &&
   $dest_url = checkRetourUrl($_GET['retour']);
 }
 
+if (isset($_GET['nonretour']) && 
+    ($_GET['nonretour'] == "true")) {
+  $non_retour = true;
+}
+
 if ($sessionValid == true) {
-  // check here if there is a redirect url. If not we send to home
-  // page after a short delay (via js ?)
- 
-  // destUrl is implemented but not currently used anywhere
-  /*  if ($fks->getDestUrl()) {
-    $dest_url = $fks->getDestUrl();
-    }*/
-
-  if ( isset($_GET['retour']) &&
-       $_GET['retour']) {
-    $dest_url = checkRetourUrl($_GET['retour']);
+  if (isset($_GET['ajouterservice']) &&
+      ($_GET['ajouterservice'] == "true")) {
+    $ajouter_service = true;
   }
-  header('Location: ' . $dest_url);
 
-  $message = "Vous êtes déjà connecté(e) sur Fabula. " .
-    "Vous allez être dirigé vers votre page personnelle.";
+  // check here if there is a redirect url. If not we send to home
+  // page after a short delay 
+
+  if (($non_retour === false) && ($ajouter_service === false)) {
+    header('Location: ' . $dest_url);
+    exit();
+  }
+  $message = "Vous êtes déjà connecté(e) sur Fabula. ";
 }
 
 require_once('/var/www/dom/fabula/commun3/hybridauth/Hybrid/Auth.php');
 
-if (isset( $_GET['provider']) && $_GET['provider']
-    && ($sessionValid == false))  {
+if ((isset( $_GET['provider']) && $_GET['provider'])
+    && 
+    (($sessionValid == false) || ($ajouter_service == true)))  {
+
   $provider = @ trim( strip_tags( $_GET['provider'] ));
 
   try {
     $fa = new folksoAuth($provider);
     $u = $fa->authenticate();
     $uProfile = $fa->profile;
+    $fks->startSession($u);
   }
-  catch (unknownUserException $ukE) { //
+  catch (unknownUserException $ukE) { 
+    // login is unknown, either a new user or a known user is adding a new service
+    if ($ajouter_service == true){
+      $u = $fks->userSession();
+
+      try {
+        $u->associateUserWithIdentifier($fa->secondaryIdentifierByService($provider),
+                                        $provider);
+        $service_added = true; 
+        $message .= $fa->profile->identifier;
+      }
+      catch(unknownServiceException $uSE) {
+        $error = "Erreur lors de la connexion.";
+      }
+    }
+    else {
       // create a new user
-    $user_create = true;
+      $user_create = true;
+    }
   }
   catch (configurationException $confE) {
-    $error = "Problème interne.";
+    /**
+     * This exception seems to be thrown when the user refuses to
+     * allow access to his account, so it should not really be a
+     * configurationException. This works, though.
+     */
+    $error = "Echec de la connexion. Veuillez réessayer de vous connecter.";
     $errorObj = $confE;
+    $authent_fail = true;
   }
   catch (failedAuthenticationException $failE) {
     $error = "Erreur d'authentification.";
+    $authent_fail = true;
   }
 } // _GET['provider'] not set
 
@@ -99,7 +131,8 @@ if ($message) {
 // if not identified, present "selectionner service" menu
 if ((! $provider) ||  // no provider (in $_GET) OR...
     ($fa
-     && (count($fa->getConnectedProviders()) == 0))) // ...provider but no Auth or connection
+     && (count($fa->getConnectedProviders()) == 0)) || // ...provider but no Auth or connection
+    $authent_fail) // ... authentication failed, start over
   {
 ?>
 
@@ -122,6 +155,11 @@ if ((! $provider) ||  // no provider (in $_GET) OR...
 
 <?php 
 } // end of "not identified"
+elseif ($service_added) {
+?>
+  <p>Opération réussie.</p>
+<?php
+}
 
 elseif ($user_create) { // providers, but user unknown to Fabula : create account
 
@@ -194,7 +232,11 @@ elseif ($user_create) { // providers, but user unknown to Fabula : create accoun
 }
 elseif ($u instanceof folksoUser) {
 ?> 
-<p>Vous êtes loggé</p>
+  <p><strong>Vous êtes connecté(e) !</strong></p>
+
+    <?php if ($non_retour === false) { ?>
+  <p>Vous allez être redirigé(e) sur la page d'origine ou votre page personnelle en quelques secondes.</p> <?php // ' ?>
+
 
 <script type="text/javascript">
     setTimeout(function() {
@@ -203,10 +245,11 @@ elseif ($u instanceof folksoUser) {
       2000);
 </script>
 <?php
+    } // end if non_retour
 }
 else {
 ?>
-<p>Erreur logique. Ceci n'est pas de votre faute.</p> //'
+<p>Erreur logique. Ceci n'est pas de votre faute.</p> 
 
 <p><?php echo $error; ?></p>
 <?php

@@ -12,6 +12,7 @@ require_once('folksoFabula.php');
 require_once('folksoClient.php');
 require_once('folksoUserServ.php');
 require_once('folksoPage.php');
+require_once('folksoAuth.php');
 
 if ((! $fp) || (! $fp instanceof folksoPage)) {
   $fp = new folksoPage();
@@ -19,13 +20,13 @@ if ((! $fp) || (! $fp instanceof folksoPage)) {
 
 
 require("/var/www/dom/fabula/commun3/head_libs.php");
-require("/var/www/dom/fabula/commun3/head_folkso.php");
+require("/var/www/dom/fabula/commun3/head_folkso2.php");
 $page_titre = 'Fabula - Espace tags et gestion de compte';
 $loggedIn = false;
 $redacRight = false;
 $adminRight = false; // this was "true" before. why?
 
-if ($fks->status()) {
+if ($sessionValid) {
     $loggedIn = true;
 
     if ($u &&
@@ -38,6 +39,30 @@ if ($fks->status()) {
       }
     }
 }
+else { // not logged in
+  header("Location: /tags/login.php?retour=/tags/mestags.php");
+  exit();
+}
+
+try {
+  $fa = new folksoAuth();
+  $currentProviders = $fa->getConnectedProviders();
+}
+catch (configurationException $confE) {
+  $error = 
+    "Problème interne : nous n'avos pas pu "
+    ."contacter votre service d'identification";
+}
+catch (userException $uE) {
+  // this really should be impossible
+  print "user exception";
+  print $uE->getMessage();
+  //  header('Location: /tags/login.php');
+  exit();
+}
+
+
+
 
 require("/var/www/dom/fabula/commun3/head_dtd.php");
 
@@ -49,9 +74,6 @@ require("/var/www/dom/fabula/commun3/head_meta.php");
 <link rel="stylesheet" href="css/blueprint/screen.css" type="text/css" media="screen, projection"/>
 <link rel="stylesheet" href="css/blueprint/print.css" type="text/css" media="print"/>	
 <!--[if lt IE 8]><link rel="stylesheet" href="css/blueprint/ie.css" type="text/css" media="screen, projection"><![endif]-->
-
-
-
 <?php
 
 require("/var/www/dom/fabula/commun3/head_css.php");
@@ -215,7 +237,6 @@ div#recently h2 {
 }
 
 #loggedVia {
-   display: none;
    color: gray;
    font-style: italic;
 }
@@ -261,51 +282,26 @@ div#tabs-1 li {
   list-style: none;
 }
 
-<?php 
-if (!$loggedIn) {
-?>
 .not-logged, #login-tabs {
-  display: inline;
+   display: none;
 }
-  .login-only, #logout, #logout2 {
-display: none;
+.login-only, #logout, #logout2 {
+   display: inline;
 }
-
-<?php
-    }
-else {
-?>
-  .not-logged, #login-tabs {
-    display: none;
-    }
-  .login-only, #logout, #logout2 {
-display: inline;
- }
-
-<?php
-    }
-?>
 
 #login-tabs { display: none; } 
 </style>
 
 <link rel="stylesheet" type="text/css" href="/tags/css/jquery-ui-1.8.9.custom.css" media="screen"/>
-
-
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.js"></script> 
-
-
 
 <script type="text/javascript"
   src="/tags/js/tinymce/jscripts/tiny_mce/jquery.tinymce.js">
 </script>
+
 <script type="text/javascript" src="/tags/js/jquery-ui-1.8.9.custom.min.js"></script>
-<script src="http://connect.facebook.net/en_US/all.js"></script>
 <script type="text/javascript" src="/tags/js/jquery.folksodeps.js"></script>
 <script type="text/javascript" src="/tags/js/folksonomie.min.js"></script> 
-
-
-
 
 <script type="text/javascript" 
   src="/tags/js/folkso-user.js">
@@ -316,13 +312,9 @@ display: inline;
 
 
 <?php
- if ($fp instanceof folksoPage) {
-	print $fp->jsHolder($fp->fKjsLoginState('fK.loginStatus')
-				. $fp->fbJsVars());
-
-} 
+    print $fp->jsHolder($fp->fKjsLoginState('fK.loginStatus')
+                        . $fp->fbJsVars());
 ?>
-
 
 <script type="text/javascript">
   $(document).ready(
@@ -354,12 +346,8 @@ display: inline;
                                     $more.toggle();
                                 });
 
-          $(fK.events).bind('loggedOut',
-                         function() {
-                           $(".not-logged").show();
-                           $("#login-tabs").show();
-                           $("ul.provider_list", $("#tabs-1")).show();
-                         });
+          $("
+
       });
 
 
@@ -368,16 +356,8 @@ display: inline;
 <?php
 
   //require ('/var/www/dom/fabula/commun3/browser_detect.php');
-if (stristr($_SERVER['HTTP_USER_AGENT'], 'iPhone')) {
-echo ("</head>\n<body>");
-echo ("<h1 class=\"titre_iphone\">Visitez notre site optimis<C3><A9> <br><a href=\"http://iphone.fabula.org\">iphone.fabula.org</a></h1>");
-} else {
-  /*if ( (browser_detection( 'os' )== "mac" ) && (browser_detection( 'browser' ) =="moz") ) {
-echo "<style>\n#tabs-menu {\nheight: 17px;\n}\n</style>";
-}*/
-echo ("</head>\n<body>");
-}
 
+echo ("</head>\n<body>");
 
 require("/var/www/dom/fabula/commun3/html_start.php");
 
@@ -405,48 +385,39 @@ vous enrichissez le site pour tous les utilisateurs.</span></p>
  <strong>A quoi sert votre «&#160;Espace Tags&#160;» ?</strong> Cette page vous permet de choisir des 
   <emph>tags</emph> qui vous intéressent, et de les <emph>suivre</emph>.  <a href="#" class="morelink">(suite)</a><span class="moretext">Chaque fois
   que quelqu'un applique l'un  de vos <emph>tags</emph>  à une nouvelle ressource sur Fabula 
-(une annonce dans les nouvelles, un texte de l'Atelier,  un compte-rendu dans Acta Fabula, etc.),
-un lien vers la ressource apparaîtra dans la liste <emph>Vos ressources</emph>, à droite.</span>
-</p>
-<p>
-La page "Espace tags" vous donne également la possibilité de vous présenter et de publier 
-un mini-CV. 
-</p>
+(une annonce dans les nouvelles, un texte de l'Atelier, un compte-rendu dans <emph>Acta Fabula</emph>, etc.), un lien
+vers la ressource apparaîtra dans la liste <emph>Vos
+ressources</emph>, à droite.</span> </p> <p> La page "Espace tags"
+vous donne également la possibilité de vous présenter et de publier un
+mini-CV.  </p>
 
 </div>
 </div>
 
 </div>
-<h1 class="not-logged">Il faut vous identifier d'abord</h1> 
-
-<div id="login-tabs" class="not-logged">
-
-
-<ul>
-<li><a href="#tabs-1">Open ID</a></li>
-<li><a href="#tabs-2">Facebook Connect</a></li>
-</ul>
-
-<div id="tabs-1">
- &#160;
-</div>
-
-<div id="tabs-2">
-<div id="fb-root"></div>
-<?php
-
-print $fp->facebookConnectButton(); 
-
-?>
-</div>
-</div> <!-- end of #login-tabs div -->     
-
 
 
 <div id="user-intro" class="login-only span-15">
 <div class="span-6" id="greeting">
 <p>Bonjour <span class="userhello"></span> !</p>
- <p id="loggedVia" class="quiet">Loggé(e) via <span id="loginSource"></span></p>
+ <p id="loggedVia">Loggé(e) via <span id="loginSource"><?php //'
+ echo implode(', ', $currentProviders);
+ ?></span> <a href="#">Ajouter</a></p>
+<div class="hidden">
+  <p>Sélectionner un autre service à associer à votre compte
+  Fabula.</p>
+  <p>(Ceci vous permettra de vous connecter à partir de plusieurs
+  comptes différents.)</p>
+  <ul>
+    <li><a href="/tags/login.php?provider=Google&ajouterservice=true">Google</a></li> 
+    <li><a href="/tags/login.php?provider=Yahoo&ajouterservice=true">Yahoo</a></li> 
+    <li><a href="/tags/login.php?provider=Facebook&ajouterservice=true">Facebook</a></li>
+    <li><a href="/tags/login.php?provider=Twitter&ajouterservice=true">Twitter</a></li>
+    <li><a href="/tags/login.php?provider=LinkedIn&ajouterservice=true">LinkedIn</a></li> 
+  </ul>
+</div>
+
+
 </div>
 <ul id="userNav" class="span-7 prepend-2 last login-only">
   <?php // Admin, redac link
@@ -456,7 +427,6 @@ print $fp->facebookConnectButton();
     <?php
   }
 
-
  if (($u instanceof folksoUser) && $u->nameUrl()) {
        $userUrl =  'http://www.fabula.org/' . $u->nameUrl();
        echo sprintf('<li><a id="publicLink" href="%s">Page publique</a></li>',
@@ -464,7 +434,7 @@ print $fp->facebookConnectButton();
  }
 ?>
 
-<li><a href="#" id="logout2" class="login-only">Quitter</a></li>
+<li><a href="/tags/logout.php" id="logout2" class="login-only">Quitter</a></li>
 </ul>
 </div>
 
@@ -627,7 +597,7 @@ Si vous ne souhaitez pas publier ces informations, il suffit de vous assurer que
 
 <div class="login-only span-15" id="lastNav">
 <div class="span-3 last prepend-11">
-<a href="#" class="login-only" id="logout">Quitter</a>
+<a href="/tags/logout.php" class="login-only" id="logout">Quitter</a>
 </div>
 </div>
 

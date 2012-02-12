@@ -115,6 +115,8 @@ class folksoUser {
     $this->eventCount = $number;
   }
 
+
+  
   /**
    * @param $id
    */
@@ -308,7 +310,7 @@ class folksoUser {
    }
 
    if ($i->result_status == 'NOROWS') {
-     throw new unknownServiceException();
+     throw new unknownServiceException("Could not find service code.");
    }
  }
 
@@ -643,29 +645,39 @@ class folksoUser {
      }
 
      try {
+       if (strlen($service) > 4) {
+         $service = $this->getServiceIdFromName($service);
+       }
        $i = new folksoDBinteract($this->dbc);
        $sql = sprintf('insert into user_services '
-                      .' (userid, service_id, identifier) '
+                      .' (userid, identifier, service_id) '
                       .' values '
-                      ." (%s, %s, %s)",
-                      $this->userId,
+                      ." ('%s', '%s', '%s')",
+                      $this->userid,
                       $i->dbescape($identifier),
                       $i->dbescape(strtolower($service)));
 
        $i->query($sql);
      }
+     catch (unknownServiceException $uSE) {
+       throw new unknownServiceException("Identification service name incorrect"
+                                         . $uSE->getMessage(), 5, $uSE);
+     }
      catch (dbQueryException $qe) {
        if (($qe->sqlcode == 1452) &&
-           (strpos($qe->message, 'service_id'))) {
-         throw new unknownServiceException();
+           (strpos($qe->getMessage(), 'service_id'))) {
+         throw new unknownServiceException($sql);
        }
        elseif (($qe->sqlcode == 1452) &&
-               (strpos($qe->message, 'userid'))) {
-         throw new badUseridException("userid is not known or is missing");
+               (strpos($qe->getMessage(), 'userid'))) {
+         throw new badUseridException("userid is not known or is missing: "
+                                      . $this->userId);
+       }
+       else {
+         throw $qe;
        }
      }
    }
-
 
 
 /**
