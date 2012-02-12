@@ -243,10 +243,6 @@ class folksoSession {
   * @return folksoUser obj or false if user not found
   */
  public function userSession ($sid = null, $service = null, $right = null) {
-    if ($this->user instanceof folksoUser) {
-      return $this->user;
-    }
-
     $sid = $sid ? $sid : $this->sessionId;
     if ($this->validateSid($sid) === false) {
       return false;  // exception?
