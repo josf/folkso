@@ -11,9 +11,7 @@ $(document).ready(
                     autocompleteUrl: hostAndPath + 'tagcomplete.php',
                     postResUrl: hostAndPath + 'resource.php',
                     getResUrl: hostAndPath + 'resource.php',
-                    getUserUrl: hostAndPath + 'user.php',
-                    oIdLogoPath: "/tags/logos/",
-                    oIdPath: '/tags/fdent/'
+                    getUserUrl: hostAndPath + 'user.php'
                 });
 
 
@@ -691,7 +689,6 @@ $(document).ready(
                               " loginStatus was " + fK.loginStatus);) */
                              $(".login-only").show();
                              $("h1.not-logged").hide();
-                             $("#fbstuff").hide();
                              $("#login-tabs").hide();
 
                              // ideally, all showing of hidden elements should be done 
@@ -705,18 +702,6 @@ $(document).ready(
                              fK.loginStatus = true;
                        });
 
-        $(fK.events).bind('FBlogin',
-                          function() {
-                              /* CLAG(console.log("FBlogin event fired");) */
-                              $("#loggedVia").show();
-                              $("#loginSource").html("Facebook");
-                          });
-
-        $(fK.events).bind('OIDlogin',
-                          function() {
-                              $("#loggedVia").show();
-                              $("#loginSource").html("OpenID");
-                          });
 
 
 //        $(fK.events).unbind('loggedOut');
@@ -729,12 +714,6 @@ $(document).ready(
                            $("h1.not-logged").show();
                            $("#fKTaginput").hide();
                            $("#login-tabs").show();
-
-                           var $oidTab = $("#tabs-1");
-                           if ($("ul", $oidTab).length === 0) {
-                               $oidTab.append(fK.oid.providerList()); 
-                           }
-
                        });
 
         $(fK.events).bind('userLogout',
