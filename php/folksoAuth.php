@@ -112,9 +112,9 @@ class folksoAuth {
 
 
   /**
-   * @param 
+   * 
    *
-   * Throws lots of different errors. Better catch them or do something.
+   * Throws lots of different exceptions. Better catch them or do something.
    */
   public function authenticate () {
     if (! $this->provider) {
@@ -165,4 +165,32 @@ class folksoAuth {
       }
     }
   }
+
+
+  /**
+   * Wrapper to call Hybrid Auth $Auth->logoutAllProviders
+   *
+   * hybrid_auth just forgets about these connections when this is
+   * called.
+   */
+  public function logout () {
+    $this->Auth->logoutAllProviders();
+  }
+
+
+  
+  /**
+   * @param $provider
+   */
+  public function secondaryIdentifierByService ($provider) {
+    if ($this->validateProvider($provider) == false) {
+      throw new unknownServiceException("Secondary service unknown: " 
+                                        . $provider);
+    }
+    
+    $secondaryAdapter = $this->Auth->getAdapter($provider);
+    $profile = $secondaryAdapter->getUserProfile();
+    return $profile->identifier;
+  }
+
 }
