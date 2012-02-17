@@ -85,6 +85,10 @@ require("/var/www/dom/fabula/commun3/head_css.php");
 position: static;
  }
 
+ul, li {
+  margin-left: 0px;
+}
+
 a.taglink {
     font-size: 12pt;
 }
@@ -165,15 +169,17 @@ span.moretext {
 div#test { background-color: red;
 }
 ul#userNav li {
+    text-align: left;
     display: inline; 
     list-style-type: none; 
-    padding-right: 20px;
+  padding-right: 1.4em;
     font-size: 8pt;
     color: #d45500;
 }
 ul#userNav a, ul#userNav a:link, ul#userNav a:visited, ul#userNav a:active {
     color: #d45500;
     border-bottom: none;
+  text-align: left;
 }
 
 div#user-intro {
@@ -290,6 +296,24 @@ div#tabs-1 li {
 }
 
 #login-tabs { display: none; } 
+
+#gestionIdLink {
+  font-size: 10pt;
+  text-decoration: none;
+  color: #d45500;
+  border-bottom: none;
+}
+
+#gestionIdBox {
+display: none;
+font-size: 9pt;
+padding-left: 2em;
+padding-right: 2em;
+border: dotted grey 1px;
+}
+#gestionIdClose{
+  float: right;
+}
 </style>
 
 <link rel="stylesheet" type="text/css" href="/tags/css/jquery-ui-1.8.9.custom.css" media="screen"/>
@@ -346,7 +370,25 @@ div#tabs-1 li {
                                     $more.toggle();
                                 });
 
-          $("
+          var 
+          $gestionIdBox   = $("#gestionIdBox"),
+          $gestionIdLink  = $("#gestionIdLink"),
+          $gestionIdClose = $("#gestionIdClose");
+
+          $gestionIdLink.click(
+              function(ev) {
+                  ev.preventDefault();
+                  $gestionIdBox.toggle(300);
+              });
+
+          $gestionIdClose.click(
+              function(ev) {
+                  ev.preventDefault();
+                  $gestionIdBox.hide(300);
+              });
+          
+
+
 
       });
 
@@ -441,11 +483,12 @@ compte Fabula avec le(s) service(s) suivant(s) :
     <li><a href="/tags/login.php?provider=Twitter&ajouterservice=true">Twitter</a></li>
     <li><a href="/tags/login.php?provider=LinkedIn&ajouterservice=true">LinkedIn</a></li> 
   </ul>
+<a href="#" id="gestionIdClose"><img src="/tags/images/close_x_20px.png"/></a>
 </div>
 
 
-</div>
-<ul id="userNav" class="span-7 prepend-2 last login-only">
+
+<ul id="userNav" class="span-9 login-only">
   <?php // Admin, redac link
   if ($redacRight || $adminRight) {
     ?>
