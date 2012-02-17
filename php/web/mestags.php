@@ -400,14 +400,40 @@ mini-CV.  </p>
 <div id="user-intro" class="login-only span-15">
 <div class="span-6" id="greeting">
 <p>Bonjour <span class="userhello"></span> !</p>
- <p id="loggedVia">Loggé(e) via <span id="loginSource"><?php //'
- echo implode(', ', $currentProviders);
- ?></span> <a href="#">Ajouter</a></p>
-<div class="hidden">
-  <p>Sélectionner un autre service à associer à votre compte
-  Fabula.</p>
-  <p>(Ceci vous permettra de vous connecter à partir de plusieurs
-  comptes différents.)</p>
+</div>
+            <?php 
+            /**
+             * $currentProviders = les services utilisés en ce moment
+             * avec hybridauth. Il peut n'y en avoir aucun, si la
+             * session folksonomie (folksoSession) est valable en
+             * dehors des sessions hybridauth. (This is a feature.)
+             */
+            if (count($currentProviders) > 0) { 
+              ?>
+ <p id="loggedVia" class="span-15">Loggé(e) via <span id="loginSource">
+              <?php
+              echo implode(', ', $currentProviders);
+              ?>
+              </span></p>
+              <?php
+            } // end if $currentProviders
+          ?>
+ <p><a href="#" id="gestionIdLink">Gérer ses services d'indentification</a></p>
+<div class="hidden span-13" id="gestionIdBox">
+   <p><strong>Comptes actuels</strong>  Vous avez déjà associé votre 
+compte Fabula avec le(s) service(s) suivant(s) :
+</p>
+   <ul>
+   <?php //'
+   foreach ($u->getLoginServices() as $prov) {
+            print "<li>" . $prov['fullname'] . "</li>";
+          }
+   ?>
+</ul>
+
+  <p>Vous pouvez sélectionner un autre service à associer à votre compte
+                                                                                                               Fabula parmi les suivants :
+</p>
   <ul>
     <li><a href="/tags/login.php?provider=Google&ajouterservice=true">Google</a></li> 
     <li><a href="/tags/login.php?provider=Yahoo&ajouterservice=true">Yahoo</a></li> 

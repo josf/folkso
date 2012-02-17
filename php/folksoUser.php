@@ -680,6 +680,39 @@ class folksoUser {
    }
 
 
+   
+   /**
+    * Provides a list of the services the user has associated with her
+    * account.
+    *
+    * The keys of each assoc array returned are 'id', 'fullname',
+    * 'provider_name'. 'provider_name' is the name used in hybridauth
+    * requests, ie. 'Yahoo' instead of  'Yahoo!'.
+    *
+    * @return Array of assoc arrays 
+    */
+   public function getLoginServices () {
+     
+     $serviceList = array();
+     $i = new folksoDBinteract($this->dbc);
+     $i->query('select '
+               .' service_id, fullname, provider_name '
+               .' from '
+               .' id_services  '
+               .' natural join user_services '
+               ." where userid = '" . $this->userid . "'");
+
+     if ($i->result_status != 'NOROWS') {
+       while ($row = $i->result->fetch_object()) {
+         $serviceList[] = array('id'            => $row->service_id,
+                                'fullname'      => $row->fullname,
+                                'provider_name' => $row->provider_name);
+       }
+     }
+     return $serviceList;
+   }
+
+
 /**
  * @param 
  */
