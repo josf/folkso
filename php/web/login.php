@@ -104,6 +104,27 @@ echo ("<html>\n<head>");
 require '/var/www/dom/fabula/commun3/head_meta.php';
 require '/var/www/dom/fabula/commun3/head_css.php';
 require '/var/www/dom/fabula/commun3/head_css_folkso.php';
+
+?>
+<style type="text/css">
+  #compteDeja {
+color: gray;
+padding: 1em;
+margin-bottom: 2em;
+border: 1px gray dotted;
+
+}
+
+  ul#newUserForm {
+    text-align: left;
+  }
+
+</style>
+
+
+<?php
+
+
 require '/var/www/dom/fabula/commun3/head_javascript.php';
 require '/var/www/dom/fabula/commun3/head_javascript_folkso.php';
 //echo '<script type="text/javascript" src="/tags/js/pageinit.js"></script>';
@@ -173,35 +194,46 @@ elseif ($user_create) { // providers, but user unknown to Fabula : create accoun
 
 
 
-  <p>Bonjour <?php echo $uProfile->firstName; ?>.
-     Vous pouvez maintenant créer votre compte. 
-       Seules les rubriques comportant une astérisque sont obligatoires.</p>
+      <p>Bonjour <?php echo $fa->profile->firstName; ?>.
+     Vous pouvez maintenant créer votre compte.</p>
+<p> Aucune rubrique n'est obligatoire. Si vous renseignez "Prénom" 
+et "Nom de famille", une page personnelle publique vous sera créée, où 
+vous pourriez afficher un mini-CV. Si 
+vous ne le souhaitez pas, il suffit de les laisser vides.</p>
+<p>Vous pourrez modifier ces informations à tout moment à partir 
+de votre « Espace tags ».</p>
 
 <p id="messageBox"></p>
 
 <div id="compteDeja">
-       <p><strong>Mais je me suis déjà inscrit(e) !</strong></p>
+       <p><strong>Vous avez déjà un compte ?</strong></p>
        <p>Si vous avez déjà créé un compte chez nous avec un autre 
-       service que <?php echo $provider; ?>, <a href="/auth/log.php">cliquez 
-       ici</a> pour choisir le service souhaité.</p>
+       service que <?php 
+       echo $provider; 
+     ?>, <a href="/auth/log.php">cliquez 
+     ici</a> pour choisir le service souhaité. Ensuite, sur 
+       votre page personnelle (Espace Tags), vous pourriez ajouter <?php
+       echo $provider;
+     ?> en vous cliquant sur "Gérer ses services d'identification".
+</p>
 </div>
 
 <form action="" method="POST" name="newUserForm">
 <ul id="newUserForm">
 <li>
-   <label for="firstNameInput">Prénom *</label>
+   <label for="firstNameInput">Prénom</label>
    <input id="firstNameInput" type="text" 
           maxlength="60" size="40" class="oblig"
           value="<?php echo $fa->profile->firstName; ?>"></input>
 </li>
 <li>
-  <label for="lastNameInput">Nom de famille *</label>
+  <label for="lastNameInput">Nom de famille</label>
   <input id="lastNameInput" type="text"
          maxlength="60" size="40" class="oblig"
          value="<?php echo $fa->profile->lastName; ?>"></input>
 </li>
 <li>
-  <label for="emailInput">Courrier électronique *</label>
+  <label for="emailInput">Courrier électronique</label>
   <input id="emailInput" type="text"
          maxlength="80" size="50" class="oblig"
          value="<?php echo $fa->profile->email; ?>"></input>
@@ -209,7 +241,7 @@ elseif ($user_create) { // providers, but user unknown to Fabula : create accoun
 <li>
   <label for="institutionInput">Institution</label>
   <input id="institutionInput" type="text" class="facul"
-         maxlength="100" size="70"></input>
+         maxlength="100" size="50"></input>
 </li>
 <li>
   <lable for="fonctionInput">Fonction</lable>
