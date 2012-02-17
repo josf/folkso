@@ -29,7 +29,7 @@ grant select on id_services to 'folkso-rw'@'localhost';
 -- no need to write to this table
 
 
-create table user_services_bis 
+create table user_services
        (identifier varchar(255) primary key,
        userid varchar(255) not null,
        service_id char(4) not null,
