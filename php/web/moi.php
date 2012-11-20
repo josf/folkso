@@ -18,8 +18,6 @@ require_once 'folksoPage.php';
 require_once 'folksoUserServ.php';
 require_once 'folksoInteract.php';
 
-require_once 'facebook.php';
-
 if ((! $fp) || (! $fp instanceof folksoPage)) {
   $fp = new folksoPage();
 } 
@@ -34,15 +32,6 @@ $rawUser = strip_tags($_GET['user']);
 if (strlen($rawUser) > 255) {
   $rawUser = null;
 }
-
-/*$faceHelp = new folksoFacebookHelper($loc);
-if ($faceHelp->sessionCheck()) {
-  $u = new folksoFBuser($dbc);
-  $u->userFromLogin($faceHelp->uid());
-}
-else {
-
-  }*/
 
 
 // check the userid param first. If someone asks for this, then they know what they want
